@@ -13,7 +13,7 @@
       --border: #e2e8f0;
       --primary: #dc2626;
       --primary-hover: #b91c1c;
-      --radius: 14px;
+      --radius: 16px;
       --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
       --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     }
@@ -151,7 +151,7 @@
       border-color: var(--primary);
     }
 
-    /* Área Principal */
+    /* Cuadrícula Principal */
     main {
       flex: 1;
       max-width: 1200px;
@@ -194,23 +194,25 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
     }
 
-    /* Tarjetas de Contenido */
+    /* Tarjetas Interactivas */
     .block-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.25rem;
-      text-decoration: none;
+      padding: 1.5rem;
+      text-align: left;
+      cursor: pointer;
       color: inherit;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      width: 100%;
     }
 
     .block-card:hover {
@@ -227,17 +229,17 @@
     }
 
     .block-icon {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
     }
 
     .block-name {
       font-size: 0.8rem;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
-    /* Indicadores de Bloque */
+    /* Colores por Bloque de Matemáticas */
     .theme-num { color: #2563eb; }
     .theme-calc { color: #dc2626; }
     .theme-prob { color: #d97706; }
@@ -246,26 +248,157 @@
     .theme-sit { color: #0891b2; }
 
     .block-title {
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
       line-height: 1.3;
       margin-bottom: 0.5rem;
     }
 
     .block-items {
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
-      line-height: 1.4;
-      margin-bottom: 1rem;
+      line-height: 1.45;
+      margin-bottom: 1.25rem;
     }
 
     .block-link {
-      font-size: 0.8rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--primary);
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    /* Modal Emergente */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 640px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.25);
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header-info h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-header-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 0.25rem;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .activities-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .activity-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .activity-link:hover {
+      border-color: var(--primary);
+      background: var(--surface);
+      transform: translateX(4px);
+      color: var(--primary);
+    }
+
+    .activity-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .act-num {
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
     }
 
     .empty-search {
@@ -294,11 +427,11 @@
     </div>
     <div class="brand">
       <h1>📐 Repositorio de Matemáticas</h1>
-      <p>Materiales interactivos, cálculo mental, problemas y geometría por cursos</p>
+      <p>Selecciona un bloque para abrir el catálogo con sus 10 actividades interactivas</p>
     </div>
 
     <div class="controls">
-      <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. fracciones, ángulos, cálculo mental, 3R...)">
+      <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. números pares, fracciones, ángulos, cálculo mental...)">
       <div class="filter-bar">
         <button class="filter-btn active" data-filter="all">Todos los bloques</button>
         <button class="filter-btn" data-filter="num">Numeración</button>
@@ -321,59 +454,71 @@
       </div>
       <div class="cards-grid">
         
-        <a href="./1primaria/numeracion/" class="block-card" data-block="num">
+        <button class="block-card" data-block="num" 
+          data-title="Numeración" data-icon="🔢" data-course-name="1.º de Primaria" data-path="./1primaria/numeracion/"
+          data-activities='["Los números del 0 al 9 en la recta","La decena: Agrupaciones de 10","Decenas y unidades con bloques multibase","Comparación de números (Mayor y menor)","Números pares e impares","Los números ordinales (1.º al 10.º)","Escritura y lectura de números hasta el 99","La tabla del 100 interactiva","Anterior y posterior de un número","Descomposición de números de dos cifras"]'>
           <div>
             <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
             <h3 class="block-title">Números del 0 al 99</h3>
             <p class="block-items">Decenas y unidades, pares e impares, números ordinales y comparación.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./1primaria/calculo/" class="block-card" data-block="calc">
+        <button class="block-card" data-block="calc" 
+          data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="1.º de Primaria" data-path="./1primaria/calculo/"
+          data-activities='["La suma en la recta numérica","La resta en la recta numérica","Sumas de decenas completas (20 + 30)","Restas de decenas completas (50 - 20)","Sumas de número de 2 cifras más dígito (34 + 5)","Sumas sin llevadas de dos cifras","Sumas de 3 sumandos","Relación entre suma y resta (Familias de operaciones)","Amigos del 10: Cálculo mental rápido","Ruleta de cálculo mental contra reloj"]'>
           <div>
             <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
             <h3 class="block-title">Sumas y Restas Básicas</h3>
             <p class="block-items">Recta numérica, decenas completas, sumas de 3 sumandos y cálculo mental.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./1primaria/problemas/" class="block-card" data-block="prob">
+        <button class="block-card" data-block="prob" 
+          data-title="Resolución de Problemas" data-icon="🧩" data-course-name="1.º de Primaria" data-path="./1primaria/problemas/"
+          data-activities='["Pasos para resolver: Identificar la pregunta","Identificar datos numéricos en una imagen","Problemas de suma: ¿Cuántos hay en total?","Problemas de resta: ¿Cuántos quedan?","Problemas de resta: ¿Cuántos faltan?","Problemas de comparación: ¿Cuántos más que...?","Problemas de comparación: ¿Cuántos menos que...?","Dibujar los datos para resolver","Elegir la pregunta adecuada para unos datos","Inventar el enunciado de un problema"]'>
           <div>
             <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
             <h3 class="block-title">Iniciación a Problemas</h3>
             <p class="block-items">Reconocer enunciados, dibujar datos y problemas de "más/menos que".</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./1primaria/medida/" class="block-card" data-block="med">
+        <button class="block-card" data-block="med" 
+          data-title="Medida" data-icon="📏" data-course-name="1.º de Primaria" data-path="./1primaria/medida/"
+          data-activities='["Los días de la semana y los meses","El calendario: Buscar fechas y eventos","El reloj de agujas: Las horas en punto","El reloj digital: Las horas y media","Medidas corporales: Palmo, pie y paso","El metro y el centímetro con regla","El litro: Llenar y vaciar recipientes","El kilo: Pesar objetos en balanza","Monedas de 1 y 2 euros y céntimos","Billetes de 5, 10 y 20 euros: Pagar exacto"]'>
           <div>
             <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
             <h3 class="block-title">Tiempo, Dinero y Magnitudes</h3>
             <p class="block-items">Calendario, reloj (en punto y media), monedas/billetes de euro y medidas naturales.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./1primaria/geometria/" class="block-card" data-block="geom">
+        <button class="block-card" data-block="geom" 
+          data-title="Geometría y Estadística" data-icon="📐" data-course-name="1.º de Primaria" data-path="./1primaria/geometria/"
+          data-activities='["Izquierda y derecha de mi cuerpo","Posiciones: Arriba/abajo, delante/detrás","Líneas rectas, curvas y poligonales","Identificar figuras planas (Círculo, cuadrado, triángulo)","Cuerpos geométricos: La esfera y el cubo","Clasificar objetos en tablas de datos","Gráficos de barras con pictogramas","Interpretar una tabla de frecuencias sencilla","Relacionar gráficos con dibujos de aula","Laberintos de orientación espacial"]'>
           <div>
             <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
             <h3 class="block-title">Espacio, Figuras y Gráficos</h3>
             <p class="block-items">Orientación espacial, esfera/cubo, figuras planas y gráficos de barras sencillos.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./1primaria/situaciones/" class="block-card" data-block="sit">
+        <button class="block-card" data-block="sit" 
+          data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="1.º de Primaria" data-path="./1primaria/situaciones/"
+          data-activities='["¡Vamos a conocernos!: Contar objetos para decorar la clase","La regla de las 3R: Diseñar contenedores de reciclaje","Tareas de casa: Registrar actividades en una tabla","Receta tradicional: Medir ingredientes con vasos y cucharas","Zona verde del colegio: Diseñar el plano de plantas","Organizamos una fiesta: Presupuesto y horarios del festival","Mercadillo solidario de juguetes usados","El rincón de la fruta: Estadísticas de meriendas","Conteo de pasos en el circuito del patio","Cuidamos el aula: Inventario de lápices y tijeras"]'>
           <div>
             <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
             <h3 class="block-title">Proyectos de Aula 1.º</h3>
             <p class="block-items">La regla de las 3R, recetas tradicionales, tareas en casa y fiesta fin de curso.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
       </div>
     </section>
@@ -386,336 +531,106 @@
       </div>
       <div class="cards-grid">
         
-        <a href="./2primaria/numeracion/" class="block-card" data-block="num">
+        <button class="block-card" data-block="num" 
+          data-title="Numeración" data-icon="🔢" data-course-name="2.º de Primaria" data-path="./2primaria/numeracion/"
+          data-activities='["El número 100: Formar centenas","La tabla numérica del 0 al 999","Aproximación a la decena más cercana","Descomposición en centenas, decenas y unidades","Lectura y escritura de números de 3 cifras","Comparación de números hasta el 999","Series numéricas ascendentes y descendentes","El número 1.000: La unidad de millar","Los números ordinales hasta el 20.º","Composición de números con ábacos virtuales"]'>
           <div>
             <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
             <h3 class="block-title">Números hasta el 1.000</h3>
             <p class="block-items">La centena, descomposición hasta el 999 y aproximación a la decena cercana.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./2primaria/calculo/" class="block-card" data-block="calc">
+        <button class="block-card" data-block="calc" 
+          data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="2.º de Primaria" data-path="./2primaria/calculo/"
+          data-activities='["Propiedad conmutativa de la suma","Sumas con llevadas de números de 2 y 3 cifras","La prueba de la resta","Sumas y restas por descomposición","Relación entre suma repetida y multiplicación","La tabla de multiplicar del 2 (El doble)","La tabla de multiplicar del 3 (El triple)","Repartos exactos: La mitad y el tercio","Uso básico de la calculadora en el aula","Cálculo mental: Sumar y restar 10 y 100"]'>
           <div>
             <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
             <h3 class="block-title">Operaciones y Tablas (2 y 3)</h3>
             <p class="block-items">Prueba de la resta, doble y triple, repartos iguales y cálculo mental hasta 3 cifras.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./2primaria/problemas/" class="block-card" data-block="prob">
+        <button class="block-card" data-block="prob" 
+          data-title="Resolución de Problemas" data-icon="🧩" data-course-name="2.º de Primaria" data-path="./2primaria/problemas/"
+          data-activities='["Problemas de combinación: Unión y subconjuntos","Problemas de cambio: Aumentos y disminuciones","Problemas de igualación","Reconocer preguntas válidas a partir de un enunciado","Completar enunciados a partir de la solución","Problemas de dos operaciones encadenadas","Problemas de repartos equitativos","Elegir la operación correcta: ¿Sumar o restar?","Detectar datos innecesarios en un texto","Inventar problemas con tablas de precios"]'>
           <div>
             <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
             <h3 class="block-title">Cambio, Unión e Igualación</h3>
             <p class="block-items">Problemas de dos operaciones, repartos e invención de enunciados.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./2primaria/medida/" class="block-card" data-block="med">
+        <button class="block-card" data-block="med" 
+          data-title="Medida" data-icon="📏" data-course-name="2.º de Primaria" data-path="./2primaria/medida/"
+          data-activities='["Lectura del reloj: Horas y minutos exactos","Cálculo de tiempos transcurridos en el horario","Organizar un horario escolar semanal","Monedas y billetes: Relación euro y céntimo","Situaciones de compra: Calcular el cambio","El centímetro, metro y kilómetro","El kilo, medio kilo y cuarto de kilo","El litro, medio litro y cuarto de litro","Medidas no convencionales: Comparar balanzas","Problemas cotidianos de compra y venta"]'>
           <div>
             <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
             <h3 class="block-title">Reloj y Medidas Reales</h3>
             <p class="block-items">Horas y minutos, situaciones de compra en euros, metro/km, kilo y litro.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./2primaria/geometria/" class="block-card" data-block="geom">
+        <button class="block-card" data-block="geom" 
+          data-title="Geometría y Estadística" data-icon="📐" data-course-name="2.º de Primaria" data-path="./2primaria/geometria/"
+          data-activities='["Giros a la izquierda y derecha","La circunferencia y el círculo","Polígonos: Lados y vértices","Eje de simetría en figuras planas","Cuerpos geométricos: Prismas, cilindros y conos","Tablas de datos de doble entrada","Gráficos de barras de dos características","Relacionar gráficos con encuestas de clase","Probabilidad: Suceso seguro, posible e imposible","Construcción de figuras geométricas en cuadrícula"]'>
           <div>
             <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
             <h3 class="block-title">Polígonos y Probabilidad</h3>
             <p class="block-items">Simetría, círculo/circunferencia, polígonos y sucesos (seguro, posible, imposible).</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
-        <a href="./2primaria/situaciones/" class="block-card" data-block="sit">
+        <button class="block-card" data-block="sit" 
+          data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="2.º de Primaria" data-path="./2primaria/situaciones/"
+          data-activities='["Mejoramos el colegio: Medir y redistribuir el patio","Nos cuidamos: Diseñar un menú saludable mensual","Ahorramos agua: Analizar el consumo doméstico en litros","Matemáticas en la biblioteca: Clasificar libros por tejuelos","Cuidamos el huerto: Reparto de parcelas y siembra","Organizamos una excursión: Horarios, autobuses y billetes","Tienda de la clase: Simulación de compras con euros","Juegos matemáticos con dados y probabilidad","Registro de temperaturas diarias del cole","Diseño de un mosaico simétrico para el pasillo"]'>
           <div>
             <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
             <h3 class="block-title">Proyectos de Aula 2.º</h3>
             <p class="block-items">Mejoramos el patio, ahorro de agua, menú saludable y huerto escolar.</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
+        </button>
 
       </div>
     </section>
 
-    <!-- ==================== CURSO 3.º ==================== -->
-    <section class="course-section" data-course="3">
-      <div class="course-header">
-        <h2 class="course-title">3.º de Primaria</h2>
-        <span class="cycle-badge">Segundo Ciclo</span>
-      </div>
-      <div class="cards-grid">
-        
-        <a href="./3primaria/numeracion/" class="block-card" data-block="num">
-          <div>
-            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
-            <h3 class="block-title">Números hasta el 9.999</h3>
-            <p class="block-items">Unidades y decenas de millar, lectura, escritura, comparación y redondeo.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./3primaria/calculo/" class="block-card" data-block="calc">
-          <div>
-            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
-            <h3 class="block-title">Tablas y División Básica</h3>
-            <p class="block-items">Tablas de multiplicar, propiedad asociativa, división exacta y entera (3 cifras / 1 cifra).</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./3primaria/problemas/" class="block-card" data-block="prob">
-          <div>
-            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
-            <h3 class="block-title">Estrategias de Resolución</h3>
-            <p class="block-items">Deducir qué calcular primero, detección de errores y estimación de soluciones.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./3primaria/medida/" class="block-card" data-block="med">
-          <div>
-            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
-            <h3 class="block-title">Tiempo y Unidades Métricas</h3>
-            <p class="block-items">Horas/minutos/segundos, mm/cm/m/km, gramo/kilo, mililitro/litro e instrumentos de medida.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./3primaria/geometria/" class="block-card" data-block="geom">
-          <div>
-            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
-            <h3 class="block-title">Ángulos, Triángulos y Perímetro</h3>
-            <p class="block-items">Uso del transportador, clasificación de triángulos y cuadriláteros, poliedros y coordenadas.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./3primaria/situaciones/" class="block-card" data-block="sit">
-          <div>
-            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
-            <h3 class="block-title">Proyectos de Aula 3.º</h3>
-            <p class="block-items">Aprovechamiento de alimentos, día del deporte, protección animal y mejora del barrio.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ==================== CURSO 4.º ==================== -->
-    <section class="course-section" data-course="4">
-      <div class="course-header">
-        <h2 class="course-title">4.º de Primaria</h2>
-        <span class="cycle-badge">Segundo Ciclo</span>
-      </div>
-      <div class="cards-grid">
-        
-        <a href="./4primaria/numeracion/" class="block-card" data-block="num">
-          <div>
-            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
-            <h3 class="block-title">Fracciones y Decimales</h3>
-            <p class="block-items">Números romanos, fracciones propias/impropias y unidades decimales (décimas/centésimas).</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./4primaria/calculo/" class="block-card" data-block="calc">
-          <div>
-            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
-            <h3 class="block-title">Multiplicación y División Avanzada</h3>
-            <p class="block-items">División por 2 cifras, propiedad distributiva, operaciones combinadas y suma/resta con decimales.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./4primaria/problemas/" class="block-card" data-block="prob">
-          <div>
-            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
-            <h3 class="block-title">Problemas Estructurados</h3>
-            <p class="block-items">Determinar si un problema tiene solución única, completar cálculos y extracción de datos.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./4primaria/medida/" class="block-card" data-block="med">
-          <div>
-            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
-            <h3 class="block-title">Sistema Métrico Decimal</h3>
-            <p class="block-items">Equivalencias completas de longitud (km a mm), capacidad (kl a ml) y masa (kg a mg).</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./4primaria/geometria/" class="block-card" data-block="geom">
-          <div>
-            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
-            <h3 class="block-title">Áreas, Prismas y Pictogramas</h3>
-            <p class="block-items">Paralelogramos, prismas y pirámides, traslaciones, gráficos de barras lineales y pictogramas.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./4primaria/situaciones/" class="block-card" data-block="sit">
-          <div>
-            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
-            <h3 class="block-title">Proyectos de Aula 4.º</h3>
-            <p class="block-items">Nutrición saludable, uso responsable del transporte y consumo consciente.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ==================== CURSO 5.º ==================== -->
-    <section class="course-section" data-course="5">
-      <div class="course-header">
-        <h2 class="course-title">5.º de Primaria</h2>
-        <span class="cycle-badge">Tercer Ciclo</span>
-      </div>
-      <div class="cards-grid">
-        
-        <a href="./5primaria/numeracion/" class="block-card" data-block="num">
-          <div>
-            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
-            <h3 class="block-title">Múltiplos, Divisores y Fracciones</h3>
-            <p class="block-items">Números de 7 cifras, números mixtos, fracciones equivalentes y mínimo común denominador.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./5primaria/calculo/" class="block-card" data-block="calc">
-          <div>
-            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
-            <h3 class="block-title">Potencias, Decimales y Porcentajes</h3>
-            <p class="block-items">Potencias de 10, multiplicación y división con decimales, y cálculo de porcentajes.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./5primaria/problemas/" class="block-card" data-block="prob">
-          <div>
-            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
-            <h3 class="block-title">Estrategias y Ensayo-Error</h3>
-            <p class="block-items">Diagramas de árbol, empezar por el final, preguntas intermedias y reducción a problemas sencillos.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./5primaria/medida/" class="block-card" data-block="med">
-          <div>
-            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
-            <h3 class="block-title">Superficie y Sistema Sexagesimal</h3>
-            <p class="block-items">El metro cuadrado y submúltiplos, cálculo horario exacto y grados/minutos/segundos.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./5primaria/geometria/" class="block-card" data-block="geom">
-          <div>
-            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
-            <h3 class="block-title">Áreas de Polígonos y Estadística</h3>
-            <p class="block-items">Área del triángulo, cuadriláteros y círculo, mediatriz/bisectriz, media y moda.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./5primaria/situaciones/" class="block-card" data-block="sit">
-          <div>
-            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
-            <h3 class="block-title">Proyectos de Aula 5.º</h3>
-            <p class="block-items">Mujeres científicas, cuidado del medio marino y reducción de la contaminación.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- ==================== CURSO 6.º ==================== -->
-    <section class="course-section" data-course="6">
-      <div class="course-header">
-        <h2 class="course-title">6.º de Primaria</h2>
-        <span class="cycle-badge">Tercer Ciclo</span>
-      </div>
-      <div class="cards-grid">
-        
-        <a href="./6primaria/numeracion/" class="block-card" data-block="num">
-          <div>
-            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
-            <h3 class="block-title">Enteros, Divisibilidad y Fracciones</h3>
-            <p class="block-items">M.C.M., M.C.D., criterios de divisibilidad, números enteros y comparación de fracciones.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./6primaria/calculo/" class="block-card" data-block="calc">
-          <div>
-            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
-            <h3 class="block-title">Operaciones Complejas y Raíces</h3>
-            <p class="block-items">Operaciones combinadas con fracciones, raíz cuadrada, división con decimales y proporcionalidad.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./6primaria/problemas/" class="block-card" data-block="prob">
-          <div>
-            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
-            <h3 class="block-title">Modelización y Lógica</h3>
-            <p class="block-items">Problemas de aumentos/disminuciones porcentuales, escalas y justificación de procedimientos.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./6primaria/medida/" class="block-card" data-block="med">
-          <div>
-            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
-            <h3 class="block-title">Volumen y Sistema Sexagesimal</h3>
-            <p class="block-items">Metro cúbico, relaciones volumen-capacidad, operaciones sexagesimales y unidades de información.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./6primaria/geometria/" class="block-card" data-block="geom">
-          <div>
-            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
-            <h3 class="block-title">Cuerpos Geométricos y Estadística</h3>
-            <p class="block-items">Área y volumen de prismas/pirámides/cuerpos redondos, mediana, rango y probabilidad.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-        <a href="./6primaria/situaciones/" class="block-card" data-block="sit">
-          <div>
-            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
-            <h3 class="block-title">Proyectos de Aula 6.º</h3>
-            <p class="block-items">Convivencia escolar, aprendizaje intergeneracional, protección del planeta y arte matemático.</p>
-          </div>
-          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
-        </a>
-
-      </div>
-    </section>
-
-    <!-- Estado cuando la búsqueda no coincide -->
+    <!-- Estado de Búsqueda Vacía -->
     <div class="empty-search" id="emptySearch">
       No se han encontrado bloques o contenidos de matemáticas que coincidan con la búsqueda.
     </div>
 
   </main>
 
+  <!-- ==================== CONTENEDOR MODAL ==================== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h2 id="modalTitle"><span>🔢</span> Numeración</h2>
+          <p id="modalSubtitle">1.º de Primaria • Listado de actividades</p>
+        </div>
+        <button class="modal-close" id="modalClose" aria-label="Cerrar modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul class="activities-list" id="activitiesList">
+          <!-- Se genera dinámicamente con JavaScript -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <p>Programación de Matemáticas • Primaria • Recursos Educativos Abiertos en GitHub Pages</p>
   </footer>
 
   <script>
-    // Filtro por Bloques y Búsqueda en Vivo
+    // 1. FILTRADO Y BÚSQUEDA EN TIEMPO REAL
     const searchInput = document.getElementById('searchInput');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const cards = document.querySelectorAll('.block-card');
@@ -748,7 +663,6 @@
           }
         });
 
-        // Ocultar sección del curso si ninguna de sus tarjetas coincide
         section.style.display = sectionVisibleCards > 0 ? 'flex' : 'none';
       });
 
@@ -766,7 +680,64 @@
 
     searchInput.addEventListener('input', runFilter);
 
-    // Tema Claro / Oscuro Sincronizado
+    // 2. MODAL DINÁMICO DE ACTIVIDADES
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const activitiesList = document.getElementById('activitiesList');
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const title = card.getAttribute('data-title');
+        const icon = card.getAttribute('data-icon');
+        const course = card.getAttribute('data-course-name');
+        const basePath = card.getAttribute('data-path') || './';
+        const rawActivities = card.getAttribute('data-activities');
+        
+        const activities = rawActivities ? JSON.parse(rawActivities) : [];
+
+        modalTitle.innerHTML = `<span>${icon}</span> ${title}`;
+        modalSubtitle.textContent = `${course} • Selecciona una actividad interactiva`;
+
+        activitiesList.innerHTML = '';
+        activities.forEach((act, index) => {
+          const li = document.createElement('li');
+          const actNumber = index + 1;
+          const actHref = `${basePath}actividad-${actNumber}/`;
+
+          li.innerHTML = `
+            <a href="${actHref}" class="activity-link">
+              <div class="activity-left">
+                <span class="act-num">Act. ${actNumber}</span>
+                <span>${act}</span>
+              </div>
+              <span>→</span>
+            </a>
+          `;
+          activitiesList.appendChild(li);
+        });
+
+        modalOverlay.classList.add('active');
+      });
+    });
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // 3. TEMA CLARO / OSCURO SINCRONIZADO
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
