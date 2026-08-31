@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>¡Gira y Atrapa! - Othello Escolar</title>
+  
+  <!-- Tipografía Escolar y Amigable -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========================================================
+       VARIABLES Y PALETA DE COLOR PASTEL Y CONTRASTADA
+       ======================================================== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #fef6e4 0%, #e1f7f5 50%, #f3e8ff 100%);
+      --card-bg: #ffffff;
+      --board-outer: #4e9f78;
+      --board-inner: #3b8b64;
+      --board-cell: #2c6e4e;
+      --text-main: #272343;
+      --text-muted: #5f6c7b;
+      
+      /* Jugador 1 (Predeterminado: Sol / Dorado) */
+      --p1-main: #f9bc60;
+      --p1-dark: #e89e27;
+      --p1-light: #fff3cd;
+      --p1-text: #5e3b00;
+      
+      /* Jugador 2 (Predeterminado: Luna / Morado-Índigo) */
+      --p2-main: #90b4ce;
+      --p2-dark: #628ea8;
+      --p2-light: #d8eefe;
+      --p2-text: #1d3557;
+
+      --accent-coral: #ff7e67;
+      --accent-green: #52b788;
+      --accent-yellow: #ffd166;
+      
+      --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.12), 0 10px 10px -5px rgba(0,0,0,0.04);
+      --font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Reseteo y prevención de gestos no deseados en PDI */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    /* ========================================================
+       BARRA SUPERIOR Y TÍTULO
+       ======================================================== */
+    header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title h1 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #272343;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-badge {
+      background: #ffd166;
+      color: #5e3b00;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Botones de acción táctiles estándar */
+    .icon-btn {
+      min-width: 48px;
+      min-height: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 16px;
+      background: #ffffff;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 2px solid #eef2f5;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: #eef2f5;
+    }
+
+    /* ========================================================
+       CONTENEDOR PRINCIPAL
+       ======================================================== */
+    main {
+      width: 100%;
+      max-width: 950px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* ========================================================
+       MARCADOR Y ESTADO DE TURNOS
+       ======================================================== */
+    .scoreboard {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .player-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 3px solid transparent;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .player-card.active {
+      transform: scale(1.04);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .player-card.p1-card.active {
+      border-color: var(--p1-dark);
+      background: linear-gradient(135deg, #ffffff 40%, var(--p1-light) 100%);
+    }
+
+    .player-card.p2-card.active {
+      border-color: var(--p2-dark);
+      background: linear-gradient(135deg, #ffffff 40%, var(--p2-light) 100%);
+    }
+
+    .player-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.85rem;
+      flex-shrink: 0;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.6), var(--shadow-sm);
+    }
+
+    .p1-avatar { background: var(--p1-main); color: var(--p1-text); }
+    .p2-avatar { background: var(--p2-main); color: var(--p2-text); }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .player-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .turn-indicator {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .player-card.active .turn-indicator {
+      opacity: 1;
+    }
+
+    .p1-card .turn-indicator { color: #c07a00; }
+    .p2-card .turn-indicator { color: #3d6a86; }
+
+    .player-score {
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .vs-badge {
+      background: #ffffff;
+      font-weight: 900;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+      border: 2px dashed #cbd5e1;
+    }
+
+    /* Mensaje de turno o aviso pedagógico */
+    .turn-banner {
+      background: #ffffff;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+      border: 2px solid #edf2f7;
+      text-align: center;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .turn-banner .status-icon {
+      font-size: 1.3rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* ========================================================
+       TABLERO DE JUEGO
+       ======================================================== */
+    .board-wrapper {
+      position: relative;
+      background: var(--board-outer);
+      padding: 14px;
+      border-radius: 28px;
+      box-shadow: var(--shadow-lg), 0 12px 0 #285943;
+      touch-action: none;
+      width: 100%;
+      max-width: 540px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .game-board {
+      width: 100%;
+      height: 100%;
+      background: var(--board-inner);
+      border-radius: 18px;
+      display: grid;
+      gap: 6px;
+      padding: 6px;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Cuadrículas configurables (6x6 o 8x8) */
+    .game-board.size-6 {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+    }
+
+    .game-board.size-8 {
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+    }
+
+    /* Celda / Casilla táctil */
+    .cell {
+      background: var(--board-cell);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+      transition: background 0.15s;
+    }
+
+    .cell:active {
+      background: #23593f;
+    }
+
+    /* Pistas visuales (jugadas válidas) */
+    .cell.valid-move::after {
+      content: '';
+      position: absolute;
+      width: 32%;
+      height: 32%;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+      animation: hintGlow 1.4s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    .cell.valid-move:hover::after {
+      width: 48%;
+      height: 48%;
+      background: #ffffff;
+    }
+
+    @keyframes hintGlow {
+      from { transform: scale(0.85); opacity: 0.5; }
+      to { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* ========================================================
+       FICHAS (DISKS) Y ANIMACIÓN 3D DE VOLTEO
+       ======================================================== */
+    .disk-container {
+      width: 86%;
+      height: 86%;
+      perspective: 800px;
+      position: relative;
+      pointer-events: none;
+    }
+
+    .disk {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+    }
+
+    .disk.pop-in {
+      animation: diskDrop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes diskDrop {
+      0% { transform: scale(0.2); opacity: 0; }
+      80% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .disk-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: inset 0 3px 6px rgba(255,255,255,0.7), 0 4px 6px rgba(0,0,0,0.25);
+    }
+
+    /* Cara Jugador 1 (Frontal) */
+    .disk-face.front {
+      background: radial-gradient(circle at 30% 30%, #fff7d6, var(--p1-main) 70%, var(--p1-dark) 100%);
+      color: var(--p1-text);
+      transform: rotateY(0deg);
+      border: 2px solid #ffd166;
+    }
+
+    /* Cara Jugador 2 (Trasera) */
+    .disk-face.back {
+      background: radial-gradient(circle at 30% 30%, #e2f0fb, var(--p2-main) 70%, var(--p2-dark) 100%);
+      color: var(--p2-text);
+      transform: rotateY(180deg);
+      border: 2px solid #a2c6df;
+    }
+
+    /* Estados de rotación */
+    .disk.player-1 {
+      transform: rotateY(0deg);
+    }
+
+    .disk.player-2 {
+      transform: rotateY(180deg);
+    }
+
+    /* ========================================================
+       BARRA DE CONTROLES INFERIOR
+       ======================================================== */
+    .controls-bar {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      min-height: 54px;
+      padding: 10px 18px;
+      border-radius: 18px;
+      font-family: var(--font-family);
+      font-weight: 800;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 2px solid #e2e8f0;
+    }
+
+    .btn-action:active {
+      transform: scale(0.94);
+    }
+
+    .btn-action.btn-primary {
+      background: var(--accent-coral);
+      color: #ffffff;
+      border-color: #f76850;
+      box-shadow: 0 4px 10px rgba(255, 126, 103, 0.35);
+    }
+
+    .btn-action.btn-toggle.active {
+      background: #ebfbee;
+      color: #2b8a3e;
+      border-color: #8ce99a;
+    }
+
+    /* ========================================================
+       MODALES Y VENTANAS FLOTANTES
+       ======================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(39, 35, 67, 0.65);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 28px;
+      padding: 26px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .modal-overlay.open .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .modal-content {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .rule-num {
+      background: var(--p1-main);
+      color: var(--p1-text);
+      font-weight: 900;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Modal de Victoria */
+    .winner-badge {
+      font-size: 4.5rem;
+      margin-bottom: -10px;
+      animation: bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-12px); }
+    }
+
+    .winner-name {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--accent-coral);
+    }
+
+    .score-summary {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: 18px;
+      margin: 8px 0;
+    }
+
+    .summary-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .summary-box .num {
+      font-size: 1.8rem;
+      font-weight: 900;
+    }
+
+    /* Lienzo de confeti */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1001;
+    }
+
+    /* Selector de temáticas */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .theme-btn {
+      padding: 10px;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .theme-btn.active {
+      border-color: var(--accent-coral);
+      background: #fff5f3;
+      transform: scale(1.05);
+    }
+
+    /* ========================================================
+       ADAPTACIÓN RESPONSIVE PANTALLA GRANDE / TABLET
+       ======================================================== */
+    @media (max-width: 600px) {
+      .brand-title h1 { font-size: 1.2rem; }
+      .player-card { padding: 8px 10px; gap: 8px; }
+      .player-avatar { width: 42px; height: 42px; font-size: 1.4rem; }
+      .player-score { font-size: 1.6rem; }
+      .board-wrapper { padding: 8px; border-radius: 20px; }
+      .game-board { gap: 4px; padding: 4px; border-radius: 14px; }
+      .btn-action { padding: 8px 12px; font-size: 0.9rem; min-height: 48px; }
+    }
+
+    @media (min-width: 1000px) {
+      .board-wrapper { max-width: 580px; }
+      .player-card { padding: 14px 22px; }
+      .player-avatar { width: 62px; height: 62px; font-size: 2.2rem; }
+      .player-score { font-size: 2.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       BARRA SUPERIOR (LOGO Y BOTONES DE CONFIGURACIÓN)
+       ======================================================== -->
+  <header>
+    <div class="brand-title">
+      <h1><span>🌟</span> ¡Gira y Atrapa!</h1>
+      <span class="brand-badge">3.º Primaria</span>
+    </div>
+    
+    <div class="header-actions">
+      <!-- Selector de Modo de Juego -->
+      <button class="icon-btn" id="btn-mode" title="Cambiar Modo de Juego">👥</button>
+      <!-- Selector de Temática -->
+      <button class="icon-btn" id="btn-theme" title="Elegir Personajes">🎨</button>
+      <!-- Tamaño de Tablero (6x6 o 8x8) -->
+      <button class="icon-btn" id="btn-size" title="Tamaño de Tablero">📐</button>
+      <!-- Sonido On/Off -->
+      <button class="icon-btn" id="btn-sound" title="Sonido">🔊</button>
+      <!-- Ayuda / Instrucciones -->
+      <button class="icon-btn" id="btn-help" title="Cómo se juega">❓</button>
+      <!-- Pantalla Completa (Ideal PDI) -->
+      <button class="icon-btn" id="btn-fullscreen" title="Pantalla Completa">⛶</button>
+    </div>
+  </header>
+
+  <!-- ========================================================
+       ÁREA PRINCIPAL DE JUEGO
+       ======================================================== -->
+  <main>
+    <!-- Marcador y Turno -->
+    <div class="scoreboard">
+      <!-- Jugador 1 -->
+      <div class="player-card p1-card active" id="card-p1">
+        <div class="player-avatar p1-avatar" id="avatar-p1">☀️</div>
+        <div class="player-info">
+          <span class="turn-indicator">¡Tu Turno!</span>
+          <span class="player-name" id="name-p1">Equipo Sol</span>
+        </div>
+        <div class="player-score" id="score-p1">2</div>
+      </div>
+
+      <div class="vs-badge">VS</div>
+
+      <!-- Jugador 2 (O Robot) -->
+      <div class="player-card p2-card" id="card-p2">
+        <div class="player-score" id="score-p2">2</div>
+        <div class="player-info" style="text-align: right;">
+          <span class="turn-indicator">¡Tu Turno!</span>
+          <span class="player-name" id="name-p2">Equipo Luna</span>
+        </div>
+        <div class="player-avatar p2-avatar" id="avatar-p2">🌙</div>
+      </div>
+    </div>
+
+    <!-- Banner dinámico de estado -->
+    <div class="turn-banner" id="status-banner">
+      <span class="status-icon" id="status-icon">👉</span>
+      <span id="status-text">¡Le toca mover a Equipo Sol!</span>
+    </div>
+
+    <!-- Tablero de Juego -->
+    <div class="board-wrapper">
+      <div class="game-board size-6" id="board">
+        <!-- Las casillas se generan dinámicamente con JavaScript -->
+      </div>
+    </div>
+
+    <!-- Barra de Controles Táctiles -->
+    <div class="controls-bar">
+      <!-- Mostrar / Ocultar Pistas -->
+      <button class="btn-action btn-toggle active" id="btn-hints">
+        <span>💡</span> Pistas: <b>SÍ</b>
+      </button>
+      
+      <!-- Deshacer Movimiento (Ideal para errores táctiles) -->
+      <button class="btn-action" id="btn-undo" title="Deshacer el último movimiento">
+        <span>↩️</span> Deshacer
+      </button>
+      
+      <!-- Reiniciar Partida -->
+      <button class="btn-action btn-primary" id="btn-restart">
+        <span>🔄</span> Nueva Partida
+      </button>
+    </div>
+  </main>
+
+  <!-- Lienzo para Confeti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- ========================================================
+       MODAL DE INSTRUCCIONES PEDAGÓGICAS
+       ======================================================== -->
+  <div class="modal-overlay" id="modal-help">
+    <div class="modal-card">
+      <h2 class="modal-title">¿Cómo se juega? 🎯</h2>
+      <div class="modal-content">
+        <div class="rule-item">
+          <div class="rule-num">1</div>
+          <p><b>Encierra fichas:</b> Coloca tu ficha en una casilla vacía de modo que <b>atrapes</b> una o más fichas del rival en línea recta (horizontal, vertical o diagonal) entre tu nueva ficha y otra que ya tengas.</p>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">2</div>
+          <p><b>¡Gíralas todas!:</b> Todas las fichas atrapadas en medio se darán la vuelta por arte de magia y se convertirán en fichas de tu equipo.</p>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">3</div>
+          <p><b>¡A ganar!:</b> La partida termina cuando el tablero se llena o nadie puede mover. ¡Gana el equipo con <b>más fichas</b> de su color!</p>
+        </div>
+      </div>
+      <button class="btn-action btn-primary" id="btn-close-help" style="width: 100%;">¡Entendido, a jugar! 🚀</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL DE TEMÁTICAS / PERSONAJES
+       ======================================================== -->
+  <div class="modal-overlay" id="modal-theme">
+    <div class="modal-card">
+      <h2 class="modal-title">Elige tus Personajes 🎨</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Selecciona los equipos que jugarán en el aula:</p>
+      
+      <div class="theme-grid" id="theme-options">
+        <button class="theme-btn active" data-theme="sol-luna">
+          <span style="font-size: 2rem;">☀️ vs 🌙</span>
+          <span>Sol y Luna</span>
+        </button>
+        <button class="theme-btn" data-theme="rana-abeja">
+          <span style="font-size: 2rem;">🐸 vs 🐝</span>
+          <span>Rana y Abeja</span>
+        </button>
+        <button class="theme-btn" data-theme="estrella-pulpo">
+          <span style="font-size: 2rem;">⭐ vs 🐙</span>
+          <span>Estrella y Pulpo</span>
+        </button>
+      </div>
+
+      <button class="btn-action btn-primary" id="btn-close-theme" style="width: 100%; margin-top: 10px;">Aplicar Equipos ✨</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL DE VICTORIA / FIN DE PARTIDA
+       ======================================================== -->
+  <div class="modal-overlay" id="modal-victory">
+    <div class="modal-card">
+      <div class="winner-badge" id="vic-badge">🏆</div>
+      <h2 class="winner-name" id="vic-title">¡Victoria Fantástica!</h2>
+      <p id="vic-desc" style="font-weight: 700; color: var(--text-muted);">El Equipo Sol ha conquistado el tablero</p>
+      
+      <div class="score-summary">
+        <div class="summary-box">
+          <span id="vic-avatar-1" style="font-size: 2rem;">☀️</span>
+          <span class="num" id="vic-score-1" style="color: #c07a00;">0</span>
+          <span style="font-size: 0.8rem; font-weight: 800;" id="vic-name-1">Sol</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 900; align-self: center; color: #cbd5e1;">-</div>
+        <div class="summary-box">
+          <span id="vic-avatar-2" style="font-size: 2rem;">🌙</span>
+          <span class="num" id="vic-score-2" style="color: #3d6a86;">0</span>
+          <span style="font-size: 0.8rem; font-weight: 800;" id="vic-name-2">Luna</span>
+        </div>
+      </div>
+
+      <button class="btn-action btn-primary" id="btn-vic-restart" style="width: 100%;">¡Jugar Otra Ronda! 🔄</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       LÓGICA JAVASCRIPT Y CONTROL DEL JUEGO
+       ======================================================== -->
+  <script>
+    /* ========================================================
+       1. MOTOR DE EFECTOS SONOROS (WEB AUDIO API - SIN EXTERNOS)
+       ======================================================== */
+    class SoundFX {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Pop agradable al colocar ficha
+      playPop() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+
+      // Sonido al voltear ficha (sube de tono según el índice del combo)
+      playFlip(step = 0) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        const baseFreq = 520 + Math.min(step * 40, 400);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq + 150, now + 0.07);
+
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      }
+
+      // Sonido de error o casilla bloqueada
+      playError() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.linearRampToValueAtTime(130, now + 0.15);
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      }
+
+      // Fanfarria de Victoria
+      playVictory() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do agudo
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const start = this.ctx.currentTime + idx * 0.12;
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, start);
+
+          gain.gain.setValueAtTime(0.28, start);
+          gain.gain.exponentialRampToValueAtTime(0.01, start + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(start);
+          osc.stop(start + 0.35);
+        });
+      }
+
+      // Sonido cuando un jugador pasa turno
+      playPass() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.setValueAtTime(300, now + 0.1);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
+    /* ========================================================
+       2. TEMÁTICAS INFANTILES DISPONIBLES
+       ======================================================== */
+    const THEMES = {
+      'sol-luna': {
+        p1: { name: 'Equipo Sol', icon: '☀️', color: '#f9bc60', dark: '#e89e27' },
+        p2: { name: 'Equipo Luna', icon: '🌙', color: '#90b4ce', dark: '#628ea8' }
+      },
+      'rana-abeja': {
+        p1: { name: 'Equipo Ranita', icon: '🐸', color: '#80ed99', dark: '#57cc99' },
+        p2: { name: 'Equipo Abejita', icon: '🐝', color: '#ffd166', dark: '#f4a261' }
+      },
+      'estrella-pulpo': {
+        p1: { name: 'Equipo Estrella', icon: '⭐', color: '#ffb703', dark: '#fb8500' },
+        p2: { name: 'Equipo Pulpo', icon: '🐙', color: '#f72585', dark: '#b5179e' }
+      }
+    };
+
+    /* ========================================================
+       3. ESTADO GLOBAL DEL JUEGO
+       ======================================================== */
+    const sound = new SoundFX();
+    let boardSize = 6; // Por defecto 6x6 (ideal para 3º Primaria), conmutable a 8x8
+    let boardState = []; // Matriz: 0 = Vacío, 1 = P1, 2 = P2
+    let currentPlayer = 1; // 1 o 2
+    let isVsBot = false; // false: 2 Jugadores | true: vs Robotito Amigo
+    let showHints = true; // Mostrar pistas visuales
+    let currentThemeKey = 'sol-luna';
+    let isProcessingMove = false; // Bloquea toques durante animaciones
+    let historyState = []; // Para botón Deshacer
+
+    // Direcciones de búsqueda en 8 sentidos (dx, dy)
+    const DIRECTIONS = [
+      [-1, -1], [-1, 0], [-1, 1],
+      [ 0, -1],          [ 0, 1],
+      [ 1, -1], [ 1, 0], [ 1, 1]
+    ];
+
+    /* ========================================================
+       4. ELEMENTOS DEL DOM
+       ======================================================== */
+    const boardEl = document.getElementById('board');
+    const scoreP1El = document.getElementById('score-p1');
+    const scoreP2El = document.getElementById('score-p2');
+    const cardP1El = document.getElementById('card-p1');
+    const cardP2El = document.getElementById('card-p2');
+    const avatarP1El = document.getElementById('avatar-p1');
+    const avatarP2El = document.getElementById('avatar-p2');
+    const nameP1El = document.getElementById('name-p1');
+    const nameP2El = document.getElementById('name-p2');
+    const statusTextEl = document.getElementById('status-text');
+    const statusIconEl = document.getElementById('status-icon');
+    const statusBannerEl = document.getElementById('status-banner');
+    
+    // Modales y Botones
+    const btnHints = document.getElementById('btn-hints');
+    const btnUndo = document.getElementById('btn-undo');
+    const btnRestart = document.getElementById('btn-restart');
+    const btnMode = document.getElementById('btn-mode');
+    const btnTheme = document.getElementById('btn-theme');
+    const btnSize = document.getElementById('btn-size');
+    const btnSound = document.getElementById('btn-sound');
+    const btnHelp = document.getElementById('btn-help');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+
+    const modalHelp = document.getElementById('modal-help');
+    const btnCloseHelp = document.getElementById('btn-close-help');
+    const modalTheme = document.getElementById('modal-theme');
+    const btnCloseTheme = document.getElementById('btn-close-theme');
+    const modalVictory = document.getElementById('modal-victory');
+    const btnVicRestart = document.getElementById('btn-vic-restart');
+
+    /* ========================================================
+       5. INICIALIZACIÓN Y GESTIÓN DE TABLERO
+       ======================================================== */
+    function initGame() {
+      // Crear matriz vacía
+      boardState = Array(boardSize).fill(null).map(() => Array(boardSize).fill(0));
+      historyState = [];
+
+      // Colocación inicial en cruz central
+      const mid = boardSize / 2;
+      boardState[mid - 1][mid - 1] = 2;
+      boardState[mid - 1][mid]     = 1;
+      boardState[mid][mid - 1]     = 1;
+      boardState[mid][mid]         = 2;
+
+      currentPlayer = 1;
+      isProcessingMove = false;
+
+      renderBoardGrid();
+      updateThemeDisplay();
+      updateScoresAndTurn();
+      saveHistorySnapshot();
+    }
+
+    // Renderiza las celdas del tablero según el tamaño
+    function renderBoardGrid() {
+      boardEl.innerHTML = '';
+      boardEl.className = `game-board size-${boardSize}`;
+
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+          
+          // Eventos para PDI y tabletas
+          cell.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            handleCellTap(r, c);
+          });
+
+          boardEl.appendChild(cell);
+        }
+      }
+      renderAllDisks(false);
+      highlightValidMoves();
+    }
+
+    // Actualiza o crea las fichas en pantalla
+    function renderAllDisks(animated = true) {
+      const theme = THEMES[currentThemeKey];
+
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          const val = boardState[r][c];
+          const cell = getCellEl(r, c);
+          if (!cell) continue;
+
+          let diskContainer = cell.querySelector('.disk-container');
+
+          if (val === 0) {
+            if (diskContainer) diskContainer.remove();
+          } else {
+            if (!diskContainer) {
+              diskContainer = document.createElement('div');
+              diskContainer.className = 'disk-container';
+              diskContainer.innerHTML = `
+                <div class="disk ${val === 1 ? 'player-1' : 'player-2'} ${animated ? 'pop-in' : ''}">
+                  <div class="disk-face front">${theme.p1.icon}</div>
+                  <div class="disk-face back">${theme.p2.icon}</div>
+                </div>
+              `;
+              cell.appendChild(diskContainer);
+            } else {
+              const disk = diskContainer.querySelector('.disk');
+              disk.className = `disk ${val === 1 ? 'player-1' : 'player-2'}`;
+              disk.querySelector('.front').textContent = theme.p1.icon;
+              disk.querySelector('.back').textContent = theme.p2.icon;
+            }
+          }
+        }
+      }
+    }
+
+    function getCellEl(r, c) {
+      return boardEl.querySelector(`.cell[data-row="${r}"][data-col="${c}"]`);
+    }
+
+    /* ========================================================
+       6. REGLAS Y VALIDACIÓN DE OTHELLO
+       ======================================================== */
+    // Comprueba si un movimiento es válido y devuelve las fichas a capturar
+    function getFlipsForMove(board, row, col, player) {
+      if (board[row][col] !== 0) return [];
+
+      const opponent = player === 1 ? 2 : 1;
+      let totalFlips = [];
+
+      for (const [dr, dc] of DIRECTIONS) {
+        let r = row + dr;
+        let c = col + dc;
+        let flipsInDirection = [];
+
+        // Avanzar mientras encontremos fichas del oponente
+        while (r >= 0 && r < boardSize && c >= 0 && c < boardSize && board[r][c] === opponent) {
+          flipsInDirection.push({ r, c });
+          r += dr;
+          c += dc;
+        }
+
+        // Si la línea se cierra con una ficha propia, es captura válida
+        if (flipsInDirection.length > 0 && r >= 0 && r < boardSize && c >= 0 && c < boardSize && board[r][c] === player) {
+          totalFlips = totalFlips.concat(flipsInDirection);
+        }
+      }
+
+      return totalFlips;
+    }
+
+    // Obtiene todas las jugadas válidas para un jugador
+    function getValidMoves(board, player) {
+      const validMoves = [];
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          const flips = getFlipsForMove(board, r, c, player);
+          if (flips.length > 0) {
+            validMoves.push({ r, c, flips });
+          }
+        }
+      }
+      return validMoves;
+    }
+
+    // Muestra pistas visuales en las casillas
+    function highlightValidMoves() {
+      // Limpiar pistas anteriores
+      document.querySelectorAll('.cell').forEach(el => el.classList.remove('valid-move'));
+
+      if (!showHints || isProcessingMove) return;
+
+      const validMoves = getValidMoves(boardState, currentPlayer);
+      validMoves.forEach(m => {
+        const cell = getCellEl(m.r, m.c);
+        if (cell) cell.classList.add('valid-move');
+      });
+    }
+
+    /* ========================================================
+       7. GESTIÓN DE TURNOS Y MOVIMIENTOS
+       ======================================================== */
+    async function handleCellTap(r, c) {
+      if (isProcessingMove) return;
+      if (isVsBot && currentPlayer === 2) return; // Esperar al turno de la IA
+
+      sound.init();
+      const flips = getFlipsForMove(boardState, r, c, currentPlayer);
+
+      if (flips.length === 0) {
+        sound.playError();
+        const cell = getCellEl(r, c);
+        if (cell) {
+          cell.style.background = '#e76f51';
+          setTimeout(() => cell.style.background = '', 200);
+        }
+        return;
+      }
+
+      // Guardar estado antes del movimiento para poder deshacer
+      saveHistorySnapshot();
+      await executeMove(r, c, flips);
+    }
+
+    // Ejecuta la colocación y el volteo con animación en cascada
+    async function executeMove(row, col, flips) {
+      isProcessingMove = true;
+      document.querySelectorAll('.cell').forEach(el => el.classList.remove('valid-move'));
+
+      // 1. Colocar nueva ficha
+      boardState[row][col] = currentPlayer;
+      sound.playPop();
+      renderAllDisks(true);
+
+      await sleep(150);
+
+      // 2. Voltear fichas capturadas con efecto progresivo
+      for (let i = 0; i < flips.length; i++) {
+        const { r, c } = flips[i];
+        boardState[r][c] = currentPlayer;
+        
+        const cell = getCellEl(r, c);
+        if (cell) {
+          const disk = cell.querySelector('.disk');
+          if (disk) {
+            disk.className = `disk ${currentPlayer === 1 ? 'player-1' : 'player-2'}`;
+          }
+        }
+        sound.playFlip(i);
+        await sleep(75); // Retardo suave para efecto táctil en pantalla grande
+      }
+
+      await sleep(150);
+
+      // 3. Cambiar de turno y comprobar fin de juego o pase
+      nextTurn();
+    }
+
+    function nextTurn() {
+      const nextPlayer = currentPlayer === 1 ? 2 : 1;
+      const nextMoves = getValidMoves(boardState, nextPlayer);
+
+      if (nextMoves.length > 0) {
+        currentPlayer = nextPlayer;
+        updateScoresAndTurn();
+        isProcessingMove = false;
+        highlightValidMoves();
+
+        if (isVsBot && currentPlayer === 2) {
+          triggerBotMove();
+        }
+      } else {
+        // El siguiente no tiene movimientos: comprobar si el actual puede continuar
+        const currentMoves = getValidMoves(boardState, currentPlayer);
+        if (currentMoves.length > 0) {
+          sound.playPass();
+          showPassMessage(nextPlayer);
+          updateScoresAndTurn();
+          isProcessingMove = false;
+          highlightValidMoves();
+
+          if (isVsBot && currentPlayer === 2) {
+            triggerBotMove();
+          }
+        } else {
+          // Ninguno puede mover: ¡Fin de la partida!
+          endGame();
+        }
+      }
+    }
+
+    function showPassMessage(skippedPlayer) {
+      const theme = THEMES[currentThemeKey];
+      const skippedName = skippedPlayer === 1 ? theme.p1.name : theme.p2.name;
+      statusTextEl.textContent = `¡${skippedName} no tiene jugadas y pasa el turno! ⏩`;
+      statusBannerEl.style.background = '#ffe5d9';
+      setTimeout(() => {
+        statusBannerEl.style.background = '#ffffff';
+      }, 1800);
+    }
+
+    /* ========================================================
+       8. IA DEL "ROBOTITO AMIGO" (MODO 1 JUGADOR)
+       ======================================================== */
+    async function triggerBotMove() {
+      isProcessingMove = true;
+      statusTextEl.textContent = '🤖 Robotito Amigo está pensando su jugada...';
+      statusIconEl.textContent = '💭';
+
+      await sleep(700 + Math.random() * 400); // Pequeña pausa pedagógica
+
+      const validMoves = getValidMoves(boardState, 2);
+      if (validMoves.length === 0) {
+        isProcessingMove = false;
+        nextTurn();
+        return;
+      }
+
+      // Algoritmo amigable con prioridad en esquinas y capturas equilibradas
+      let bestMove = validMoves[0];
+      let bestScore = -999;
+
+      for (const move of validMoves) {
+        let score = move.flips.length;
+        const isCorner = (move.r === 0 || move.r === boardSize - 1) && (move.c === 0 || move.c === boardSize - 1);
+        const isEdge = move.r === 0 || move.r === boardSize - 1 || move.c === 0 || move.c === boardSize - 1;
+
+        if (isCorner) score += 15; // Las esquinas son muy valiosas
+        else if (isEdge) score += 4;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = move;
+        }
+      }
+
+      await executeMove(bestMove.r, bestMove.c, bestMove.flips);
+    }
+
+    /* ========================================================
+       9. MARCADOR, ESTADO Y FIN DE PARTIDA
+       ======================================================== */
+    function updateScoresAndTurn() {
+      let count1 = 0;
+      let count2 = 0;
+
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          if (boardState[r][c] === 1) count1++;
+          if (boardState[r][c] === 2) count2++;
+        }
+      }
+
+      scoreP1El.textContent = count1;
+      scoreP2El.textContent = count2;
+
+      const theme = THEMES[currentThemeKey];
+
+      if (currentPlayer === 1) {
+        cardP1El.classList.add('active');
+        cardP2El.classList.remove('active');
+        statusIconEl.textContent = theme.p1.icon;
+        statusTextEl.textContent = `¡Turno de ${theme.p1.name}!`;
+      } else {
+        cardP2El.classList.add('active');
+        cardP1El.classList.remove('active');
+        statusIconEl.textContent = isVsBot ? '🤖' : theme.p2.icon;
+        statusTextEl.textContent = isVsBot ? 'Turno de Robotito Amigo' : `¡Turno de ${theme.p2.name}!`;
+      }
+    }
+
+    function endGame() {
+      isProcessingMove = true;
+      sound.playVictory();
+      startConfetti();
+
+      let count1 = 0;
+      let count2 = 0;
+      for (let r = 0; r < boardSize; r++) {
+        for (let c = 0; c < boardSize; c++) {
+          if (boardState[r][c] === 1) count1++;
+          if (boardState[r][c] === 2) count2++;
+        }
+      }
+
+      const theme = THEMES[currentThemeKey];
+      const p2Name = isVsBot ? 'Robotito Amigo' : theme.p2.name;
+      const p2Icon = isVsBot ? '🤖' : theme.p2.icon;
+
+      document.getElementById('vic-score-1').textContent = count1;
+      document.getElementById('vic-score-2').textContent = count2;
+      document.getElementById('vic-avatar-1').textContent = theme.p1.icon;
+      document.getElementById('vic-avatar-2').textContent = p2Icon;
+      document.getElementById('vic-name-1').textContent = theme.p1.name;
+      document.getElementById('vic-name-2').textContent = p2Name;
+
+      const titleEl = document.getElementById('vic-title');
+      const descEl = document.getElementById('vic-desc');
+      const badgeEl = document.getElementById('vic-badge');
+
+      if (count1 > count2) {
+        badgeEl.textContent = '🏆';
+        titleEl.textContent = `¡Victoria de ${theme.p1.name}!`;
+        descEl.textContent = `¡Gran trabajo en equipo con ${count1} fichas conseguidas! 🌟`;
+      } else if (count2 > count1) {
+        badgeEl.textContent = isVsBot ? '🤖' : '🏆';
+        titleEl.textContent = `¡Victoria de ${p2Name}!`;
+        descEl.textContent = `¡Una partida sensacional con ${count2} fichas en el tablero! 👏`;
+      } else {
+        badgeEl.textContent = '🤝';
+        titleEl.textContent = '¡Empate Fantástico!';
+        descEl.textContent = `¡Ambos equipos han empatado a ${count1} fichas! ¡Qué partidazo!`;
+      }
+
+      setTimeout(() => {
+        modalVictory.classList.add('open');
+      }, 400);
+    }
+
+    /* ========================================================
+       10. HISTORIAL Y BOTÓN DESHACER (UNDO)
+       ======================================================== */
+    function saveHistorySnapshot() {
+      const snap = {
+        board: boardState.map(row => [...row]),
+        player: currentPlayer
+      };
+      historyState.push(snap);
+      if (historyState.length > 10) historyState.shift();
+    }
+
+    function undoMove() {
+      if (historyState.length === 0 || isProcessingMove) return;
+
+      // Si jugamos contra la IA, descalibramos 2 pasos si es posible
+      let stepsToUndo = isVsBot ? 2 : 1;
+      let snap = null;
+
+      while (stepsToUndo > 0 && historyState.length > 0) {
+        snap = historyState.pop();
+        stepsToUndo--;
+      }
+
+      if (snap) {
+        boardState = snap.board.map(row => [...row]);
+        currentPlayer = snap.player;
+        renderAllDisks(false);
+        updateScoresAndTurn();
+        highlightValidMoves();
+        sound.playPop();
+      }
+    }
+
+    /* ========================================================
+       11. GESTIÓN DE TEMÁTICAS Y PERSONALIZACIÓN
+       ======================================================== */
+    function updateThemeDisplay() {
+      const theme = THEMES[currentThemeKey];
+      avatarP1El.textContent = theme.p1.icon;
+      nameP1El.textContent = theme.p1.name;
+
+      if (isVsBot) {
+        avatarP2El.textContent = '🤖';
+        nameP2El.textContent = 'Robotito';
+      } else {
+        avatarP2El.textContent = theme.p2.icon;
+        nameP2El.textContent = theme.p2.name;
+      }
+    }
+
+    /* ========================================================
+       12. CELEBRACIÓN CON CONFETI (CANVAS PURO)
+       ======================================================== */
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function startConfetti() {
+      confettiParticles = [];
+      const colors = ['#f9bc60', '#ff7e67', '#52b788', '#90b4ce', '#ffd166', '#f72585'];
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.7) * 16,
+          size: Math.random() * 9 + 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 12,
+          gravity: 0.35
+        });
+      }
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+
+      confettiParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.rotation += p.rotSpeed;
+
+        if (p.y < canvas.height + 20) alive = true;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+      });
+
+      if (alive) {
+        confettiAnimId = requestAnimationFrame(animateConfetti);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* ========================================================
+       13. EVENT LISTENERS Y CONFIGURACIONES
+       ======================================================== */
+    const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+    // Botón Pistas
+    btnHints.addEventListener('click', () => {
+      showHints = !showHints;
+      btnHints.classList.toggle('active', showHints);
+      btnHints.innerHTML = `<span>💡</span> Pistas: <b>${showHints ? 'SÍ' : 'NO'}</b>`;
+      highlightValidMoves();
+      sound.playPop();
+    });
+
+    // Botón Deshacer
+    btnUndo.addEventListener('click', undoMove);
+
+    // Botón Reiniciar
+    btnRestart.addEventListener('click', () => {
+      sound.playPop();
+      modalVictory.classList.remove('open');
+      initGame();
+    });
+
+    btnVicRestart.addEventListener('click', () => {
+      modalVictory.classList.remove('open');
+      initGame();
+    });
+
+    // Selector de Modo (2 Jugadores / vs Robot)
+    btnMode.addEventListener('click', () => {
+      isVsBot = !isVsBot;
+      btnMode.textContent = isVsBot ? '🤖' : '👥';
+      btnMode.title = isVsBot ? 'Modo: vs Robotito Amigo' : 'Modo: 2 Jugadores en Aula';
+      sound.playPop();
+      initGame();
+    });
+
+    // Selector de Tamaño (6x6 o 8x8)
+    btnSize.addEventListener('click', () => {
+      boardSize = boardSize === 6 ? 8 : 6;
+      btnSize.textContent = boardSize === 6 ? '📐' : '🏁';
+      sound.playPop();
+      initGame();
+    });
+
+    // Toggle Sonido
+    btnSound.addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      btnSound.textContent = sound.enabled ? '🔊' : '🔇';
+    });
+
+    // Pantalla Completa (MDI)
+    btnFullscreen.addEventListener('click', () => {
+      sound.init();
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        btnFullscreen.textContent = '✖';
+      } else {
+        document.exitFullscreen();
+        btnFullscreen.textContent = '⛶';
+      }
+    });
+
+    // Modales de Ayuda y Temática
+    btnHelp.addEventListener('click', () => modalHelp.classList.add('open'));
+    btnCloseHelp.addEventListener('click', () => modalHelp.classList.remove('open'));
+
+    btnTheme.addEventListener('click', () => modalTheme.classList.add('open'));
+    btnCloseTheme.addEventListener('click', () => {
+      modalTheme.classList.remove('open');
+      updateThemeDisplay();
+      renderAllDisks(false);
+      updateScoresAndTurn();
+    });
+
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentThemeKey = btn.dataset.theme;
+        sound.playPop();
+      });
+    });
+
+    // Iniciar juego al cargar
+    window.addEventListener('DOMContentLoaded', () => {
+      initGame();
+    });
+  </script>
+</body>
+</html>
