@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🕵️‍♂️ Master Mente: Misión Código Secreto</title>
+  <!-- Tipografía Escolar Clara y Legible para Proyección -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. VARIABLES Y DISEÑO BASE (Paleta pastel contrastada y amigable)
+       ========================================================================== */
+    :root {
+      --bg-main: #edf2f7;
+      --card-bg: #ffffff;
+      --text-main: #2d3748;
+      --text-muted: #718096;
+      
+      /* Colores de las Gemas / Fichas (Alto contraste + accesibilidad) */
+      --c-red: #ff5e7e;
+      --c-blue: #4facfe;
+      --c-green: #43e97b;
+      --c-yellow: #fddb3a;
+      --c-purple: #b388ff;
+      --c-orange: #ff9a44;
+
+      /* Sombras y bordes redondeados infantiles */
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      --shadow-btn: 0 6px 0px rgba(0, 0, 0, 0.12);
+      --shadow-btn-pressed: 0 2px 0px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #f5f3ff 50%, #fef3c7 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. ENCABEZADO Y CONTROLES SUPERIORES
+       ========================================================================== */
+    header {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      margin-bottom: 14px;
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      font-size: 2.2rem;
+      background: #fef08a;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(253, 224, 71, 0.5);
+    }
+
+    .title-group h1 {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #1e293b;
+      line-height: 1.1;
+    }
+
+    .title-group p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* Selector de modo pedagógico */
+    .mode-toggle-btn {
+      background: #e0e7ff;
+      border: 2px solid #818cf8;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #3730a3;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 46px;
+      transition: all 0.15s ease;
+    }
+
+    .mode-toggle-btn:hover {
+      background: #c7d2fe;
+    }
+
+    .btn-icon {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: var(--radius-sm);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      min-height: 46px;
+    }
+
+    .btn-icon:hover {
+      background: #e2e8f0;
+      transform: translateY(-2px);
+    }
+
+    .btn-icon:active {
+      transform: translateY(2px);
+    }
+
+    /* ==========================================================================
+       3. CONTENEDOR PRINCIPAL DEL JUEGO (Alineado arriba)
+       ========================================================================== */
+    .game-layout {
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      align-items: start; /* Alineación arriba */
+      flex: 1;
+    }
+
+    @media (max-width: 900px) {
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================================================
+       4. TABLERO DE INTENTOS (IZQUIERDA)
+       ========================================================================== */
+    .board-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px dashed #e2e8f0;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #64748b;
+    }
+
+    .board-header .header-col-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .attempts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      max-height: 560px;
+      padding-right: 4px;
+    }
+
+    .attempt-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      border: 2px solid #e2e8f0;
+      transition: all 0.25s ease;
+      gap: 10px;
+    }
+
+    .attempt-row.active {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      transform: scale(1.01);
+    }
+
+    .attempt-left-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .attempt-number {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #94a3b8;
+      width: 28px;
+      text-align: center;
+    }
+
+    .attempt-row.active .attempt-number {
+      color: #3b82f6;
+    }
+
+    .pegs-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Huecos / Fichas colocadas */
+    .peg-slot {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      border: 3px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem;
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .attempt-row.active .peg-slot {
+      border-color: #93c5fd;
+      background: #ffffff;
+    }
+
+    .peg-slot.filled {
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Pistas en Línea Horizontal Continua */
+    .clues-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 2px solid #e2e8f0;
+    }
+
+    .clue-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #94a3b8;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .clue-dot.exact {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.7);
+    }
+
+    .clue-dot.misplaced {
+      background: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
+    }
+
+    .clue-dot.wrong {
+      background: #cbd5e1;
+      color: #64748b;
+      opacity: 0.7;
+    }
+
+    /* ==========================================================================
+       5. PANEL DE CONTROL Y ENIGMA (DERECHA)
+       ========================================================================== */
+    .control-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Caja del Código Secreto */
+    .secret-box {
+      background: linear-gradient(135deg, #312e81 0%, #1e1b4b 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      border: 3px solid #6366f1;
+    }
+
+    .secret-box h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #c7d2fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .secret-pegs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .secret-peg {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #4338ca;
+      border: 3px solid #818cf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.4s ease;
+    }
+
+    .secret-peg.revealed {
+      animation: flipReveal 0.6s ease forwards;
+    }
+
+    /* Paleta de Colores Táctiles */
+    .palette-box {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .palette-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #475569;
+      text-align: center;
+    }
+
+    .color-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    /* Botón de color táctil grande para MDI (Mínimo 64px) */
+    .btn-color {
+      height: 66px;
+      border-radius: var(--radius-md);
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.55rem;
+      font-family: inherit;
+      font-weight: 800;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-btn);
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-color span {
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-color:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.05);
+    }
+
+    .btn-color:active {
+      transform: translateY(4px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    /* Clases de colores */
+    .c-red { background: var(--c-red); border-bottom: 4px solid #e02850; }
+    .c-blue { background: var(--c-blue); border-bottom: 4px solid #2575fc; }
+    .c-green { background: var(--c-green); border-bottom: 4px solid #10b981; }
+    .c-yellow { background: var(--c-yellow); color: #854d0e; text-shadow: none; border-bottom: 4px solid #d97706; }
+    .c-purple { background: var(--c-purple); border-bottom: 4px solid #7c3aed; }
+    .c-orange { background: var(--c-orange); border-bottom: 4px solid #ea580c; }
+
+    /* Botones de acción principales */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn-action {
+      height: 62px;
+      border-radius: var(--radius-md);
+      font-size: 1.2rem;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .btn-delete {
+      background: #f1f5f9;
+      color: #64748b;
+      border-bottom: 4px solid #cbd5e1;
+    }
+
+    .btn-delete:active {
+      transform: translateY(4px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    .btn-check {
+      background: #10b981;
+      color: white;
+      border-bottom: 4px solid #059669;
+    }
+
+    .btn-check:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+
+    .btn-check:active:not(:disabled) {
+      transform: translateY(4px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    .btn-check:disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      border-bottom: 4px solid #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-check.ready {
+      animation: pulseGlow 1.5s infinite;
+    }
+
+    /* Leyenda Didáctica en Pantalla */
+    .legend-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .legend-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .legend-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: white;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .legend-note {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 600;
+      font-style: italic;
+    }
+
+    /* ==========================================================================
+       6. MODALES Y VENTANAS FLOTANTES
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 16px;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+      text-align: center;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-backdrop.show .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      font-size: 4rem;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: bounce 1s infinite alternate;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    .modal-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #475569;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .modal-steps {
+      text-align: left;
+      background: #f8fafc;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #334155;
+    }
+
+    .btn-modal-primary {
+      width: 100%;
+      height: 60px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-bottom: 5px solid #1d4ed8;
+      border-radius: var(--radius-md);
+      font-size: 1.3rem;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+      transition: all 0.15s ease;
+    }
+
+    .btn-modal-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-modal-primary:active {
+      transform: translateY(4px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    /* ==========================================================================
+       7. ANIMACIONES Y EFECTOS
+       ========================================================================== */
+    @keyframes popIn {
+      0% { transform: scale(0.3); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes flipReveal {
+      0% { transform: rotateY(0deg); }
+      50% { transform: rotateY(90deg); background: #6366f1; }
+      100% { transform: rotateY(0deg); }
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-12px); }
+    }
+
+    /* Confeti en Canvas para celebración */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Lienzo para confeti de victoria -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Encabezado Principal -->
+  <header>
+    <div class="title-group">
+      <div class="logo-badge">🕵️‍♂️</div>
+      <div>
+        <h1>Misión: Código Secreto</h1>
+        <p>¡Descifra las 4 gemas misteriosas!</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="mode-toggle-btn" id="btn-toggle-mode" title="Cambiar modo de evaluación de pistas">
+        📍 Modo: Por Casilla
+      </button>
+      <button class="btn-icon" id="btn-sound" title="Activar/Silenciar Sonido">🔊</button>
+      <button class="btn-icon" id="btn-help" title="¿Cómo se juega?">❓ Guía</button>
+      <button class="btn-icon" id="btn-new" title="Nueva Partida">🔄 Reiniciar</button>
+    </div>
+  </header>
+
+  <!-- Distribución de la Aplicación -->
+  <main class="game-layout">
+    
+    <!-- COLUMNA IZQUIERDA: Tablero de Juego con los Intentos -->
+    <section class="board-card">
+      <div class="board-header">
+        <div class="header-col-left">
+          <span>🔢 INTENTO</span>
+          <span>🎨 TUS 4 GEMAS</span>
+        </div>
+        <span>🔍 PISTAS</span>
+      </div>
+      <div class="attempts-list" id="attempts-container">
+        <!-- Generado dinámicamente mediante JavaScript -->
+      </div>
+    </section>
+
+    <!-- COLUMNA DERECHA: Controles, Código Oculto y Leyenda -->
+    <section class="control-card">
+      
+      <!-- Panel del Código Secreto -->
+      <div class="secret-box">
+        <h2>🔒 CÓDIGO SECRETO DEL ROBOT</h2>
+        <div class="secret-pegs" id="secret-pegs-container">
+          <div class="secret-peg" id="sec-0">❓</div>
+          <div class="secret-peg" id="sec-1">❓</div>
+          <div class="secret-peg" id="sec-2">❓</div>
+          <div class="secret-peg" id="sec-3">❓</div>
+        </div>
+      </div>
+
+      <!-- Paleta Táctil de Selección de Color -->
+      <div class="palette-box">
+        <div class="palette-title">👉 Pulsa un color para rellenar tu fila:</div>
+        
+        <div class="color-buttons">
+          <button class="btn-color c-red" data-color="red" data-icon="❤️">
+            ❤️<span>Rojo</span>
+          </button>
+          <button class="btn-color c-blue" data-color="blue" data-icon="💎">
+            💎<span>Azul</span>
+          </button>
+          <button class="btn-color c-green" data-color="green" data-icon="🍀">
+            🍀<span>Verde</span>
+          </button>
+          <button class="btn-color c-yellow" data-color="yellow" data-icon="⭐">
+            ⭐<span>Amarillo</span>
+          </button>
+          <button class="btn-color c-purple" data-color="purple" data-icon="🔮">
+            🔮<span>Morado</span>
+          </button>
+          <button class="btn-color c-orange" data-color="orange" data-icon="🔥">
+            🔥<span>Naranja</span>
+          </button>
+        </div>
+
+        <!-- Botones de Acción: Borrar y Comprobar -->
+        <div class="action-buttons">
+          <button class="btn-action btn-delete" id="btn-delete" title="Borrar última gema">
+            ⌫ Borrar
+          </button>
+          <button class="btn-action btn-check" id="btn-check" disabled>
+            🚀 Comprobar
+          </button>
+        </div>
+      </div>
+
+      <!-- Leyenda Visual Didáctica para la Pizarra Digital -->
+      <div class="legend-card">
+        <div class="legend-title" id="legend-title">💡 ¿CÓMO LEER LAS PISTAS? (MODO POR CASILLA)</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #10b981;">✔</span>
+            <span id="legend-exact-text"><strong>Punto Verde:</strong> Esta gema está en el color y lugar CORRECTO.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #f59e0b;">↔</span>
+            <span id="legend-misplaced-text"><strong>Punto Amarillo:</strong> Este color está en el código, pero en OTRA casilla.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #cbd5e1; color: #475569;">✖</span>
+            <span><strong>Punto Gris:</strong> Este color NO forma parte del código secreto.</span>
+          </div>
+        </div>
+        <div class="legend-note" id="legend-footer-note">📍 Cada punto corresponde a la gema situada en su misma posición vertical.</div>
+      </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #f59e0b;">↔</span>
+            <span><strong>Punto Amarillo:</strong> El color está, pero en OTRA posición.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: #cbd5e1; color: #475569;">✖</span>
+            <span><strong>Punto Gris:</strong> Este color NO forma parte del código.</span>
+          </div>
+        </div>
+        <div class="legend-note">* Las pistas resumen cuántos aciertos hay en la fila (no van en orden posicional).</div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- MODAL: Instrucciones / Ayuda para el Aula -->
+  <div class="modal-backdrop" id="modal-help">
+    <div class="modal-box">
+      <div class="modal-icon">🔍</div>
+      <h2 class="modal-title">¡Misión Detective!</h2>
+      <p class="modal-text">Tu misión de equipo es descubrir el código secreto de 4 colores antes de que se acaben los 8 intentos.</p>
+      
+      <div class="modal-steps">
+        <div>1️⃣ Elige 4 gemas pulsando en la paleta de colores.</div>
+        <div>2️⃣ Pulsa el botón verde <strong>"Comprobar"</strong>.</div>
+        <div>3️⃣ Mira atentamente los puntos de pista para deducir el orden.</div>
+      </div>
+
+      <button class="btn-modal-primary" id="btn-close-help">¡Entendido, a jugar! 🚀</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Fin de Partida (Victoria / Derrota) -->
+  <div class="modal-backdrop" id="modal-gameover">
+    <div class="modal-box">
+      <div class="modal-icon" id="go-icon">🏆</div>
+      <h2 class="modal-title" id="go-title">¡Enhorabuena!</h2>
+      <p class="modal-text" id="go-message">¡Habéis descifrado el código secreto en el intento 4!</p>
+      <button class="btn-modal-primary" id="btn-restart-game">Jugar otra vez 🔄</button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CONFIGURACIÓN Y VARIABLES DEL JUEGO PEDAGÓGICO
+       ========================================================================== */
+    const CONFIG = {
+      codeLength: 4,      // Número de gemas en el código secreto
+      maxAttempts: 8,     // Número total de intentos permitidos
+      allowDuplicates: true // Permitir colores repetidos en el código secreto
+    };
+
+    // 'positional': cada pista evalúa su columna 1 a 1 (ideal Primaria)
+    // 'classic': resumen acumulativo sin orden posicional
+    let gameMode = 'positional';
+
+    // Definición de las 6 gemas disponibles (Color, Nombre, Icono y Código CSS)
+    const AVAILABLE_COLORS = {
+      red:    { name: 'Rojo',     icon: '❤️', bg: 'var(--c-red)' },
+      blue:   { name: 'Azul',     icon: '💎', bg: 'var(--c-blue)' },
+      green:  { name: 'Verde',    icon: '🍀', bg: 'var(--c-green)' },
+      yellow: { name: 'Amarillo', icon: '⭐', bg: 'var(--c-yellow)' },
+      purple: { name: 'Morado',   icon: '🔮', bg: 'var(--c-purple)' },
+      orange: { name: 'Naranja',  icon: '🔥', bg: 'var(--c-orange)' }
+    };
+
+    const COLOR_KEYS = Object.keys(AVAILABLE_COLORS);
+
+    // Estado de la partida
+    let secretCode = [];
+    let currentRowIndex = 0;
+    let currentGuess = [];
+    let isGameOver = false;
+    let soundEnabled = true;
+
+    /* ==========================================================================
+       SINTETIZADOR DE AUDIO (Web Audio API - Sin archivos externos)
+       ========================================================================== */
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.1, delay = 0) {
+      if (!soundEnabled) return;
+      initAudio();
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {
+          // Ignorar restricciones en navegadores
+        }
+      }, delay * 1000);
+    }
+
+    // Efectos de sonido didácticos
+    const SoundEffects = {
+      pop: () => playTone(520, 'triangle', 0.08),
+      delete: () => playTone(300, 'sine', 0.1),
+      check: () => {
+        playTone(440, 'sine', 0.08, 0);
+        playTone(554, 'sine', 0.08, 0.08);
+      },
+      win: () => {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => playTone(freq, 'triangle', 0.25, i * 0.12));
+      },
+      lose: () => {
+        const notes = [400, 350, 300, 240];
+        notes.forEach((freq, i) => playTone(freq, 'sawtooth', 0.25, i * 0.15));
+      }
+    };
+
+    /* ==========================================================================
+       SISTEMA DE CONFETI PARA CELEBRACIÓN DE ACIERTO
+       ========================================================================== */
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerConfetti() {
+      confettiParticles = [];
+      const colors = ['#ff5e7e', '#4facfe', '#43e97b', '#fddb3a', '#b388ff', '#ff9a44'];
+      for (let i = 0; i < 120; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          r: Math.random() * 8 + 4,
+          dx: (Math.random() - 0.5) * 16,
+          dy: (Math.random() - 0.5) * 16 - 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          tilt: Math.random() * 10,
+          tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
+          tiltAngle: 0
+        });
+      }
+
+      if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let stillActive = false;
+
+      confettiParticles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        p.dy += 0.25;
+        p.tiltAngle += p.tiltAngleIncremental;
+        p.tilt = Math.sin(p.tiltAngle) * 12;
+
+        if (p.y < canvas.height + 20) {
+          stillActive = true;
+          ctx.beginPath();
+          ctx.lineWidth = p.r;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+          ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+          ctx.stroke();
+        }
+      });
+
+      if (stillActive) {
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* ==========================================================================
+       LÓGICA PRINCIPAL DEL JUEGO
+       ========================================================================== */
+
+    // Iniciar una nueva partida
+    function initGame() {
+      // 1. Generar código secreto aleatorio
+      secretCode = [];
+      if (CONFIG.allowDuplicates) {
+        for (let i = 0; i < CONFIG.codeLength; i++) {
+          const randomColor = COLOR_KEYS[Math.floor(Math.random() * COLOR_KEYS.length)];
+          secretCode.push(randomColor);
+        }
+      } else {
+        const shuffled = [...COLOR_KEYS].sort(() => 0.5 - Math.random());
+        secretCode = shuffled.slice(0, CONFIG.codeLength);
+      }
+
+      // Reiniciar estado
+      currentRowIndex = 0;
+      currentGuess = [];
+      isGameOver = false;
+
+      // Ocultar código secreto en la UI
+      for (let i = 0; i < CONFIG.codeLength; i++) {
+        const secretSlot = document.getElementById(`sec-${i}`);
+        secretSlot.innerHTML = '❓';
+        secretSlot.style.background = '#4338ca';
+        secretSlot.style.borderColor = '#818cf8';
+        secretSlot.classList.remove('revealed');
+      }
+
+      // 2. Construir el tablero visual con pistas en línea horizontal
+      const attemptsContainer = document.getElementById('attempts-container');
+      attemptsContainer.innerHTML = '';
+
+      for (let i = 0; i < CONFIG.maxAttempts; i++) {
+        const rowEl = document.createElement('div');
+        rowEl.className = `attempt-row ${i === 0 ? 'active' : ''}`;
+        rowEl.id = `row-${i}`;
+
+        // Grupo izquierdo: Número + 4 Huecos de Gemas
+        const leftGroup = document.createElement('div');
+        leftGroup.className = 'attempt-left-group';
+
+        // Número de intento
+        const numEl = document.createElement('div');
+        numEl.className = 'attempt-number';
+        numEl.innerText = `#${i + 1}`;
+        leftGroup.appendChild(numEl);
+
+        // Fila de 4 Gemas
+        const pegsContainer = document.createElement('div');
+        pegsContainer.className = 'pegs-row';
+
+        for (let j = 0; j < CONFIG.codeLength; j++) {
+          const slot = document.createElement('div');
+          slot.className = 'peg-slot';
+          slot.id = `slot-${i}-${j}`;
+          
+          slot.addEventListener('click', () => {
+            if (i === currentRowIndex && !isGameOver) {
+              removeColorAt(j);
+            }
+          });
+
+          pegsContainer.appendChild(slot);
+        }
+        leftGroup.appendChild(pegsContainer);
+        rowEl.appendChild(leftGroup);
+
+        // Grupo derecho: 4 Casillas de Pistas en Línea Horizontal
+        const cluesRow = document.createElement('div');
+        cluesRow.className = 'clues-row';
+        for (let c = 0; c < CONFIG.codeLength; c++) {
+          const clueDot = document.createElement('div');
+          clueDot.className = 'clue-dot';
+          clueDot.id = `clue-${i}-${c}`;
+          clueDot.innerHTML = '•';
+          cluesRow.appendChild(clueDot);
+        }
+        rowEl.appendChild(cluesRow);
+
+        attemptsContainer.appendChild(rowEl);
+      }
+
+      updateCheckButton();
+      closeModal('modal-gameover');
+    }
+
+    // Añadir color a la fila actual
+    function addColorToCurrentRow(colorKey) {
+      if (isGameOver) return;
+      if (currentGuess.length >= CONFIG.codeLength) return;
+
+      SoundEffects.pop();
+      currentGuess.push(colorKey);
+      renderCurrentGuess();
+      updateCheckButton();
+    }
+
+    // Borrar última gema
+    function removeLastColor() {
+      if (isGameOver || currentGuess.length === 0) return;
+      SoundEffects.delete();
+      currentGuess.pop();
+      renderCurrentGuess();
+      updateCheckButton();
+    }
+
+    // Borrar una posición específica
+    function removeColorAt(index) {
+      if (index < currentGuess.length) {
+        SoundEffects.delete();
+        currentGuess.splice(index, 1);
+        renderCurrentGuess();
+        updateCheckButton();
+      }
+    }
+
+    // Actualizar visualmente la fila activa
+    function renderCurrentGuess() {
+      for (let j = 0; j < CONFIG.codeLength; j++) {
+        const slot = document.getElementById(`slot-${currentRowIndex}-${j}`);
+        if (j < currentGuess.length) {
+          const colorData = AVAILABLE_COLORS[currentGuess[j]];
+          slot.innerHTML = colorData.icon;
+          slot.style.background = colorData.bg;
+          slot.classList.add('filled');
+        } else {
+          slot.innerHTML = '';
+          slot.style.background = '#ffffff';
+          slot.classList.remove('filled');
+        }
+      }
+    }
+
+    // Habilitar/Deshabilitar botón de comprobar
+    function updateCheckButton() {
+      const btnCheck = document.getElementById('btn-check');
+      const isComplete = currentGuess.length === CONFIG.codeLength;
+      btnCheck.disabled = !isComplete;
+      if (isComplete) {
+        btnCheck.classList.add('ready');
+      } else {
+        btnCheck.classList.remove('ready');
+      }
+    }
+
+    /* ==========================================================================
+       ALGORITMOS DE EVALUACIÓN MATEMÁTICA Y PEDAGÓGICA
+       ========================================================================== */
+    
+    // Modo 1: Evaluación Posicional (1 a 1 con gestión estricta de repetidos)
+    function evaluatePositional(secret, guess) {
+      const n = secret.length;
+      const clues = new Array(n).fill('wrong');
+      const remainingSecretCounts = {};
+      let exactCount = 0;
+
+      // Paso 1: Detectar aciertos exactos (Verde ✔)
+      for (let i = 0; i < n; i++) {
+        if (guess[i] === secret[i]) {
+          clues[i] = 'exact';
+          exactCount++;
+        } else {
+          remainingSecretCounts[secret[i]] = (remainingSecretCounts[secret[i]] || 0) + 1;
+        }
+      }
+
+      // Paso 2: Detectar colores desplazados (Amarillo ↔)
+      for (let i = 0; i < n; i++) {
+        if (clues[i] !== 'exact') {
+          const color = guess[i];
+          if (remainingSecretCounts[color] && remainingSecretCounts[color] > 0) {
+            clues[i] = 'misplaced';
+            remainingSecretCounts[color]--;
+          } else {
+            clues[i] = 'wrong';
+          }
+        }
+      }
+
+      return { exactCount, clues };
+    }
+
+    // Modo 2: Evaluación Clásica de Mastermind (Agrupada por tipo)
+    function evaluateClassic(secret, guess) {
+      const n = secret.length;
+      let exactCount = 0;
+      let misplacedCount = 0;
+
+      const secretCopy = [...secret];
+      const guessCopy = [...guess];
+
+      // Paso 1: Coincidencias exactas
+      for (let i = 0; i < n; i++) {
+        if (guessCopy[i] === secretCopy[i]) {
+          exactCount++;
+          secretCopy[i] = null;
+          guessCopy[i] = null;
+        }
+      }
+
+      // Paso 2: Coincidencias de color
+      for (let i = 0; i < n; i++) {
+        if (guessCopy[i] !== null) {
+          const foundIdx = secretCopy.indexOf(guessCopy[i]);
+          if (foundIdx !== -1) {
+            misplacedCount++;
+            secretCopy[foundIdx] = null;
+          }
+        }
+      }
+
+      const clues = [];
+      for (let i = 0; i < exactCount; i++) clues.push('exact');
+      for (let i = 0; i < misplacedCount; i++) clues.push('misplaced');
+      while (clues.length < n) clues.push('wrong');
+
+      return { exactCount, clues };
+    }
+
+    // Comprobar la jugada del alumno
+    function checkCurrentRow() {
+      if (currentGuess.length !== CONFIG.codeLength || isGameOver) return;
+
+      SoundEffects.check();
+
+      // Evaluar según el modo seleccionado
+      const result = (gameMode === 'positional') 
+        ? evaluatePositional(secretCode, currentGuess)
+        : evaluateClassic(secretCode, currentGuess);
+
+      const exactMatches = result.exactCount;
+      const clues = result.clues;
+
+      // Actualizar visualmente las 4 casillas de pistas
+      for (let c = 0; c < CONFIG.codeLength; c++) {
+        const clueDot = document.getElementById(`clue-${currentRowIndex}-${c}`);
+        clueDot.className = 'clue-dot ' + clues[c];
+        if (clues[c] === 'exact') {
+          clueDot.innerHTML = '✔';
+        } else if (clues[c] === 'misplaced') {
+          clueDot.innerHTML = '↔';
+        } else {
+          clueDot.innerHTML = '✖';
+        }
+      }
+
+      // Comprobar Victoria o Fin de Intentos
+      if (exactMatches === CONFIG.codeLength) {
+        handleGameWin();
+      } else if (currentRowIndex + 1 >= CONFIG.maxAttempts) {
+        handleGameLose();
+      } else {
+        // Pasar al siguiente intento
+        document.getElementById(`row-${currentRowIndex}`).classList.remove('active');
+        currentRowIndex++;
+        currentGuess = [];
+        document.getElementById(`row-${currentRowIndex}`).classList.add('active');
+        updateCheckButton();
+        
+        // Auto-scroll suave en pantallas táctiles
+        document.getElementById(`row-${currentRowIndex}`).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // Manejar Victoria
+    function handleGameWin() {
+      isGameOver = true;
+      revealSecretCode();
+      SoundEffects.win();
+      triggerConfetti();
+
+      setTimeout(() => {
+        document.getElementById('go-icon').innerText = '🏆';
+        document.getElementById('go-title').innerText = '¡CÓDIGO DESCIFRADO!';
+        document.getElementById('go-message').innerHTML = `¡Excelente deducción de equipo! Habéis descubierto el código secreto en el <strong>intento ${currentRowIndex + 1}</strong> de ${CONFIG.maxAttempts}.`;
+        openModal('modal-gameover');
+      }, 700);
+    }
+
+    // Manejar Fin de Intentos
+    function handleGameLose() {
+      isGameOver = true;
+      revealSecretCode();
+      SoundEffects.lose();
+
+      setTimeout(() => {
+        document.getElementById('go-icon').innerText = '🔒';
+        document.getElementById('go-title').innerText = '¡Buen intento, detectives!';
+        document.getElementById('go-message').innerHTML = `Se han agotado los ${CONFIG.maxAttempts} intentos. ¡Arriba tenéis la combinación secreta revelada para analizarla!`;
+        openModal('modal-gameover');
+      }, 700);
+    }
+
+    // Revelar la combinación oculta
+    function revealSecretCode() {
+      for (let i = 0; i < CONFIG.codeLength; i++) {
+        const secretSlot = document.getElementById(`sec-${i}`);
+        const colorData = AVAILABLE_COLORS[secretCode[i]];
+        secretSlot.innerHTML = colorData.icon;
+        secretSlot.style.background = colorData.bg;
+        secretSlot.style.borderColor = '#ffffff';
+        secretSlot.classList.add('revealed');
+      }
+    }
+
+    /* ==========================================================================
+       GESTIÓN DE MODALES
+       ========================================================================== */
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    /* ==========================================================================
+       EVENT LISTENERS (Eventos Táctiles y Clics para Pantalla Digital)
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // Botones de la paleta de colores
+      const colorBtns = document.querySelectorAll('.btn-color');
+      colorBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const color = btn.dataset.color;
+          addColorToCurrentRow(color);
+        });
+      });
+
+      // Botón Borrar
+      document.getElementById('btn-delete').addEventListener('click', (e) => {
+        e.preventDefault();
+        removeLastColor();
+      });
+
+      // Botón Comprobar
+      document.getElementById('btn-check').addEventListener('click', (e) => {
+        e.preventDefault();
+        checkCurrentRow();
+      });
+
+      // Conmutador de Modo de Juego (Posicional vs Clásico)
+      const modeBtn = document.getElementById('btn-toggle-mode');
+      modeBtn.addEventListener('click', () => {
+        gameMode = (gameMode === 'positional') ? 'classic' : 'positional';
+        
+        if (gameMode === 'positional') {
+          modeBtn.innerText = '📍 Modo: Por Casilla';
+          modeBtn.style.background = '#e0e7ff';
+          modeBtn.style.color = '#3730a3';
+          document.getElementById('legend-title').innerText = '💡 ¿CÓMO LEER LAS PISTAS? (MODO POR CASILLA)';
+          document.getElementById('legend-footer-note').innerText = '📍 Cada punto corresponde a la gema situada en su misma posición vertical.';
+        } else {
+          modeBtn.innerText = '🎲 Modo: Clásico';
+          modeBtn.style.background = '#fef3c7';
+          modeBtn.style.color = '#92400e';
+          document.getElementById('legend-title').innerText = '💡 ¿CÓMO LEER LAS PISTAS? (MODO CLÁSICO)';
+          document.getElementById('legend-footer-note').innerText = '🎲 Las pistas son un resumen total de la fila (no corresponden casilla a casilla).';
+        }
+      });
+
+      // Botones de Navegación y Ayuda
+      document.getElementById('btn-help').addEventListener('click', () => openModal('modal-help'));
+      document.getElementById('btn-close-help').addEventListener('click', () => closeModal('modal-help'));
+      
+      document.getElementById('btn-new').addEventListener('click', () => {
+        if (confirm('¿Quieres reiniciar la partida con un nuevo código secreto?')) {
+          initGame();
+        }
+      });
+      
+      document.getElementById('btn-restart-game').addEventListener('click', () => initGame());
+
+      // Conmutador de Sonido
+      const soundBtn = document.getElementById('btn-sound');
+      soundBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundBtn.innerText = soundEnabled ? '🔊' : '🔇';
+        soundBtn.style.opacity = soundEnabled ? '1' : '0.6';
+      });
+
+      // Iniciar el juego al cargar la página
+      initGame();
+    });
+  </script>
+</body>
+</html>
