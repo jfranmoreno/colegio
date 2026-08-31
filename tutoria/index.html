@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espacio de Tutoría | Selección de Curso</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --radius: 16px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-hover: 0 12px 20px -3px rgb(0 0 0 / 0.12);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+      --shadow-hover: 0 12px 20px -3px rgb(0 0 0 / 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    header {
+      padding: 2.5rem 1.5rem 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--primary);
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .brand h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .brand p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-top: 0.25rem;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Cuadrícula de Cursos */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .course-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--primary);
+    }
+
+    .course-badge {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      margin-bottom: 1.25rem;
+    }
+
+    .badge-3primaria { background: #fef08a; color: #854d0e; }
+    .badge-6primaria { background: #bae6fd; color: #0369a1; }
+
+    [data-theme="dark"] .badge-3primaria { background: #713f12; color: #fef08a; }
+    [data-theme="dark"] .badge-6primaria { background: #075985; color: #bae6fd; }
+
+    .course-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .course-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .course-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .course-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+
+    /* Recursos Comunes de Tutoría */
+    .shared-resources {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .shared-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .shared-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .shared-item a:hover {
+      background: var(--bg);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: var(--surface);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-bar">
+      <!-- Enlace relativo para volver a la raíz -->
+      <a href="../" class="back-link">← Volver al Portal General</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">🌙 Oscuro</button>
+    </div>
+    <div class="brand">
+      <h1>📋 Espacio de Tutoría</h1>
+      <p>Selecciona el nivel educativo para acceder al tablón de clase y materiales de curso.</p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="courses-grid">
+        
+        <!-- Tarjeta Tutoría 3º Primaria -->
+        <!-- Apunta a la carpeta/repositorio correspondiente -->
+        <a href="./3primaria/" class="course-card">
+          <div>
+            <span class="course-badge badge-3primaria">Segundo Ciclo</span>
+            <div class="course-icon">🌱</div>
+            <h2 class="course-title">Tutoría 3º de Primaria</h2>
+            <p class="course-desc">Horario semanal, normas de clase, proyectos trimestrales, hábitos de estudio y canal de avisos.</p>
+          </div>
+          <div class="course-action">
+            <span>Entrar al aula de 3º</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <!-- Tarjeta Tutoría 6º Primaria -->
+        <!-- Apunta a la carpeta/repositorio correspondiente -->
+        <a href="./6primaria/" class="course-card">
+          <div>
+            <span class="course-badge badge-6primaria">Tercer Ciclo</span>
+            <div class="course-icon">🚀</div>
+            <h2 class="course-title">Tutoría 6º de Primaria</h2>
+            <p class="course-desc">Gestión de tareas, delegados, proyectos de fin de etapa, graduación y orientación hacia la ESO.</p>
+          </div>
+          <div class="course-action">
+            <span>Entrar al aula de 6º</span>
+            <span>→</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Recursos transversales útiles para ambas tutorías -->
+    <section class="shared-resources">
+      <h3 class="section-title" style="margin-bottom: 0;">Herramientas y Dinámicas Generales</h3>
+      <ul class="shared-list">
+        <li class="shared-item">
+          <a href="./normas-convivencia/">
+            <span>🤝</span>
+            <span>Acuerdos de Convivencia</span>
+          </a>
+        </li>
+        <li class="shared-item">
+          <a href="./reuniones-familias/">
+            <span>👥</span>
+            <span>Guía para Familias</span>
+          </a>
+        </li>
+        <li class="shared-item">
+          <a href="./asamblea/">
+            <span>⏱️</span>
+            <span>Temporizador / Asamblea</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Portal Docente • Gestión de Tutoría y Acompañamiento Escolar</p>
+  </footer>
+
+  <script>
+    // Sincronización del tema Claro/Oscuro
+    const themeToggle = document.getElementById('themeToggle');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    const currentTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    updateToggleText(currentTheme);
+
+    themeToggle.addEventListener('click', () => {
+      const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateToggleText(newTheme);
+    });
+
+    function updateToggleText(theme) {
+      themeToggle.textContent = theme === 'dark' ? '☀️ Claro' : '🌙 Oscuro';
+    }
+  </script>
+</body>
+</html>
