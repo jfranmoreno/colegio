@@ -46,7 +46,6 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Cabecera y Navegación */
     header {
       padding: 2rem 1.5rem 1rem;
       max-width: 1200px;
@@ -103,7 +102,6 @@
       margin-top: 0.25rem;
     }
 
-    /* Controles y Filtros */
     .controls {
       display: flex;
       flex-direction: column;
@@ -151,7 +149,6 @@
       border-color: var(--primary);
     }
 
-    /* Cuadrícula Principal */
     main {
       flex: 1;
       max-width: 1200px;
@@ -198,7 +195,6 @@
       gap: 1.25rem;
     }
 
-    /* Tarjetas Interactivas */
     .block-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -239,7 +235,6 @@
       letter-spacing: 0.04em;
     }
 
-    /* Colores por Bloque de Matemáticas */
     .theme-num { color: #2563eb; }
     .theme-calc { color: #dc2626; }
     .theme-prob { color: #d97706; }
@@ -270,7 +265,6 @@
       align-items: center;
     }
 
-    /* Modal Emergente */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -431,7 +425,7 @@
     </div>
 
     <div class="controls">
-      <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. números pares, fracciones, ángulos, cálculo mental...)">
+      <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. fracciones, enteros, ángulos, cálculo mental...)">
       <div class="filter-bar">
         <button class="filter-btn active" data-filter="all">Todos los bloques</button>
         <button class="filter-btn" data-filter="num">Numeración</button>
@@ -453,10 +447,7 @@
         <span class="cycle-badge">Primer Ciclo</span>
       </div>
       <div class="cards-grid">
-        
-        <button class="block-card" data-block="num" 
-          data-title="Numeración" data-icon="🔢" data-course-name="1.º de Primaria" data-path="./1primaria/numeracion/"
-          data-activities='["Los números del 0 al 9 en la recta","La decena: Agrupaciones de 10","Decenas y unidades con bloques multibase","Comparación de números (Mayor y menor)","Números pares e impares","Los números ordinales (1.º al 10.º)","Escritura y lectura de números hasta el 99","La tabla del 100 interactiva","Anterior y posterior de un número","Descomposición de números de dos cifras"]'>
+        <button class="block-card" data-block="num" data-title="Numeración" data-icon="🔢" data-course-name="1.º de Primaria" data-path="./1primaria/numeracion/" data-activities='["Los números del 0 al 9 en la recta","La decena: Agrupaciones de 10","Decenas y unidades con bloques multibase","Comparación de números (Mayor y menor)","Números pares e impares","Los números ordinales (1.º al 10.º)","Escritura y lectura de números hasta el 99","La tabla del 100 interactiva","Anterior y posterior de un número","Descomposición de números de dos cifras"]'>
           <div>
             <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
             <h3 class="block-title">Números del 0 al 99</h3>
@@ -465,9 +456,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="calc" 
-          data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="1.º de Primaria" data-path="./1primaria/calculo/"
-          data-activities='["La suma en la recta numérica","La resta en la recta numérica","Sumas de decenas completas (20 + 30)","Restas de decenas completas (50 - 20)","Sumas de número de 2 cifras más dígito (34 + 5)","Sumas sin llevadas de dos cifras","Sumas de 3 sumandos","Relación entre suma y resta (Familias de operaciones)","Amigos del 10: Cálculo mental rápido","Ruleta de cálculo mental contra reloj"]'>
+        <button class="block-card" data-block="calc" data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="1.º de Primaria" data-path="./1primaria/calculo/" data-activities='["La suma en la recta numérica","La resta en la recta numérica","Sumas de decenas completas (20 + 30)","Restas de decenas completas (50 - 20)","Sumas de número de 2 cifras más dígito (34 + 5)","Sumas sin llevadas de dos cifras","Sumas de 3 sumandos","Relación entre suma y resta","Amigos del 10: Cálculo mental rápido","Ruleta de cálculo mental contra reloj"]'>
           <div>
             <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
             <h3 class="block-title">Sumas y Restas Básicas</h3>
@@ -476,9 +465,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="prob" 
-          data-title="Resolución de Problemas" data-icon="🧩" data-course-name="1.º de Primaria" data-path="./1primaria/problemas/"
-          data-activities='["Pasos para resolver: Identificar la pregunta","Identificar datos numéricos en una imagen","Problemas de suma: ¿Cuántos hay en total?","Problemas de resta: ¿Cuántos quedan?","Problemas de resta: ¿Cuántos faltan?","Problemas de comparación: ¿Cuántos más que...?","Problemas de comparación: ¿Cuántos menos que...?","Dibujar los datos para resolver","Elegir la pregunta adecuada para unos datos","Inventar el enunciado de un problema"]'>
+        <button class="block-card" data-block="prob" data-title="Resolución de Problemas" data-icon="🧩" data-course-name="1.º de Primaria" data-path="./1primaria/problemas/" data-activities='["Pasos para resolver: Identificar la pregunta","Identificar datos numéricos en una imagen","Problemas de suma: ¿Cuántos hay en total?","Problemas de resta: ¿Cuántos quedan?","Problemas de resta: ¿Cuántos faltan?","Problemas de comparación: ¿Cuántos más que...?","Problemas de comparación: ¿Cuántos menos que...?","Dibujar los datos para resolver","Elegir la pregunta adecuada para unos datos","Inventar el enunciado de un problema"]'>
           <div>
             <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
             <h3 class="block-title">Iniciación a Problemas</h3>
@@ -487,9 +474,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="med" 
-          data-title="Medida" data-icon="📏" data-course-name="1.º de Primaria" data-path="./1primaria/medida/"
-          data-activities='["Los días de la semana y los meses","El calendario: Buscar fechas y eventos","El reloj de agujas: Las horas en punto","El reloj digital: Las horas y media","Medidas corporales: Palmo, pie y paso","El metro y el centímetro con regla","El litro: Llenar y vaciar recipientes","El kilo: Pesar objetos en balanza","Monedas de 1 y 2 euros y céntimos","Billetes de 5, 10 y 20 euros: Pagar exacto"]'>
+        <button class="block-card" data-block="med" data-title="Medida" data-icon="📏" data-course-name="1.º de Primaria" data-path="./1primaria/medida/" data-activities='["Los días de la semana y los meses","El calendario: Buscar fechas y eventos","El reloj de agujas: Las horas en punto","El reloj digital: Las horas y media","Medidas corporales: Palmo, pie y paso","El metro y el centímetro con regla","El litro: Llenar y vaciar recipientes","El kilo: Pesar objetos en balanza","Monedas de 1 y 2 euros y céntimos","Billetes de 5, 10 y 20 euros: Pagar exacto"]'>
           <div>
             <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
             <h3 class="block-title">Tiempo, Dinero y Magnitudes</h3>
@@ -498,9 +483,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="geom" 
-          data-title="Geometría y Estadística" data-icon="📐" data-course-name="1.º de Primaria" data-path="./1primaria/geometria/"
-          data-activities='["Izquierda y derecha de mi cuerpo","Posiciones: Arriba/abajo, delante/detrás","Líneas rectas, curvas y poligonales","Identificar figuras planas (Círculo, cuadrado, triángulo)","Cuerpos geométricos: La esfera y el cubo","Clasificar objetos en tablas de datos","Gráficos de barras con pictogramas","Interpretar una tabla de frecuencias sencilla","Relacionar gráficos con dibujos de aula","Laberintos de orientación espacial"]'>
+        <button class="block-card" data-block="geom" data-title="Geometría y Estadística" data-icon="📐" data-course-name="1.º de Primaria" data-path="./1primaria/geometria/" data-activities='["Izquierda y derecha de mi cuerpo","Posiciones: Arriba/abajo, delante/detrás","Líneas rectas, curvas y poligonales","Identificar figuras planas","Cuerpos geométricos: La esfera y el cubo","Clasificar objetos en tablas de datos","Gráficos de barras con pictogramas","Interpretar una tabla de frecuencias sencilla","Relacionar gráficos con dibujos de aula","Laberintos de orientación espacial"]'>
           <div>
             <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
             <h3 class="block-title">Espacio, Figuras y Gráficos</h3>
@@ -509,9 +492,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="sit" 
-          data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="1.º de Primaria" data-path="./1primaria/situaciones/"
-          data-activities='["¡Vamos a conocernos!: Contar objetos para decorar la clase","La regla de las 3R: Diseñar contenedores de reciclaje","Tareas de casa: Registrar actividades en una tabla","Receta tradicional: Medir ingredientes con vasos y cucharas","Zona verde del colegio: Diseñar el plano de plantas","Organizamos una fiesta: Presupuesto y horarios del festival","Mercadillo solidario de juguetes usados","El rincón de la fruta: Estadísticas de meriendas","Conteo de pasos en el circuito del patio","Cuidamos el aula: Inventario de lápices y tijeras"]'>
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="1.º de Primaria" data-path="./1primaria/situaciones/" data-activities='["¡Vamos a conocernos!: Contar objetos para el aula","La regla de las 3R: Diseñar contenedores","Tareas de casa: Registrar actividades en tabla","Receta tradicional: Medir con vasos y cucharas","Zona verde del colegio: Diseñar el plano","Organizamos una fiesta: Horarios y presupuesto","Mercadillo solidario de juguetes","El rincón de la fruta: Gráficos de meriendas","Conteo de pasos en el circuito del patio","Inventario del material de clase"]'>
           <div>
             <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
             <h3 class="block-title">Proyectos de Aula 1.º</h3>
@@ -519,7 +500,6 @@
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
-
       </div>
     </section>
 
@@ -530,10 +510,7 @@
         <span class="cycle-badge">Primer Ciclo</span>
       </div>
       <div class="cards-grid">
-        
-        <button class="block-card" data-block="num" 
-          data-title="Numeración" data-icon="🔢" data-course-name="2.º de Primaria" data-path="./2primaria/numeracion/"
-          data-activities='["El número 100: Formar centenas","La tabla numérica del 0 al 999","Aproximación a la decena más cercana","Descomposición en centenas, decenas y unidades","Lectura y escritura de números de 3 cifras","Comparación de números hasta el 999","Series numéricas ascendentes y descendentes","El número 1.000: La unidad de millar","Los números ordinales hasta el 20.º","Composición de números con ábacos virtuales"]'>
+        <button class="block-card" data-block="num" data-title="Numeración" data-icon="🔢" data-course-name="2.º de Primaria" data-path="./2primaria/numeracion/" data-activities='["El número 100: Formar centenas","La tabla numérica del 0 al 999","Aproximación a la decena más cercana","Descomposición en centenas, decenas y unidades","Lectura y escritura de números de 3 cifras","Comparación de números hasta el 999","Series numéricas ascendentes y descendentes","El número 1.000: La unidad de millar","Los números ordinales hasta el 20.º","Composición de números con ábacos virtuales"]'>
           <div>
             <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
             <h3 class="block-title">Números hasta el 1.000</h3>
@@ -542,9 +519,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="calc" 
-          data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="2.º de Primaria" data-path="./2primaria/calculo/"
-          data-activities='["Propiedad conmutativa de la suma","Sumas con llevadas de números de 2 y 3 cifras","La prueba de la resta","Sumas y restas por descomposición","Relación entre suma repetida y multiplicación","La tabla de multiplicar del 2 (El doble)","La tabla de multiplicar del 3 (El triple)","Repartos exactos: La mitad y el tercio","Uso básico de la calculadora en el aula","Cálculo mental: Sumar y restar 10 y 100"]'>
+        <button class="block-card" data-block="calc" data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="2.º de Primaria" data-path="./2primaria/calculo/" data-activities='["Propiedad conmutativa de la suma","Sumas con llevadas de 2 y 3 cifras","La prueba de la resta","Sumas y restas por descomposición","Relación entre suma repetida y multiplicación","La tabla de multiplicar del 2 (El doble)","La tabla de multiplicar del 3 (El triple)","Repartos exactos: La mitad y el tercio","Uso básico de la calculadora","Cálculo mental: Sumar y restar 10 y 100"]'>
           <div>
             <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
             <h3 class="block-title">Operaciones y Tablas (2 y 3)</h3>
@@ -553,9 +528,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="prob" 
-          data-title="Resolución de Problemas" data-icon="🧩" data-course-name="2.º de Primaria" data-path="./2primaria/problemas/"
-          data-activities='["Problemas de combinación: Unión y subconjuntos","Problemas de cambio: Aumentos y disminuciones","Problemas de igualación","Reconocer preguntas válidas a partir de un enunciado","Completar enunciados a partir de la solución","Problemas de dos operaciones encadenadas","Problemas de repartos equitativos","Elegir la operación correcta: ¿Sumar o restar?","Detectar datos innecesarios en un texto","Inventar problemas con tablas de precios"]'>
+        <button class="block-card" data-block="prob" data-title="Resolución de Problemas" data-icon="🧩" data-course-name="2.º de Primaria" data-path="./2primaria/problemas/" data-activities='["Problemas de combinación: Unión y subconjuntos","Problemas de cambio: Aumentos y disminuciones","Problemas de igualación","Reconocer preguntas válidas","Completar enunciados a partir de la solución","Problemas de dos operaciones encadenadas","Problemas de repartos equitativos","Elegir la operación correcta","Detectar datos innecesarios","Inventar problemas con tablas de precios"]'>
           <div>
             <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
             <h3 class="block-title">Cambio, Unión e Igualación</h3>
@@ -564,9 +537,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="med" 
-          data-title="Medida" data-icon="📏" data-course-name="2.º de Primaria" data-path="./2primaria/medida/"
-          data-activities='["Lectura del reloj: Horas y minutos exactos","Cálculo de tiempos transcurridos en el horario","Organizar un horario escolar semanal","Monedas y billetes: Relación euro y céntimo","Situaciones de compra: Calcular el cambio","El centímetro, metro y kilómetro","El kilo, medio kilo y cuarto de kilo","El litro, medio litro y cuarto de litro","Medidas no convencionales: Comparar balanzas","Problemas cotidianos de compra y venta"]'>
+        <button class="block-card" data-block="med" data-title="Medida" data-icon="📏" data-course-name="2.º de Primaria" data-path="./2primaria/medida/" data-activities='["Lectura del reloj: Horas y minutos exactos","Cálculo de tiempos transcurridos","Organizar un horario escolar semanal","Monedas y billetes: Relación euro y céntimo","Situaciones de compra: Calcular el cambio","El centímetro, metro y kilómetro","El kilo, medio kilo y cuarto de kilo","El litro, medio litro y cuarto de litro","Medidas no convencionales: Balanzas","Problemas cotidianos de compra y venta"]'>
           <div>
             <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
             <h3 class="block-title">Reloj y Medidas Reales</h3>
@@ -575,9 +546,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="geom" 
-          data-title="Geometría y Estadística" data-icon="📐" data-course-name="2.º de Primaria" data-path="./2primaria/geometria/"
-          data-activities='["Giros a la izquierda y derecha","La circunferencia y el círculo","Polígonos: Lados y vértices","Eje de simetría en figuras planas","Cuerpos geométricos: Prismas, cilindros y conos","Tablas de datos de doble entrada","Gráficos de barras de dos características","Relacionar gráficos con encuestas de clase","Probabilidad: Suceso seguro, posible e imposible","Construcción de figuras geométricas en cuadrícula"]'>
+        <button class="block-card" data-block="geom" data-title="Geometría y Estadística" data-icon="📐" data-course-name="2.º de Primaria" data-path="./2primaria/geometria/" data-activities='["Giros a la izquierda y derecha","La circunferencia y el círculo","Polígonos: Lados y vértices","Eje de simetría en figuras planas","Cuerpos geométricos: Prismas, cilindros y conos","Tablas de datos de doble entrada","Gráficos de barras de dos características","Relacionar gráficos con encuestas de clase","Probabilidad: Suceso seguro, posible e imposible","Construcción de figuras en cuadrícula"]'>
           <div>
             <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
             <h3 class="block-title">Polígonos y Probabilidad</h3>
@@ -586,9 +555,7 @@
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="sit" 
-          data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="2.º de Primaria" data-path="./2primaria/situaciones/"
-          data-activities='["Mejoramos el colegio: Medir y redistribuir el patio","Nos cuidamos: Diseñar un menú saludable mensual","Ahorramos agua: Analizar el consumo doméstico en litros","Matemáticas en la biblioteca: Clasificar libros por tejuelos","Cuidamos el huerto: Reparto de parcelas y siembra","Organizamos una excursión: Horarios, autobuses y billetes","Tienda de la clase: Simulación de compras con euros","Juegos matemáticos con dados y probabilidad","Registro de temperaturas diarias del cole","Diseño de un mosaico simétrico para el pasillo"]'>
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="2.º de Primaria" data-path="./2primaria/situaciones/" data-activities='["Mejoramos el colegio: Redistribuir el patio","Nos cuidamos: Menú saludable mensual","Ahorramos agua: Consumo doméstico en litros","Matemáticas en la biblioteca: Clasificar libros","Cuidamos el huerto: Parcelas y siembra","Organizamos una excursión: Horarios y billetes","Tienda de la clase: Simulaciones con euros","Juegos matemáticos con dados y probabilidad","Registro de temperaturas diarias","Mosaico simétrico para el pasillo"]'>
           <div>
             <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
             <h3 class="block-title">Proyectos de Aula 2.º</h3>
@@ -596,7 +563,258 @@
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
+      </div>
+    </section>
 
+    <!-- ==================== CURSO 3.º ==================== -->
+    <section class="course-section" data-course="3">
+      <div class="course-header">
+        <h2 class="course-title">3.º de Primaria</h2>
+        <span class="cycle-badge">Segundo Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="num" data-title="Numeración" data-icon="🔢" data-course-name="3.º de Primaria" data-path="./3primaria/numeracion/" data-activities='["Números de 3 cifras: Lectura y escritura","Comparación y aproximación de 3 cifras","El número 1.000: La unidad de millar","Los números del 1.000 al 1.999","Números hasta el 9.999: Descomposición","Aproximación a la centena y al millar","Los números ordinales hasta el 30.º","La decena de millar (10.000)","Series numéricas con patrones","Lectura y formación en el ábaco de 5 cifras"]'>
+          <div>
+            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
+            <h3 class="block-title">Números hasta el 9.999</h3>
+            <p class="block-items">Unidades y decenas de millar, lectura, escritura, comparación y redondeo.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="calc" data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="3.º de Primaria" data-path="./3primaria/calculo/" data-activities='["Propiedades conmutativa y asociativa de la suma","Sumas y restas combinadas de 3 cifras","Suma y multiplicación: Tablas del 1 al 10","Multiplicación por descomposición","Multiplicación de 2 cifras por 2 cifras","Iniciación a la propiedad distributiva","División: Términos y prueba de la división","División exacta y entera","División de 3 cifras entre 1 cifra","Mitad, tercio, cuarto y quinto"]'>
+          <div>
+            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
+            <h3 class="block-title">Tablas y División Básica</h3>
+            <p class="block-items">Tablas de multiplicar, propiedad asociativa, división exacta y entera (3 cifras / 1 cifra).</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="prob" data-title="Resolución de Problemas" data-icon="🧩" data-course-name="3.º de Primaria" data-path="./3primaria/problemas/" data-activities='["Reconocer y formar problemas incompletos","Reconocer datos necesarios e innecesarios","Relacionar enunciados y preguntas","Completar cálculos que resuelven un problema","Distinguir qué se debe calcular primero","Relacionar resoluciones y preguntas","Reconocer errores en una resolución","Estimar y elegir la solución razonable","Cambiar datos para variar la respuesta","Usar diagramas y dibujos para resolver"]'>
+          <div>
+            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
+            <h3 class="block-title">Estrategias de Resolución</h3>
+            <p class="block-items">Deducir qué calcular primero, detección de errores y estimación de soluciones.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="med" data-title="Medida" data-icon="📏" data-course-name="3.º de Primaria" data-path="./3primaria/medida/" data-activities='["Reloj de agujas y reloj digital: Cuartos y menos cuarto","Correspondencia: Horas, minutos y segundos","El metro, el kilómetro, el centímetro y el milímetro","Instrumentos de medición de longitud","El kilo y el gramo: Pesadas en balanza","El litro y el mililitro: Capacidad","Problemas cotidianos de medidas combinadas","Monedas y billetes: Presupuestos de compras","El calendario: Semanas, meses y trimestres","Estimaciones visuales de medidas reales"]'>
+          <div>
+            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
+            <h3 class="block-title">Tiempo y Unidades Métricas</h3>
+            <p class="block-items">Horas/minutos/segundos, mm/cm/m/km, gramo/kilo, mililitro/litro e instrumentos de medida.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="geom" data-title="Geometría y Estadística" data-icon="📐" data-course-name="3.º de Primaria" data-path="./3primaria/geometria/" data-activities='["Tipos de rectas: Paralelas, secantes y perpendiculares","Los ángulos y sus tipos (Recto, agudo, obtuso)","Uso del transportador de ángulos","Simetría y traslación en cuadrícula","Círculo y circunferencia: Elementos principales","Polígonos: Elementos y tipos","Clasificación de triángulos por lados y ángulos","Clasificación de cuadriláteros","Cálculo del perímetro y área por cuadrícula","Poliedros y cuerpos redondos"]'>
+          <div>
+            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
+            <h3 class="block-title">Ángulos, Triángulos y Perímetro</h3>
+            <p class="block-items">Uso del transportador, clasificación de triángulos y cuadriláteros, poliedros y coordenadas.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="3.º de Primaria" data-path="./3primaria/situaciones/" data-activities='["Aprovechamos los alimentos: Evitar el desperdicio","Protegemos a los animales: Censo del refugio","Trabajamos por la igualdad: Datos de profesiones","Mejoramos el barrio: Plano y señalización","Celebración del Día del Deporte: Marcas y tiempos","Descubrimos los paisajes: Alturas y distancias","Diseño de un folleto con precios y descuentos","Organizar la biblioteca de clase por temáticas","Campaña del reciclaje: Gráficos semanales","Mapa del tesoro con coordenadas cartesianas"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 3.º</h3>
+            <p class="block-items">Aprovechamiento de alimentos, día del deporte, protección animal y mejora del barrio.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 4.º ==================== -->
+    <section class="course-section" data-course="4">
+      <div class="course-header">
+        <h2 class="course-title">4.º de Primaria</h2>
+        <span class="cycle-badge">Segundo Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="num" data-title="Numeración" data-icon="🔢" data-course-name="4.º de Primaria" data-path="./4primaria/numeracion/" data-activities='["Números de 4 y 5 cifras: Lectura y escritura","Comparación y aproximación a cualquier orden","Los números romanos (I, V, X, L, C, D, M)","Concepto de fracción: Numerador y denominador","Fracciones propias, impropias e iguales a la unidad","Comparación de fracciones con igual denominador","Fracción de un número y de un conjunto","Unidades decimales: Décimas y centésimas","Números decimales: Parte entera y decimal","Comparación y aproximación de decimales"]'>
+          <div>
+            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
+            <h3 class="block-title">Fracciones y Decimales</h3>
+            <p class="block-items">Números romanos, fracciones propias/impropias y unidades decimales.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="calc" data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="4.º de Primaria" data-path="./4primaria/calculo/" data-activities='["Propiedad distributiva de la multiplicación","Productos por 2 y 3 cifras","Estimaciones de productos","Operaciones combinadas de +, - y x","División por 2 cifras paso a paso","Propiedad fundamental de la división exacta","Estimación de cocientes","Operaciones combinadas (+, -, x, /)","Suma de números decimales","Resta de números decimales"]'>
+          <div>
+            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
+            <h3 class="block-title">Multiplicación y División Avanzada</h3>
+            <p class="block-items">División por 2 cifras, propiedad distributiva y operaciones con decimales.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="prob" data-title="Resolución de Problemas" data-icon="🧩" data-course-name="4.º de Primaria" data-path="./4primaria/problemas/" data-activities='["Deducir información a partir del enunciado","Reconocer datos necesarios e inventar los que faltan","Completar preguntas para formar problemas","Asociar enunciados, preguntas y resolución","Elegir qué operación calcular primero","Extraer datos de la resolución de un problema","Estimar y elegir la solución correcta","Determinar si un problema tiene solución única","Problemas con dinero y cambios en euros","Problemas de proporcionalidad directa intuitiva"]'>
+          <div>
+            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
+            <h3 class="block-title">Problemas Estructurados</h3>
+            <p class="block-items">Determinar si un problema tiene solución única, completar cálculos y extracción de datos.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="med" data-title="Medida" data-icon="📏" data-course-name="4.º de Primaria" data-path="./4primaria/medida/" data-activities='["Unidades de tiempo menores y mayores que el año","Lectura precisa de horas, minutos y segundos","El paso del tiempo: Sumar y restar duraciones","Unidades de longitud: mm, cm, dm, m, dam, hm, km","Equivalencias entre unidades de longitud","Unidades de capacidad: ml, cl, dl, l, dal, hl, kl","Equivalencias entre unidades de capacidad","Unidades de masa: mg, cg, dg, g, dag, hg, kg","Equivalencias entre unidades de masa","Resolución de problemas reales de medida"]'>
+          <div>
+            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
+            <h3 class="block-title">Sistema Métrico Decimal</h3>
+            <p class="block-items">Equivalencias completas de longitud, capacidad y masa.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="geom" data-title="Geometría y Estadística" data-icon="📐" data-course-name="4.º de Primaria" data-path="./4primaria/geometria/" data-activities='["Posiciones relativas de rectas y circunferencias","Trazado y medida de ángulos con semicírculo","Simetrías axiales y traslaciones","Polígonos: Elementos y perímetro","Clasificación de triángulos y cuadriláteros","Clasificación de paralelogramos","Prismas y pirámides: Caras, aristas y vértices","Cuerpos redondos: Cilindro, cono y esfera","Coordenadas cartesianas de un punto","Gráficos de barras, lineales, pictogramas e histogramas"]'>
+          <div>
+            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
+            <h3 class="block-title">Áreas, Prismas y Pictogramas</h3>
+            <p class="block-items">Paralelogramos, prismas, pirámides, traslaciones y gráficos estadísticos.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="4.º de Primaria" data-path="./4primaria/situaciones/" data-activities='["Nos alimentamos bien: Calorías y proporciones","Uso de transportes: Rutas, tiempos y distancias","Valoramos las diferencias: Estadísticas del cole","Disfrutamos de los libros: Préstamos y páginas leídas","Consumo responsable: Comparador de precios del súper","Nos divertimos juntos: Juegos de mesa y probabilidad","Diseño de un mapa a escala sencilla","El huerto escolar: Área y distribución de hortalizas","Presupuesto para una fiesta de cumpleaños","Registro meteorológico mensual"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 4.º</h3>
+            <p class="block-items">Nutrición saludable, uso del transporte y consumo consciente.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 5.º ==================== -->
+    <section class="course-section" data-course="5">
+      <div class="course-header">
+        <h2 class="course-title">5.º de Primaria</h2>
+        <span class="cycle-badge">Tercer Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="num" data-title="Numeración" data-icon="🔢" data-course-name="5.º de Primaria" data-path="./5primaria/numeracion/" data-activities='["Números de 7 cifras y más de 7 cifras","Aproximación de grandes números","Números romanos complejos","Múltiplos de un número","Divisores de un número","Fracción como reparto y operador","Fracciones propias, impropias y números mixtos","Fracciones equivalentes por simplificación y amplificación","Comparación de fracciones con distinto denominador","Unidades decimales: Décimas, centésimas y milésimas"]'>
+          <div>
+            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
+            <h3 class="block-title">Múltiplos, Divisores y Fracciones</h3>
+            <p class="block-items">Números de 7 cifras, números mixtos, múltiplos, divisores y fracciones equivalentes.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="calc" data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="5.º de Primaria" data-path="./5primaria/calculo/" data-activities='["Multiplicación por 3 cifras y cálculo mental","Potencias y potencias de base 10","División exacta y entera con estimaciones","Operaciones combinadas con jerarquía de paréntesis","Suma y resta de fracciones con igual denominador","Fracción de un número","Porcentaje: Significado y cálculo del %","Aumentos y disminuciones porcentuales","Multiplicación de naturales por decimales y decimal por decimal","División de un decimal entre un número natural"]'>
+          <div>
+            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
+            <h3 class="block-title">Potencias, Decimales y Porcentajes</h3>
+            <p class="block-items">Potencias de 10, operaciones con decimales y cálculo de porcentajes.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="prob" data-title="Resolución de Problemas" data-icon="🧩" data-course-name="5.º de Primaria" data-path="./5primaria/problemas/" data-activities='["Escribir preguntas para datos sobrantes","Completar o escribir la pregunta intermedia","Explicar qué se averigua con unos cálculos dados","Detectar errores en la resolución de problemas","Resolver problemas empezando por el final","Estrategia de ensayo y error dirigida","Resolución de problemas con diagramas de árbol","Reducir el problema a otro más sencillo","Determinar si un problema tiene solución única","Problemas de porcentajes y descuentos reales"]'>
+          <div>
+            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
+            <h3 class="block-title">Estrategias y Ensayo-Error</h3>
+            <p class="block-items">Diagramas de árbol, empezar por el final, preguntas intermedias y reducción.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="med" data-title="Medida" data-icon="📏" data-course-name="5.º de Primaria" data-path="./5primaria/medida/" data-activities='["Relaciones complejas de longitud, capacidad y masa","Problemas reales con unidades compuestas","Concepto de superficie: El cuadrado unidad","El metro cuadrado y sus submúltiplos (dm2, cm2, mm2)","Problemas con unidades de superficie","El reloj: Cálculos de horas, minutos y segundos","El sistema sexagesimal: Grados, minutos y segundos","Suma en el sistema sexagesimal","Resta en el sistema sexagesimal","Equivalencias entre magnitudes en recetas y planos"]'>
+          <div>
+            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
+            <h3 class="block-title">Superficie y Sistema Sexagesimal</h3>
+            <p class="block-items">Metro cuadrado y submúltiplos, cálculo horario y grados/minutos/segundos.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="geom" data-title="Geometría y Estadística" data-icon="📐" data-course-name="5.º de Primaria" data-path="./5primaria/geometria/" data-activities='["Mediatriz de un segmento y bisectriz de un ángulo","Simetría, traslación y giros en el plano","Concepto de figuras semejantes y escalas","Posiciones relativas de la circunferencia y rectas","Base y altura en triángulos y paralelogramos","Área de paralelogramos y del triángulo","Longitud de la circunferencia y área del círculo","Área de figuras planas compuestas","Poliedros: Prismas y pirámides regulares","Estadística: Frecuencias, media, moda y probabilidad"]'>
+          <div>
+            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
+            <h3 class="block-title">Áreas de Polígonos y Estadística</h3>
+            <p class="block-items">Área de triángulos, cuadriláteros y círculos, mediatriz, media y moda.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="5.º de Primaria" data-path="./5primaria/situaciones/" data-activities='["Conocemos a mujeres científicas: Líneas de tiempo","Cuidamos los mares: Superficie de vertidos plásticos","Nos informamos: Interpretación crítica de noticias","Reducimos la contaminación: Cálculo de huella de carbono","Recorremos el mundo: Distancias aéreas y husos horarios","Viajamos en el tiempo: Fechas y números romanos","Diseño de un plano de una vivienda a escala","Presupuesto de reforma: Azulejos y metros cuadrados","Campaña escolar de ahorro energético","Estudio estadístico de hábitos del colegio"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 5.º</h3>
+            <p class="block-items">Mujeres científicas, cuidado del medio marino y reducción de la contaminación.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 6.º ==================== -->
+    <section class="course-section" data-course="6">
+      <div class="course-header">
+        <h2 class="course-title">6.º de Primaria</h2>
+        <span class="cycle-badge">Tercer Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="num" data-title="Numeración" data-icon="🔢" data-course-name="6.º de Primaria" data-path="./6primaria/numeracion/" data-activities='["Criterios de divisibilidad (2, 3, 5, 9, 10)","Cálculo de todos los divisores de un número","Mínimo Común Múltiplo (M.C.M.)","Máximo Común Divisor (M.C.D.)","Los números enteros positivos y negativos","Comparación y recta de números enteros","Fracciones: Reducción a común denominador","Comparación de fracciones complejas","Números decimales y su aproximación precisa","Expresión polinómica de un número"]'>
+          <div>
+            <div class="block-header theme-num"><span class="block-icon">🔢</span><span class="block-name">Numeración</span></div>
+            <h3 class="block-title">Enteros, Divisibilidad y Fracciones</h3>
+            <p class="block-items">M.C.M., M.C.D., divisibilidad, números enteros y comparación de fracciones.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="calc" data-title="Cálculo y Operaciones" data-icon="➕" data-course-name="6.º de Primaria" data-path="./6primaria/calculo/" data-activities='["Operaciones combinadas con potencias y raíces cuadradas","Suma y resta de números enteros","Suma y resta de fracciones con distinto denominador","Multiplicación y división de fracciones","Operaciones combinadas con fracciones","División de un natural entre un decimal","División de un decimal entre un decimal","Sacar decimales en divisiones inexactas","Problemas de proporcionalidad directa y porcentajes","Cálculo de escalas en mapas y maquetas"]'>
+          <div>
+            <div class="block-header theme-calc"><span class="block-icon">➕</span><span class="block-name">Cálculo</span></div>
+            <h3 class="block-title">Operaciones Complejas y Raíces</h3>
+            <p class="block-items">Fracciones complejas, raíz cuadrada, división con decimales y proporcionalidad.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="prob" data-title="Resolución de Problemas" data-icon="🧩" data-course-name="6.º de Primaria" data-path="./6primaria/problemas/" data-activities='["Convertir enunciados abiertos en problemas","Completar conclusiones extraídas de un texto","Explicar qué hay que calcular paso a paso","Detectar fallos lógicos en resoluciones dadas","Problemas de proporcionalidad compuesta sencilla","Problemas de porcentajes encadenados e IVA","Resolver por ensayo-error y árboles lógicos","Problemas de velocidad, distancia y tiempo","Problemas de mezclas y repartos proporcionales","Modelización de problemas de la vida real"]'>
+          <div>
+            <div class="block-header theme-prob"><span class="block-icon">🧩</span><span class="block-name">Problemas</span></div>
+            <h3 class="block-title">Modelización y Lógica</h3>
+            <p class="block-items">Aumentos/disminuciones porcentuales, escalas y justificación de procedimientos.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="med" data-title="Medida" data-icon="📏" data-course-name="6.º de Primaria" data-path="./6primaria/medida/" data-activities='["Unidades de longitud, capacidad y masa avanzadas","Unidades de superficie: Hectárea, área y centiárea","Concepto de volumen: El cubo unidad","El metro cúbico y sus submúltiplos (dm3, cm3, mm3)","Múltiplos del metro cúbico","Relación fundamental entre volumen y capacidad (1 dm3 = 1 l)","Operaciones en el sistema sexagesimal (Tiempo y ángulos)","Unidades de información digital: Byte, KB, MB, GB, TB","Conversiones rápidas en el sistema digital","Problemas reales de almacenamiento y volumen"]'>
+          <div>
+            <div class="block-header theme-med"><span class="block-icon">📏</span><span class="block-name">Medida</span></div>
+            <h3 class="block-title">Volumen y Sistema Sexagesimal</h3>
+            <p class="block-items">Metro cúbico, volumen-capacidad, sistema sexagesimal e información digital.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="geom" data-title="Geometría y Estadística" data-icon="📐" data-course-name="6.º de Primaria" data-path="./6primaria/geometria/" data-activities='["Área de figuras compuestas y polígonos regulares","Área del rombo, trapecio y romboide","Longitud de arco y figuras circulares","Poliedros regulares (Tetraedro, cubo, octaedro...)","Área lateral y total de prismas y pirámides","Área de cuerpos redondos (Cilindro, cono, esfera)","Volumen de prismas y pirámides","Volumen de cuerpos redondos","Estadística: Tabla de frecuencias, media, moda, mediana y rango","Cálculo de probabilidad con la regla de Laplace"]'>
+          <div>
+            <div class="block-header theme-geom"><span class="block-icon">📐</span><span class="block-name">Geometría</span></div>
+            <h3 class="block-title">Cuerpos Geométricos y Estadística</h3>
+            <p class="block-items">Áreas y volúmenes de cuerpos, mediana, rango y probabilidad.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="6.º de Primaria" data-path="./6primaria/situaciones/" data-activities='["Trabajamos por la convivencia: Decálogo y estadísticas","Aprendemos con los mayores: Presupuestos de talleres","Cuidamos nuestra salud: Gráficos de gasto calórico e IMC","Protegemos el planeta: Consumo energético del centro","Valoramos las lenguas: Diversidad lingüística en gráficos","Disfrutamos del arte: Geometría en la pintura y escultura","Viaje de fin de curso: Presupuesto, kilometraje y alojamiento","Diseño de un envase óptimo: Relación volumen-superficie","Simulador financiero: Compras online y descuentos","Campaña de concienciación ambiental escolar"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 6.º</h3>
+            <p class="block-items">Convivencia escolar, aprendizaje intergeneracional, protección del planeta y arte matemático.</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
       </div>
     </section>
 
@@ -619,7 +837,7 @@
       </div>
       <div class="modal-body">
         <ul class="activities-list" id="activitiesList">
-          <!-- Se genera dinámicamente con JavaScript -->
+          <!-- Generado dinámicamente con JavaScript -->
         </ul>
       </div>
     </div>
