@@ -46,7 +46,6 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Cabecera */
     header {
       padding: 2rem 1.5rem 1rem;
       max-width: 1200px;
@@ -103,7 +102,6 @@
       margin-top: 0.25rem;
     }
 
-    /* Controles y Filtros */
     .controls {
       display: flex;
       flex-direction: column;
@@ -151,7 +149,6 @@
       border-color: var(--primary);
     }
 
-    /* Contenido Principal */
     main {
       flex: 1;
       max-width: 1200px;
@@ -198,7 +195,6 @@
       gap: 1.25rem;
     }
 
-    /* Tarjetas Interactivas (Botones) */
     .block-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -239,7 +235,6 @@
       letter-spacing: 0.04em;
     }
 
-    /* Colores por Bloque */
     .theme-oral { color: #0284c7; }
     .theme-lec { color: #e11d48; }
     .theme-esc { color: #d97706; }
@@ -271,7 +266,6 @@
       align-items: center;
     }
 
-    /* ==================== MODAL / VENTANA EMERGENTE ==================== */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -432,7 +426,7 @@
     </div>
 
     <div class="controls">
-      <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. anagramas, ortografía, cómic, sinónimos, teatro...)">
+      <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. determinantes, agudas, cómic, sinónimos, teatro...)">
       <div class="filter-bar">
         <button class="filter-btn active" data-filter="all">Todos los bloques</button>
         <button class="filter-btn" data-filter="oral">Oral</button>
@@ -455,74 +449,59 @@
         <span class="cycle-badge">Primer Ciclo</span>
       </div>
       <div class="cards-grid">
-        
-        <button class="block-card" data-block="oral" 
-          data-title="Comunicación Oral" data-icon="🗣️" data-course-name="1.º de Primaria" data-path="./1primaria/comunicacion-oral/"
-          data-activities='["Presentarse a los compañeros","Comprender y dar instrucciones","Contar una anécdota personal","Juego del Veo Veo: Describir objetos","Describir a una persona","Extraer datos de un vídeo corto","Contar experiencias del fin de semana","Expresión corporal y mímica","Entonación y preguntas","Fórmulas de cortesía en clase"]'>
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="1.º de Primaria" data-path="./1primaria/comunicacion-oral/" data-activities='["Presentarse a los compañeros","Comprender y dar instrucciones","Contar una anécdota personal","Juego del Veo Veo: Describir objetos","Describir a una persona","Extraer datos de un vídeo corto","Contar experiencias del fin de semana","Expresión corporal y mímica","Entonación y preguntas","Fórmulas de cortesía en clase"]'>
           <div>
             <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
             <h3 class="block-title">Expresión y Escucha</h3>
-            <p class="block-items">Presentarse, dar instrucciones, anécdotas, descripciones de personas/objetos y veoveo.</p>
+            <p class="block-items">Presentarse, dar instrucciones, anécdotas, descripciones de personas/objetos y veoveo[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="lec" 
-          data-title="Comprensión Lectora" data-icon="📚" data-course-name="1.º de Primaria" data-path="./1primaria/comprension-lectora/"
-          data-activities='["Lectura de un cómic","Cuento con pictogramas","La página de un diario","Instrucciones paso a paso","Poemas rimados","Trabalenguas divertidos","Cartel de normas de aula","Diálogo entre dos personajes","Texto informativo sobre animales","Adivinanzas populares"]'>
+        <button class="block-card" data-block="lec" data-title="Comprensión Lectora" data-icon="📚" data-course-name="1.º de Primaria" data-path="./1primaria/comprension-lectora/" data-activities='["Lectura de un cómic","Cuento con pictogramas","La página de un diario","Instrucciones paso a paso","Poemas rimados","Trabalenguas divertidos","Cartel de normas de aula","Diálogo entre dos personajes","Texto informativo sobre animales","Adivinanzas populares"]'>
           <div>
             <div class="block-header theme-lec"><span class="block-icon">📚</span><span class="block-name">Lectura</span></div>
             <h3 class="block-title">Comprensión Lectora Inicial</h3>
-            <p class="block-items">Cuentos, cómics, poesías, trabalenguas, normas, páginas de diario e instrucciones.</p>
+            <p class="block-items">Cuentos, cómics, poesías, trabalenguas, normas, páginas de diario e instrucciones[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="esc" 
-          data-title="Expresión Escrita" data-icon="✍️" data-course-name="1.º de Primaria" data-path="./1primaria/escritura/"
-          data-activities='["Rellenar mi carné escolar","Escribir oraciones completas","Lista de la compra","Diseñar un cartel de actividad","Completar un anuncio publicitario","Describir a mi mascota u objeto","Inventar una adivinanza","Escribir un diálogo corto","El programa de una fiesta escolar","Describir un personaje fantástico"]'>
+        <button class="block-card" data-block="esc" data-title="Expresión Escrita" data-icon="✍️" data-course-name="1.º de Primaria" data-path="./1primaria/escritura/" data-activities='["Rellenar mi carné escolar","Escribir oraciones completas","Lista de la compra","Diseñar un cartel de actividad","Completar un anuncio publicitario","Describir a mi mascota u objeto","Inventar una adivinanza","Escribir un diálogo corto","El programa de una fiesta escolar","Describir un personaje fantástico"]'>
           <div>
             <div class="block-header theme-esc"><span class="block-icon">✍️</span><span class="block-name">Escritura</span></div>
             <h3 class="block-title">Trazos y Textos Cortos</h3>
-            <p class="block-items">Escribir oraciones, adivinanzas, listas, carteles, anuncios publicitarios y programas.</p>
+            <p class="block-items">Escribir oraciones, adivinanzas, listas, carteles, anuncios publicitarios y programas[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="ort" 
-          data-title="Taller de Ortografía" data-icon="📝" data-course-name="1.º de Primaria" data-path="./1primaria/ortografia/"
-          data-activities='["Palabras con R fuerte y suave","Diferenciar C y QU","Uso de Z y C","Palabras con GA, GO, GU","Palabras con GUE y GUI","Grupos consonánticos con BR","Grupos consonánticos con BL","Regla de MB antes de B","Regla de MP antes de P","Mayúscula inicial en oraciones"]'>
+        <button class="block-card" data-block="ort" data-title="Taller de Ortografía" data-icon="📝" data-course-name="1.º de Primaria" data-path="./1primaria/ortografia/" data-activities='["Palabras con R fuerte y suave","Diferenciar C y QU","Uso de Z y C","Palabras con GA, GO, GU","Palabras con GUE y GUI","Grupos consonánticos con BR","Grupos consonánticos con BL","Regla de MB antes de B","Regla de MP antes de P","Mayúscula inicial en oraciones"]'>
           <div>
             <div class="block-header theme-ort"><span class="block-icon">📝</span><span class="block-name">Ortografía</span></div>
             <h3 class="block-title">Taller de Ortografía 1.º</h3>
-            <p class="block-items">R fuerte, grafías c/qu, z/c, palabras con g, grupos br/bl y mb/mp.</p>
+            <p class="block-items">R fuerte, grafías c/qu, z/c, palabras con g, grupos br/bl y mb/mp[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <!-- TARJETA DESTACADA: Juegos de Lengua -->
-        <button class="block-card" data-block="voc" 
-          data-title="Juegos de Lengua" data-icon="🔠" data-course-name="1.º de Primaria" data-path="./1primaria/juegos-lengua/"
-          data-activities='["Sopa de letras temáticas","Crucigrama de vocabulario ilustrado","Palabras encadenadas","Descifrar el mensaje secreto","Generador de anagramas","Completar letras perdidas","Ordenar sílabas desordenadas","Laberinto de vocales y consonantes","Ruleta de palabras rápidas","Emparejar palabras y dibujos"]'>
+        <button class="block-card" data-block="voc" data-title="Juegos de Lengua" data-icon="🔠" data-course-name="1.º de Primaria" data-path="./1primaria/juegos-lengua/" data-activities='["Sopa de letras temáticas","Crucigrama de vocabulario ilustrado","Palabras encadenadas","Descifrar el mensaje secreto","Generador de anagramas","Completar letras perdidas","Ordenar sílabas desordenadas","Laberinto de vocales y consonantes","Ruleta de palabras rápidas","Emparejar palabras y dibujos"]'>
           <div>
             <div class="block-header theme-voc"><span class="block-icon">🔠</span><span class="block-name">Juegos de Lengua</span></div>
             <h3 class="block-title">Lectoescritura y Retos</h3>
-            <p class="block-items">Sopas de letras, crucigramas, palabras encadenadas, mensajes secretos y anagramas.</p>
+            <p class="block-items">Sopas de letras, crucigramas, palabras encadenadas, mensajes secretos y anagramas[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="sit" 
-          data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="1.º de Primaria" data-path="./1primaria/situaciones/"
-          data-activities='["¡Vamos a conocernos!: Presentar a mi familia","Vídeo: ¿Cómo colaboramos en casa?","Cartel: Normas para cuidar el parque","Mercadillo escolar con la regla de las 3R","Libro colectivo de nuestras tradiciones","Guión para preparar una obra de teatro","El rincón del reciclaje en clase","Mi rincón de lectura favorito","Ficha de nuestra mascota de clase","Planificar la fiesta de final de curso"]'>
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="1.º de Primaria" data-path="./1primaria/situaciones/" data-activities='["¡Vamos a conocernos!: Presentar a mi familia","Vídeo: ¿Cómo colaboramos en casa?","Cartel: Normas para cuidar el parque","Mercadillo escolar con la regla de las 3R","Libro colectivo de nuestras tradiciones","Guión para preparar una obra de teatro","El rincón del reciclaje en clase","Mi rincón de lectura favorito","Ficha de nuestra mascota de clase","Planificar la fiesta de final de curso"]'>
           <div>
             <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
             <h3 class="block-title">Proyectos de Aula 1.º</h3>
-            <p class="block-items">Presentar a la familia, vídeo de tareas en casa, cartel del parque y obra de teatro.</p>
+            <p class="block-items">Presentar a la familia, vídeo de tareas en casa, cartel del parque y obra de teatro[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
-
       </div>
     </section>
 
@@ -533,84 +512,356 @@
         <span class="cycle-badge">Primer Ciclo</span>
       </div>
       <div class="cards-grid">
-        
-        <button class="block-card" data-block="oral" 
-          data-title="Comunicación Oral" data-icon="🗣️" data-course-name="2.º de Primaria" data-path="./2primaria/comunicacion-oral/"
-          data-activities='["Contar planes de futuro","Cuentos en cadena colaborativos","Explicar una receta paso a paso","Describir a un animal favorito","Dar argumentos sencillos","Proponer y consensuar normas","Comprender diálogos cotidianos","Representar una escena teatral","Hablar sobre hábitos de salud","Explicar las normas de un juego"]'>
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="2.º de Primaria" data-path="./2primaria/comunicacion-oral/" data-activities='["Contar planes de futuro","Cuentos en cadena colaborativos","Explicar una receta paso a paso","Describir a un animal favorito","Dar argumentos sencillos","Proponer y consensuar normas","Comprender diálogos cotidianos","Representar una escena teatral","Hablar sobre hábitos de salud","Explicar las normas de un juego"]'>
           <div>
             <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
             <h3 class="block-title">Diálogos y Argumentos</h3>
-            <p class="block-items">Contar planes, cuentos en cadena, recetas, dar argumentos y consensuar ideas.</p>
+            <p class="block-items">Contar planes, cuentos en cadena, recetas, dar argumentos y consensuar ideas[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="lec" 
-          data-title="Comprensión Lectora" data-icon="📚" data-course-name="2.º de Primaria" data-path="./2primaria/comprension-lectora/"
-          data-activities='["Lectura de portadas de revista","Noticias infantiles","Obra teatral en el aula","Folletos turísticos informativos","Instrucciones de montaje de un juguete","Poemas con ritmo y rima","Cuento: Los tres deseos","Descripción de un paisaje natural","Cómic: Aventuras en la escuela","Cartel publicitario saludable"]'>
+        <button class="block-card" data-block="lec" data-title="Comprensión Lectora" data-icon="📚" data-course-name="2.º de Primaria" data-path="./2primaria/comprension-lectora/" data-activities='["Lectura de portadas de revista","Noticias infantiles","Obra teatral en el aula","Folletos turísticos informativos","Instrucciones de montaje de un juguete","Poemas con ritmo y rima","Cuento: Los tres deseos","Descripción de un paisaje natural","Cómic: Aventuras en la escuela","Cartel publicitario saludable"]'>
           <div>
             <div class="block-header theme-lec"><span class="block-icon">📚</span><span class="block-name">Lectura</span></div>
             <h3 class="block-title">Lectura y Textos Variados</h3>
-            <p class="block-items">Portadas de revista, noticias, teatro, folletos informativos, cuentos y descripciones.</p>
+            <p class="block-items">Portadas de revista, noticias, teatro, folletos informativos, cuentos y descripciones[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="esc" 
-          data-title="Expresión Escrita" data-icon="✍️" data-course-name="2.º de Primaria" data-path="./2primaria/escritura/"
-          data-activities='["Escribir el final de un cuento","Tarjeta de invitación de cumpleaños","Escribir notas de aviso","Describir una secuencia de viñetas","Redactar normas de convivencia","Escribir una anécdota divertida","Describir un paisaje con adjetivos","Instrucciones para cuidar una planta","Escribir y alargar oraciones","Elaborar un menú semanal"]'>
+        <button class="block-card" data-block="esc" data-title="Expresión Escrita" data-icon="✍️" data-course-name="2.º de Primaria" data-path="./2primaria/escritura/" data-activities='["Escribir el final de un cuento","Tarjeta de invitación de cumpleaños","Escribir notas de aviso","Describir una secuencia de viñetas","Redactar normas de convivencia","Escribir una anécdota divertida","Describir un paisaje con adjetivos","Instrucciones para cuidar una planta","Escribir y alargar oraciones","Elaborar un menú semanal"]'>
           <div>
             <div class="block-header theme-esc"><span class="block-icon">✍️</span><span class="block-name">Escritura</span></div>
             <h3 class="block-title">Composición y Notas</h3>
-            <p class="block-items">Finales de cuentos, invitaciones, normas, describir paisajes y escribir anécdotas.</p>
+            <p class="block-items">Finales de cuentos, invitaciones, normas, describir paisajes y escribir anécdotas[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="gram" 
-          data-title="Gramática" data-icon="🏛️" data-course-name="2.º de Primaria" data-path="./2primaria/gramatica/"
-          data-activities='["Identificar el sustantivo","Género: Masculino y femenino","Número: Singular y plural","El artículo determinado e indeterminado","Adjetivos que describen cualidades","Reconocer acciones: El verbo","La oración: Ordenar palabras","Tipos de oraciones: Afirmativas y negativas","Oraciones interrogativas y exclamativas","Separar palabras en sílabas"]'>
+        <button class="block-card" data-block="gram" data-title="Gramática" data-icon="🏛️" data-course-name="2.º de Primaria" data-path="./2primaria/gramatica/" data-activities='["Identificar el sustantivo","Género: Masculino y femenino","Número: Singular y plural","El artículo determinado e indeterminado","Adjetivos que describen cualidades","Reconocer acciones: El verbo","La oración: Ordenar palabras","Tipos de oraciones: Afirmativas y negativas","Oraciones interrogativas y exclamativas","Separar palabras en sílabas"]'>
           <div>
             <div class="block-header theme-gram"><span class="block-icon">🏛️</span><span class="block-name">Gramática</span></div>
             <h3 class="block-title">Clases de Palabras</h3>
-            <p class="block-items">El sustantivo, artículo, adjetivo, verbo, la oración y clases de oraciones.</p>
+            <p class="block-items">El sustantivo, artículo, adjetivo, verbo, la oración y clases de oraciones[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="ort" 
-          data-title="Taller de Ortografía" data-icon="📝" data-course-name="2.º de Primaria" data-path="./2primaria/ortografia/"
-          data-activities='["El uso de la mayúscula en nombres propios","Signos de interrogación (¿?)","Signos de exclamación (¡!)","La coma en las enumeraciones","Sonido J: Grafías J y G","La diéresis en GÜE y GÜI","Palabras terminadas en -Y","Ortografía visual: B y V","Práctica de C/QU y Z/C","Dictado interactivo autoevaluado"]'>
+        <button class="block-card" data-block="ort" data-title="Taller de Ortografía" data-icon="📝" data-course-name="2.º de Primaria" data-path="./2primaria/ortografia/" data-activities='["El uso de la mayúscula en nombres propios","Signos de interrogación (¿?)","Signos de exclamación (¡!)","La coma en las enumeraciones","Sonido J: Grafías J y G","La diéresis en GÜE y GÜI","Palabras terminadas en -Y","Ortografía visual: B y V","Práctica de C/QU y Z/C","Dictado interactivo autoevaluado"]'>
           <div>
             <div class="block-header theme-ort"><span class="block-icon">📝</span><span class="block-name">Ortografía</span></div>
             <h3 class="block-title">Reglas y Signos</h3>
-            <p class="block-items">Mayúsculas, signos ¿? ¡!, coma en enumeraciones, la diéresis, sonido J y terminación -y.</p>
+            <p class="block-items">Mayúsculas, signos ¿? ¡!, coma en enumeraciones, la diéresis, sonido J y terminación -y[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="voc" 
-          data-title="Vocabulario" data-icon="🔠" data-course-name="2.º de Primaria" data-path="./2primaria/vocabulario/"
-          data-activities='["Palabras sinónimas","Palabras antónimas","Diminutivos con -ito / -ita","Aumentativos con -ón / -azo","Palabras colectivas (rebaño, enjambre)","Palabras polisémicas","Vocabulario temático: El huerto","Vocabulario temático: La salud","Vocabulario temático: La naturaleza","Reto de descifrar mensajes secretos"]'>
+        <button class="block-card" data-block="voc" data-title="Vocabulario" data-icon="🔠" data-course-name="2.º de Primaria" data-path="./2primaria/vocabulario/" data-activities='["Palabras sinónimas","Palabras antónimas","Diminutivos con -ito / -ita","Aumentativos con -ón / -azo","Palabras colectivas (rebaño, enjambre)","Palabras polisémicas","Vocabulario temático: El huerto","Vocabulario temático: La salud","Vocabulario temático: La naturaleza","Reto de descifrar mensajes secretos"]'>
           <div>
             <div class="block-header theme-voc"><span class="block-icon">🔠</span><span class="block-name">Vocabulario</span></div>
             <h3 class="block-title">Semántica y Juegos</h3>
-            <p class="block-items">Sinónimos, antónimos, diminutivos, aumentativos, palabras colectivas y polisémicas.</p>
+            <p class="block-items">Sinónimos, antónimos, diminutivos, aumentativos, palabras colectivas y polisémicas[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
-        <button class="block-card" data-block="sit" 
-          data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="2.º de Primaria" data-path="./2primaria/situaciones/"
-          data-activities='["Mural decorativo para el aula","Podcast: Consejos para cuidar la salud","Cartel con tips para ahorrar agua","Organizar una sesión de cuentacuentos","Instrucciones para cuidar el huerto escolar","Folleto turístico de nuestra localidad","Campaña para cuidar los libros","Exposición oral sobre los animales","Diseño del logo de nuestro equipo","Árbol de los compromisos de clase"]'>
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="2.º de Primaria" data-path="./2primaria/situaciones/" data-activities='["Mural decorativo para el aula","Podcast: Consejos para cuidar la salud","Cartel con tips para ahorrar agua","Organizar una sesión de cuentacuentos","Instrucciones para cuidar el huerto escolar","Folleto turístico de nuestra localidad","Campaña para cuidar los libros","Exposición oral sobre los animales","Diseño del logo de nuestro equipo","Árbol de los compromisos de clase"]'>
           <div>
             <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
             <h3 class="block-title">Proyectos de Aula 2.º</h3>
-            <p class="block-items">Mural del aula, audio saludable, folleto turístico e instrucciones para el huerto.</p>
+            <p class="block-items">Mural del aula, audio saludable, folleto turístico e instrucciones para el huerto[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 3.º ==================== -->
+    <section class="course-section" data-course="3">
+      <div class="course-header">
+        <h2 class="course-title">3.º de Primaria</h2>
+        <span class="cycle-badge">Segundo Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="3.º de Primaria" data-path="./3primaria/comunicacion-oral/" data-activities='["Explicar una receta en público","Hablar sobre un animal y sus características","Técnicas para convencer a los demás","Contar una noticia de actualidad escolar","Describir un paisaje con detalle","Presentar un deporte y sus reglas","Describir a una persona (Rasgos físicos y de carácter)","Hablar sobre un lugar del mundo","Expresión de emociones en asamblea","Escucha activa y preguntas en clase"]'>
+          <div>
+            <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
+            <h3 class="block-title">Exposiciones y Debates</h3>
+            <p class="block-items">Convencer a alguien, contar noticias, describir paisajes y hablar sobre lugares del mundo[cite: 2].</p>
           </div>
           <div class="block-link"><span>Ver actividades</span><span>→</span></div>
         </button>
 
+        <button class="block-card" data-block="lec" data-title="Comprensión Lectora" data-icon="📚" data-course-name="3.º de Primaria" data-path="./3primaria/comprension-lectora/" data-activities='["Comprensión de cuentos populares","Lectura y entonación de poemas","Artículos informativos de ciencias","Noticias periodísticas para niños","Lectura de escenas de teatro","Carteles de campañas sociales","Lectura de viñetas de cómics","Guías de instrucciones técnicas","Identificar la idea principal de un texto","Inferencia de información implícita"]'>
+          <div>
+            <div class="block-header theme-lec"><span class="block-icon">📚</span><span class="block-name">Lectura</span></div>
+            <h3 class="block-title">Tipologías Textuales</h3>
+            <p class="block-items">Textos informativos, cómics, carteles publicitarios, obras teatrales y poemas[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="esc" data-title="Expresión Escrita" data-icon="✍️" data-course-name="3.º de Primaria" data-path="./3primaria/escritura/" data-activities='["Redactar un correo electrónico formal","Escribir una receta con pasos e ingredientes","Redacción de una biografía sencilla","Escribir una noticia escolar completa","Cuentos con diálogos intercalados","Contar una experiencia inolvidable","Describir una localidad o pueblo","Elaborar un cartel promocional","Explicar un itinerario o recorrido","Hacer el resumen de un texto leído"]'>
+          <div>
+            <div class="block-header theme-esc"><span class="block-icon">✍️</span><span class="block-name">Escritura</span></div>
+            <h3 class="block-title">Producción de Textos</h3>
+            <p class="block-items">Correos electrónicos, recetas, biografías, noticias, resúmenes y recorridos[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="gram" data-title="Gramática" data-icon="🏛️" data-course-name="3.º de Primaria" data-path="./3primaria/gramatica/" data-activities='["Sonidos y letras del abecedario","Estructura de la sílaba: Tónica y átona","El sustantivo: Clases, género y número","El artículo determinado e indeterminado","Concordancia entre sustantivo y adjetivo","Los pronombres personales de sujeto","El verbo: Presente, pasado y futuro","Número y persona en el verbo","La oración: Sujeto y predicado","Clasificación de enunciados"]'>
+          <div>
+            <div class="block-header theme-gram"><span class="block-icon">🏛️</span><span class="block-name">Gramática</span></div>
+            <h3 class="block-title">Estructura de la Lengua</h3>
+            <p class="block-items">Género y número en sustantivos, el adjetivo, pronombres personales y el verbo[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="ort" data-title="Taller de Ortografía" data-icon="📝" data-course-name="3.º de Primaria" data-path="./3primaria/ortografia/" data-activities='["Sonidos K, Z y G suave","Sonidos J y R fuerte","Diferenciar ha y a","Diferenciar hay y ahí","Uso de la H en hacer, hablar y haber","Palabras que empiezan por hie- y hue-","Adjetivos terminados en -ivo e -iva","El punto y la mayúscula","Uso de la coma en listas y vocativos","Uso de los dos puntos antes de enumerar"]'>
+          <div>
+            <div class="block-header theme-ort"><span class="block-icon">📝</span><span class="block-name">Ortografía</span></div>
+            <h3 class="block-title">Reglas de Puntuación y Uso</h3>
+            <p class="block-items">Sonidos K, Z, G suave, J y R; ha/a, hay/ahí, hie-/hue-, punto, coma y dos puntos[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="voc" data-title="Vocabulario" data-icon="🔠" data-course-name="3.º de Primaria" data-path="./3primaria/vocabulario/" data-activities='["Identificación de sinónimos y antónimos","Palabras colectivas y sus individuales","Formación de palabras derivadas","Reconocer significados en palabras polisémicas","Creación de palabras compuestas","Uso de aumentativos y diminutivos","Los gentilicios de pueblos y ciudades","Familia léxica y raíz común","Uso del diccionario: Orden alfabético","Buscar palabras guía en el diccionario"]'>
+          <div>
+            <div class="block-header theme-voc"><span class="block-icon">🔠</span><span class="block-name">Vocabulario</span></div>
+            <h3 class="block-title">Morfología Léxica</h3>
+            <p class="block-items">Palabras compuestas, derivadas, gentilicios, familias de palabras y sinónimos/antónimos[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="3.º de Primaria" data-path="./3primaria/situaciones/" data-activities='["Recetas para aprovechar la comida","Cartel publicitario de una protectora de animales","Debate en el aula sobre juegos e igualdad","Simulación de una asamblea vecinal","Escribir el diario de un viaje imaginario","Grabar un anuncio sobre las olimpiadas escolares","Guía turística de nuestro municipio","Diseñar un juego de mesa de preguntas de lengua","Campaña escolar contra el acoso","Periódico mural con entrevistas del centro"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 3.º</h3>
+            <p class="block-items">Asamblea vecinal, diario de viaje, debate de igualdad y anuncio de olimpiadas escolares[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 4.º ==================== -->
+    <section class="course-section" data-course="4">
+      <div class="course-header">
+        <h2 class="course-title">4.º de Primaria</h2>
+        <span class="cycle-badge">Segundo Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="4.º de Primaria" data-path="./4primaria/comunicacion-oral/" data-activities='["Exponer hábitos y gustos alimentarios","Narrar un suceso real o imaginario","Describir el aula y sus rincones","Contar una experiencia con orden cronológico","Recomendar un libro favorito justificándolo","Pedir información formal por teléfono o ventanilla","Explicar el proceso de reciclaje de materiales","Hacer el pregón de las fiestas patronales","Opinar y argumentar en una mesa redonda","Debatir respetando los turnos de palabra"]'>
+          <div>
+            <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
+            <h3 class="block-title">Discurso y Pregones</h3>
+            <p class="block-items">Opinar y debatir, recomendar un libro, pregón de fiestas y pedir información formal[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="lec" data-title="Comprensión Lectora" data-icon="📚" data-course-name="4.º de Primaria" data-path="./4primaria/comprension-lectora/" data-activities='["Lectura comprensiva de leyendas tradicionales","Análisis de textos argumentativos","Navegación y lectura en páginas web escolares","Lectura de artículos de divulgación en revistas","Comprensión de folletos e instrucciones de uso","Análisis de acotaciones en obras de teatro","Poemas: Métrica y figuras sencillas","Lectura crítica de carteles publicitarios","Estructura de la noticia: Titular, entradilla y cuerpo","Secuencia narrativa en cómics"]'>
+          <div>
+            <div class="block-header theme-lec"><span class="block-icon">📚</span><span class="block-name">Lectura</span></div>
+            <h3 class="block-title">Textos Digitales y Leyendas</h3>
+            <p class="block-items">Páginas web, textos argumentativos, leyendas populares, revistas y críticas literarias[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="esc" data-title="Expresión Escrita" data-icon="✍️" data-course-name="4.º de Primaria" data-path="./4primaria/escritura/" data-activities='["Redactar una reseña crítica de un libro","Escribir una carta al director de un periódico","Redacción de normas para un espacio común","Escribir textos expositivos con subtítulos","Hacer una entrevista estructurada","Redactar una argumentación a favor o en contra","Crear el programa de actos de una festividad","Escribir una solicitud o petición formal","Describir una escena con recursos sensoriales","Elaborar un diario personal de una semana"]'>
+          <div>
+            <div class="block-header theme-esc"><span class="block-icon">✍️</span><span class="block-name">Escritura</span></div>
+            <h3 class="block-title">Textos de Opinión y Prensa</h3>
+            <p class="block-items">Reseñas de libros, cartas al director, entrevistas, diarios y textos argumentativos[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="gram" data-title="Gramática" data-icon="🏛️" data-course-name="4.º de Primaria" data-path="./4primaria/gramatica/" data-activities='["La comunicación y las lenguas de España","Determinantes demostrativos (Cercanía, distancia media, lejanía)","Determinantes posesivos","Determinantes numerales (Cardinales y ordinales)","Determinantes indefinidos","Pronombres personales tónicos y átonos","El verbo: Raíz y desinencia","El verbo: Persona, número y tiempo","El adverbio (Lugar, tiempo, modo, cantidad)","La oración: Identificar sujeto y predicado"]'>
+          <div>
+            <div class="block-header theme-gram"><span class="block-icon">🏛️</span><span class="block-name">Gramática</span></div>
+            <h3 class="block-title">Determinantes y Sintaxis</h3>
+            <p class="block-items">Demostrativos, posesivos, numerales, indefinidos, el adverbio, sujeto y predicado[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="ort" data-title="Taller de Ortografía" data-icon="📝" data-course-name="4.º de Primaria" data-path="./4primaria/ortografia/" data-activities='["Palabras agudas: Regla de acentuación","Palabras llanas: Regla de acentuación","Palabras esdrújulas: Regla de acentuación","Diferenciar hubo, había y habrá","Diferenciar allá, haya y halla","Diferenciar echo y hecho","Verbos terminados en -bir (Excepciones: hervir, servir, vivir)","Verbos terminados en -ger y -gir","Palabras terminadas en -aje y -eje","La H en los tiempos compuestos del verbo haber"]'>
+          <div>
+            <div class="block-header theme-ort"><span class="block-icon">📝</span><span class="block-name">Ortografía</span></div>
+            <h3 class="block-title">Acentuación y Verbos</h3>
+            <p class="block-items">Agudas, llanas y esdrújulas; hubo/había, allá/haya/halla, terminaciones -bir, -ger, -gir, -aje[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="voc" data-title="Vocabulario" data-icon="🔠" data-course-name="4.º de Primaria" data-path="./4primaria/vocabulario/" data-activities='["Palabras simples y compuestas","Palabras primitivas y derivadas","Palabras homófonas en contexto","Prefijos de negación (in-, des-)","Prefijos de lugar y tiempo (sub-, pre-, re-)","Concepto de campo semántico","Concepto de campo léxico","Diferenciar campo semántico y familia léxica","Frases hechas de uso coloquial","Acepciones múltiples en el diccionario"]'>
+          <div>
+            <div class="block-header theme-voc"><span class="block-icon">🔠</span><span class="block-name">Vocabulario</span></div>
+            <h3 class="block-title">Campos Semánticos y Prefijos</h3>
+            <p class="block-items">Palabras primitivas y derivadas, homófonas, prefijos y clases de campo semántico/léxico[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="4.º de Primaria" data-path="./4primaria/situaciones/" data-activities='["Campaña publicitaria sobre la dieta mediterránea","Elaborar un cómic ilustrado sobre un viaje","Entrevista a un profesional del colegio o familia","Booktuber escolar: Grabar recomendación en vídeo","Folleto informativo para promover las 3R","Diseño y maquetación del programa fin de curso","Guía de buenas prácticas digitales","Creación de un herbario con fichas técnicas","Representación de un radioteatro","Decálogo de ahorro energético en el colegio"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 4.º</h3>
+            <p class="block-items">Anuncio de dieta mediterránea, cómic de viaje, folleto de las 3R y programa de fiestas[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 5.º ==================== -->
+    <section class="course-section" data-course="5">
+      <div class="course-header">
+        <h2 class="course-title">5.º de Primaria</h2>
+        <span class="cycle-badge">Tercer Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="5.º de Primaria" data-path="./5primaria/comunicacion-oral/" data-activities='["Hablar sobre la profesión de un familiar","Contar un relato sobre el universo","Describir minuciosamente un animal marino","Presentar una noticia de televisión con rigor","Exponer un tema académico con soporte visual","Narrar las etapas de un viaje de estudios","Describir el interior de un monumento o sala","Semblanza oral de un personaje histórico","Técnicas de modulación de voz y contacto visual","Debates reglados con moderador"]'>
+          <div>
+            <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
+            <h3 class="block-title">Exposición Formal</h3>
+            <p class="block-items">Exponer un tema preparado, relatar relatos del universo, describir interiores y noticias[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="lec" data-title="Literatura" data-icon="🎭" data-course-name="5.º de Primaria" data-path="./5primaria/literatura/" data-activities='["La literatura y el lenguaje poético","Métrica: Medir versos y sinalefas","Tipos de rima: Asonante y consonante","Identificar recursos literarios (Metáfora, personificación, comparación)","Lectura de relatos mitológicos universales","Análisis de cuentos de la literatura infantil y juvenil","Estructura del texto teatral: Acotaciones y diálogos","Lectura e interpretación de leyendas urbanas","Ficha técnica y crítica de una novela juvenil","Participación en tertulias literarias dialógicas"]'>
+          <div>
+            <div class="block-header theme-lec"><span class="block-icon">🎭</span><span class="block-name">Literatura</span></div>
+            <h3 class="block-title">Competencia Literaria</h3>
+            <p class="block-items">La rima, medida de versos, recursos literarios, leyendas mitológicas y literatura juvenil[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="esc" data-title="Expresión Escrita" data-icon="✍️" data-course-name="5.º de Primaria" data-path="./5primaria/escritura/" data-activities='["Escribir una biografía cronológica documentada","Redactar una hoja de reclamación formal","Carta de presentación para una candidatura","Escribir un texto expositivo con citas","Redactar una solicitud administrativa al ayuntamiento","Elaborar un folleto turístico tríptico","Crear una leyenda con elementos fantásticos","Guión de cómic con bocadillos y cartelas","Escribir un decálogo de normas escolares","Redacción de crónicas de eventos del centro"]'>
+          <div>
+            <div class="block-header theme-esc"><span class="block-icon">✍️</span><span class="block-name">Escritura</span></div>
+            <h3 class="block-title">Documentos y Reclamaciones</h3>
+            <p class="block-items">Reclamaciones formales, solicitudes, cartas de presentación, relatos mitológicos e informes[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="gram" data-title="Gramática" data-icon="🏛️" data-course-name="5.º de Primaria" data-path="./5primaria/gramatica/" data-activities='["El grupo nominal: Núcleo, determinante y adyacente","Grados del adjetivo (Positivo, comparativo, superlativo)","Los pronombres y sus tipos","Formas personales y no personales del verbo","Tiempos simples y compuestos de la conjugación","Clasificación de adverbios según su significado","Enlaces: Las preposiciones","Enlaces: Las conjunciones coordinantes","Enunciados: Frases y oraciones","La concordancia en la oración simple"]'>
+          <div>
+            <div class="block-header theme-gram"><span class="block-icon">🏛️</span><span class="block-name">Gramática</span></div>
+            <h3 class="block-title">Enlaces y Tipos de Enunciados</h3>
+            <p class="block-items">Enlaces (preposiciones y conjunciones), adverbios, tiempos verbales y la oración[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="ort" data-title="Taller de Ortografía" data-icon="📝" data-course-name="5.º de Primaria" data-path="./5primaria/ortografia/" data-activities='["Reglas generales de acentuación","La tilde en diptongos y triptongos","La tilde en hiatos","Uso de la mayúscula en instituciones y títulos","Adjetivos con V terminados en -ivo, -ave, -eve","Palabras con H intercalada","Palabras con doble C (-cc-)","Uso de B y G ante consonante","Uso del punto y coma (;)","Uso de los puntos suspensivos (...)"]'>
+          <div>
+            <div class="block-header theme-ort"><span class="block-icon">📝</span><span class="block-name">Ortografía</span></div>
+            <h3 class="block-title">Acentuación Compleja y Signos</h3>
+            <p class="block-items">Tilde en diptongos, triptongos e hiatos; punto y coma, puntos suspensivos y palabras con cc[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="voc" data-title="Vocabulario" data-icon="🔠" data-course-name="5.º de Primaria" data-path="./5primaria/vocabulario/" data-activities='["Diferenciar palabras homónimas y parónimas","Mecanismos de formación de palabras","Sufijos aumentativos, diminutivos y despectivos","Sufijos intensivos (-ísimo, super-)","Sufijos para crear profesiones y lugares","Formación de gentilicios complejos","Identificación y significado de siglas y acrónimos","Neologismos y préstamos lingüísticos","Tabúes y palabras sinónimas de respeto","Etimología básica con prefijos griegos y latinos"]'>
+          <div>
+            <div class="block-header theme-voc"><span class="block-icon">🔠</span><span class="block-name">Vocabulario</span></div>
+            <h3 class="block-title">Sufijos y Homonimia</h3>
+            <p class="block-items">Palabras homónimas y parónimas, sufijos intensivos/aumentativos, siglas y gentilicios[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="5.º de Primaria" data-path="./5primaria/situaciones/" data-activities='["Escribir una antología biográfica de mujeres científicas","Recital poético de poemas dedicados al mar","Redactar el periódico escolar del trimestre","Carta formal al ayuntamiento sobre zonas verdes","Folleto promocional sobre el patrimonio de la ciudad","Cómic narrativo sobre un héroe de la Antigüedad","Diseño de un atlas lingüístico del aula","Campaña contra el plástico en los océanos","Guía de recomendaciones de lectura para 1.º ciclo","Organización de un club de debate escolar"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 5.º</h3>
+            <p class="block-items">Libro de biografías de mujeres científicas, poemas del mar y cómic de héroes clásicos[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== CURSO 6.º ==================== -->
+    <section class="course-section" data-course="6">
+      <div class="course-header">
+        <h2 class="course-title">6.º de Primaria</h2>
+        <span class="cycle-badge">Tercer Ciclo</span>
+      </div>
+      <div class="cards-grid">
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="6.º de Primaria" data-path="./6primaria/comunicacion-oral/" data-activities='["Presentar un decálogo de normas de convivencia","Dar un parte meteorológico en formato informativo","Comentar y hacer la crítica oral de un cuadro o escultura","Discurso de oratoria persuasiva para convencer a la audiencia","Coloquio organizado sobre el cambio climático","Exponer un trabajo de investigación con presentación digital","Transmitir una anécdota personal con recursos expresivos","Análisis crítico de un anuncio publicitario audiovisual","Entrevista periodística grabada a un experto","Técnicas de debate parlamentario escolar"]'>
+          <div>
+            <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
+            <h3 class="block-title">Oratoria y Medios</h3>
+            <p class="block-items">Dar partes meteorológicos, comentar cuadros, convencer con argumentos y coloquios[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="lec" data-title="Literatura" data-icon="🎭" data-course-name="6.º de Primaria" data-path="./6primaria/literatura/" data-activities='["Los grandes géneros literarios: Lírica, narrativa y drama","La lírica tradicional y romances populares","La estructura de la novela: Capítulos, narrador y personajes","Clases de estrofas (Pareado, terceto, cuarteto, redondilla)","Taller de greguerías y juegos de palabras","Creación de haikus japoneses","Diseño de caligramas visuales","Análisis de recursos estilísticos en la poesía contemporánea","Clubes de lectura en red y reseñas digitales","Lectura dramatizada de piezas teatrales"]'>
+          <div>
+            <div class="block-header theme-lec"><span class="block-icon">🎭</span><span class="block-name">Literatura</span></div>
+            <h3 class="block-title">Géneros y Creación</h3>
+            <p class="block-items">La novela, lírica tradicional, greguerías, haikus, caligramas, clubes de lectura y teatro[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="esc" data-title="Expresión Escrita" data-icon="✍️" data-course-name="6.º de Primaria" data-path="./6primaria/escritura/" data-activities='["Redactar un artículo de opinión firmado","Escribir un reportaje de investigación escolar","Elaborar un autorretrato literario con adjetivación","Guión técnico y literario para un cortometraje","Redacción de un informe formal con conclusiones","Escritura de una escena teatral con acotaciones completas","Elaborar las bases y reglas de un juego complejo","Redactar un folleto de difusión de un acto público","Escribir un artículo de divulgación científica","Comentario crítico de un texto periodístico"]'>
+          <div>
+            <div class="block-header theme-esc"><span class="block-icon">✍️</span><span class="block-name">Escritura</span></div>
+            <h3 class="block-title">Prensa y Guiones</h3>
+            <p class="block-items">Artículos de opinión, reportajes, guiones de cortometrajes, autorretratos e informes[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="gram" data-title="Gramática" data-icon="🏛️" data-course-name="6.º de Primaria" data-path="./6primaria/gramatica/" data-activities='["Estructura completa del sintagma nominal","El sujeto: Expreso, elíptico o tácito","El predicado nominal: El verbo copulativo y el atributo","El complemento directo (CD) y prueba de sustitución","El complemento indirecto (CI) y pronombres le/les","Los complementos circunstanciales (CC de tiempo, lugar, modo, etc.)","Voz activa y voz pasiva en las oraciones","Interjecciones y frases exclamativas","Las lenguas y dialectos de España","El español en el mundo y variedades hispanoamericanas"]'>
+          <div>
+            <div class="block-header theme-gram"><span class="block-icon">🏛️</span><span class="block-name">Gramática</span></div>
+            <h3 class="block-title">Sintaxis y Variedad Lingüística</h3>
+            <p class="block-items">Sintagma nominal, atributo, complementos (CD, CI, CC), voz pasiva y lenguas de España[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="ort" data-title="Taller de Ortografía" data-icon="📝" data-course-name="6.º de Primaria" data-path="./6primaria/ortografia/" data-activities='["Tilde diacrítica en monosílabos (él/el, tú/tu, mí/mi, té/te)","Acentuación de palabras interrogativas y exclamativas (qué, cuál, cómo)","Grafías dudosas: Uso de B y V","Grafías dudosas: Uso de J y G","Grafías dudosas: Uso de LL e Y","Grafías dudosas: Uso de H y palabras homófonas","Palabras con X y con S","Uso de las comillas en citas textuales","El guion y la raya en los diálogos","Normas ortográficas de abreviaturas y símbolos"]'>
+          <div>
+            <div class="block-header theme-ort"><span class="block-icon">📝</span><span class="block-name">Ortografía</span></div>
+            <h3 class="block-title">Tilde Diacrítica y Grafías</h3>
+            <p class="block-items">Acentuación de interrogativos/exclamativos, uso de b/v, j/g, ll/y, h, x y casos dudosos[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="voc" data-title="Vocabulario" data-icon="🔠" data-course-name="6.º de Primaria" data-path="./6primaria/vocabulario/" data-activities='["Palabras tabú y eufemismos en la sociedad","Extranjerismos, préstamos y barbarismos","Precisión léxica: Evitar palabras comodín (cosa, hacer)","Significado denotativo y significado connotativo","Análisis de frases hechas y refranes populares","Sufijación para derivar sustantivos abstractos","Sufijación para derivar adjetivos y verbos","Abreviaturas, siglas y símbolos convencionales","Polisemia y contexto en textos especializados","Relaciones semánticas complejas (Hiperónimos e hipónimos)"]'>
+          <div>
+            <div class="block-header theme-voc"><span class="block-icon">🔠</span><span class="block-name">Vocabulario</span></div>
+            <h3 class="block-title">Semántica Avanzada</h3>
+            <p class="block-items">Palabras tabú y eufemismos, extranjerismos, precisión léxica, denotación y connotación[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
+
+        <button class="block-card" data-block="sit" data-title="Situaciones de Aprendizaje" data-icon="🌱" data-course-name="6.º de Primaria" data-path="./6primaria/situaciones/" data-activities='["Decálogo ilustrado de convivencia escolar","Taller de alfabetización digital para personas mayores","Grabar un programa de radio escolar sobre hábitos saludables","Preparar un coloquio sobre la emergencia climática","Campaña escolar sobre la diversidad lingüística de España","Redacción y locución de la audioguía de un museo","Organización de los actos de graduación de 6.º","Creación de una revista digital trimestral","Cortometraje escolar: Del guion al rodaje","Simulación de un juicio de debate sobre redes sociales"]'>
+          <div>
+            <div class="block-header theme-sit"><span class="block-icon">🌱</span><span class="block-name">Sit. Aprendizaje</span></div>
+            <h3 class="block-title">Proyectos de Aula 6.º</h3>
+            <p class="block-items">Programa de radio escolar, taller digital para mayores, campaña lingüística y audioguía[cite: 2].</p>
+          </div>
+          <div class="block-link"><span>Ver actividades</span><span>→</span></div>
+        </button>
       </div>
     </section>
 
@@ -633,18 +884,18 @@
       </div>
       <div class="modal-body">
         <ul class="activities-list" id="activitiesList">
-          <!-- Se genera dinámicamente con JavaScript -->
+          <!-- Generado dinámicamente con JavaScript -->
         </ul>
       </div>
     </div>
   </div>
 
   <footer>
-    <p>Programación de Lengua Castellana • Primaria • Recursos Educativos Abiertos en GitHub Pages</p>
+    <p>Programación de Lengua Castellana • Primaria • Recursos Educativos Abiertos en GitHub Pages[cite: 2]</p>
   </footer>
 
   <script>
-    // 1. FILTRADO Y BÚSQUEDA
+    // 1. FILTRADO Y BÚSQUEDA EN TIEMPO REAL
     const searchInput = document.getElementById('searchInput');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const cards = document.querySelectorAll('.block-card');
@@ -718,7 +969,6 @@
         activities.forEach((act, index) => {
           const li = document.createElement('li');
           const actNumber = index + 1;
-          // Genera el enlace relativo tipo ./1primaria/juegos-lengua/actividad-1/
           const actHref = `${basePath}actividad-${actNumber}/`;
 
           li.innerHTML = `
@@ -752,7 +1002,7 @@
       }
     });
 
-    // 3. TEMA CLARO / OSCURO
+    // 3. TEMA CLARO / OSCURO SINCRONIZADO
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
