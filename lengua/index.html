@@ -102,10 +102,11 @@
       margin-top: 0.25rem;
     }
 
+    /* Controles y Filtros Multi-nivel */
     .controls {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
     .search-input {
@@ -125,14 +126,24 @@
       border-color: var(--primary);
     }
 
-    .filter-bar {
+    .filter-row {
       display: flex;
+      align-items: center;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
 
+    .filter-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      min-width: 65px;
+    }
+
     .filter-btn {
-      padding: 0.45rem 0.85rem;
+      padding: 0.4rem 0.8rem;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--surface);
@@ -427,15 +438,30 @@
 
     <div class="controls">
       <input type="search" id="searchInput" class="search-input" placeholder="Buscar contenidos (ej. determinantes, agudas, cómic, sinónimos, teatro...)">
-      <div class="filter-bar">
-        <button class="filter-btn active" data-filter="all">Todos los bloques</button>
-        <button class="filter-btn" data-filter="oral">Oral</button>
-        <button class="filter-btn" data-filter="lec">Lectura y Literatura</button>
-        <button class="filter-btn" data-filter="esc">Escritura</button>
-        <button class="filter-btn" data-filter="gram">Gramática</button>
-        <button class="filter-btn" data-filter="ort">Ortografía</button>
-        <button class="filter-btn" data-filter="voc">Vocabulario y Juegos</button>
-        <button class="filter-btn" data-filter="sit">Sit. de Aprendizaje</button>
+      
+      <!-- Fila 1: Filtro por Cursos -->
+      <div class="filter-row">
+        <span class="filter-label">Curso:</span>
+        <button class="filter-btn course-btn active" data-course-filter="all">Todos</button>
+        <button class="filter-btn course-btn" data-course-filter="1">1.º Primaria</button>
+        <button class="filter-btn course-btn" data-course-filter="2">2.º Primaria</button>
+        <button class="filter-btn course-btn" data-course-filter="3">3.º Primaria</button>
+        <button class="filter-btn course-btn" data-course-filter="4">4.º Primaria</button>
+        <button class="filter-btn course-btn" data-course-filter="5">5.º Primaria</button>
+        <button class="filter-btn course-btn" data-course-filter="6">6.º Primaria</button>
+      </div>
+
+      <!-- Fila 2: Filtro por Bloques Temáticos -->
+      <div class="filter-row">
+        <span class="filter-label">Bloque:</span>
+        <button class="filter-btn block-btn active" data-block-filter="all">Todos los bloques</button>
+        <button class="filter-btn block-btn" data-block-filter="oral">Oral</button>
+        <button class="filter-btn block-btn" data-block-filter="lec">Lectura y Lit.</button>
+        <button class="filter-btn block-btn" data-block-filter="esc">Escritura</button>
+        <button class="filter-btn block-btn" data-block-filter="gram">Gramática</button>
+        <button class="filter-btn block-btn" data-block-filter="ort">Ortografía</button>
+        <button class="filter-btn block-btn" data-block-filter="voc">Vocabulario</button>
+        <button class="filter-btn block-btn" data-block-filter="sit">Sit. Aprendizaje</button>
       </div>
     </div>
   </header>
@@ -584,7 +610,7 @@
         <span class="cycle-badge">Segundo Ciclo</span>
       </div>
       <div class="cards-grid">
-        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="3.º de Primaria" data-path="./3primaria/comunicacion-oral/" data-activities='["Explicar una receta en público","Hablar sobre un animal y sus características","Técnicas para convencer a los demás","Contar una noticia de actualidad escolar","Describir un paisaje con detalle","Presentar un deporte y sus reglas","Describir a una persona (Rasgos físicos y de carácter)","Hablar sobre un lugar del mundo","Expresión de emociones en asamblea","Escucha activa y preguntas en clase"]'>
+        <button class="block-card" data-block="oral" data-title="Comunicación Oral" data-icon="🗣️" data-course-name="3.º de Primaria" data-path="./3primaria/comunicacion-oral/" data-activities='["Explicar una receta en público","Hablar sobre un animal y sus características","Técnicas para convencer a los demás","Contar una noticia de actualidad escolar","Describir un paisaje con detalle","Presentar un deporte y sus reglas","Describir a una persona (Rasgos físicos y carácter)","Hablar sobre un lugar del mundo","Expresión de emociones en asamblea","Escucha activa y preguntas en clase"]'>
           <div>
             <div class="block-header theme-oral"><span class="block-icon">🗣️</span><span class="block-name">Comunicación Oral</span></div>
             <h3 class="block-title">Exposiciones y Debates</h3>
@@ -895,13 +921,15 @@
   </footer>
 
   <script>
-    // 1. FILTRADO Y BÚSQUEDA EN TIEMPO REAL
+    // 1. FILTRADO MULTI-NIVEL (CURSO + BLOQUE + BÚSQUEDA EN VIVO)
     const searchInput = document.getElementById('searchInput');
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const courseButtons = document.querySelectorAll('.course-btn');
+    const blockButtons = document.querySelectorAll('.block-btn');
     const cards = document.querySelectorAll('.block-card');
     const sections = document.querySelectorAll('.course-section');
     const emptySearch = document.getElementById('emptySearch');
 
+    let currentCourseFilter = 'all';
     let currentBlockFilter = 'all';
 
     function runFilter() {
@@ -909,6 +937,9 @@
       let totalVisibleCards = 0;
 
       sections.forEach(section => {
+        const sectionCourse = section.getAttribute('data-course');
+        const matchesCourse = (currentCourseFilter === 'all' || currentCourseFilter === sectionCourse);
+        
         let sectionVisibleCards = 0;
         const sectionCards = section.querySelectorAll('.block-card');
 
@@ -919,7 +950,7 @@
           const matchesBlock = (currentBlockFilter === 'all' || block === currentBlockFilter);
           const matchesQuery = content.includes(query);
 
-          if (matchesBlock && matchesQuery) {
+          if (matchesCourse && matchesBlock && matchesQuery) {
             card.style.display = 'flex';
             sectionVisibleCards++;
             totalVisibleCards++;
@@ -928,17 +959,33 @@
           }
         });
 
-        section.style.display = sectionVisibleCards > 0 ? 'flex' : 'none';
+        // Mostrar u ocultar la sección completa del curso
+        if (matchesCourse && sectionVisibleCards > 0) {
+          section.style.display = 'flex';
+        } else {
+          section.style.display = 'none';
+        }
       });
 
       emptySearch.style.display = totalVisibleCards === 0 ? 'block' : 'none';
     }
 
-    filterButtons.forEach(btn => {
+    // Eventos para Botones de Curso
+    courseButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        filterButtons.forEach(b => b.classList.remove('active'));
+        courseButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentBlockFilter = btn.getAttribute('data-filter');
+        currentCourseFilter = btn.getAttribute('data-course-filter');
+        runFilter();
+      });
+    });
+
+    // Eventos para Botones de Bloque
+    blockButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        blockButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentBlockFilter = btn.getAttribute('data-block-filter');
         runFilter();
       });
     });
@@ -1002,7 +1049,7 @@
       }
     });
 
-    // 3. TEMA CLARO / OSCURO SINCRONIZADO
+    // 3. TEMA CLARO / OSCURO
     const themeToggle = document.getElementById('themeToggle');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
