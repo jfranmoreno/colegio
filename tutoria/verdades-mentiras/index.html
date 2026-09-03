@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff8ec">
+  <title>2 verdades y 1 mentira</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap');
+
+    :root {
+      --ink: #26324a;
+      --muted: #667085;
+      --paper: #fffdf8;
+      --cream: #fff5df;
+      --pink: #f66c9b;
+      --pink-dark: #c93f71;
+      --green: #5bcf9a;
+      --green-dark: #278a61;
+      --yellow: #f6c957;
+      --yellow-dark: #a96d04;
+      --blue: #75c6e8;
+      --violet: #9d86e9;
+      --red: #ef6a6a;
+      --shadow: 0 12px 30px rgba(55, 65, 81, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-height: 100%; background: var(--cream); }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Nunito", ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(246,108,155,.15) 0 80px, transparent 82px),
+        radial-gradient(circle at 94% 88%, rgba(91,207,154,.17) 0 120px, transparent 122px),
+        linear-gradient(160deg, #fffaf0 0%, #f7fbff 55%, #fff5fa 100%);
+      overflow-x: hidden;
+    }
+
+    button, input { font: inherit; }
+    button { touch-action: manipulation; }
+
+    .app {
+      width: min(1440px, 100%);
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: auto;
+      padding: clamp(14px, 2vw, 28px);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: clamp(14px, 2vw, 24px);
+    }
+
+    header {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+
+    .logo {
+      width: 68px;
+      height: 68px;
+      flex: 0 0 68px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      background: linear-gradient(145deg, var(--pink), #ff91b6);
+      box-shadow: 0 7px 0 #c83f71, var(--shadow);
+      color: white;
+      font-size: 38px;
+    }
+
+    h1 { margin: 0; font-size: clamp(28px, 4vw, 54px); line-height: .98; letter-spacing: -.04em; }
+    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: clamp(16px, 1.4vw, 21px); }
+
+    .tools { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .icon-btn {
+      min-width: 64px;
+      min-height: 64px;
+      padding: 8px 14px;
+      border: 2px solid #e7e2d8;
+      border-radius: 20px;
+      background: rgba(255,255,255,.9);
+      color: var(--ink);
+      box-shadow: 0 5px 0 #ded8cc;
+      cursor: pointer;
+      font-size: 28px;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .icon-btn:hover { transform: translateY(-2px); }
+    .icon-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #ded8cc; }
+    .icon-btn:focus-visible, button:focus-visible { outline: 5px solid rgba(117,198,232,.55); outline-offset: 3px; }
+
+    .game-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) clamp(250px, 23vw, 330px);
+      align-items: start;
+      gap: clamp(16px, 2vw, 26px);
+      min-height: 0;
+    }
+
+    .board, .side-card {
+      background: rgba(255,255,255,.92);
+      border: 3px solid rgba(255,255,255,.9);
+      box-shadow: var(--shadow);
+      border-radius: 30px;
+    }
+
+    .board {
+      padding: clamp(18px, 2.5vw, 34px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: clamp(16px, 2vh, 24px);
+    }
+
+    .round-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+    .round-label {
+      display: inline-flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: #e8f7ff;
+      color: #197498;
+      font-size: clamp(17px, 1.5vw, 22px);
+      font-weight: 900;
+    }
+
+    .score { font-size: clamp(18px, 1.8vw, 26px); font-weight: 900; white-space: nowrap; }
+
+    .speaker {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(25px, 3vw, 42px);
+      line-height: 1.1;
+    }
+
+    .speaker span { color: var(--pink-dark); }
+
+    .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.5vw, 20px); }
+
+    .option {
+      position: relative;
+      min-height: clamp(170px, 30vh, 290px);
+      padding: 24px 18px 22px;
+      border: 4px solid transparent;
+      border-radius: 28px;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 18px;
+      box-shadow: 0 8px 0 var(--option-shadow), 0 16px 24px rgba(38,50,74,.08);
+      transition: transform .18s, box-shadow .18s, border-color .18s, filter .18s;
+    }
+
+    .option:nth-child(1) { background: #fff0f5; --option-shadow: #e8a3bb; --accent: var(--pink); }
+    .option:nth-child(2) { background: #edfff6; --option-shadow: #9dd9bd; --accent: var(--green); }
+    .option:nth-child(3) { background: #fff9e4; --option-shadow: #e2c776; --accent: var(--yellow); }
+    .option:hover:not(:disabled) { transform: translateY(-4px); filter: saturate(1.07); }
+    .option:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 2px 0 var(--option-shadow); }
+    .option.selected { border-color: var(--accent); transform: translateY(-5px) scale(1.015); }
+    .option:disabled { cursor: default; opacity: 1; }
+    .option.dimmed { opacity: .48; filter: grayscale(.25); }
+    .option.lie { border-color: var(--red); background: #fff0ef; animation: reveal .6s ease both; }
+    .option.truth { border-color: var(--green); background: #edfff6; }
+
+    .letter {
+      width: clamp(60px, 6vw, 82px);
+      height: clamp(60px, 6vw, 82px);
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      border: 5px solid rgba(255,255,255,.8);
+      box-shadow: 0 5px 0 var(--option-shadow);
+      font-size: clamp(30px, 3vw, 44px);
+      font-weight: 900;
+    }
+
+    .statement {
+      font-size: clamp(20px, 2.05vw, 32px);
+      line-height: 1.22;
+      font-weight: 800;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      display: none;
+      min-height: 44px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: white;
+      font-size: clamp(16px, 1.4vw, 20px);
+      font-weight: 900;
+    }
+
+    .option.lie .badge, .option.truth .badge { display: inline-flex; align-items: center; }
+    .option.lie .badge { background: var(--red); }
+    .option.truth .badge { background: var(--green-dark); }
+
+    .action-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+    .main-btn {
+      min-width: min(100%, 270px);
+      min-height: 66px;
+      padding: 12px 25px;
+      border: 0;
+      border-radius: 21px;
+      background: linear-gradient(145deg, #7460d6, var(--violet));
+      color: white;
+      box-shadow: 0 7px 0 #5946b7;
+      cursor: pointer;
+      font-size: clamp(20px, 1.8vw, 27px);
+      font-weight: 900;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+    }
+
+    .main-btn:disabled { opacity: .42; cursor: not-allowed; }
+    .main-btn:not(:disabled):active { transform: translateY(5px); box-shadow: 0 2px 0 #5946b7; }
+    .main-btn.next { background: linear-gradient(145deg, #36aa77, var(--green)); box-shadow: 0 7px 0 #278a61; }
+
+    .side { display: flex; flex-direction: column; gap: 16px; }
+    .side-card { padding: clamp(18px, 2vw, 24px); }
+    .side-card h2 { margin: 0 0 12px; font-size: clamp(21px, 2vw, 28px); }
+    .side-card p { margin: 0; color: var(--muted); font-size: clamp(17px, 1.4vw, 20px); line-height: 1.45; }
+
+    .progress-track { height: 18px; margin-top: 16px; overflow: hidden; border-radius: 999px; background: #ece9e4; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--blue), var(--violet)); transition: width .45s ease; }
+
+    .small-actions { display: grid; gap: 12px; margin-top: 18px; }
+
+    .secondary-btn {
+      min-height: 60px;
+      padding: 10px 15px;
+      border: 2px solid #ded9ce;
+      border-radius: 18px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 4px 0 #ded9ce;
+      cursor: pointer;
+      font-size: clamp(16px, 1.35vw, 19px);
+      font-weight: 900;
+    }
+
+    .secondary-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #ded9ce; }
+    .file-input { display: none; }
+
+    .message {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: 18px;
+      background: #f7f5f1;
+      color: var(--muted);
+      text-align: center;
+      font-size: clamp(17px, 1.45vw, 21px);
+      font-weight: 900;
+    }
+
+    .message.good { background: #e8fff3; color: #167249; }
+    .message.bad { background: #fff0ef; color: #b43838; }
+
+    [hidden] { display: none !important; }
+
+    .setup-screen {
+      width: min(1050px, 100%);
+      margin: auto;
+      padding: clamp(22px, 4vw, 46px);
+      border-radius: 32px;
+      background: rgba(255,255,255,.94);
+      box-shadow: var(--shadow);
+    }
+    .setup-screen h2 { margin: 0; text-align: center; font-size: clamp(30px, 4vw, 50px); }
+    .setup-lead { margin: 8px 0 26px; text-align: center; color: var(--muted); font-size: clamp(18px, 2vw, 23px); }
+    .setup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .setting-card { padding: 22px; border-radius: 24px; background: #f8f7ff; border: 3px solid #ece8ff; }
+    .setting-card:nth-child(2) { background: #effcf6; border-color: #d8f3e5; }
+    .setting-card:nth-child(3) { background: #fff8e7; border-color: #f5e7b7; }
+    .setting-card h3 { margin: 0 0 14px; font-size: clamp(20px, 2vw, 26px); }
+    .choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .choice {
+      min-height: 62px; border: 3px solid #ded9f8; border-radius: 17px; background: white; color: var(--ink);
+      font-size: clamp(19px, 2vw, 26px); font-weight: 900; cursor: pointer;
+    }
+    .choice.active { color: white; border-color: #6f5bd1; background: var(--violet); box-shadow: 0 5px 0 #5946b7; transform: translateY(-2px); }
+    .setup-actions { margin-top: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+    .status-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 11px 15px;
+      border-radius: 20px; background: #eef8ff; border: 2px solid #d5ecf8;
+    }
+    .status-chip { min-height: 44px; display: inline-flex; align-items: center; padding: 6px 13px; border-radius: 999px; background: white; font-size: clamp(16px,1.3vw,19px); font-weight: 900; }
+    .status-chip.turn { margin-left: auto; background: #fff0f6; color: var(--pink-dark); }
+    .timer { min-width: 104px; justify-content: center; color: #197498; }
+    .timer.warning { color: #b43838; background: #fff0ef; animation: pulse .7s infinite alternate; }
+
+    .score-list { display: grid; gap: 10px; }
+    .team-score { min-height: 64px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-radius: 18px; background: #f6f5f2; border: 3px solid transparent; }
+    .team-score.active { border-color: var(--pink); background: #fff0f6; transform: scale(1.02); }
+    .team-dot { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; color: white; font-weight: 900; }
+    .team-name { flex: 1; font-size: clamp(17px,1.4vw,21px); font-weight: 900; }
+    .team-points { font-size: clamp(22px,2vw,30px); font-weight: 900; }
+
+    @keyframes pulse { to { transform: scale(1.06); } }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 20;
+      max-width: calc(100% - 28px);
+      padding: 14px 22px;
+      border-radius: 16px;
+      background: var(--ink);
+      color: white;
+      box-shadow: var(--shadow);
+      font-size: 18px;
+      font-weight: 800;
+      transform: translate(-50%, 130%);
+      transition: transform .25s ease;
+    }
+
+    .toast.show { transform: translate(-50%, 0); }
+    .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+    .confetti i { position: absolute; top: -30px; width: 14px; height: 24px; border-radius: 5px; animation: fall 1.6s ease-in forwards; }
+
+    dialog {
+      width: min(700px, calc(100% - 28px));
+      border: 0;
+      border-radius: 28px;
+      padding: clamp(22px, 4vw, 38px);
+      color: var(--ink);
+      box-shadow: 0 25px 80px rgba(38,50,74,.28);
+    }
+    dialog::backdrop { background: rgba(38,50,74,.55); backdrop-filter: blur(4px); }
+    dialog h2 { margin: 0 0 12px; font-size: clamp(26px, 4vw, 42px); }
+    dialog p, dialog li { font-size: clamp(17px, 2vw, 21px); line-height: 1.45; }
+    dialog menu { padding: 0; margin: 24px 0 0; display: flex; justify-content: flex-end; }
+
+    @keyframes reveal { 0% { transform: rotate(-1deg) scale(.95); } 55% { transform: rotate(1deg) scale(1.04); } 100% { transform: none; } }
+    @keyframes fall { to { transform: translate(var(--drift), 110vh) rotate(720deg); } }
+
+    @media (max-width: 950px) {
+      .setup-grid { grid-template-columns: 1fr; }
+      .game-shell { grid-template-columns: 1fr; }
+      .side { display: grid; grid-template-columns: 1fr 1fr; }
+      .side-card:last-child { grid-column: 1 / -1; }
+      .option { min-height: 220px; }
+    }
+
+    @media (max-width: 680px) {
+      .app { padding: 12px; }
+      header { align-items: flex-start; }
+      .logo { width: 58px; height: 58px; flex-basis: 58px; font-size: 32px; border-radius: 18px; }
+      .subtitle { display: none; }
+      .tools .icon-btn:not(#soundBtn) { display: none; }
+      .icon-btn { min-width: 58px; min-height: 58px; }
+      .board { border-radius: 24px; }
+      .options { grid-template-columns: 1fr; }
+      .option { min-height: 112px; padding: 14px; flex-direction: row; justify-content: flex-start; text-align: left; border-radius: 22px; }
+      .letter { width: 64px; height: 64px; flex-basis: 64px; }
+      .statement { text-align: left; flex: 1; }
+      .badge { margin-left: auto; }
+      .side { grid-template-columns: 1fr; }
+      .side-card:last-child { grid-column: auto; }
+      .status-chip.turn { width: 100%; margin-left: 0; justify-content: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🕵️</div>
+        <div>
+          <h1 id="gameTitle">2 verdades y 1 mentira</h1>
+          <p class="subtitle">¡Observa, piensa y descubre la frase falsa!</p>
+        </div>
+      </div>
+      <div class="tools">
+        <button class="icon-btn" id="helpBtn" aria-label="Ver instrucciones" title="Instrucciones">❔</button>
+        <button class="icon-btn" id="fullscreenBtn" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+        <button class="icon-btn" id="soundBtn" aria-label="Desactivar sonido" title="Sonido">🔊</button>
+      </div>
+    </header>
+
+    <section class="setup-screen" id="setupScreen" aria-labelledby="setupTitle">
+      <h2 id="setupTitle">⚙️ Prepara la partida</h2>
+      <p class="setup-lead">Elige la configuración y deja que el azar decida los turnos.</p>
+      <div class="setup-grid">
+        <section class="setting-card">
+          <h3>👥 Número de equipos</h3>
+          <div class="choice-grid" id="teamChoices" aria-label="Número de equipos"></div>
+        </section>
+        <section class="setting-card">
+          <h3>⏱️ Tiempo por respuesta</h3>
+          <div class="choice-grid" id="timeChoices" aria-label="Tiempo por respuesta"></div>
+        </section>
+        <section class="setting-card">
+          <h3>🔁 Número de rondas</h3>
+          <div class="choice-grid" id="roundChoices" aria-label="Número de rondas"></div>
+        </section>
+      </div>
+      <div class="setup-actions">
+        <label class="secondary-btn" for="jsonInput" role="button" tabindex="0">📂 Cargar JSON</label>
+        <input class="file-input" type="file" id="jsonInput" accept="application/json,.json">
+        <button class="secondary-btn" id="downloadBtn">⬇️ Descargar JSON de ejemplo</button>
+        <button class="main-btn" id="startBtn">🎲 Empezar partida</button>
+      </div>
+    </section>
+
+    <section class="game-shell" id="gameScreen" aria-label="Zona de juego" hidden>
+      <article class="board">
+        <div class="status-bar" aria-label="Estado de la partida">
+          <span class="status-chip" id="roundLabel">🔁 Ronda 1 de 3</span>
+          <span class="status-chip" id="teamStatus">👥 3 equipos</span>
+          <span class="status-chip timer" id="timer">⏱️ 30 s</span>
+          <span class="status-chip turn" id="turnStatus">🎲 Turno: Equipo 1</span>
+        </div>
+
+        <h2 class="speaker" id="speaker">Estas frases son de <span>Lucía</span></h2>
+
+        <div class="options" id="options" aria-label="Elige la mentira"></div>
+
+        <div class="action-row">
+          <button class="main-btn" id="actionBtn" disabled>Elige A, B o C</button>
+        </div>
+      </article>
+
+      <aside class="side" aria-label="Controles y ayuda">
+        <section class="side-card">
+          <h2>🏆 Marcador</h2>
+          <div class="score-list" id="scoreList" aria-live="polite"></div>
+          <div class="progress-track" aria-label="Progreso de la partida">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </section>
+
+        <section class="side-card">
+          <h2>🎯 Tu misión</h2>
+          <p id="instructions">Lee las tres frases. Dos son verdad y una es mentira. ¿Cuál será?</p>
+          <div class="small-actions">
+            <button class="secondary-btn" id="restartBtn">⚙️ Nueva configuración</button>
+          </div>
+        </section>
+
+        <div class="message" id="message" role="status" aria-live="polite">Toca una tarjeta para votar.</div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="helpDialog">
+    <h2>¿Cómo se juega?</h2>
+    <ol>
+      <li>Configura de 1 a 6 equipos, el tiempo de respuesta y las rondas.</li>
+      <li>En cada ronda, el juego sortea qué equipo participa.</li>
+      <li>Lee las tres frases de la persona protagonista.</li>
+      <li>Toca <strong>A, B o C</strong> para elegir la que crees que es mentira.</li>
+      <li>Pulsa <strong>Comprobar</strong> para descubrir la respuesta.</li>
+    </ol>
+    <p><strong>Consejo docente:</strong> si el tiempo llega a cero, la respuesta se revela y el turno termina sin sumar puntos.</p>
+    <menu><button class="main-btn" id="closeHelp">¡Entendido!</button></menu>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    /* ================================================================
+       CONTENIDO DE EJEMPLO
+       Para crear otra partida, modifica este objeto o descarga el JSON
+       desde el botón de la aplicación y edítalo con cualquier editor.
+       lieIndex usa 0 para A, 1 para B y 2 para C.
+       ================================================================ */
+    const EXAMPLE_DATA = {
+      "title": "2 verdades y 1 mentira",
+      "instructions": "Lee las tres frases. Dos son verdad y una es mentira. ¿Cuál será?",
+      "rounds": [
+        {
+          "speaker": "Lucía",
+          "statements": [
+            "Tengo una tortuga que se llama Pipa.",
+            "He viajado en globo aerostático.",
+            "Mi fruta favorita es la sandía."
+          ],
+          "lieIndex": 1,
+          "explanation": "Lucía nunca ha viajado en globo aerostático."
+        },
+        {
+          "speaker": "Hugo",
+          "statements": [
+            "Sé montar en bicicleta sin ruedines.",
+            "Tengo cuatro hermanos mayores.",
+            "Me encanta construir cosas con bloques."
+          ],
+          "lieIndex": 1,
+          "explanation": "Hugo es hijo único: no tiene cuatro hermanos."
+        },
+        {
+          "speaker": "Nora",
+          "statements": [
+            "Una vez dormí en una tienda de campaña.",
+            "Puedo hablar con los delfines.",
+            "Mi asignatura favorita es Educación Física."
+          ],
+          "lieIndex": 1,
+          "explanation": "Nora no puede hablar con los delfines, aunque le encantan."
+        }
+      ]
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const letters = ["A", "B", "C"];
+    const teamColors = ["#f66c9b", "#5bcf9a", "#e7ad22", "#75c6e8", "#9d86e9", "#ef6a6a"];
+    let gameData = structuredClone(EXAMPLE_DATA);
+    let config = { teamCount: 3, seconds: 30, roundCount: 3 };
+    let teams = [];
+    let turnOrder = [];
+    let roundIndex = 0;
+    let selectedIndex = null;
+    let revealed = false;
+    let gameFinished = false;
+    let remainingSeconds = 0;
+    let timerId = null;
+    let soundOn = true;
+    let audioContext = null;
+    let toastTimer = null;
+
+    const elements = {
+      title: $("#gameTitle"), instructions: $("#instructions"), round: $("#roundLabel"),
+      speaker: $("#speaker"), options: $("#options"), timer: $("#timer"),
+      action: $("#actionBtn"), message: $("#message"), progress: $("#progressBar"),
+      file: $("#jsonInput"), toast: $("#toast"), confetti: $("#confetti"),
+      setup: $("#setupScreen"), game: $("#gameScreen"), scores: $("#scoreList"),
+      teamStatus: $("#teamStatus"), turnStatus: $("#turnStatus")
+    };
+
+    function validateData(data) {
+      if (!data || typeof data !== "object") throw new Error("El JSON debe contener un objeto.");
+      if (typeof data.title !== "string" || !data.title.trim()) throw new Error("Falta un título válido.");
+      if (!Array.isArray(data.rounds) || data.rounds.length === 0) throw new Error("Añade al menos una ronda.");
+      data.rounds.forEach((round, index) => {
+        if (typeof round.speaker !== "string" || !round.speaker.trim()) throw new Error(`Falta el nombre en la ronda ${index + 1}.`);
+        if (!Array.isArray(round.statements) || round.statements.length !== 3 || round.statements.some(item => typeof item !== "string" || !item.trim())) {
+          throw new Error(`La ronda ${index + 1} debe tener exactamente 3 frases.`);
+        }
+        if (![0, 1, 2].includes(round.lieIndex)) throw new Error(`lieIndex debe ser 0, 1 o 2 en la ronda ${index + 1}.`);
+        if (round.explanation !== undefined && typeof round.explanation !== "string") throw new Error(`La explicación de la ronda ${index + 1} no es válida.`);
+      });
+      return data;
+    }
+
+    function renderSetup() {
+      config.roundCount = Math.min(config.roundCount, gameData.rounds.length);
+      renderChoices("#teamChoices", [1, 2, 3, 4, 5, 6], config.teamCount, value => { config.teamCount = value; renderSetup(); });
+      renderChoices("#timeChoices", [15, 30, 45, 60, 90, 120], config.seconds, value => { config.seconds = value; renderSetup(); }, value => `${value}s`);
+      const availableRounds = Array.from({ length: gameData.rounds.length }, (_, index) => index + 1);
+      renderChoices("#roundChoices", availableRounds, config.roundCount, value => { config.roundCount = value; renderSetup(); });
+      elements.title.textContent = gameData.title;
+    }
+
+    function renderChoices(selector, values, activeValue, onChoose, format = String) {
+      const container = $(selector);
+      container.replaceChildren();
+      values.forEach(value => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `choice${value === activeValue ? " active" : ""}`;
+        button.textContent = format(value);
+        button.setAttribute("aria-pressed", String(value === activeValue));
+        button.addEventListener("click", () => onChoose(value));
+        container.appendChild(button);
+      });
+    }
+
+    function shuffled(values) {
+      const copy = [...values];
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const target = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[target]] = [copy[target], copy[index]];
+      }
+      return copy;
+    }
+
+    function buildTurnOrder() {
+      const order = [];
+      const indexes = teams.map((_, index) => index);
+      while (order.length < config.roundCount) order.push(...shuffled(indexes));
+      return order.slice(0, config.roundCount);
+    }
+
+    function startGame() {
+      teams = Array.from({ length: config.teamCount }, (_, index) => ({ name: `Equipo ${index + 1}`, score: 0, color: teamColors[index] }));
+      turnOrder = buildTurnOrder();
+      roundIndex = 0;
+      gameFinished = false;
+      elements.setup.hidden = true;
+      elements.game.hidden = false;
+      renderRound();
+      showToast("¡Turnos sorteados! Empieza la partida");
+      playTone("success");
+    }
+
+    function renderRound() {
+      const round = gameData.rounds[roundIndex];
+      const activeTeam = teams[turnOrder[roundIndex]];
+      selectedIndex = null;
+      revealed = false;
+      elements.title.textContent = gameData.title;
+      elements.instructions.textContent = gameData.instructions || EXAMPLE_DATA.instructions;
+      elements.round.textContent = `🔁 Ronda ${roundIndex + 1} de ${config.roundCount}`;
+      elements.teamStatus.textContent = `👥 ${config.teamCount} ${config.teamCount === 1 ? "equipo" : "equipos"}`;
+      elements.turnStatus.textContent = `🎲 Turno: ${activeTeam.name}`;
+      elements.speaker.innerHTML = `Estas frases son de <span>${escapeHTML(round.speaker)}</span>`;
+      elements.progress.style.width = `${(roundIndex / config.roundCount) * 100}%`;
+      elements.action.textContent = "Elige A, B o C";
+      elements.action.classList.remove("next");
+      elements.action.disabled = true;
+      setMessage(`${activeTeam.name}: toca una tarjeta para votar.`);
+      renderScores();
+
+      elements.options.replaceChildren();
+      round.statements.forEach((statement, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.type = "button";
+        button.dataset.index = index;
+        button.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-label", `Opción ${letters[index]}: ${statement}`);
+        button.innerHTML = `
+          <span class="letter">${letters[index]}</span>
+          <span class="statement">${escapeHTML(statement)}</span>
+          <span class="badge"></span>`;
+        button.addEventListener("click", () => selectOption(index));
+        elements.options.appendChild(button);
+      });
+      startTimer();
+    }
+
+    function renderScores() {
+      const activeIndex = turnOrder[roundIndex];
+      elements.scores.replaceChildren();
+      teams.forEach((team, index) => {
+        const row = document.createElement("div");
+        row.className = `team-score${!gameFinished && index === activeIndex ? " active" : ""}`;
+        row.innerHTML = `<span class="team-dot" style="background:${team.color}">${index + 1}</span><span class="team-name">${team.name}</span><span class="team-points">${team.score} ⭐</span>`;
+        elements.scores.appendChild(row);
+      });
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      remainingSeconds = config.seconds;
+      updateTimer();
+      timerId = setInterval(() => {
+        remainingSeconds -= 1;
+        updateTimer();
+        if (remainingSeconds <= 0) {
+          clearInterval(timerId);
+          revealAnswer(true);
+        }
+      }, 1000);
+    }
+
+    function updateTimer() {
+      elements.timer.textContent = `⏱️ ${remainingSeconds} s`;
+      elements.timer.classList.toggle("warning", remainingSeconds <= 5);
+    }
+
+    function selectOption(index) {
+      if (revealed) return;
+      selectedIndex = index;
+      [...elements.options.children].forEach((card, i) => {
+        card.classList.toggle("selected", i === index);
+        card.setAttribute("aria-pressed", String(i === index));
+      });
+      elements.action.disabled = false;
+      elements.action.textContent = `Comprobar la ${letters[index]}`;
+      setMessage(`Has elegido la opción ${letters[index]}. ¡Piénsalo bien!`);
+      playTone("tap");
+    }
+
+    function revealAnswer(timedOut = false) {
+      if (revealed) return;
+      clearInterval(timerId);
+      const round = gameData.rounds[roundIndex];
+      const correct = !timedOut && selectedIndex === round.lieIndex;
+      revealed = true;
+
+      [...elements.options.children].forEach((card, index) => {
+        card.disabled = true;
+        const badge = card.querySelector(".badge");
+        if (index === round.lieIndex) {
+          card.classList.add("lie");
+          badge.textContent = "🤥 MENTIRA";
+        } else {
+          card.classList.add("truth");
+          badge.textContent = "✓ VERDAD";
+        }
+        if (index !== round.lieIndex && index !== selectedIndex) card.classList.add("dimmed");
+      });
+
+      if (correct) {
+        teams[turnOrder[roundIndex]].score += 1;
+        renderScores();
+        setMessage(`¡Genial! La ${letters[round.lieIndex]} era la mentira. ${round.explanation || ""}`, "good");
+        playTone("success");
+        makeConfetti();
+      } else {
+        const start = timedOut ? "¡Tiempo agotado!" : "¡Casi!";
+        setMessage(`${start} La mentira era la ${letters[round.lieIndex]}. ${round.explanation || ""}`, "bad");
+        playTone("error");
+      }
+
+      elements.progress.style.width = `${((roundIndex + 1) / config.roundCount) * 100}%`;
+      elements.action.disabled = false;
+      elements.action.classList.add("next");
+      elements.action.textContent = roundIndex === config.roundCount - 1 ? "Ver resultado" : "Siguiente ronda →";
+    }
+
+    function nextRound() {
+      if (roundIndex < config.roundCount - 1) {
+        roundIndex += 1;
+        renderRound();
+        return;
+      }
+      showResult();
+    }
+
+    function showResult() {
+      clearInterval(timerId);
+      const bestScore = Math.max(...teams.map(team => team.score));
+      const winners = teams.filter(team => team.score === bestScore).map(team => team.name);
+      revealed = false;
+      selectedIndex = null;
+      gameFinished = true;
+      const message = winners.length > 1 ? "¡Tenemos empate!" : `¡Gana ${winners[0]}!`;
+      elements.speaker.innerHTML = `<span>${message}</span>`;
+      elements.options.innerHTML = `
+        <div style="grid-column:1/-1; min-height:310px; display:grid; place-items:center; text-align:center; padding:24px; border-radius:28px; background:#fff8df;">
+          <div><div style="font-size:clamp(72px,12vw,140px); line-height:1">🏆</div>
+          <div style="font-size:clamp(28px,4vw,52px); font-weight:900; margin-top:12px">${escapeHTML(winners.join(" y "))}: ${bestScore} ${bestScore === 1 ? "punto" : "puntos"}</div>
+          <div style="font-size:clamp(19px,2vw,27px); color:var(--muted); margin-top:10px">Ahora inventa dos verdades y una mentira sobre ti.</div></div>
+        </div>`;
+      elements.message.className = "message good";
+      elements.message.textContent = "¡Partida terminada! ¿Jugamos otra vez?";
+      elements.action.textContent = "Jugar de nuevo ↻";
+      elements.action.classList.add("next");
+      elements.action.disabled = false;
+      elements.progress.style.width = "100%";
+      elements.timer.textContent = "⏱️ Fin";
+      elements.timer.classList.remove("warning");
+      elements.turnStatus.textContent = "🏆 Resultado final";
+      renderScores();
+      playTone("finish");
+      makeConfetti(42);
+    }
+
+    function returnToSetup() {
+      clearInterval(timerId);
+      elements.game.hidden = true;
+      elements.setup.hidden = false;
+      renderSetup();
+      showToast("Puedes preparar una nueva partida");
+    }
+
+    function setMessage(text, type = "") {
+      elements.message.className = `message ${type}`.trim();
+      elements.message.textContent = text;
+    }
+
+    function escapeHTML(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function downloadExample() {
+      const blob = new Blob([JSON.stringify(EXAMPLE_DATA, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "ejemplo-2-verdades-1-mentira.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("JSON de ejemplo descargado");
+    }
+
+    async function loadJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      if (file.size > 1024 * 1024) {
+        showToast("El archivo es demasiado grande (máximo 1 MB)");
+        event.target.value = "";
+        return;
+      }
+      try {
+        const parsed = JSON.parse(await file.text());
+        gameData = validateData(parsed);
+        config.roundCount = Math.min(config.roundCount, gameData.rounds.length);
+        returnToSetup();
+        showToast(`Partida “${gameData.title}” cargada`);
+        playTone("success");
+      } catch (error) {
+        showToast(`No se pudo cargar: ${error.message}`);
+        playTone("error");
+      } finally {
+        event.target.value = "";
+      }
+    }
+
+    function showToast(text) {
+      clearTimeout(toastTimer);
+      elements.toast.textContent = text;
+      elements.toast.classList.add("show");
+      toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 3000);
+    }
+
+    function playTone(kind) {
+      if (!soundOn) return;
+      try {
+        audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioContext.currentTime;
+        const sounds = {
+          tap: [[440, .05]],
+          success: [[523, .09], [659, .09], [784, .16]],
+          error: [[260, .12], [190, .2]],
+          finish: [[523, .09], [659, .09], [784, .09], [1047, .25]]
+        };
+        let offset = 0;
+        sounds[kind].forEach(([frequency, duration]) => {
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          oscillator.type = kind === "error" ? "triangle" : "sine";
+          oscillator.frequency.value = frequency;
+          gain.gain.setValueAtTime(.0001, now + offset);
+          gain.gain.exponentialRampToValueAtTime(.18, now + offset + .015);
+          gain.gain.exponentialRampToValueAtTime(.0001, now + offset + duration);
+          oscillator.connect(gain).connect(audioContext.destination);
+          oscillator.start(now + offset);
+          oscillator.stop(now + offset + duration + .02);
+          offset += duration;
+        });
+      } catch (_) { /* El juego sigue funcionando si el navegador bloquea el audio. */ }
+    }
+
+    function makeConfetti(amount = 24) {
+      const colors = ["#f66c9b", "#5bcf9a", "#f6c957", "#75c6e8", "#9d86e9"];
+      for (let i = 0; i < amount; i += 1) {
+        const piece = document.createElement("i");
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.setProperty("--drift", `${(Math.random() - .5) * 260}px`);
+        piece.style.animationDelay = `${Math.random() * .35}s`;
+        elements.confetti.appendChild(piece);
+        setTimeout(() => piece.remove(), 2100);
+      }
+    }
+
+    elements.action.addEventListener("click", () => {
+      if (!revealed && selectedIndex !== null) revealAnswer();
+      else if (revealed) nextRound();
+      else if (gameFinished) returnToSetup();
+    });
+    $("#startBtn").addEventListener("click", startGame);
+    $("#downloadBtn").addEventListener("click", downloadExample);
+    $("#restartBtn").addEventListener("click", returnToSetup);
+    elements.file.addEventListener("change", loadJSON);
+    document.querySelector('label[for="jsonInput"]').addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") { event.preventDefault(); elements.file.click(); }
+    });
+    $("#soundBtn").addEventListener("click", (event) => {
+      soundOn = !soundOn;
+      event.currentTarget.textContent = soundOn ? "🔊" : "🔇";
+      event.currentTarget.setAttribute("aria-label", soundOn ? "Desactivar sonido" : "Activar sonido");
+      if (soundOn) playTone("tap");
+    });
+    $("#fullscreenBtn").addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+      } catch (_) { showToast("La pantalla completa no está disponible en este navegador"); }
+    });
+    $("#helpBtn").addEventListener("click", () => $("#helpDialog").showModal());
+    $("#closeHelp").addEventListener("click", () => $("#helpDialog").close());
+    document.addEventListener("keydown", event => {
+      if (!elements.game.hidden && !revealed && ["a", "b", "c"].includes(event.key.toLowerCase())) selectOption(["a", "b", "c"].indexOf(event.key.toLowerCase()));
+      if (!elements.game.hidden && event.key === "Enter" && !elements.action.disabled) elements.action.click();
+    });
+
+    validateData(gameData);
+    renderSetup();
+  </script>
+</body>
+</html>
