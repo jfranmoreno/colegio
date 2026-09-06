@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TODO SOBRE MÍ - Pizarra Digital Interactiva</title>
+  
+  <!-- Tipografías escolares de Google Fonts de alta legibilidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-cream: #FCF9F2;
+      --card-bg: #FFFFFF;
+      --text-main: #2C3E50;
+      --text-muted: #7F8C8D;
+      --accent-pink: #FF6B8B;
+      --accent-yellow: #FFD166;
+      --accent-blue: #4D96FF;
+      --accent-green: #6BCB77;
+      --accent-purple: #9B5DE5;
+      --accent-orange: #FF9F43;
+      --radius-xl: 28px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.09);
+      --shadow-lg: 0 14px 35px rgba(0,0,0,0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* BARRA SUPERIOR DE CONTROL DOCENTE */
+    header {
+      background: #FFFFFF;
+      padding: 12px 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .student-selector-box {
+      background: #FFE8E8;
+      border: 2px dashed var(--accent-pink);
+      padding: 4px 14px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .student-selector-box label {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #D63031;
+      white-space: nowrap;
+    }
+
+    .select-student-head {
+      border: 2px solid var(--accent-pink);
+      border-radius: 20px;
+      background: #FFFFFF;
+      color: #D63031;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 4px 12px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .badge-team-tag {
+      background: #D63031;
+      color: #FFFFFF;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-touch {
+      min-height: 50px;
+      min-width: 50px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease-in-out;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+    }
+
+    .btn-touch:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.12);
+    }
+
+    .btn-primary { background: var(--accent-blue); color: #fff; }
+    .btn-success { background: var(--accent-green); color: #fff; }
+    .btn-warning { background: var(--accent-yellow); color: #4A3E00; }
+    .btn-purple { background: var(--accent-purple); color: #fff; }
+    .btn-outline { background: #F1F2F6; color: #2F3542; border: 2px solid #CED6E0; }
+    .btn-danger { background: #EF4444; color: #fff; }
+
+    /* CONTENIDO PRINCIPAL: DOS COLUMNAS ALINEADAS EN ALTURA */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      padding: 24px;
+      max-width: 1750px;
+      margin: 0 auto;
+      width: 100%;
+      align-content: start;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1100px) {
+      main {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .sheet-container, .game-panel, .active-round-box {
+        height: auto !important;
+      }
+    }
+
+    /* SECCIÓN IZQUIERDA: LÁMINA ESTILO FICHA */
+    .sheet-container {
+      background: #FFFFFF;
+      border: 8px solid #2C3E50;
+      border-radius: var(--radius-xl);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .sheet-header {
+      text-align: center;
+      margin-bottom: 14px;
+      border-bottom: 3px dashed #E4E7EB;
+      padding-bottom: 10px;
+    }
+
+    .sheet-title-text {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: inline-flex;
+      gap: 4px;
+      line-height: 1;
+    }
+
+    .sheet-title-text span:nth-child(1) { color: #E74C3C; }
+    .sheet-title-text span:nth-child(2) { color: #E67E22; }
+    .sheet-title-text span:nth-child(3) { color: #F1C40F; }
+    .sheet-title-text span:nth-child(4) { color: #2ECC71; }
+    .sheet-title-text span:nth-child(5) { color: #1ABC9C; }
+    .sheet-title-text span:nth-child(6) { color: #3498DB; }
+    .sheet-title-text span:nth-child(7) { color: #9B59B6; }
+    .sheet-title-text span:nth-child(8) { color: #E91E63; }
+    .sheet-title-text span:nth-child(9) { color: #D35400; }
+    .sheet-title-text span:nth-child(10) { color: #27AE60; }
+    .sheet-title-text span:nth-child(11) { color: #2980B9; }
+
+    .sheet-subtitle {
+      font-family: 'Fredoka', cursive;
+      font-size: 1.25rem;
+      color: #576574;
+      margin-top: 2px;
+    }
+
+    /* GRID DE LAS 10 CASILLAS (1 RONDA POR PALABRA) */
+    .sheet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 18px;
+      flex: 1;
+      align-content: space-between;
+    }
+
+    .category-card {
+      background: #FAFAFA;
+      border: 3px solid #EEF1F6;
+      border-radius: var(--radius-lg);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 88px;
+      position: relative;
+    }
+
+    .category-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .category-card.active {
+      border-color: #2ED573;
+      background: #F0FFF4;
+      box-shadow: 0 0 0 4px rgba(46, 213, 115, 0.35);
+    }
+
+    .category-card.completed {
+      opacity: 0.8;
+      background: #F8F9FA;
+      border-color: #CBD5E1;
+    }
+
+    .round-indicator-pill {
+      position: absolute;
+      top: -9px;
+      left: 12px;
+      background: #475569;
+      color: #FFFFFF;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cat-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .cat-icon-wrapper {
+      width: 58px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cat-labels h4 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #2F3542;
+      line-height: 1.2;
+    }
+
+    .cat-labels p {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* MARCOS CON TOPOS ESTILO FICHA IMPRESA */
+    .slot-frame {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1E272E;
+      position: relative;
+      flex-shrink: 0;
+      background: #FFFFFF;
+    }
+
+    .slot-frame.square-frame { border-radius: 12px; }
+    .slot-frame.circle-frame { border-radius: 50%; }
+
+    .slot-frame svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* SECCIÓN DERECHA: PANEL DE DINÁMICA DE RONDA */
+    .game-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .active-round-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-md);
+      border: 3px solid #E2E8F0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .round-meta-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #F1F5F9;
+      border-radius: var(--radius-lg);
+      padding: 8px 16px;
+      border: 2px solid #E2E8F0;
+    }
+
+    .round-title-tag {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1E293B;
+    }
+
+    .round-balance-badge {
+      background: #E2E8F0;
+      color: #475569;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .target-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 12px 16px;
+      background: #F8FAFC;
+      border-radius: var(--radius-lg);
+      border: 2px dashed #E2E8F0;
+    }
+
+    .target-letter-big {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #FFF;
+      border: 5px solid var(--accent-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* AVISO DEL EQUIPO DEL PROTAGONISTA (NO JUEGA) */
+    .excluded-team-notice {
+      background: #FFF1F2;
+      border: 2px dashed #F43F5E;
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #BE123C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* COLA DE TURNOS DE EQUIPOS (SORTEO) */
+    .turn-roulette-container {
+      background: #F8FAFC;
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      border: 2px solid #E2E8F0;
+    }
+
+    .turn-roulette-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .turn-queue {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .turn-queue {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .team-turn-chip {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      padding: 6px 4px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border: 2px solid #E2E8F0;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      position: relative;
+    }
+
+    .team-turn-chip.current-turn {
+      background: #FFF7ED;
+      border-color: #F97316;
+      transform: scale(1.06);
+      box-shadow: 0 4px 10px rgba(249, 115, 22, 0.25);
+    }
+
+    .team-turn-chip.used-attempt {
+      opacity: 0.4;
+      text-decoration: line-through;
+      background: #E2E8F0;
+    }
+
+    .first-turn-tag {
+      font-size: 0.68rem;
+      background: #FEF3C7;
+      color: #B45309;
+      border-radius: 8px;
+      padding: 1px 5px;
+      font-weight: 800;
+    }
+
+    /* BANNER DEL EQUIPO ACTIVO */
+    .active-team-banner {
+      background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+      color: #FFFFFF;
+      padding: 14px 18px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .active-team-banner h3 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.65rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* BOTONERA TÁCTIL DE ACCIÓN DE RONDA */
+    .round-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .round-actions .btn-touch {
+      flex: 1 1 45%;
+      min-height: 58px;
+      font-size: 1.15rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .nav-actions .btn-touch {
+      flex: 1;
+      min-height: 46px;
+      font-size: 0.95rem;
+    }
+
+    /* REVELACIÓN DE PALABRA SECRETA */
+    .secret-word-display {
+      padding: 10px 14px;
+      background: #FEF3C7;
+      border: 2px dashed #F59E0B;
+      border-radius: var(--radius-md);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #92400E;
+      display: none;
+    }
+
+    /* MODALES FLOTANTES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-sheet {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 900px;
+      max-height: 92vh;
+      border-radius: var(--radius-xl);
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 12px;
+    }
+
+    .modal-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.85rem;
+      color: #1E293B;
+    }
+
+    /* PUNTUACIONES */
+    .scores-grid-modal {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 680px) {
+      .scores-grid-modal { grid-template-columns: repeat(2, 1fr); }
+      .sheet-grid { grid-template-columns: 1fr; }
+    }
+
+    .team-score-card {
+      border-radius: var(--radius-lg);
+      padding: 18px 14px;
+      text-align: center;
+      color: #FFFFFF;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 160px;
+    }
+
+    .team-score-card.is-protagonist-team {
+      border: 4px solid #FFD166;
+      box-shadow: 0 0 0 3px #D63031;
+    }
+
+    .team-score-card .team-name {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .team-score-card .team-protagonist-badge {
+      background: rgba(0,0,0,0.25);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      margin-top: 3px;
+      display: inline-block;
+    }
+
+    .team-score-card .team-score {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin: 8px 0;
+    }
+
+    .team-card-btns {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-score-adjust {
+      background: rgba(255,255,255,0.28);
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-family: 'Fredoka', sans-serif;
+      transition: background 0.15s;
+    }
+
+    .btn-score-adjust:active {
+      background: rgba(255,255,255,0.55);
+    }
+
+    .team-bg-1 { background: #EF4444; }
+    .team-bg-2 { background: #3B82F6; }
+    .team-bg-3 { background: #10B981; }
+    .team-bg-4 { background: #F59E0B; }
+    .team-bg-5 { background: #8B5CF6; }
+    .team-bg-6 { background: #EC4899; }
+
+    /* SECCIÓN DE GESTIÓN MULTI-ALUMNOS Y JSON */
+    .json-hub-box {
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .json-hub-info h4 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.25rem;
+      color: #1E293B;
+    }
+
+    .json-hub-info p {
+      font-size: 0.88rem;
+      color: #64748B;
+      font-weight: 700;
+    }
+
+    .json-hub-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .student-tabs-container {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .student-tabs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .students-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 120px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .student-chip {
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 30px;
+      padding: 6px 14px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .student-chip.active {
+      background: #FFE8E8;
+      border-color: var(--accent-pink);
+      color: #D63031;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
+    }
+
+    .student-config-banner {
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 14px;
+      align-items: flex-end;
+    }
+
+    @media (max-width: 750px) {
+      .student-config-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .config-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .config-field-group label {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    .config-field-group input,
+    .config-field-group select {
+      border: 2px solid #94A3B8;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 1.05rem;
+      font-family: inherit;
+      font-weight: 700;
+      background: #FFFFFF;
+    }
+
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .config-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .config-row {
+      background: #F8FAFC;
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .config-row-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      flex: 1;
+    }
+
+    .config-row input.initial-input {
+      width: 48px;
+      height: 48px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      border: 2px solid var(--accent-blue);
+      border-radius: 8px;
+      background: #FFF;
+    }
+
+    .config-row input.word-input {
+      flex: 1.2;
+      height: 44px;
+      padding: 6px 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 2px solid #CBD5E1;
+      border-radius: 8px;
+    }
+
+    /* TOAST EDUCATIVO PARA MENSAJES */
+    .edu-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1E293B;
+      color: #FFFFFF;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 3000;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .edu-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* CANVAS DE CONFETI */
+    #celebration-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR DE CONTROL -->
+  <header>
+    <div class="brand-title">
+      <!-- SELECTOR RÁPIDO DE ALUMNO PROTAGONISTA EN PANTALLA -->
+      <div class="student-selector-box">
+        <label for="quick-student-select">🌟 Protagonista:</label>
+        <select id="quick-student-select" class="select-student-head" onchange="onQuickStudentChange(this.value)">
+          <!-- Renderizado dinámico -->
+        </select>
+        <span class="badge-team-tag" id="display-student-team">Equipo 1</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- BOTÓN DE PUNTUACIONES -->
+      <button class="btn-touch btn-warning" onclick="openScoreModal()">
+        🏆 Puntuaciones (6 Equipos)
+      </button>
+
+      <!-- BOTONES DIRECTOS DE CARGA Y DESCARGA JSON -->
+      <button class="btn-touch btn-success" onclick="downloadStudentsJSON()" title="Descargar todas las fichas en JSON">
+        📥 Descargar JSON
+      </button>
+
+      <label class="btn-touch btn-purple" style="cursor:pointer;" title="Cargar archivo JSON con fichas">
+        📤 Cargar JSON
+        <input type="file" id="input-json-file" accept=".json" style="display:none;" onchange="handleJSONUpload(event)">
+      </label>
+
+      <!-- CONFIGURACIÓN COMPLETA -->
+      <button class="btn-touch btn-primary" onclick="openConfigModal()">
+        ✏️ Fichas y Alumnos
+      </button>
+
+      <button class="btn-touch btn-outline" onclick="toggleFullScreen()">
+        ⛶ Pantalla Completa
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+    <!-- COLUMNA IZQUIERDA: LÁMINA "TODO SOBRE MÍ" (10 RONDAS · 1 PALABRA POR RONDA) -->
+    <div class="sheet-container">
+      <div class="sheet-header">
+        <div class="sheet-title-text">
+          <span>T</span><span>O</span><span>D</span><span>O</span>
+          <span>&nbsp;</span>
+          <span>S</span><span>O</span><span>B</span><span>R</span><span>E</span>
+          <span>&nbsp;</span>
+          <span>M</span><span>I</span>
+        </div>
+        <div class="sheet-subtitle">Primera letra — 10 Rondas (1 Palabra por Ronda)</div>
+      </div>
+
+      <div class="sheet-grid" id="categories-container">
+        <!-- 10 casillas renderizadas dinámicamente -->
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: DINÁMICA DE RONDA Y TURNOS -->
+    <div class="game-panel">
+      
+      <div class="active-round-box" id="active-round-area">
+        
+        <!-- CABECERA DE LA RONDA ACTUAL (1 PALABRA = 1 RONDA) -->
+        <div class="round-meta-header">
+          <div class="round-title-tag" id="round-indicator-label">Ronda 1 de 10</div>
+          <div class="round-balance-badge" title="Garantiza 2 aperturas de turno para cada uno de los 5 equipos rivales">
+            ⚖️ 2 aperturas por equipo
+          </div>
+        </div>
+
+        <!-- TARJETA DE LA PREGUNTA ACTIVA -->
+        <div class="target-preview" id="round-target-preview">
+          <div class="cat-icon-wrapper" id="current-cat-icon"></div>
+          <div>
+            <h2 id="current-cat-name" style="font-family:'Fredoka'; font-size:1.6rem;">¿Quién adivina la palabra?</h2>
+            <p style="color:var(--text-muted); font-weight:700;" id="current-cat-subtitle">Toca una casilla para comenzar</p>
+          </div>
+          <div class="target-letter-big" id="current-target-letter">?</div>
+        </div>
+
+        <!-- AVISO DEL EQUIPO DEL ALUMNO PROTAGONISTA (EXCLUIDO) -->
+        <div class="excluded-team-notice" id="excluded-team-box">
+          🚫 <span id="excluded-team-msg">El <strong>Equipo 1</strong> no participa en esta ronda (es el equipo de Lucas).</span>
+        </div>
+
+        <!-- COLA DE TURNOS DE LOS 5 EQUIPOS RESTANTES -->
+        <div class="turn-roulette-container">
+          <div class="turn-roulette-header">
+            <span style="font-weight:800; font-size:1rem; color:#334155;" id="turn-title-label">
+              🎲 Orden de Turnos (Ronda 1):
+            </span>
+            <button class="btn-touch btn-warning" style="min-height:42px; padding:6px 14px; font-size:0.95rem;" onclick="reShuffleEntireGameSchedule()">
+              🎲 Re-sortear Partida
+            </button>
+          </div>
+
+          <div class="turn-queue" id="turn-queue-display">
+            <!-- Chips de los 5 equipos -->
+          </div>
+        </div>
+
+        <!-- BANNER DEL EQUIPO ACTIVO -->
+        <div class="active-team-banner" id="active-team-banner">
+          <div>
+            <span style="font-size:0.85rem; font-weight:800; opacity:0.9; text-transform:uppercase;">Turno de responder:</span>
+            <h3 id="current-team-title">Equipo 2</h3>
+          </div>
+          <span style="font-size:2rem;">🎯</span>
+        </div>
+
+        <!-- BOTONES DE VALIDACIÓN DE RESPUESTAS -->
+        <div class="round-actions">
+          <button class="btn-touch btn-success" onclick="handleTeamSuccess()">
+            ✨ ¡Palabra Acertada! (+10 pts)
+          </button>
+          <button class="btn-touch btn-outline" onclick="handleTeamFail()">
+            ❌ Fallo / Siguiente Equipo
+          </button>
+          <button class="btn-touch btn-warning" onclick="toggleSecretWord()">
+            👁️ Ver Solución
+          </button>
+        </div>
+
+        <!-- PALABRA SECRETA -->
+        <div class="secret-word-display" id="secret-word-box">
+          Palabra secreta: <span id="secret-word-text">---</span>
+        </div>
+
+        <!-- NAVEGACIÓN RÁPIDA ENTRE RONDAS -->
+        <div class="nav-actions">
+          <button class="btn-touch btn-outline" onclick="navigateRound(-1)">
+            ⬅️ Ronda Anterior
+          </button>
+          <button class="btn-touch btn-purple" onclick="navigateRound(1)">
+            Siguiente Ronda ➡️
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL DE PUNTUACIONES DE LOS 6 EQUIPOS -->
+  <div class="modal-overlay" id="score-modal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h2 class="modal-title">🏆 Marcador de los 6 Equipos</h2>
+        <button class="btn-touch btn-outline" style="min-height:40px; padding:6px 12px;" onclick="closeScoreModal()">✕ Cerrar</button>
+      </div>
+
+      <p style="color:var(--text-muted); font-weight:700; margin-bottom:12px;">
+        Puntuaciones acumuladas en directo. Puedes ajustar los puntos manualmente con los botones táctiles:
+      </p>
+
+      <div class="scores-grid-modal" id="modal-teams-scoreboard">
+        <!-- Renderizado dinámico de los 6 Equipos -->
+      </div>
+
+      <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <button class="btn-touch btn-outline" onclick="resetRoundScores()">
+          🔄 Reiniciar Puntuaciones a 0
+        </button>
+        <button class="btn-touch btn-primary" onclick="closeScoreModal()">
+          ✓ Volver a la Pizarra
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN Y GESTIÓN MULTI-ALUMNOS (DESCARGA / CARGA JSON) -->
+  <div class="modal-overlay" id="config-modal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h2 class="modal-title">✏️ Gestión de Fichas de Alumnos</h2>
+        <button class="btn-touch btn-outline" style="min-height:40px; padding:6px 12px;" onclick="closeConfigModal()">✕ Cerrar</button>
+      </div>
+
+      <!-- ZONA DE COPIA DE SEGURIDAD / ARCHIVOS JSON -->
+      <div class="json-hub-box">
+        <div class="json-hub-info">
+          <h4>📁 Guardar o Cargar fichero de Clase (.JSON)</h4>
+          <p>Exporta todas las fichas a un archivo o carga las fichas preparadas con antelación.</p>
+        </div>
+        <div class="json-hub-btns">
+          <button class="btn-touch btn-success" onclick="downloadStudentsJSON()">
+            📥 Descargar JSON
+          </button>
+          <label class="btn-touch btn-purple" style="cursor:pointer;">
+            📤 Cargar JSON
+            <input type="file" accept=".json" style="display:none;" onchange="handleJSONUpload(event)">
+          </label>
+        </div>
+      </div>
+
+      <!-- SELECTOR DE ALUMNO A EDITAR / NUEVO ALUMNO -->
+      <div class="student-tabs-container">
+        <div class="student-tabs-header">
+          <strong style="color:#1E293B; font-size:1.1rem;">Selecciona el alumno a editar o jugar:</strong>
+          <button class="btn-touch btn-success" style="min-height:40px; padding:6px 14px; font-size:0.95rem;" onclick="addNewStudent()">
+            ➕ Añadir Nuevo Alumno
+          </button>
+        </div>
+        <div class="students-chip-list" id="students-chip-list">
+          <!-- Chips de alumnos -->
+        </div>
+      </div>
+
+      <!-- CAMPOS DEL ALUMNO SELECCIONADO -->
+      <div class="student-config-banner">
+        <div class="config-field-group">
+          <label for="input-edit-student-name">Nombre del Alumno/a:</label>
+          <input type="text" id="input-edit-student-name" placeholder="Ej. Sofía...">
+        </div>
+        <div class="config-field-group">
+          <label for="select-edit-student-team">Equipo al que pertenece (No juega):</label>
+          <select id="select-edit-student-team">
+            <option value="1">Equipo 1</option>
+            <option value="2">Equipo 2</option>
+            <option value="3">Equipo 3</option>
+            <option value="4">Equipo 4</option>
+            <option value="5">Equipo 5</option>
+            <option value="6">Equipo 6</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn-touch btn-danger" style="min-height:46px; width:100%;" onclick="deleteCurrentStudent()">
+            🗑️ Eliminar Ficha
+          </button>
+        </div>
+      </div>
+
+      <p style="margin-bottom:14px; font-weight:700; color:#475569;">
+        Iniciales y palabras secretas de esta ficha (10 palabras · 10 rondas de juego):
+      </p>
+
+      <div class="config-grid" id="config-fields-list">
+        <!-- Campos de las 10 categorías -->
+      </div>
+
+      <div style="margin-top:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <button class="btn-touch btn-outline" onclick="loadSampleTemplate()">
+          📄 Rellenar con Ejemplo Rápido
+        </button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-touch btn-primary" onclick="saveCurrentStudentChanges(true)">
+            💾 Guardar y Jugar Esta Ficha
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICACIÓN TOAST INFANTIL -->
+  <div class="edu-toast" id="edu-toast">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">Mensaje</span>
+  </div>
+
+  <!-- CANVAS DE ANIMACIÓN DE CONFETI -->
+  <canvas id="celebration-canvas"></canvas>
+
+  <script>
+    /* =========================================================================
+       1. DEFINICIÓN DE CONTENIDOS GRÁFICOS (SVGs) Y EQUIPOS
+       ========================================================================= */
+
+    const CATEGORY_ICONS = {
+      hamburguesa: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M15,50 Q15,18 50,18 Q85,18 85,50 Z" fill="#F4A261" stroke="#264653" stroke-width="4" stroke-linejoin="round"/>
+        <ellipse cx="35" cy="30" rx="2" ry="4" fill="#FFE3A8" transform="rotate(-15 35 30)"/>
+        <ellipse cx="50" cy="26" rx="2" ry="4" fill="#FFE3A8"/>
+        <ellipse cx="65" cy="32" rx="2" ry="4" fill="#FFE3A8" transform="rotate(15 65 32)"/>
+        <circle cx="42" cy="40" r="2.5" fill="#264653"/>
+        <circle cx="58" cy="40" r="2.5" fill="#264653"/>
+        <path d="M47,44 Q50,48 53,44" fill="none" stroke="#264653" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M13,52 Q25,58 35,52 Q50,60 65,52 Q75,59 87,52 L87,58 Q75,65 65,58 Q50,66 35,58 Q25,64 13,58 Z" fill="#2A9D8F" stroke="#264653" stroke-width="3"/>
+        <path d="M16,58 L84,58 L72,67 L28,67 Z" fill="#E9C46A" stroke="#264653" stroke-width="3"/>
+        <rect x="14" y="66" width="72" height="12" rx="6" fill="#A44A3F" stroke="#264653" stroke-width="4"/>
+        <path d="M18,80 L82,80 Q82,90 50,90 Q18,90 18,80 Z" fill="#F4A261" stroke="#264653" stroke-width="4"/>
+      </svg>`,
+
+      bebida: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M56,40 L65,15 L78,15" fill="none" stroke="#E76F51" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M35,32 A 18 18 0 0 1 18,15 Z" fill="#FFE66D" stroke="#264653" stroke-width="3"/>
+        <path d="M25,35 L32,88 Q33,92 50,92 Q67,92 68,88 L75,35 Z" fill="#A8DADC" stroke="#264653" stroke-width="4"/>
+        <path d="M28,48 L32,84 Q33,88 50,88 Q67,88 68,84 L72,48 Q60,53 50,48 Q40,43 28,48 Z" fill="#FFE66D"/>
+        <circle cx="43" cy="62" r="2.5" fill="#264653"/>
+        <circle cx="57" cy="62" r="2.5" fill="#264653"/>
+        <path d="M48,67 Q50,70 52,67" fill="none" stroke="#264653" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>`,
+
+      elefante: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <ellipse cx="58" cy="62" rx="26" ry="20" fill="#A0C4E2" stroke="#264653" stroke-width="4"/>
+        <circle cx="40" cy="50" r="18" fill="#A0C4E2" stroke="#264653" stroke-width="4"/>
+        <ellipse cx="25" cy="48" rx="14" ry="18" fill="#FDE2E4" stroke="#264653" stroke-width="4"/>
+        <path d="M46,58 Q58,62 65,50 Q68,40 60,38" fill="none" stroke="#A0C4E2" stroke-width="9" stroke-linecap="round"/>
+        <path d="M46,58 Q58,62 65,50 Q68,40 60,38" fill="none" stroke="#264653" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="36" cy="46" r="2.5" fill="#264653"/>
+        <rect x="42" y="74" width="8" height="15" rx="4" fill="#A0C4E2" stroke="#264653" stroke-width="3"/>
+        <rect x="56" y="74" width="8" height="15" rx="4" fill="#A0C4E2" stroke="#264653" stroke-width="3"/>
+        <rect x="70" y="72" width="8" height="16" rx="4" fill="#A0C4E2" stroke="#264653" stroke-width="3"/>
+      </svg>`,
+
+      color: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M30,22 Q75,10 88,40 Q95,65 72,82 Q55,94 38,82 Q12,68 20,40 Q24,28 30,22 Z" fill="#F4D06F" stroke="#264653" stroke-width="4"/>
+        <circle cx="70" cy="65" r="7" fill="#FCF9F2" stroke="#264653" stroke-width="3"/>
+        <circle cx="35" cy="35" r="6" fill="#E63946"/>
+        <circle cx="55" cy="30" r="6" fill="#457B9D"/>
+        <circle cx="72" cy="42" r="6" fill="#2A9D8F"/>
+        <circle cx="38" cy="60" r="6" fill="#9B5DE5"/>
+        <path d="M50,85 L85,20" stroke="#8D5B4C" stroke-width="6" stroke-linecap="round"/>
+        <path d="M85,20 L92,10" stroke="#264653" stroke-width="7" stroke-linecap="round"/>
+      </svg>`,
+
+      deporte: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <circle cx="40" cy="42" r="24" fill="#F77F00" stroke="#264653" stroke-width="4"/>
+        <path d="M16,42 L64,42 M40,18 L40,66" stroke="#264653" stroke-width="3"/>
+        <path d="M23,25 Q35,42 23,59 M57,25 Q45,42 57,59" stroke="#264653" stroke-width="3" fill="none"/>
+        <g transform="rotate(35 60 60)">
+          <ellipse cx="65" cy="35" rx="14" ry="18" fill="#E0FBFC" stroke="#264653" stroke-width="4"/>
+          <line x1="57" y1="35" x2="73" y2="35" stroke="#264653" stroke-width="1.5"/>
+          <line x1="65" y1="23" x2="65" y2="47" stroke="#264653" stroke-width="1.5"/>
+          <rect x="62" y="52" width="6" height="28" rx="2" fill="#3D5A80" stroke="#264653" stroke-width="3"/>
+        </g>
+      </svg>`,
+
+      lugar: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <circle cx="50" cy="52" r="32" fill="#48CAE4" stroke="#264653" stroke-width="4"/>
+        <path d="M30,35 Q40,30 45,42 Q40,55 26,50 Z" fill="#52B788"/>
+        <path d="M55,30 Q70,32 75,45 Q70,60 52,60 Q55,42 55,30 Z" fill="#52B788"/>
+        <path d="M35,68 Q45,62 55,75 Q40,84 35,68 Z" fill="#52B788"/>
+        <circle cx="44" cy="52" r="2" fill="#264653"/>
+        <circle cx="56" cy="52" r="2" fill="#264653"/>
+        <path d="M48,56 Q50,59 52,56" fill="none" stroke="#264653" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18,30 Q50,5 82,25" fill="none" stroke="#264653" stroke-width="2.5" stroke-dasharray="4 4"/>
+        <g transform="translate(74, 22) rotate(45) scale(0.7)">
+          <path d="M0,0 L20,7 L0,14 L5,7 Z" fill="#FFFFFF" stroke="#264653" stroke-width="2"/>
+        </g>
+      </svg>`,
+
+      cancion: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M36,65 L36,30 L72,20 L72,55" fill="none" stroke="#264653" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M33,30 L75,20 L75,29 L33,39 Z" fill="#48CAE4" stroke="#264653" stroke-width="3"/>
+        <ellipse cx="28" cy="65" rx="10" ry="8" fill="#48CAE4" stroke="#264653" stroke-width="4" transform="rotate(-15 28 65)"/>
+        <ellipse cx="64" cy="55" rx="10" ry="8" fill="#48CAE4" stroke="#264653" stroke-width="4" transform="rotate(-15 64 55)"/>
+        <circle cx="26" cy="64" r="1.8" fill="#264653"/>
+        <circle cx="32" cy="63" r="1.8" fill="#264653"/>
+      </svg>`,
+
+      juego: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M22,25 L45,25 Q52,18 45,12 Q38,18 45,25 L45,45 Q55,45 55,53 Q55,61 45,61 L45,78 L22,78 Z" fill="#F4A261" stroke="#264653" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M50,22 L76,22 L76,46 Q84,46 84,54 Q84,62 76,62 L76,78 L52,78 L52,62 Q60,62 60,54 Q60,46 52,46 Z" fill="#90E0EF" stroke="#264653" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="30" cy="50" r="2.2" fill="#264653"/>
+        <circle cx="38" cy="50" r="2.2" fill="#264653"/>
+        <path d="M32,56 Q34,59 36,56" fill="none" stroke="#264653" stroke-width="2" stroke-linecap="round"/>
+      </svg>`,
+
+      asignatura: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <rect x="24" y="20" width="56" height="66" rx="8" fill="#2A9D8F" stroke="#264653" stroke-width="4"/>
+        <rect x="30" y="26" width="44" height="54" rx="4" fill="#FFFFFF" stroke="#264653" stroke-width="3"/>
+        <text x="52" y="46" font-family="'Fredoka', sans-serif" font-weight="700" font-size="12" fill="#264653" text-anchor="middle">MATH</text>
+        <path d="M46,74 L46,92 L52,86 L58,92 L58,74 Z" fill="#E76F51" stroke="#264653" stroke-width="3"/>
+        <text x="52" y="66" font-family="'Fredoka', sans-serif" font-weight="700" font-size="14" fill="#E76F51" text-anchor="middle">+  -  ×</text>
+      </svg>`,
+
+      fiesta: `<svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M22,78 L50,15 L78,78 Z" fill="#F72585" stroke="#264653" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M31,58 L69,58 L63,45 L37,45 Z" fill="#4CC9F0"/>
+        <path d="M41,36 L59,36 L54,26 L46,26 Z" fill="#FFD166"/>
+        <circle cx="50" cy="14" r="7" fill="#7209B7" stroke="#264653" stroke-width="3"/>
+        <circle cx="50" cy="78" r="4" fill="#4CC9F0"/>
+        <circle cx="32" cy="78" r="4" fill="#FFD166"/>
+        <circle cx="68" cy="78" r="4" fill="#7209B7"/>
+        <circle cx="20" cy="30" r="3" fill="#4CC9F0"/>
+        <circle cx="80" cy="40" r="3" fill="#F72585"/>
+        <rect x="75" y="20" width="6" height="6" fill="#FFD166" transform="rotate(25 78 23)"/>
+      </svg>`
+    };
+
+    // Plantilla base de las 10 categorías (1 categoría = 1 ronda de juego)
+    const CATEGORIES_TEMPLATE = [
+      { id: 'comida', title: 'Comida favorita', subtitle: 'Hamburguesa...', shape: 'square', color: '#E76F51', iconKey: 'hamburguesa' },
+      { id: 'bebida', title: 'Bebida favorita', subtitle: 'Zumo, batido...', shape: 'circle', color: '#E9C46A', iconKey: 'bebida' },
+      { id: 'animal', title: 'Animal favorito', subtitle: 'Elefante...', shape: 'circle', color: '#4D96FF', iconKey: 'elefante' },
+      { id: 'color', title: 'Color favorito', subtitle: 'Paleta...', shape: 'square', color: '#FF6B8B', iconKey: 'color' },
+      { id: 'deporte', title: 'Deporte favorito', subtitle: 'Raqueta, balón...', shape: 'square', color: '#9B5DE5', iconKey: 'deporte' },
+      { id: 'lugar', title: 'Lugar favorito', subtitle: 'Viajes, mundo...', shape: 'circle', color: '#2ECC71', iconKey: 'lugar' },
+      { id: 'cancion', title: 'Canción favorita', subtitle: 'Música...', shape: 'circle', color: '#576574', iconKey: 'cancion' },
+      { id: 'juego', title: 'Juego favorito', subtitle: 'Puzzle...', shape: 'square', color: '#F39C12', iconKey: 'juego' },
+      { id: 'asignatura', title: 'Asignatura favorita', subtitle: 'Matemáticas...', shape: 'square', color: '#1B9CFC', iconKey: 'asignatura' },
+      { id: 'fiesta', title: 'Fiesta favorita', subtitle: 'Cotillón...', shape: 'circle', color: '#FF4757', iconKey: 'fiesta' }
+    ];
+
+    // Equipos 1 al 6
+    let teams = [
+      { id: 1, name: 'Equipo 1', color: '#EF4444', class: 'team-bg-1', score: 0 },
+      { id: 2, name: 'Equipo 2', color: '#3B82F6', class: 'team-bg-2', score: 0 },
+      { id: 3, name: 'Equipo 3', color: '#10B981', class: 'team-bg-3', score: 0 },
+      { id: 4, name: 'Equipo 4', color: '#F59E0B', class: 'team-bg-4', score: 0 },
+      { id: 5, name: 'Equipo 5', color: '#8B5CF6', class: 'team-bg-5', score: 0 },
+      { id: 6, name: 'Equipo 6', color: '#EC4899', class: 'team-bg-6', score: 0 }
+    ];
+
+    /* =========================================================================
+       2. LISTADO MULTI-ALUMNOS (EXPORTABLE / IMPORTABLE EN JSON)
+       ========================================================================= */
+
+    let studentsList = [
+      {
+        id: 'alumno-1',
+        name: 'Lucas',
+        teamId: 1,
+        items: [
+          { letter: 'P', word: 'PIZZA' },
+          { letter: 'L', word: 'LIMONADA' },
+          { letter: 'D', word: 'DELFÍN' },
+          { letter: 'A', word: 'AZUL' },
+          { letter: 'B', word: 'BALONCESTO' },
+          { letter: 'P', word: 'PARÍS' },
+          { letter: 'Q', word: 'QUÉDATE' },
+          { letter: 'L', word: 'LEGO' },
+          { letter: 'E', word: 'EDUCACIÓN FÍSICA' },
+          { letter: 'N', word: 'NAVIDAD' }
+        ]
+      },
+      {
+        id: 'alumno-2',
+        name: 'Sofía',
+        teamId: 3,
+        items: [
+          { letter: 'M', word: 'MACARRONES' },
+          { letter: 'A', word: 'AGUA' },
+          { letter: 'P', word: 'PERRO' },
+          { letter: 'V', word: 'VERDE' },
+          { letter: 'N', word: 'NATACIÓN' },
+          { letter: 'P', word: 'PLAYA' },
+          { letter: 'V', word: 'VIVIR MI VIDA' },
+          { letter: 'A', word: 'AJEDREZ' },
+          { letter: 'C', word: 'CIENCIAS' },
+          { letter: 'C', word: 'CUMPLEAÑOS' }
+        ]
+      },
+      {
+        id: 'alumno-3',
+        name: 'Mateo',
+        teamId: 5,
+        items: [
+          { letter: 'T', word: 'TORTILLA' },
+          { letter: 'Z', word: 'ZUMO DE NARANJA' },
+          { letter: 'L', word: 'LEÓN' },
+          { letter: 'R', word: 'ROJO' },
+          { letter: 'F', word: 'FÚTBOL' },
+          { letter: 'M', word: 'MONTAÑA' },
+          { letter: 'T', word: 'TACONES ROJOS' },
+          { letter: 'M', word: 'MINECRAFT' },
+          { letter: 'M', word: 'MATEMÁTICAS' },
+          { letter: 'H', word: 'HALLOWEEN' }
+        ]
+      }
+    ];
+
+    // Estados de juego activos
+    let currentStudentIndex = 0;
+    let editingStudentIndex = 0;
+    let currentCategoryIndex = 0;     // Ronda actual: de 0 a 9 (10 rondas)
+    let gameTurnSchedule = [];        // Matriz [10][5]: Turnos ordenados para cada una de las 10 rondas
+    let currentTurnIndex = 0;         // Turno actual dentro de la ronda (0 a 4)
+    let completedCategories = new Set();
+
+    /* =========================================================================
+       3. EFECTOS DE AUDIO SINTETIZADOS (WEB AUDIO API)
+       ========================================================================= */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const now = audioCtx.currentTime;
+
+      if (type === 'click') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(460, now);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } 
+      else if (type === 'shuffle') {
+        for (let i = 0; i < 5; i++) {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320 + (i * 80), now + (i * 0.05));
+          gain.gain.setValueAtTime(0.12, now + (i * 0.05));
+          gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.05) + 0.05);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + (i * 0.05));
+          osc.stop(now + (i * 0.05) + 0.05);
+        }
+      } 
+      else if (type === 'success') {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + (idx * 0.1));
+          gain.gain.setValueAtTime(0.25, now + (idx * 0.1));
+          gain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.1) + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + (idx * 0.1));
+          osc.stop(now + (idx * 0.1) + 0.35);
+        });
+      } 
+      else if (type === 'fail') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(280, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
+    function showToast(msg, icon = '✨') {
+      const toast = document.getElementById('edu-toast');
+      document.getElementById('toast-msg').innerText = msg;
+      document.getElementById('toast-icon').innerText = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    /* =========================================================================
+       4. GENERADOR DE MARCOS CON TOPOS (SVG)
+       ========================================================================= */
+    function getFrameSVG(shape, strokeColor) {
+      if (shape === 'circle') {
+        return `<svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="${strokeColor}" stroke-width="7" stroke-dasharray="1 10" stroke-linecap="round"/>
+          <circle cx="50" cy="50" r="37" fill="none" stroke="${strokeColor}" stroke-width="2"/>
+        </svg>`;
+      } else {
+        return `<svg viewBox="0 0 100 100">
+          <rect x="8" y="8" width="84" height="84" rx="14" fill="none" stroke="${strokeColor}" stroke-width="7" stroke-dasharray="1 11" stroke-linecap="round"/>
+          <rect x="13" y="13" width="74" height="74" rx="10" fill="none" stroke="${strokeColor}" stroke-width="2"/>
+        </svg>`;
+      }
+    }
+
+    /* =========================================================================
+       5. ALGORITMO DE SORTEO EQUITATIVO (2 PRIMERAS OPCIONES POR EQUIPO)
+       ========================================================================= */
+    
+    // Genera el cronograma de turnos de las 10 rondas garantizando que cada uno
+    // de los 5 equipos rivales abre exactamente 2 palabras en primer lugar.
+    function generateFairGameSchedule() {
+      const currentStudent = studentsList[currentStudentIndex];
+      // 5 equipos participantes (se excluye el del alumno protagonista)
+      const playingTeams = teams.filter(t => t.id !== currentStudent.teamId);
+
+      // Cada equipo tendrá 2 aperturas (5 * 2 = 10 aperturas)
+      let starters = [];
+      playingTeams.forEach(t => {
+        starters.push(t, t);
+      });
+
+      // Barajar aleatoriamente los equipos que abren cada una de las 10 rondas
+      for (let i = starters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [starters[i], starters[j]] = [starters[j], starters[i]];
+      }
+
+      // Para cada ronda, fijar el primer equipo y sortear el orden de los 4 restantes
+      gameTurnSchedule = [];
+      for (let r = 0; r < 10; r++) {
+        const firstTeam = starters[r];
+        const otherTeams = playingTeams.filter(t => t.id !== firstTeam.id);
+
+        // Barajar aleatoriamente los turnos del 2 al 5
+        for (let i = otherTeams.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [otherTeams[i], otherTeams[j]] = [otherTeams[j], otherTeams[i]];
+        }
+
+        gameTurnSchedule.push([firstTeam, ...otherTeams]);
+      }
+    }
+
+    function reShuffleEntireGameSchedule() {
+      generateFairGameSchedule();
+      currentTurnIndex = 0;
+      renderTurnQueue();
+      updateActiveTeamBanner();
+      playSound('shuffle');
+      showToast('¡Sorteo renovado! (2 aperturas por equipo garantizadas)', '🎲');
+    }
+
+    /* =========================================================================
+       6. INICIALIZACIÓN
+       ========================================================================= */
+    function init() {
+      updateStudentSelectDropdown();
+      loadActiveStudentGame(false);
+      setupCelebrationCanvas();
+    }
+
+    function updateStudentSelectDropdown() {
+      const select = document.getElementById('quick-student-select');
+      select.innerHTML = '';
+
+      studentsList.forEach((st, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `${st.name} (Eq. ${st.teamId})`;
+        if (idx === currentStudentIndex) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function onQuickStudentChange(index) {
+      currentStudentIndex = parseInt(index, 10);
+      editingStudentIndex = currentStudentIndex;
+      completedCategories.clear();
+      loadActiveStudentGame(true);
+      showToast(`¡Ahora juega ${studentsList[currentStudentIndex].name}!`, '🌟');
+    }
+
+    function loadActiveStudentGame(doAudio = true) {
+      const currentStudent = studentsList[currentStudentIndex];
+      const teamObj = teams.find(t => t.id === currentStudent.teamId) || teams[0];
+
+      const teamBadge = document.getElementById('display-student-team');
+      teamBadge.innerText = `${teamObj.name} (No juega)`;
+      teamBadge.style.backgroundColor = teamObj.color;
+
+      const noticeMsg = document.getElementById('excluded-team-msg');
+      noticeMsg.innerHTML = `El <strong>${teamObj.name}</strong> no participa en las rondas (es el equipo de ${currentStudent.name}).`;
+
+      // Generar calendario de turnos equitativo para el nuevo alumno
+      generateFairGameSchedule();
+      renderSheetCategories();
+      selectCategory(0, false);
+      if (doAudio) playSound('click');
+    }
+
+    function renderSheetCategories() {
+      const container = document.getElementById('categories-container');
+      container.innerHTML = '';
+      const currentStudent = studentsList[currentStudentIndex];
+
+      CATEGORIES_TEMPLATE.forEach((cat, index) => {
+        const studentItem = currentStudent.items[index] || { letter: '?', word: '' };
+        const roundNum = index + 1;
+
+        const card = document.createElement('div');
+        card.className = `category-card ${index === currentCategoryIndex ? 'active' : ''} ${completedCategories.has(index) ? 'completed' : ''}`;
+        card.onclick = () => selectCategory(index, true);
+
+        const frameClass = cat.shape === 'circle' ? 'circle-frame' : 'square-frame';
+        const frameSVG = getFrameSVG(cat.shape, cat.color);
+
+        card.innerHTML = `
+          <div class="round-indicator-pill">Ronda ${roundNum}</div>
+          <div class="cat-info">
+            <div class="cat-icon-wrapper">
+              ${CATEGORY_ICONS[cat.iconKey]}
+            </div>
+            <div class="cat-labels">
+              <h4>${roundNum}. ${cat.title}</h4>
+              <p>${cat.subtitle}</p>
+            </div>
+          </div>
+          <div class="slot-frame ${frameClass}" style="color:${cat.color}">
+            ${frameSVG}
+            <span>${studentItem.letter || '?'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /* =========================================================================
+       7. GESTIÓN DE RONDAS (1 PALABRA = 1 RONDA)
+       ========================================================================= */
+    function selectCategory(index, userClicked = true) {
+      currentCategoryIndex = index;
+      currentTurnIndex = 0; // Reiniciar al primer equipo de esta ronda
+
+      const currentStudent = studentsList[currentStudentIndex];
+      const cat = CATEGORIES_TEMPLATE[index];
+      const item = currentStudent.items[index] || { letter: '?', word: '' };
+
+      document.querySelectorAll('.category-card').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+
+      const roundNumber = index + 1;
+      document.getElementById('round-indicator-label').innerText = `Ronda ${roundNumber} de 10`;
+      document.getElementById('turn-title-label').innerText = `🎲 Orden de Turnos (Ronda ${roundNumber}):`;
+
+      document.getElementById('current-cat-icon').innerHTML = CATEGORY_ICONS[cat.iconKey];
+      document.getElementById('current-cat-name').innerText = `${roundNumber}. ${cat.title}`;
+      document.getElementById('current-cat-subtitle').innerText = cat.subtitle;
+      document.getElementById('current-target-letter').innerText = item.letter || '?';
+      document.getElementById('current-target-letter').style.borderColor = cat.color;
+      document.getElementById('current-target-letter').style.color = cat.color;
+
+      document.getElementById('secret-word-box').style.display = 'none';
+      document.getElementById('secret-word-text').innerText = item.word || 'No indicada';
+
+      renderTurnQueue();
+      updateActiveTeamBanner();
+
+      if (userClicked) playSound('click');
+    }
+
+    function navigateRound(delta) {
+      let nextIndex = currentCategoryIndex + delta;
+      if (nextIndex < 0) nextIndex = 0;
+      if (nextIndex > 9) nextIndex = 9;
+      selectCategory(nextIndex, true);
+    }
+
+    /* =========================================================================
+       8. DINÁMICA DE JUEGO: COLA DE TURNOS Y RESPUESTAS
+       ========================================================================= */
+    function renderTurnQueue() {
+      const queueBox = document.getElementById('turn-queue-display');
+      queueBox.innerHTML = '';
+
+      const currentRoundTeams = gameTurnSchedule[currentCategoryIndex] || [];
+
+      currentRoundTeams.forEach((team, step) => {
+        const chip = document.createElement('div');
+        chip.className = 'team-turn-chip';
+        
+        if (step === currentTurnIndex) {
+          chip.classList.add('current-turn');
+        } else if (step < currentTurnIndex) {
+          chip.classList.add('used-attempt');
+        }
+
+        const isFirstChoice = step === 0;
+
+        chip.innerHTML = `
+          <span style="font-size:0.72rem; color:#64748B;">Turno ${step + 1}</span>
+          <strong style="color:${team.color};">${team.name}</strong>
+          ${isFirstChoice ? `<span class="first-turn-tag">⭐ 1.ª Opción</span>` : ''}
+        `;
+        queueBox.appendChild(chip);
+      });
+    }
+
+    function updateActiveTeamBanner() {
+      const banner = document.getElementById('active-team-banner');
+      const title = document.getElementById('current-team-title');
+      const currentRoundTeams = gameTurnSchedule[currentCategoryIndex] || [];
+
+      if (currentTurnIndex < currentRoundTeams.length) {
+        const activeTeam = currentRoundTeams[currentTurnIndex];
+        banner.style.background = activeTeam.color;
+        const isFirst = currentTurnIndex === 0;
+        title.innerText = `${activeTeam.name} ${isFirst ? '(¡Tiene la 1.ª opción!)' : '(Intento 1/1)'}`;
+      } else {
+        banner.style.background = "#64748B";
+        title.innerText = `¡Ronda finalizada sin aciertos!`;
+      }
+    }
+
+    function handleTeamSuccess() {
+      const currentRoundTeams = gameTurnSchedule[currentCategoryIndex] || [];
+      if (currentTurnIndex >= currentRoundTeams.length) return;
+
+      const team = currentRoundTeams[currentTurnIndex];
+      team.score += 10;
+      playSound('success');
+      launchConfetti();
+
+      document.getElementById('secret-word-box').style.display = 'block';
+      completedCategories.add(currentCategoryIndex);
+      renderSheetCategories();
+
+      document.getElementById('current-team-title').innerText = `🎉 ¡Punto para el ${team.name.toUpperCase()}! (+10 pts)`;
+    }
+
+    function handleTeamFail() {
+      playSound('fail');
+      const currentRoundTeams = gameTurnSchedule[currentCategoryIndex] || [];
+
+      if (currentTurnIndex < currentRoundTeams.length - 1) {
+        currentTurnIndex++;
+        renderTurnQueue();
+        updateActiveTeamBanner();
+      } else {
+        currentTurnIndex = currentRoundTeams.length;
+        renderTurnQueue();
+        updateActiveTeamBanner();
+        document.getElementById('secret-word-box').style.display = 'block';
+      }
+    }
+
+    function toggleSecretWord() {
+      const box = document.getElementById('secret-word-box');
+      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+      playSound('click');
+    }
+
+    /* =========================================================================
+       9. GESTIÓN DEL MODAL DE PUNTUACIONES (EQUIPOS 1 AL 6)
+       ========================================================================= */
+    function openScoreModal() {
+      playSound('click');
+      renderModalScoreboard();
+      document.getElementById('score-modal').classList.add('open');
+    }
+
+    function closeScoreModal() {
+      playSound('click');
+      document.getElementById('score-modal').classList.remove('open');
+    }
+
+    function renderModalScoreboard() {
+      const container = document.getElementById('modal-teams-scoreboard');
+      container.innerHTML = '';
+      const currentStudent = studentsList[currentStudentIndex];
+
+      teams.forEach((team) => {
+        const isProtagonistTeam = team.id === currentStudent.teamId;
+        const card = document.createElement('div');
+        card.className = `team-score-card ${team.class} ${isProtagonistTeam ? 'is-protagonist-team' : ''}`;
+
+        card.innerHTML = `
+          <div>
+            <div class="team-name">${team.name}</div>
+            ${isProtagonistTeam ? `<div class="team-protagonist-badge">⭐ Equipo de ${currentStudent.name}</div>` : ''}
+          </div>
+          <div class="team-score">${team.score}</div>
+          <div class="team-card-btns">
+            <button class="btn-score-adjust" onclick="adjustTeamScore(${team.id}, -5)">-5</button>
+            <button class="btn-score-adjust" onclick="adjustTeamScore(${team.id}, 5)">+5</button>
+            <button class="btn-score-adjust" onclick="adjustTeamScore(${team.id}, 10)">+10</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function adjustTeamScore(teamId, amount) {
+      const team = teams.find(t => t.id === teamId);
+      if (team) {
+        team.score = Math.max(0, team.score + amount);
+        renderModalScoreboard();
+        playSound('click');
+      }
+    }
+
+    function resetRoundScores() {
+      teams.forEach(t => t.score = 0);
+      completedCategories.clear();
+      renderModalScoreboard();
+      renderSheetCategories();
+      playSound('click');
+      showToast('Marcador reiniciado a 0', '🔄');
+    }
+
+    /* =========================================================================
+       10. GESTIÓN MULTI-ALUMNO, EDICIÓN Y SOPORTE JSON
+       ========================================================================= */
+
+    function openConfigModal() {
+      playSound('click');
+      editingStudentIndex = currentStudentIndex;
+      renderStudentsChipList();
+      populateEditStudentFields();
+      document.getElementById('config-modal').classList.add('open');
+    }
+
+    function closeConfigModal() {
+      playSound('click');
+      document.getElementById('config-modal').classList.remove('open');
+    }
+
+    function renderStudentsChipList() {
+      const container = document.getElementById('students-chip-list');
+      container.innerHTML = '';
+
+      studentsList.forEach((st, idx) => {
+        const chip = document.createElement('div');
+        chip.className = `student-chip ${idx === editingStudentIndex ? 'active' : ''}`;
+        chip.innerHTML = `<span>👤</span> ${st.name} <small style="opacity:0.75;">(Eq. ${st.teamId})</small>`;
+        chip.onclick = () => {
+          saveCurrentStudentChanges(false);
+          editingStudentIndex = idx;
+          renderStudentsChipList();
+          populateEditStudentFields();
+          playSound('click');
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    function populateEditStudentFields() {
+      const student = studentsList[editingStudentIndex];
+      document.getElementById('input-edit-student-name').value = student.name;
+      document.getElementById('select-edit-student-team').value = student.teamId;
+
+      const listContainer = document.getElementById('config-fields-list');
+      listContainer.innerHTML = '';
+
+      CATEGORIES_TEMPLATE.forEach((cat, i) => {
+        const item = student.items[i] || { letter: '', word: '' };
+        const row = document.createElement('div');
+        row.className = 'config-row';
+        row.innerHTML = `
+          <div class="config-row-title">${i + 1}. ${cat.title}</div>
+          <input type="text" maxlength="1" class="initial-input" id="cfg-letter-${i}" value="${item.letter}" placeholder="?">
+          <input type="text" class="word-input" id="cfg-word-${i}" value="${item.word}" placeholder="Palabra completa...">
+        `;
+        listContainer.appendChild(row);
+      });
+    }
+
+    function saveCurrentStudentChanges(setAsActiveAndClose = false) {
+      const student = studentsList[editingStudentIndex];
+      if (!student) return;
+
+      const newName = document.getElementById('input-edit-student-name').value.trim();
+      student.name = newName || `Alumno ${editingStudentIndex + 1}`;
+      student.teamId = parseInt(document.getElementById('select-edit-student-team').value, 10);
+
+      student.items = [];
+      for (let i = 0; i < 10; i++) {
+        const elL = document.getElementById(`cfg-letter-${i}`);
+        const elW = document.getElementById(`cfg-word-${i}`);
+        student.items.push({
+          letter: (elL ? elL.value : '').toUpperCase(),
+          word: (elW ? elW.value : '').toUpperCase()
+        });
+      }
+
+      if (setAsActiveAndClose) {
+        currentStudentIndex = editingStudentIndex;
+        completedCategories.clear();
+        updateStudentSelectDropdown();
+        loadActiveStudentGame(false);
+        closeConfigModal();
+        playSound('success');
+        showToast(`Ficha de ${student.name} guardada y lista`, '✅');
+      } else {
+        updateStudentSelectDropdown();
+      }
+    }
+
+    function addNewStudent() {
+      saveCurrentStudentChanges(false);
+      const newNum = studentsList.length + 1;
+      const newStudent = {
+        id: `alumno-${Date.now()}`,
+        name: `Alumno ${newNum}`,
+        teamId: ((newNum - 1) % 6) + 1,
+        items: Array.from({ length: 10 }, () => ({ letter: '', word: '' }))
+      };
+      studentsList.push(newStudent);
+      editingStudentIndex = studentsList.length - 1;
+      renderStudentsChipList();
+      populateEditStudentFields();
+      playSound('success');
+      showToast('Nueva ficha creada', '➕');
+    }
+
+    function deleteCurrentStudent() {
+      if (studentsList.length <= 1) {
+        showToast('Debe haber al menos una ficha de alumno en la lista', '⚠️');
+        return;
+      }
+      const deletedName = studentsList[editingStudentIndex].name;
+      studentsList.splice(editingStudentIndex, 1);
+      editingStudentIndex = Math.max(0, editingStudentIndex - 1);
+      if (currentStudentIndex >= studentsList.length) {
+        currentStudentIndex = 0;
+      }
+      renderStudentsChipList();
+      populateEditStudentFields();
+      updateStudentSelectDropdown();
+      loadActiveStudentGame(false);
+      playSound('fail');
+      showToast(`Ficha de ${deletedName} eliminada`, '🗑️');
+    }
+
+    function loadSampleTemplate() {
+      const sample = [
+        { l: 'M', w: 'MACARRONES' },
+        { l: 'A', w: 'AGUA' },
+        { l: 'P', w: 'PERRO' },
+        { l: 'V', w: 'VERDE' },
+        { l: 'N', w: 'NATACIÓN' },
+        { l: 'P', w: 'PLAYA' },
+        { l: 'V', w: 'VIVIR MI VIDA' },
+        { l: 'A', w: 'AJEDREZ' },
+        { l: 'C', w: 'CIENCIAS' },
+        { l: 'C', w: 'CUMPLEAÑOS' }
+      ];
+
+      sample.forEach((s, i) => {
+        const elL = document.getElementById(`cfg-letter-${i}`);
+        const elW = document.getElementById(`cfg-word-${i}`);
+        if (elL) elL.value = s.l;
+        if (elW) elW.value = s.w;
+      });
+      playSound('click');
+      showToast('Datos de ejemplo aplicados', '📄');
+    }
+
+    function downloadStudentsJSON() {
+      const modalOpen = document.getElementById('config-modal').classList.contains('open');
+      if (modalOpen) {
+        saveCurrentStudentChanges(false);
+      }
+
+      const exportData = {
+        app: "Todo Sobre Mi - Pizarra Digital Interactiva",
+        version: "2.5",
+        exportDate: new Date().toISOString(),
+        students: studentsList
+      };
+
+      const jsonString = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.href = url;
+      downloadAnchor.download = `fichas_todo_sobre_mi_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      document.body.removeChild(downloadAnchor);
+      URL.revokeObjectURL(url);
+
+      playSound('success');
+      showToast('¡Archivo JSON descargado con éxito!', '📥');
+    }
+
+    function handleJSONUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          let importedStudents = null;
+
+          if (Array.isArray(parsed.students) && parsed.students.length > 0) {
+            importedStudents = parsed.students;
+          } else if (Array.isArray(parsed) && parsed.length > 0) {
+            importedStudents = parsed;
+          }
+
+          if (importedStudents) {
+            studentsList = importedStudents.map((st, i) => ({
+              id: st.id || `alumno-${i + 1}`,
+              name: st.name || `Alumno ${i + 1}`,
+              teamId: (st.teamId >= 1 && st.teamId <= 6) ? st.teamId : 1,
+              items: Array.isArray(st.items) ? st.items.slice(0, 10).map(it => ({
+                letter: (it.letter || '?').toUpperCase(),
+                word: (it.word || '').toUpperCase()
+              })) : Array.from({ length: 10 }, () => ({ letter: '', word: '' }))
+            }));
+
+            currentStudentIndex = 0;
+            editingStudentIndex = 0;
+            completedCategories.clear();
+
+            updateStudentSelectDropdown();
+            loadActiveStudentGame(false);
+
+            if (document.getElementById('config-modal').classList.contains('open')) {
+              renderStudentsChipList();
+              populateEditStudentFields();
+            }
+
+            playSound('success');
+            showToast(`¡${studentsList.length} fichas cargadas con éxito!`, '🎉');
+          } else {
+            showToast('El archivo no contiene fichas válidas de alumnos', '❌');
+          }
+        } catch (err) {
+          showToast('Error al leer el archivo JSON: formato inválido', '❌');
+        }
+      };
+
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    /* =========================================================================
+       11. PANTALLA COMPLETA Y ANIMACIÓN DE CONFETI
+       ========================================================================= */
+    function toggleFullScreen() {
+      playSound('click');
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    let confettiParticles = [];
+    let confettiCanvas, confettiCtx, animId;
+
+    function setupCelebrationCanvas() {
+      confettiCanvas = document.getElementById('celebration-canvas');
+      confettiCtx = confettiCanvas.getContext('2d');
+      resizeConfettiCanvas();
+      window.addEventListener('resize', resizeConfettiCanvas);
+    }
+
+    function resizeConfettiCanvas() {
+      if (confettiCanvas) {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+      }
+    }
+
+    function launchConfetti() {
+      const colors = ['#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#FFE66D'];
+      confettiParticles = [];
+
+      for (let i = 0; i < 90; i++) {
+        confettiParticles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight * 0.4,
+          vx: (Math.random() - 0.5) * 18,
+          vy: (Math.random() - 0.8) * 16,
+          size: Math.random() * 9 + 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 12,
+          life: 1
+        });
+      }
+
+      if (animId) cancelAnimationFrame(animId);
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      let activeParticles = 0;
+
+      confettiParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.rotation += p.rotationSpeed;
+        p.life -= 0.012;
+
+        if (p.life > 0) {
+          activeParticles++;
+          confettiCtx.save();
+          confettiCtx.translate(p.x, p.y);
+          confettiCtx.rotate((p.rotation * Math.PI) / 180);
+          confettiCtx.fillStyle = p.color;
+          confettiCtx.globalAlpha = Math.max(0, p.life);
+          confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+          confettiCtx.restore();
+        }
+      });
+
+      if (activeParticles > 0) {
+        animId = requestAnimationFrame(animateConfetti);
+      } else {
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      }
+    }
+
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
