@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Elige tu Esquina - Dinámica de Aula</title>
+  <!-- Tipografía escolar y redondeada de alta legibilidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Paleta pastel contrastada según las fichas */
+      --c1-main: #e11d48;
+      --c1-bg: #ffe4e6;
+      --c1-border: #fda4af;
+      
+      --c2-main: #d97706;
+      --c2-bg: #fef3c7;
+      --c2-border: #fcd34d;
+      
+      --c3-main: #059669;
+      --c3-bg: #d1fae5;
+      --c3-border: #6ee7b7;
+      
+      --c4-main: #0284c7;
+      --c4-bg: #e0f2fe;
+      --c4-border: #7dd3fc;
+      
+      --bg-board: #f1f5f9;
+      --panel-bg: #ffffff;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --purple-accent: #7c3aed;
+      --purple-bg: #ede9fe;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg-board);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: 140px; /* Margen amplio para que el cajón inferior no tape nada */
+    }
+
+    /* BARRA SUPERIOR / CONTROLES DOCENTE */
+    header {
+      background: white;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 3px solid #e2e8f0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      flex-wrap: wrap;
+      margin-bottom: 8px; /* Separación respecto a la siguiente sección */
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      font-size: 2.4rem;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(4deg); }
+    }
+
+    .brand-title {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #3b0764;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-sub {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #9333ea;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* BOTONES TÁCTILES GRANDES (Mínimo 50-60px de área de pulsación) */
+    .btn {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.12);
+      min-height: 52px;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.12);
+    }
+
+    .btn-primary {
+      background: var(--purple-accent);
+      color: white;
+      border-color: #6d28d9;
+    }
+
+    .btn-secondary {
+      background: #f8fafc;
+      color: var(--text-dark);
+      border-color: #cbd5e1;
+    }
+
+    .btn-warning {
+      background: #f59e0b;
+      color: white;
+      border-color: #d97706;
+    }
+
+    .btn-json {
+      background: #0ea5e9;
+      color: white;
+      border-color: #0284c7;
+    }
+
+    .btn-icon-only {
+      padding: 12px 16px;
+      font-size: 1.3rem;
+    }
+
+    /* SELECTOR DE SITUACIÓN CON ESPACIADO MEJORADO */
+    .situation-selector-bar {
+      background: #faf5ff;
+      border-top: 2px solid #f3e8ff;
+      border-bottom: 2px dashed #d8b4fe;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: thin;
+      margin-bottom: 16px; /* Separación amplia hacia la tarjeta de pregunta */
+    }
+
+    .situation-pill {
+      background: white;
+      border: 2px solid #e9d5ff;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-weight: 800;
+      color: #6b21a8;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .situation-pill.active {
+      background: #7c3aed;
+      color: white;
+      border-color: #5b21b6;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+      transform: scale(1.05);
+    }
+
+    /* BANNER CENTRAL DE PREGUNTA CON MAYOR AIRE */
+    .question-banner {
+      margin: 10px 32px 24px 32px; /* Margen respirable superior e inferior */
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 10px solid var(--purple-accent);
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .q-info {
+      flex: 1;
+    }
+
+    .q-badge {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      background: var(--purple-bg);
+      color: var(--purple-accent);
+      padding: 6px 14px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .q-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+
+    .q-subtitle {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #475569;
+      margin-top: 6px;
+    }
+
+    /* TABLERO DE LAS 4 ESQUINAS CON ESPACIADO ENTRE MÓDULOS */
+    .corners-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 22px; /* Espaciado generoso entre esquinas */
+      padding: 0 32px 32px 32px;
+      flex: 1;
+      min-height: 520px;
+    }
+
+    .corner-card {
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border: 3.5px solid;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+      transition: transform 0.15s ease, box-shadow 0.2s;
+      min-height: 240px;
+    }
+
+    .corner-card.drag-over {
+      transform: scale(1.02);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+      filter: brightness(1.02);
+    }
+
+    /* Estilos temáticos de cada esquina */
+    .corner-1 { background: var(--c1-bg); border-color: var(--c1-border); }
+    .corner-2 { background: var(--c2-bg); border-color: var(--c2-border); }
+    .corner-3 { background: var(--c3-bg); border-color: var(--c3-border); }
+    .corner-4 { background: var(--c4-bg); border-color: var(--c4-border); }
+
+    .corner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      border-bottom: 2px dashed rgba(0,0,0,0.1);
+      padding-bottom: 12px;
+    }
+
+    .corner-heading-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .corner-num-badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .corner-1 .corner-num-badge { background: var(--c1-main); }
+    .corner-2 .corner-num-badge { background: var(--c2-main); }
+    .corner-3 .corner-num-badge { background: var(--c3-main); }
+    .corner-4 .corner-num-badge { background: var(--c4-main); }
+
+    .corner-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      line-height: 1.15;
+      color: #0f172a;
+    }
+
+    .corner-orientation {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .corner-arrow {
+      font-size: 1.5rem;
+      display: inline-block;
+    }
+
+    .corner-1 .corner-orientation { color: var(--c1-main); }
+    .corner-2 .corner-orientation { color: var(--c2-main); }
+    .corner-3 .corner-orientation { color: var(--c3-main); }
+    .corner-4 .corner-orientation { color: var(--c4-main); }
+
+    .corner-illustration {
+      font-size: 3.2rem;
+      text-align: center;
+      margin: 6px 0 12px 0;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+    }
+
+    /* ZONA DONDE CAEN LOS ALUMNOS */
+    .corner-drop-zone {
+      flex: 1;
+      background: rgba(255,255,255,0.72);
+      border-radius: var(--radius-md);
+      border: 2px dashed rgba(0,0,0,0.15);
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 10px;
+      min-height: 95px;
+      transition: background 0.2s;
+    }
+
+    .corner-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #475569;
+    }
+
+    .student-count-badge {
+      background: white;
+      padding: 5px 14px;
+      border-radius: 999px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      font-weight: 900;
+    }
+
+    /* FICHAS DE ALUMNOS (PILLS) */
+    .student-chip {
+      background: white;
+      border: 2px solid #cbd5e1;
+      color: #0f172a;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: grab;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: all 0.15s ease;
+      touch-action: none;
+      position: relative;
+    }
+
+    .student-chip:active {
+      cursor: grabbing;
+      transform: scale(1.08);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.22);
+      z-index: 100;
+    }
+
+    .student-chip .avatar-emoji {
+      font-size: 1.3rem;
+    }
+
+    .student-chip.assigned-c1 { border-color: var(--c1-main); background: #fff1f2; }
+    .student-chip.assigned-c2 { border-color: var(--c2-main); background: #fffbeb; }
+    .student-chip.assigned-c3 { border-color: var(--c3-main); background: #ecfdf5; }
+    .student-chip.assigned-c4 { border-color: var(--c4-main); background: #f0f9ff; }
+
+    /* CAJÓN INFERIOR DE ALUMNOS (DRAWER) */
+    .drawer-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 4px solid #cbd5e1;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.14);
+      z-index: 200;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .drawer-handle {
+      background: #f8fafc;
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .drawer-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .drawer-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .drawer-body {
+      padding: 16px 32px 22px 32px;
+      max-height: 190px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      background: #f8fafc;
+      scrollbar-width: thin;
+    }
+
+    .drawer-empty-state {
+      width: 100%;
+      text-align: center;
+      color: #10b981;
+      font-weight: 800;
+      font-size: 1.2rem;
+      padding: 14px;
+    }
+
+    /* MODAL GENERAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+      border: 4px solid var(--purple-accent);
+    }
+
+    .modal-box h3 {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .modal-box p {
+      text-align: center;
+      font-size: 1.15rem;
+      color: #475569;
+      margin-bottom: 22px;
+      font-weight: 600;
+    }
+
+    .target-corner-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .btn-target-corner {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 3px solid;
+      font-size: 1.25rem;
+      font-weight: 900;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-tc-1 { background: var(--c1-bg); border-color: var(--c1-main); color: var(--c1-main); }
+    .btn-tc-2 { background: var(--c2-bg); border-color: var(--c2-main); color: var(--c2-main); }
+    .btn-tc-3 { background: var(--c3-bg); border-color: var(--c3-main); color: var(--c3-main); }
+    .btn-tc-4 { background: var(--c4-bg); border-color: var(--c4-main); color: var(--c4-main); }
+
+    /* SPOTLIGHT MICRÓFONO */
+    .spotlight-card {
+      text-align: center;
+      padding: 10px;
+    }
+
+    .spotlight-avatar {
+      font-size: 4.8rem;
+      margin-bottom: 8px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .spotlight-name {
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: var(--purple-accent);
+    }
+
+    .spotlight-corner-info {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin: 12px 0 22px 0;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      display: inline-block;
+    }
+
+    .spotlight-prompt {
+      background: #fef08a;
+      border: 2px dashed #ca8a04;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #713f12;
+      line-height: 1.35;
+    }
+
+    /* GESTOR DE ALUMNOS (TEXTAREA) */
+    .roster-textarea {
+      width: 100%;
+      height: 160px;
+      padding: 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      resize: vertical;
+      margin-bottom: 18px;
+    }
+
+    /* TEMPORIZADOR */
+    .timer-display {
+      font-size: 4.2rem;
+      font-weight: 900;
+      color: #0f172a;
+      text-align: center;
+      margin: 12px 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    /* TOAST / MENSAJE EN PANTALLA (SIN ALERT) */
+    .toast-msg {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #1e293b;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      z-index: 10000;
+      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      .corners-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        padding: 0 16px 24px 16px;
+      }
+      .question-banner {
+        margin: 10px 16px 20px 16px;
+        padding: 18px 20px;
+      }
+      .situation-selector-bar {
+        padding: 10px 16px;
+      }
+      header {
+        padding: 12px 16px;
+      }
+      .brand-title { font-size: 1.4rem; }
+      .q-title { font-size: 1.4rem; }
+      .btn { font-size: 0.95rem; padding: 10px 14px; min-height: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NOTIFICACIÓN FLOTANTE (REEMPLAZO ACCESIBLE DE ALERTA) -->
+  <div class="toast-msg" id="toast-msg">
+    <span id="toast-icon">✨</span>
+    <span id="toast-text">Mensaje</span>
+  </div>
+
+  <!-- BARRA SUPERIOR CON ACCIONES -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⭐</div>
+      <div>
+        <div class="brand-title">ELIGE TU ESQUINA</div>
+        <div class="brand-sub">Dinámica de Aula Activa • 3.º Primaria</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- BOTONES JSON SOLICITADOS -->
+      <button class="btn btn-json" id="btn-export-json" title="Descargar las preguntas y configuración en un archivo JSON">
+        💾 Descargar JSON
+      </button>
+      <button class="btn btn-secondary" id="btn-import-json-trigger" title="Cargar un archivo JSON con preguntas personalizadas">
+        📂 Cargar JSON
+      </button>
+      <input type="file" id="json-file-input" accept=".json,application/json" style="display: none;">
+
+      <!-- HERRAMIENTAS DE AULA -->
+      <button class="btn btn-warning" id="btn-timer" title="Temporizador de debate">
+        ⏱️ <span id="timer-btn-text">Temporizador</span>
+      </button>
+      <button class="btn btn-primary" id="btn-speaker" title="Elegir a un alumno al azar para justificar">
+        🎤 ¿Por qué tu esquina?
+      </button>
+      <button class="btn btn-secondary" id="btn-roster" title="Editar lista de alumnos">
+        👥 Alumnado (<span id="total-students-count">0</span>)
+      </button>
+      <button class="btn btn-secondary btn-icon-only" id="btn-sound-toggle" title="Activar/Silenciar efectos de sonido">
+        🔊
+      </button>
+      <button class="btn btn-secondary btn-icon-only" id="btn-reset" title="Devolver a todos al cajón">
+        🔄
+      </button>
+    </div>
+  </header>
+
+  <!-- SELECTOR RÁPIDO DE SITUACIONES (Fichas didácticas) -->
+  <nav class="situation-selector-bar" id="situations-bar">
+    <!-- Generado dinámicamente por JS -->
+  </nav>
+
+  <!-- BANNER DE LA PREGUNTA ACTIVA -->
+  <section class="question-banner">
+    <div class="q-info">
+      <span class="q-badge" id="current-category">SITUACIÓN 1</span>
+      <h1 class="q-title" id="current-title">¿Qué prefieres hacer en clase?</h1>
+      <p class="q-subtitle" id="current-question">Plantea la pregunta, escucha las 4 opciones y ¡muévete a tu esquina!</p>
+    </div>
+    <div>
+      <button class="btn btn-secondary" id="btn-custom-sit">
+        ✏️ Crear mi pregunta
+      </button>
+    </div>
+  </section>
+
+  <!-- TABLERO 2x2: LAS 4 ESQUINAS DEL AULA -->
+  <main class="corners-grid">
+    <!-- ESQUINA 1: ARRIBA A LA IZQUIERDA (FRENTE IZQUIERDA) -->
+    <div class="corner-card corner-1" data-corner="1">
+      <div class="corner-header">
+        <div class="corner-heading-group">
+          <div class="corner-num-badge">1</div>
+          <div class="corner-title" id="c1-title">Leer</div>
+        </div>
+        <div class="corner-orientation">
+          <span class="corner-arrow">↖</span> Esquina 1
+        </div>
+      </div>
+      <div class="corner-illustration" id="c1-icon">📖</div>
+      <div class="corner-drop-zone" id="drop-1" data-corner="1">
+        <!-- Fichas de alumnos -->
+      </div>
+      <div class="corner-footer">
+        <span class="corner-label">Frente Izquierda</span>
+        <span class="student-count-badge" id="count-1">0 alumnos</span>
+      </div>
+    </div>
+
+    <!-- ESQUINA 2: ARRIBA A LA DERECHA (FRENTE DERECHA) -->
+    <div class="corner-card corner-2" data-corner="2">
+      <div class="corner-header">
+        <div class="corner-heading-group">
+          <div class="corner-num-badge">2</div>
+          <div class="corner-title" id="c2-title">Dibujar</div>
+        </div>
+        <div class="corner-orientation">
+          Esquina 2 <span class="corner-arrow">↗</span>
+        </div>
+      </div>
+      <div class="corner-illustration" id="c2-icon">🎨</div>
+      <div class="corner-drop-zone" id="drop-2" data-corner="2">
+        <!-- Fichas de alumnos -->
+      </div>
+      <div class="corner-footer">
+        <span class="corner-label">Frente Derecha</span>
+        <span class="student-count-badge" id="count-2">0 alumnos</span>
+      </div>
+    </div>
+
+    <!-- ESQUINA 3: ABAJO A LA IZQUIERDA (FONDO IZQUIERDA) -->
+    <div class="corner-card corner-3" data-corner="3">
+      <div class="corner-header">
+        <div class="corner-heading-group">
+          <div class="corner-num-badge">3</div>
+          <div class="corner-title" id="c3-title">Construir</div>
+        </div>
+        <div class="corner-orientation">
+          <span class="corner-arrow">↙</span> Esquina 3
+        </div>
+      </div>
+      <div class="corner-illustration" id="c3-icon">🧱</div>
+      <div class="corner-drop-zone" id="drop-3" data-corner="3">
+        <!-- Fichas de alumnos -->
+      </div>
+      <div class="corner-footer">
+        <span class="corner-label">Fondo Izquierda</span>
+        <span class="student-count-badge" id="count-3">0 alumnos</span>
+      </div>
+    </div>
+
+    <!-- ESQUINA 4: ABAJO A LA DERECHA (FONDO DERECHA) -->
+    <div class="corner-card corner-4" data-corner="4">
+      <div class="corner-header">
+        <div class="corner-heading-group">
+          <div class="corner-num-badge">4</div>
+          <div class="corner-title" id="c4-title">Investigar</div>
+        </div>
+        <div class="corner-orientation">
+          Esquina 4 <span class="corner-arrow">↘</span>
+        </div>
+      </div>
+      <div class="corner-illustration" id="c4-icon">🔍</div>
+      <div class="corner-drop-zone" id="drop-4" data-corner="4">
+        <!-- Fichas de alumnos -->
+      </div>
+      <div class="corner-footer">
+        <span class="corner-label">Fondo Derecha</span>
+        <span class="student-count-badge" id="count-4">0 alumnos</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- CAJÓN DE ALUMNOS (DRAWER) -->
+  <aside class="drawer-panel" id="drawer-panel">
+    <div class="drawer-handle" id="drawer-toggle">
+      <div class="drawer-title">
+        <span>🎒 CAJÓN DE LA CLASE</span>
+        <span style="font-size: 1rem; font-weight: 700; color: #64748b;">(Pendientes de elegir: <span id="pending-count">0</span>)</span>
+      </div>
+      <div class="drawer-controls">
+        <button class="btn btn-secondary" id="btn-quick-auto" style="padding: 8px 14px; font-size: 0.95rem; min-height: 42px;">
+          ⚡ Reparto sorpresa
+        </button>
+        <button class="btn btn-secondary" id="btn-drawer-fold" style="padding: 8px 14px; font-size: 0.95rem; min-height: 42px;">
+          🔽 Ocultar / Mostrar
+        </button>
+      </div>
+    </div>
+    <div class="drawer-body" id="drawer-students">
+      <!-- Los nombres de alumnos pendientes se renderizan aquí -->
+    </div>
+  </aside>
+
+  <!-- MODAL: ASIGNACIÓN RÁPIDA POR TOQUE EN PANTALLA TÁCTIL (MDI) -->
+  <div class="modal-overlay" id="modal-select-corner">
+    <div class="modal-box">
+      <h3 id="modal-student-name">Mover a Alumno</h3>
+      <p>Toca la esquina a la que va a ir o devuélvelo al cajón:</p>
+      <div class="target-corner-buttons">
+        <button class="btn-target-corner btn-tc-1" data-corner="1">
+          <span>↖ Esquina 1</span>
+          <strong id="btn-tc1-label">Opción 1</strong>
+        </button>
+        <button class="btn-target-corner btn-tc-2" data-corner="2">
+          <span>↗ Esquina 2</span>
+          <strong id="btn-tc2-label">Opción 2</strong>
+        </button>
+        <button class="btn-target-corner btn-tc-3" data-corner="3">
+          <span>↙ Esquina 3</span>
+          <strong id="btn-tc3-label">Opción 3</strong>
+        </button>
+        <button class="btn-target-corner btn-tc-4" data-corner="4">
+          <span>↘ Esquina 4</span>
+          <strong id="btn-tc4-label">Opción 4</strong>
+        </button>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn btn-secondary" style="flex: 1;" id="btn-return-drawer">
+          🎒 Devolver al cajón
+        </button>
+        <button class="btn btn-secondary" style="flex: 1;" id="btn-close-modal-corner">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MICRÓFONO DE JUSTIFICACIÓN ("¿Por qué elegiste esa esquina?") -->
+  <div class="modal-overlay" id="modal-spotlight">
+    <div class="modal-box" style="text-align: center;">
+      <div class="spotlight-card">
+        <div class="spotlight-avatar" id="spotlight-avatar">🌟</div>
+        <h3 style="color:#64748b; font-size:1.15rem; text-transform:uppercase; letter-spacing:1px;">¡Turno de palabra!</h3>
+        <div class="spotlight-name" id="spotlight-student">Nombre Alumno</div>
+        <div class="spotlight-corner-info" id="spotlight-corner-desc">Ha elegido la Esquina X</div>
+        
+        <div class="spotlight-prompt">
+          🗣️ "¿Por qué elegiste esta opción? Comparte tu motivo con la clase en voz alta."
+        </div>
+      </div>
+      <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center;">
+        <button class="btn btn-primary" id="btn-spotlight-another">
+          🎲 Elegir a otro/a
+        </button>
+        <button class="btn btn-secondary" id="btn-spotlight-close">
+          ¡Listo!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TEMPORIZADOR DE DEBATE Y REFLEXIÓN -->
+  <div class="modal-overlay" id="modal-timer">
+    <div class="modal-box" style="text-align: center; max-width: 480px;">
+      <h3>⏱️ Tiempo de Debate en Esquinas</h3>
+      <p>Reuníos con los compañeros de vuestra esquina y compartid argumentos.</p>
+      
+      <div class="timer-display" id="timer-display">01:00</div>
+
+      <div class="timer-buttons">
+        <button class="btn btn-secondary" data-time="30">30 seg</button>
+        <button class="btn btn-secondary" data-time="60">1 min</button>
+        <button class="btn btn-secondary" data-time="120">2 min</button>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 18px;">
+        <button class="btn btn-primary" id="timer-start-pause">▶ Iniciar</button>
+        <button class="btn btn-secondary" id="timer-reset">↺ Reiniciar</button>
+        <button class="btn btn-secondary" id="timer-close">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTIÓN DE LA LISTA DE ALUMNOS -->
+  <div class="modal-overlay" id="modal-roster">
+    <div class="modal-box">
+      <h3>👥 Alumnos de la Clase</h3>
+      <p>Escribe o pega los nombres de tus alumnos (uno por línea o separados por comas):</p>
+      <textarea class="roster-textarea" id="roster-input" placeholder="Ej: Lucas, Sofía, Mateo, Valeria..."></textarea>
+      <div style="display: flex; gap: 12px;">
+        <button class="btn btn-primary" style="flex: 1;" id="btn-save-roster">Guardar lista</button>
+        <button class="btn btn-secondary" id="btn-close-roster">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR SITUACIÓN PERSONALIZADA -->
+  <div class="modal-overlay" id="modal-custom">
+    <div class="modal-box">
+      <h3>✏️ Nueva Situación de Aula</h3>
+      <p>Define la temática y las 4 esquinas a debatir:</p>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <input type="text" id="cust-title" placeholder="Título de la pregunta (Ej: ¿Qué superpoder tendrías?)" style="padding:12px; border:2px solid #cbd5e1; border-radius:10px; font-size:1.05rem; font-weight:700;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <input type="text" id="cust-c1" placeholder="↖ Esquina 1 (Texto + Emoji)" style="padding:10px; border:2px solid var(--c1-border); border-radius:8px;">
+          <input type="text" id="cust-c2" placeholder="↗ Esquina 2 (Texto + Emoji)" style="padding:10px; border:2px solid var(--c2-border); border-radius:8px;">
+          <input type="text" id="cust-c3" placeholder="↙ Esquina 3 (Texto + Emoji)" style="padding:10px; border:2px solid var(--c3-border); border-radius:8px;">
+          <input type="text" id="cust-c4" placeholder="↘ Esquina 4 (Texto + Emoji)" style="padding:10px; border:2px solid var(--c4-border); border-radius:8px;">
+        </div>
+      </div>
+      <div style="display:flex; gap:12px;">
+        <button class="btn btn-primary" style="flex:1;" id="btn-save-custom">Añadir al juego</button>
+        <button class="btn btn-secondary" id="btn-close-custom">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================
+       DATOS DIDÁCTICOS PREDEFINIDOS (Fichas del aula)
+       ========================================================== */
+    const SITUACIONES_PREDEFINIDAS = [
+      {
+        id: 'preferencias',
+        badge: 'Rincón de Aula',
+        title: '¿Qué actividad prefieres hacer hoy?',
+        subtitle: 'Elige tu rincón favorito y desplázate hasta esa esquina física del aula.',
+        c1: { title: 'Leer', icon: '📖', orient: '↖ Esquina 1' },
+        c2: { title: 'Dibujar', icon: '🎨', orient: 'Esquina 2 ↗' },
+        c3: { title: 'Construir', icon: '🧱', orient: '↙ Esquina 3' },
+        c4: { title: 'Investigar', icon: '🔍', orient: 'Esquina 4 ↘' }
+      },
+      {
+        id: 'viaje_magico',
+        badge: 'SITUACIÓN 1: Un Viaje Mágico',
+        title: 'Te encuentras un billete de tren para un viaje misterioso. ¿Adónde irías?',
+        subtitle: 'Justifica tu decisión: ¿Por qué te atrae más ese destino fantástico?',
+        c1: { title: 'Un Castillo de Fantasía', icon: '🏰', orient: '↖ Esquina 1' },
+        c2: { title: 'Una Isla Tropical', icon: '🏝️', orient: 'Esquina 2 ↗' },
+        c3: { title: 'La Estación Espacial', icon: '🚀', orient: '↙ Esquina 3' },
+        c4: { title: 'Un Bosque Profundo', icon: '🌲', orient: 'Esquina 4 ↘' }
+      },
+      {
+        id: 'inventos_utiles',
+        badge: 'SITUACIÓN 2: Inventos Útiles',
+        title: 'Eres un inventor/a famoso/a. ¿Qué invento crearías primero?',
+        subtitle: 'Piensa en qué problema resuelve tu invento y cómo ayuda al mundo.',
+        c1: { title: 'Máquina del Tiempo', icon: '⏳', orient: '↖ Esquina 1' },
+        c2: { title: 'Robots Cocineros', icon: '🤖', orient: 'Esquina 2 ↗' },
+        c3: { title: 'Un Teletransportador', icon: '🌀', orient: '↙ Esquina 3' },
+        c4: { title: 'Planta Limpia-Aire', icon: '🌸', orient: 'Esquina 4 ↘' }
+      },
+      {
+        id: 'superpoderes',
+        badge: 'SITUACIÓN 3: Superpoderes del Día',
+        title: 'Te dan a elegir un superpoder durante todo el día. ¿Cuál eliges?',
+        subtitle: 'Razona qué harías a lo largo del día con esa habilidad especial.',
+        c1: { title: 'Volar como un Pájaro', icon: '🪽', orient: '↖ Esquina 1' },
+        c2: { title: 'Súper Fuerza', icon: '💪', orient: 'Esquina 2 ↗' },
+        c3: { title: 'Ser Invisible', icon: '👻', orient: '↙ Esquina 3' },
+        c4: { title: 'Controlar el Clima', icon: '🌦️', orient: 'Esquina 4 ↘' }
+      },
+      {
+        id: 'picnic_clase',
+        badge: 'SITUACIÓN 4: El Mejor Picnic',
+        title: 'Organizas un picnic perfecto para toda la clase. ¿Qué actividad eliges?',
+        subtitle: '¿Qué plan divertirá a más compañeros y cómo lo prepararías?',
+        c1: { title: 'Cuentacuentos Interactivo', icon: '📚', orient: '↖ Esquina 1' },
+        c2: { title: 'Gran Mural de Tiza', icon: '🖍️', orient: 'Esquina 2 ↗' },
+        c3: { title: 'Construir Cabaña Gigante', icon: '🏕️', orient: '↙ Esquina 3' },
+        c4: { title: 'Búsqueda del Tesoro', icon: '🗺️', orient: 'Esquina 4 ↘' }
+      }
+    ];
+
+    // Alumnado por defecto (3.º Primaria)
+    const DEFAULT_STUDENTS = [
+      "Álvaro", "Carmen", "Daniel", "Emma", "Hugo", 
+      "Irene", "Javier", "Leo", "Lucía", "Lucas", 
+      "Manuel", "Marina", "Mateo", "Noa", "Oliver", 
+      "Paula", "Pablo", "Sara", "Sofía", "Valeria"
+    ];
+
+    const EMOJIS_AVATARS = ["🦁", "🦊", "🐼", "🐸", "🚀", "🌟", "🦄", "🐨", "🐯", "🐬", "🦉", "🎨", "⚡", "🦖"];
+
+    /* ==========================================================
+       ESTADO DE LA APLICACIÓN
+       ========================================================== */
+    let appState = {
+      situations: JSON.parse(JSON.stringify(SITUACIONES_PREDEFINIDAS)),
+      currentSituationIndex: 0,
+      students: [],
+      soundEnabled: true,
+      drawerOpen: true,
+      activeStudentForModal: null,
+      timerSeconds: 60,
+      timerRunning: false,
+      timerInterval: null
+    };
+
+    /* ==========================================================
+       NOTIFICACIONES FLOTANTES (REEMPLAZO DE ALERT)
+       ========================================================== */
+    let toastTimeout = null;
+    function showToast(message, icon = '✨') {
+      const toast = document.getElementById('toast-msg');
+      document.getElementById('toast-text').textContent = message;
+      document.getElementById('toast-icon').textContent = icon;
+      toast.classList.add('show');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3200);
+    }
+
+    /* ==========================================================
+       WEB AUDIO API (Retroalimentación sonora)
+       ========================================================== */
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    const soundFX = {
+      pop: () => {
+        if (!appState.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(420, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.08);
+        } catch(e) {}
+      },
+      chime: () => {
+        if (!appState.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.4);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.08);
+            osc.stop(ctx.currentTime + idx * 0.08 + 0.45);
+          });
+        } catch(e) {}
+      },
+      tick: () => {
+        if (!appState.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          gain.gain.setValueAtTime(0.1, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.03);
+        } catch(e) {}
+      }
+    };
+
+    /* ==========================================================
+       INICIALIZACIÓN Y RENDERIZADO
+       ========================================================== */
+    function initApp() {
+      initStudents(DEFAULT_STUDENTS);
+      renderSituationsBar();
+      loadSituation(0);
+      setupEventListeners();
+      setupDragAndDrop();
+    }
+
+    function initStudents(namesArray) {
+      appState.students = namesArray.map((name, index) => ({
+        id: 'std_' + index + '_' + Math.random().toString(36).substr(2, 9),
+        name: name.trim(),
+        avatar: EMOJIS_AVATARS[index % EMOJIS_AVATARS.length],
+        corner: null
+      }));
+      renderStudents();
+    }
+
+    function renderSituationsBar() {
+      const container = document.getElementById('situations-bar');
+      container.innerHTML = '';
+      appState.situations.forEach((sit, index) => {
+        const pill = document.createElement('button');
+        pill.className = `situation-pill ${index === appState.currentSituationIndex ? 'active' : ''}`;
+        pill.textContent = `${index + 1}. ${sit.badge.split(':')[0] || 'Situación'}`;
+        pill.addEventListener('click', () => {
+          loadSituation(index);
+          soundFX.pop();
+        });
+        container.appendChild(pill);
+      });
+    }
+
+    function loadSituation(index) {
+      if (!appState.situations[index]) index = 0;
+      appState.currentSituationIndex = index;
+      const sit = appState.situations[index];
+
+      // Cabecera
+      document.getElementById('current-category').textContent = sit.badge || `SITUACIÓN ${index + 1}`;
+      document.getElementById('current-title').textContent = sit.title;
+      document.getElementById('current-question').textContent = sit.subtitle || '¡Muévete a tu esquina elegida!';
+
+      // 4 esquinas
+      document.getElementById('c1-title').textContent = sit.c1.title;
+      document.getElementById('c1-icon').textContent = sit.c1.icon || '📖';
+
+      document.getElementById('c2-title').textContent = sit.c2.title;
+      document.getElementById('c2-icon').textContent = sit.c2.icon || '🎨';
+
+      document.getElementById('c3-title').textContent = sit.c3.title;
+      document.getElementById('c3-icon').textContent = sit.c3.icon || '🧱';
+
+      document.getElementById('c4-title').textContent = sit.c4.title;
+      document.getElementById('c4-icon').textContent = sit.c4.icon || '🔍';
+
+      // Actualizar modal rápido
+      document.getElementById('btn-tc1-label').textContent = `${sit.c1.icon || ''} ${sit.c1.title}`;
+      document.getElementById('btn-tc2-label').textContent = `${sit.c2.icon || ''} ${sit.c2.title}`;
+      document.getElementById('btn-tc3-label').textContent = `${sit.c3.icon || ''} ${sit.c3.title}`;
+      document.getElementById('btn-tc4-label').textContent = `${sit.c4.icon || ''} ${sit.c4.title}`;
+
+      // Actualizar pills
+      const pills = document.querySelectorAll('.situation-pill');
+      pills.forEach((p, i) => p.classList.toggle('active', i === index));
+
+      renderStudents();
+    }
+
+    function renderStudents() {
+      const drawer = document.getElementById('drawer-students');
+      const drop1 = document.getElementById('drop-1');
+      const drop2 = document.getElementById('drop-2');
+      const drop3 = document.getElementById('drop-3');
+      const drop4 = document.getElementById('drop-4');
+
+      drawer.innerHTML = '';
+      drop1.innerHTML = '';
+      drop2.innerHTML = '';
+      drop3.innerHTML = '';
+      drop4.innerHTML = '';
+
+      let countPend = 0;
+      const counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+      appState.students.forEach(student => {
+        const chip = createStudentChip(student);
+
+        if (student.corner === null) {
+          drawer.appendChild(chip);
+          countPend++;
+        } else {
+          counts[student.corner]++;
+          chip.classList.add(`assigned-c${student.corner}`);
+          const targetZone = document.getElementById(`drop-${student.corner}`);
+          if (targetZone) targetZone.appendChild(chip);
+        }
+      });
+
+      if (countPend === 0) {
+        drawer.innerHTML = '<div class="drawer-empty-state">🎉 ¡Genial! Todos los alumnos ya han elegido su rincón.</div>';
+      }
+
+      document.getElementById('pending-count').textContent = countPend;
+      document.getElementById('total-students-count').textContent = appState.students.length;
+      document.getElementById('count-1').textContent = `${counts[1]} ${counts[1] === 1 ? 'alumno' : 'alumnos'}`;
+      document.getElementById('count-2').textContent = `${counts[2]} ${counts[2] === 1 ? 'alumno' : 'alumnos'}`;
+      document.getElementById('count-3').textContent = `${counts[3]} ${counts[3] === 1 ? 'alumno' : 'alumnos'}`;
+      document.getElementById('count-4').textContent = `${counts[4]} ${counts[4] === 1 ? 'alumno' : 'alumnos'}`;
+    }
+
+    function createStudentChip(student) {
+      const chip = document.createElement('div');
+      chip.className = 'student-chip';
+      chip.setAttribute('data-id', student.id);
+      chip.setAttribute('draggable', 'true');
+      chip.innerHTML = `<span class="avatar-emoji">${student.avatar}</span> <span>${student.name}</span>`;
+
+      chip.addEventListener('click', () => {
+        if (!chip.dataset.isDragging) {
+          openCornerSelectorModal(student);
+          soundFX.pop();
+        }
+      });
+
+      return chip;
+    }
+
+    /* ==========================================================
+       DRAG AND DROP TÁCTIL Y RATÓN
+       ========================================================== */
+    let draggedStudentId = null;
+
+    function setupDragAndDrop() {
+      document.addEventListener('dragstart', (e) => {
+        const target = e.target.closest('.student-chip');
+        if (target) {
+          draggedStudentId = target.getAttribute('data-id');
+          target.dataset.isDragging = 'true';
+          e.dataTransfer.setData('text/plain', draggedStudentId);
+          setTimeout(() => target.style.opacity = '0.4', 0);
+          soundFX.pop();
+        }
+      });
+
+      document.addEventListener('dragend', (e) => {
+        const target = e.target.closest('.student-chip');
+        if (target) {
+          delete target.dataset.isDragging;
+          target.style.opacity = '1';
+        }
+        document.querySelectorAll('.corner-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      const dropZones = [
+        document.querySelector('.corner-1'),
+        document.querySelector('.corner-2'),
+        document.querySelector('.corner-3'),
+        document.querySelector('.corner-4'),
+        document.getElementById('drawer-panel')
+      ];
+
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (zone.classList.contains('corner-card')) {
+            zone.classList.add('drag-over');
+          }
+        });
+
+        zone.addEventListener('dragleave', () => {
+          zone.classList.remove('drag-over');
+        });
+
+        zone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          const id = e.dataTransfer.getData('text/plain') || draggedStudentId;
+          if (id) {
+            const cornerNum = zone.dataset.corner ? parseInt(zone.dataset.corner) : null;
+            moveStudentToCorner(id, cornerNum);
+          }
+        });
+      });
+
+      // Pointer events para pantallas táctiles de gran formato (MDI)
+      let activePointerItem = null;
+      let ghost = null;
+      let startX = 0, startY = 0;
+
+      document.addEventListener('pointerdown', (e) => {
+        const chip = e.target.closest('.student-chip');
+        if (!chip || e.button !== 0) return;
+        startX = e.clientX;
+        startY = e.clientY;
+        activePointerItem = chip;
+      });
+
+      document.addEventListener('pointermove', (e) => {
+        if (!activePointerItem) return;
+        const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+        if (dist > 14 && !ghost) {
+          activePointerItem.dataset.isDragging = 'true';
+          ghost = activePointerItem.cloneNode(true);
+          ghost.style.position = 'fixed';
+          ghost.style.pointerEvents = 'none';
+          ghost.style.zIndex = '99999';
+          ghost.style.opacity = '0.92';
+          ghost.style.transform = 'translate(-50%, -50%) scale(1.15)';
+          document.body.appendChild(ghost);
+        }
+
+        if (ghost) {
+          ghost.style.left = e.clientX + 'px';
+          ghost.style.top = e.clientY + 'px';
+        }
+      });
+
+      document.addEventListener('pointerup', (e) => {
+        if (activePointerItem && ghost) {
+          ghost.remove();
+          ghost = null;
+
+          const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+          const cornerElem = elemBelow?.closest('.corner-card');
+          const drawerElem = elemBelow?.closest('#drawer-panel');
+          const studentId = activePointerItem.getAttribute('data-id');
+
+          if (cornerElem) {
+            const cornerNum = parseInt(cornerElem.dataset.corner);
+            moveStudentToCorner(studentId, cornerNum);
+          } else if (drawerElem) {
+            moveStudentToCorner(studentId, null);
+          }
+
+          setTimeout(() => {
+            if (activePointerItem) delete activePointerItem.dataset.isDragging;
+            activePointerItem = null;
+          }, 50);
+        } else {
+          activePointerItem = null;
+        }
+      });
+    }
+
+    function moveStudentToCorner(studentId, cornerNum) {
+      const student = appState.students.find(s => s.id === studentId);
+      if (student) {
+        student.corner = cornerNum;
+        renderStudents();
+        soundFX.chime();
+      }
+    }
+
+    /* ==========================================================
+       EXPORTACIÓN E IMPORTACIÓN JSON (CONFIGURACIÓN & PREGUNTAS)
+       ========================================================== */
+    function exportToJSON() {
+      const exportData = {
+        title: "Elige tu Esquina - Configuración de Aula",
+        version: "1.0",
+        date: new Date().toISOString(),
+        students: appState.students.map(s => s.name),
+        situations: appState.situations
+      };
+
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", url);
+      downloadAnchor.setAttribute("download", `elige_tu_esquina_preguntas_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      URL.revokeObjectURL(url);
+
+      soundFX.chime();
+      showToast("¡Archivo JSON descargado con éxito!", "💾");
+    }
+
+    function handleJSONImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+
+          // Validación básica del formato
+          if (!parsed.situations || !Array.isArray(parsed.situations) || parsed.situations.length === 0) {
+            showToast("El archivo JSON no contiene un listado válido de 'situations'.", "⚠️");
+            return;
+          }
+
+          // Cargar las situaciones
+          appState.situations = parsed.situations;
+
+          // Si el JSON incluye lista de alumnos, actualizarla también
+          if (parsed.students && Array.isArray(parsed.students) && parsed.students.length > 0) {
+            initStudents(parsed.students);
+          } else {
+            // Reiniciar estado de alumnos al cajón para la nueva dinámica
+            appState.students.forEach(s => s.corner = null);
+          }
+
+          // Reconstruir UI
+          renderSituationsBar();
+          loadSituation(0);
+          soundFX.chime();
+          showToast(`¡Cargadas ${appState.situations.length} situaciones correctamente!`, "🎉");
+
+        } catch (err) {
+          showToast("Error al leer el archivo JSON. Verifica su sintaxis.", "❌");
+        } finally {
+          event.target.value = ""; // Permitir recargar el mismo archivo si es necesario
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    /* ==========================================================
+       MODAL Y UTILIDADES TÁCTILES
+       ========================================================== */
+    function openCornerSelectorModal(student) {
+      appState.activeStudentForModal = student;
+      const modal = document.getElementById('modal-select-corner');
+      document.getElementById('modal-student-name').textContent = `${student.avatar} Asignar esquina a ${student.name}`;
+      modal.classList.add('open');
+    }
+
+    function closeCornerSelectorModal() {
+      document.getElementById('modal-select-corner').classList.remove('open');
+      appState.activeStudentForModal = null;
+    }
+
+    function pickRandomStudentForSpotlight() {
+      const assigned = appState.students.filter(s => s.corner !== null);
+      if (assigned.length === 0) {
+        showToast("¡Primero algún alumno debe situarse en una esquina!", "⚠️");
+        return;
+      }
+
+      const chosen = assigned[Math.floor(Math.random() * assigned.length)];
+      const sit = appState.situations[appState.currentSituationIndex];
+      const cornerData = sit[`c${chosen.corner}`];
+
+      document.getElementById('spotlight-avatar').textContent = chosen.avatar;
+      document.getElementById('spotlight-student').textContent = chosen.name;
+      
+      const badge = document.getElementById('spotlight-corner-desc');
+      badge.textContent = `📍 Esquina ${chosen.corner}: ${cornerData.icon} ${cornerData.title}`;
+      badge.style.background = `var(--c${chosen.corner}-bg)`;
+      badge.style.color = `var(--c${chosen.corner}-main)`;
+      badge.style.border = `2px solid var(--c${chosen.corner}-border)`;
+
+      document.getElementById('modal-spotlight').classList.add('open');
+      soundFX.chime();
+    }
+
+    /* ==========================================================
+       TEMPORIZADOR DE DEBATE
+       ========================================================== */
+    function openTimerModal() {
+      document.getElementById('modal-timer').classList.add('open');
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(appState.timerSeconds / 60);
+      const secs = appState.timerSeconds % 60;
+      const str = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      document.getElementById('timer-display').textContent = str;
+      document.getElementById('timer-btn-text').textContent = str;
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('timer-start-pause');
+      if (appState.timerRunning) {
+        clearInterval(appState.timerInterval);
+        appState.timerRunning = false;
+        btn.textContent = '▶ Continuar';
+      } else {
+        if (appState.timerSeconds <= 0) appState.timerSeconds = 60;
+        appState.timerRunning = true;
+        btn.textContent = '⏸ Pausar';
+        appState.timerInterval = setInterval(() => {
+          if (appState.timerSeconds > 0) {
+            appState.timerSeconds--;
+            updateTimerDisplay();
+            if (appState.timerSeconds <= 5) soundFX.tick();
+          } else {
+            clearInterval(appState.timerInterval);
+            appState.timerRunning = false;
+            btn.textContent = '▶ Iniciar';
+            soundFX.chime();
+            showToast("¡Tiempo de debate finalizado!", "🔔");
+          }
+        }, 1000);
+      }
+    }
+
+    /* ==========================================================
+       LISTENERS DE BOTONES Y ACCIONES
+       ========================================================== */
+    function setupEventListeners() {
+      // Descargar JSON
+      document.getElementById('btn-export-json').addEventListener('click', exportToJSON);
+
+      // Cargar JSON
+      const fileInput = document.getElementById('json-file-input');
+      document.getElementById('btn-import-json-trigger').addEventListener('click', () => {
+        fileInput.click();
+      });
+      fileInput.addEventListener('change', handleJSONImport);
+
+      // Micrófono justificación
+      document.getElementById('btn-speaker').addEventListener('click', pickRandomStudentForSpotlight);
+      document.getElementById('btn-spotlight-another').addEventListener('click', pickRandomStudentForSpotlight);
+      document.getElementById('btn-spotlight-close').addEventListener('click', () => {
+        document.getElementById('modal-spotlight').classList.remove('open');
+      });
+
+      // Selección táctil de esquina
+      document.querySelectorAll('.btn-target-corner').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const cornerNum = parseInt(btn.dataset.corner);
+          if (appState.activeStudentForModal) {
+            moveStudentToCorner(appState.activeStudentForModal.id, cornerNum);
+            closeCornerSelectorModal();
+          }
+        });
+      });
+
+      document.getElementById('btn-return-drawer').addEventListener('click', () => {
+        if (appState.activeStudentForModal) {
+          moveStudentToCorner(appState.activeStudentForModal.id, null);
+          closeCornerSelectorModal();
+        }
+      });
+
+      document.getElementById('btn-close-modal-corner').addEventListener('click', closeCornerSelectorModal);
+
+      // Temporizador
+      document.getElementById('btn-timer').addEventListener('click', openTimerModal);
+      document.getElementById('timer-start-pause').addEventListener('click', toggleTimer);
+      document.getElementById('timer-reset').addEventListener('click', () => {
+        clearInterval(appState.timerInterval);
+        appState.timerRunning = false;
+        appState.timerSeconds = 60;
+        document.getElementById('timer-start-pause').textContent = '▶ Iniciar';
+        updateTimerDisplay();
+      });
+      document.getElementById('timer-close').addEventListener('click', () => {
+        document.getElementById('modal-timer').classList.remove('open');
+      });
+
+      document.querySelectorAll('[data-time]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          clearInterval(appState.timerInterval);
+          appState.timerRunning = false;
+          appState.timerSeconds = parseInt(btn.dataset.time);
+          document.getElementById('timer-start-pause').textContent = '▶ Iniciar';
+          updateTimerDisplay();
+        });
+      });
+
+      // Plegar / desplegar cajón
+      document.getElementById('btn-drawer-fold').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const body = document.getElementById('drawer-students');
+        const isHidden = body.style.display === 'none';
+        body.style.display = isHidden ? 'flex' : 'none';
+      });
+
+      // Reparto aleatorio
+      document.getElementById('btn-quick-auto').addEventListener('click', () => {
+        appState.students.forEach(s => {
+          s.corner = Math.floor(Math.random() * 4) + 1;
+        });
+        renderStudents();
+        soundFX.chime();
+      });
+
+      // Reiniciar cajón
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        appState.students.forEach(s => s.corner = null);
+        renderStudents();
+        soundFX.pop();
+        showToast("Todos los alumnos han vuelto al cajón", "🔄");
+      });
+
+      // Sonido on/off
+      document.getElementById('btn-sound-toggle').addEventListener('click', (e) => {
+        appState.soundEnabled = !appState.soundEnabled;
+        e.target.textContent = appState.soundEnabled ? '🔊' : '🔇';
+      });
+
+      // Lista de alumnos
+      document.getElementById('btn-roster').addEventListener('click', () => {
+        const text = appState.students.map(s => s.name).join('\n');
+        document.getElementById('roster-input').value = text;
+        document.getElementById('modal-roster').classList.add('open');
+      });
+
+      document.getElementById('btn-close-roster').addEventListener('click', () => {
+        document.getElementById('modal-roster').classList.remove('open');
+      });
+
+      document.getElementById('btn-save-roster').addEventListener('click', () => {
+        const text = document.getElementById('roster-input').value;
+        const names = text.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+        if (names.length > 0) {
+          initStudents(names);
+          document.getElementById('modal-roster').classList.remove('open');
+          soundFX.chime();
+          showToast(`Lista actualizada con ${names.length} alumnos`, "👥");
+        }
+      });
+
+      // Crear nueva situación manual
+      document.getElementById('btn-custom-sit').addEventListener('click', () => {
+        document.getElementById('modal-custom').classList.add('open');
+      });
+
+      document.getElementById('btn-close-custom').addEventListener('click', () => {
+        document.getElementById('modal-custom').classList.remove('open');
+      });
+
+      document.getElementById('btn-save-custom').addEventListener('click', () => {
+        const title = document.getElementById('cust-title').value.trim();
+        const c1 = document.getElementById('cust-c1').value.trim() || 'Opción 1';
+        const c2 = document.getElementById('cust-c2').value.trim() || 'Opción 2';
+        const c3 = document.getElementById('cust-c3').value.trim() || 'Opción 3';
+        const c4 = document.getElementById('cust-c4').value.trim() || 'Opción 4';
+
+        if (title) {
+          const newSit = {
+            id: 'custom_' + Date.now(),
+            badge: 'SITUACIÓN CREADA',
+            title: title,
+            subtitle: '¡Muévete a la esquina que mejor represente tu opinión!',
+            c1: { title: c1, icon: '⭐', orient: '↖ Esquina 1' },
+            c2: { title: c2, icon: '🌟', orient: 'Esquina 2 ↗' },
+            c3: { title: c3, icon: '🎯', orient: '↙ Esquina 3' },
+            c4: { title: c4, icon: '💡', orient: 'Esquina 4 ↘' }
+          };
+
+          appState.situations.push(newSit);
+          renderSituationsBar();
+          loadSituation(appState.situations.length - 1);
+          document.getElementById('modal-custom').classList.remove('open');
+          soundFX.chime();
+          showToast("¡Nueva situación añadida al juego!", "✨");
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
