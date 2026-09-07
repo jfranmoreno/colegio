@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Juego del OSO - Pizarra Digital</title>
+    
+    <!-- Tailwind CSS (Framework ligero para estilos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fuentes Escolares Google Fonts: Fredoka One (Títulos) y Quicksand (Textos) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Paleta Pastel y Vibrante para el Aula */
+            --bg-color: #f0fdfa; /* Teal clarito */
+            --grid-bg: #475569;
+            --cell-bg: #ffffff;
+            --cell-hover: #e2e8f0;
+            --claim-color: #fef08a; /* Amarillo pastel */
+            --claim-border: #eab308;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#bae6fd 3px, transparent 3px);
+            background-size: 40px 40px;
+            /* Evita el scroll accidental al arrastrar o tocar en el MDI */
+            touch-action: none;
+            overflow: hidden; 
+        }
+
+        h1, h2, h3, .title-font {
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 1px;
+        }
+        
+        /* Contenedor del Tablero para ajustarse al Monitor 16:9 o Tablets */
+        .board-container {
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .board-aspect {
+            position: relative;
+            width: 100%;
+            max-width: calc((100vh - 280px) * 1.8); /* 9:5 ratio */
+            max-height: 100%;
+            aspect-ratio: 9 / 5;
+        }
+
+        .grid-board {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: clamp(4px, 0.8vw, 10px);
+            background-color: var(--grid-bg);
+            padding: clamp(6px, 1.5vw, 14px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15), inset 0 4px 0 rgba(255,255,255,0.2);
+        }
+        
+        .cell {
+            background-color: var(--cell-bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2rem, 6vh, 4rem);
+            font-family: 'Fredoka One', cursive;
+            color: #1e293b;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s, background-color 0.2s, box-shadow 0.1s;
+            box-shadow: 0 6px 0 #cbd5e1;
+            /* Zonas de toque amplias para deditos */
+            min-height: 50px; 
+            min-width: 50px;
+        }
+        
+        .cell:active:not(.filled) {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 #cbd5e1;
+        }
+
+        .cell.filled {
+            box-shadow: 0 2px 0 #cbd5e1;
+            transform: translateY(4px);
+        }
+
+        .cell.claiming {
+            background-color: var(--claim-color);
+            box-shadow: inset 0 0 0 6px var(--claim-border), 0 2px 0 #cbd5e1;
+            transform: translateY(4px) scale(0.95);
+        }
+        
+        #svg-overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            border-radius: 20px;
+            z-index: 10;
+        }
+        
+        .btn-bounce {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-bounce:active {
+            transform: scale(0.92);
+        }
+
+        /* Estilos de los grandes botones de acción */
+        .action-label input:checked + div {
+            border-color: currentColor;
+            background-color: #eff6ff;
+            box-shadow: 0 6px 0 currentColor, inset 0 0 0 4px rgba(255,255,255,0.5);
+            transform: translateY(0);
+        }
+        .action-label input:not(:checked) + div {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 0 currentColor;
+            opacity: 0.7;
+        }
+        .action-label input:not(:checked) + div:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 currentColor;
+        }
+
+        /* Animación para llamar la atención sobre buscar el OSO */
+        @keyframes pulse-claim {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-attention {
+            animation: pulse-claim 1.5s infinite;
+        }
+
+        /* --- ESTILOS DE IMPRESIÓN (OCULTOS EN PANTALLA) --- */
+        #print-area { display: none; }
+        
+        @media print {
+            @page { size: A4 portrait; margin: 1.5cm; }
+            body * { visibility: hidden; }
+            body { background: white !important; overflow: visible; }
+            
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                display: block;
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%;
+            }
+            
+            .print-grid {
+                display: grid;
+                grid-template-columns: repeat(9, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                width: 100%;
+                aspect-ratio: 9 / 5;
+                border: 4px solid black;
+                margin-bottom: 2rem;
+            }
+            .print-cell {
+                border: 1px solid #666;
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col items-center py-2 text-slate-800">
+
+    <!-- ÁREA DE IMPRESIÓN (Solo visible al imprimir) -->
+    <div id="print-area">
+        <!-- Generamos dos tableros para aprovechar el A4 -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl title-font mb-2">🐻 JUEGO DEL OSO 🐻</h1>
+            <p class="text-xl font-bold">1. Escribe 'O' o 'S' por turnos. 2. ¡Encuentra la palabra OSO y táchala!</p>
+        </div>
+        
+        <div class="print-grid">
+            <!-- 45 celdas generadas por JS en el init -->
+        </div>
+
+        <div style="height: 3cm;"></div> <!-- Separador -->
+
+        <div class="text-center mb-8">
+            <h1 class="text-4xl title-font mb-2">🐻 JUEGO DEL OSO 🐻</h1>
+            <p class="text-xl font-bold">Jugador 1: ___________  Jugador 2: ___________</p>
+        </div>
+        
+        <div class="print-grid">
+            <!-- 45 celdas generadas por JS en el init -->
+        </div>
+    </div>
+
+    <!-- OSO DECORATIVO (Oculto en móviles, visible en MDI) -->
+    <div class="fixed top-4 left-4 hidden lg:block opacity-40 pointer-events-none z-0 scale-150 transform origin-top-left">
+        <svg width="80" height="80" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#fcd34d" />
+            <circle cx="25" cy="25" r="15" fill="#f59e0b" />
+            <circle cx="75" cy="25" r="15" fill="#f59e0b" />
+            <circle cx="50" cy="50" r="35" fill="#fbbf24" />
+            <circle cx="35" cy="45" r="4" fill="#475569" />
+            <circle cx="65" cy="45" r="4" fill="#475569" />
+            <ellipse cx="50" cy="60" rx="12" ry="8" fill="#fef3c7" />
+            <path d="M 40 58 Q 50 66 60 58" stroke="#475569" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <circle cx="50" cy="53" r="4" fill="#475569" />
+        </svg>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL INTERFAZ PANTALLA -->
+    <div class="w-full max-w-7xl px-4 flex flex-col flex-grow relative z-10 h-full" id="screen-ui">
+        
+        <!-- CABECERA -->
+        <header class="text-center mb-2 flex flex-col items-center justify-center flex-shrink-0 pt-2">
+            <h1 class="text-4xl md:text-6xl text-sky-500 drop-shadow-md leading-tight title-font stroke-white" style="-webkit-text-stroke: 2px white;">🐻 El Juego del OSO 🐻</h1>
+        </header>
+
+        <!-- VISTA: MENÚ PRINCIPAL -->
+        <div id="view-menu" class="flex flex-col items-center justify-center h-full space-y-6 w-full max-w-2xl mx-auto bg-white/90 backdrop-blur p-8 rounded-[2rem] shadow-2xl mt-4 border-4 border-white">
+            <h2 class="text-3xl title-font text-slate-700 mb-4">¿Cuántos vamos a jugar?</h2>
+            
+            <button onclick="GameApp.selectMode('PARES')" class="btn-bounce w-full bg-emerald-400 text-white text-2xl title-font py-6 px-8 rounded-3xl shadow-xl flex items-center justify-between border-b-8 border-emerald-600">
+                <span>👫 2 Jugadores (Parejas)</span>
+            </button>
+
+            <button onclick="GameApp.selectMode('SUPER4')" class="btn-bounce w-full bg-violet-400 text-white text-2xl title-font py-6 px-8 rounded-3xl shadow-xl flex items-center justify-between border-b-8 border-violet-600">
+                <span>🔥 4 Jugadores (Equipos)</span>
+            </button>
+
+            <button onclick="GameApp.selectMode('TORNEO')" class="btn-bounce w-full bg-rose-400 text-white text-2xl title-font py-6 px-8 rounded-3xl shadow-xl flex items-center justify-between border-b-8 border-rose-600">
+                <span>🏆 8 Jugadores (Torneo)</span>
+            </button>
+
+            <!-- Botón para Imprimir (Especial Profesores) -->
+            <button onclick="window.print()" class="btn-bounce mt-6 bg-slate-200 text-slate-600 text-xl font-bold py-4 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2 border-b-4 border-slate-300 w-full max-w-sm">
+                <span>🖨️</span> Imprimir Tableros (Papel)
+            </button>
+        </div>
+
+        <!-- VISTA: CONFIGURAR JUGADORES -->
+        <div id="view-setup" class="hidden flex flex-col items-center justify-center h-full w-full max-w-3xl mx-auto bg-white/95 backdrop-blur p-8 rounded-[2rem] shadow-2xl mt-4 border-4 border-white">
+            <h2 class="text-3xl title-font text-slate-700 mb-6">Nombres de los Jugadores</h2>
+            <div id="setup-inputs" class="w-full grid grid-cols-2 gap-6 mb-8 overflow-y-auto max-h-[50vh] p-4">
+                <!-- Se generan dinámicamente en JS -->
+            </div>
+            <div class="flex gap-6 w-full mt-auto">
+                <button onclick="GameApp.showMenu()" class="btn-bounce flex-1 bg-slate-300 text-slate-700 text-2xl font-bold py-4 rounded-2xl border-b-8 border-slate-400">Volver</button>
+                <button onclick="GameApp.startPlay()" class="btn-bounce flex-1 bg-sky-500 text-white text-2xl title-font py-4 rounded-2xl border-b-8 border-sky-600">¡Empezar a Jugar!</button>
+            </div>
+        </div>
+
+        <!-- VISTA: TRANSICIÓN TORNEO -->
+        <div id="view-tournament" class="hidden flex flex-col items-center justify-center h-full w-full max-w-3xl mx-auto bg-white/95 backdrop-blur p-8 rounded-[2rem] shadow-2xl text-center mt-4 border-4 border-rose-200">
+            <h2 class="text-4xl title-font text-rose-500 mb-2">🏆 Torneo de Clase 🏆</h2>
+            <p id="tourney-subtitle" class="text-2xl text-slate-600 font-bold mb-8 bg-rose-100 py-2 px-6 rounded-full inline-block">Semifinal 1</p>
+            
+            <div class="bg-rose-50 w-full p-8 rounded-3xl border-4 border-rose-200 mb-8">
+                <h3 class="title-font text-2xl text-slate-700 mb-6">¡Preparaos en la pizarra!</h3>
+                <div id="tourney-next-match" class="flex flex-wrap justify-center gap-4 text-2xl font-bold text-slate-800">
+                    <!-- Jugadores -->
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 w-full max-w-md mx-auto">
+                <button onclick="GameApp.startMatch()" class="btn-bounce bg-rose-500 text-white text-3xl title-font py-6 px-8 rounded-3xl border-b-8 border-rose-700">
+                    ¡Jugar Partida!
+                </button>
+                <button onclick="GameApp.confirmReturnToMenu()" class="btn-bounce bg-slate-200 text-slate-600 text-xl font-bold py-4 px-6 rounded-2xl border-b-4 border-slate-300">
+                    🏠 Volver al Menú
+                </button>
+            </div>
+        </div>
+
+        <!-- VISTA: TABLERO DE JUEGO -->
+        <div id="view-game" class="hidden flex flex-col items-center w-full h-full">
+            
+            <!-- CONTROLES SUPERIORES Y PUNTUACIÓN -->
+            <div class="w-full flex justify-between items-center mb-2 px-2 flex-shrink-0 max-w-5xl gap-4">
+                <button onclick="GameApp.confirmReturnToMenu()" class="btn-bounce bg-white text-slate-600 font-bold py-3 px-4 rounded-xl shadow-md border-b-4 border-slate-200 flex items-center gap-2 text-lg">
+                    <span>🏠</span> <span class="hidden md:inline">Menú</span>
+                </button>
+                
+                <!-- Marcador -->
+                <div id="scoreboard" class="flex-1 flex justify-center gap-4 bg-white/80 backdrop-blur p-2 rounded-2xl shadow-sm">
+                    <!-- Generado dinámicamente -->
+                </div>
+
+                <button onclick="GameApp.confirmRestart()" class="btn-bounce bg-white text-amber-600 font-bold py-3 px-4 rounded-xl shadow-md border-b-4 border-amber-200 flex items-center gap-2 text-lg">
+                    <span>🔄</span> <span class="hidden md:inline">Reiniciar</span>
+                </button>
+            </div>
+
+            <!-- ZONA DE ACCIONES GRANDES PARA MDI -->
+            <div class="flex flex-col md:flex-row gap-4 mb-3 w-full max-w-5xl justify-center items-stretch flex-shrink-0">
+                
+                <!-- Turno Actual y Mensaje (Izquierda) -->
+                <div id="feedback-banner" class="bg-white flex-1 border-4 border-sky-400 px-6 py-4 rounded-2xl shadow-lg flex flex-col justify-center items-center transform transition-transform duration-300 min-h-[100px]">
+                    <h2 id="turn-indicator" class="text-3xl title-font m-0 text-slate-700">Turno de: <span id="current-player-name" class="text-sky-500 text-4xl ml-2">Jugador</span></h2>
+                    <p id="motivational-message" class="text-slate-500 font-bold text-xl m-0 mt-1">¡Elige letra y toca el tablero!</p>
+                </div>
+
+                <!-- Selector de Acción (Derecha) -->
+                <div class="bg-white p-4 rounded-2xl shadow-lg flex gap-3 items-center justify-center flex-shrink-0">
+                    
+                    <label class="action-label cursor-pointer text-sky-500 flex-1">
+                        <input type="radio" name="action" value="O" class="hidden" checked onchange="GameApp.changeAction('O')">
+                        <div class="rounded-xl px-4 py-3 title-font text-3xl transition-all flex items-center justify-center gap-2 border-4 bg-white min-h-[70px]">
+                            <span>O</span>
+                        </div>
+                    </label>
+
+                    <label class="action-label cursor-pointer text-rose-500 flex-1">
+                        <input type="radio" name="action" value="S" class="hidden" onchange="GameApp.changeAction('S')">
+                        <div class="rounded-xl px-4 py-3 title-font text-3xl transition-all flex items-center justify-center gap-2 border-4 bg-white min-h-[70px]">
+                            <span>S</span>
+                        </div>
+                    </label>
+
+                    <div class="w-1 bg-slate-200 h-full rounded mx-1"></div>
+
+                    <label class="action-label cursor-pointer text-emerald-500 flex-2" id="claim-label">
+                        <input type="radio" name="action" value="CLAIM" class="hidden" onchange="GameApp.changeAction('CLAIM')">
+                        <div class="rounded-xl px-6 py-3 title-font text-2xl transition-all flex items-center justify-center gap-2 border-4 bg-white min-h-[70px]">
+                            <span>🐻 ¡Hay OSO!</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Botón Fin de turno -->
+                <button onclick="GameApp.endTurn()" id="end-turn-btn" class="bg-sky-500 text-white title-font py-4 px-6 rounded-2xl shadow-lg border-b-8 border-sky-700 text-2xl btn-bounce hidden md:flex items-center justify-center min-w-[200px]">
+                    Siguiente ➡️
+                </button>
+            </div>
+
+            <!-- Botón Fin de turno (Móvil/Tablet) -->
+            <button onclick="GameApp.endTurn()" id="end-turn-btn-mobile" class="bg-sky-500 text-white title-font py-3 px-6 rounded-2xl shadow-lg border-b-8 border-sky-700 text-xl btn-bounce flex md:hidden items-center justify-center w-full max-w-sm mb-2">
+                Siguiente Jugador ➡️
+            </button>
+
+            <!-- El Tablero (Se ajusta al tamaño que sobra) -->
+            <div class="board-container">
+                <div class="board-aspect">
+                    <div id="board" class="grid-board">
+                        <!-- Generado por JS -->
+                    </div>
+                    <svg id="svg-overlay"></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PERSONALIZADO (POPUP) -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex items-center justify-center px-4 backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] p-10 max-w-lg w-full shadow-2xl text-center transform transition-transform scale-95 border-8 border-sky-200">
+            <h2 id="modal-title" class="text-4xl title-font text-slate-800 mb-4">Título</h2>
+            <p id="modal-text" class="text-2xl text-slate-600 font-bold mb-8">Texto del mensaje</p>
+            <button id="modal-btn" class="btn-bounce bg-sky-500 text-white text-3xl title-font py-4 px-8 rounded-2xl border-b-8 border-sky-700 w-full">¡Entendido!</button>
+        </div>
+    </div>
+
+    <!-- Lógica JavaScript Adaptada para Niños y MDI -->
+    <script>
+        // --- EFECTOS DE SONIDO SINTÉTICOS (Para no depender de archivos externos) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(freq, type, duration, vol=0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // Sonidos amables y no estridentes
+        function playPop() { playTone(440, 'sine', 0.15, 0.15); }
+        function playPlaceLetter() { playTone(600, 'sine', 0.1, 0.1); }
+        function playScore() { 
+            playTone(523.25, 'triangle', 0.15, 0.2); 
+            setTimeout(() => playTone(659.25, 'triangle', 0.2, 0.2), 100);
+            setTimeout(() => playTone(783.99, 'triangle', 0.3, 0.2), 200);
+        }
+        function playError() { playTone(200, 'square', 0.2, 0.05); }
+        function playWin() {
+            let t = 0;
+            [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach(f => {
+                setTimeout(() => playTone(f, 'sine', 0.4, 0.2), t);
+                t += 120;
+            });
+        }
+
+        // --- LÓGICA DEL JUEGO ---
+        // Colores pastel/vibrantes para diferenciar equipos
+        const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+        const COLS = 9; // Columnas del tablero
+        const ROWS = 5; // Filas del tablero
+
+        const GameApp = {
+            mode: null,
+            allPlayers: [],
+            tournamentWinners: [],
+            tournamentPhase: 0,
+            matchPlayers: [],
+            board: [],
+            claimedOsos: [],
+            linesToDraw: [],
+            currentPlayerIdx: 0,
+            action: 'O',
+            claimSelection: [],
+            letterPlacedThisTurn: false,
+
+            els: {
+                viewMenu: document.getElementById('view-menu'),
+                viewSetup: document.getElementById('view-setup'),
+                viewGame: document.getElementById('view-game'),
+                viewTournament: document.getElementById('view-tournament'),
+                setupInputs: document.getElementById('setup-inputs'),
+                board: document.getElementById('board'),
+                svgOverlay: document.getElementById('svg-overlay'),
+                scoreboard: document.getElementById('scoreboard'),
+                turnIndicator: document.getElementById('turn-indicator'),
+                currentPlayerName: document.getElementById('current-player-name'),
+                motivationalMsg: document.getElementById('motivational-message'),
+                feedbackBanner: document.getElementById('feedback-banner'),
+                claimLabel: document.getElementById('claim-label')
+            },
+
+            messages: [
+                "¡Tú puedes hacerlo genial!", 
+                "¡Mira bien por todas partes!", 
+                "¡Atención a las letras cruzadas!", 
+                "¡Piensa tu estrategia!", 
+                "¡Vamos allá, equipazo!"
+            ],
+
+            init() {
+                this.generatePrintGrids();
+                this.showView('menu');
+            },
+
+            // Genera celdas vacías para imprimir
+            generatePrintGrids() {
+                const printGrids = document.querySelectorAll('.print-grid');
+                printGrids.forEach(grid => {
+                    grid.innerHTML = '';
+                    for(let i=0; i<COLS*ROWS; i++) {
+                        grid.innerHTML += `<div class="print-cell"></div>`;
+                    }
+                });
+            },
+
+            showView(viewName) {
+                this.els.viewMenu.classList.add('hidden');
+                this.els.viewSetup.classList.add('hidden');
+                this.els.viewGame.classList.add('hidden');
+                this.els.viewTournament.classList.add('hidden');
+
+                if(viewName === 'menu') this.els.viewMenu.classList.remove('hidden');
+                if(viewName === 'setup') this.els.viewSetup.classList.remove('hidden');
+                if(viewName === 'game') this.els.viewGame.classList.remove('hidden');
+                if(viewName === 'tournament') this.els.viewTournament.classList.remove('hidden');
+            },
+
+            showMenu() {
+                playPop();
+                this.showView('menu');
+            },
+
+            showModal(title, text, cb) {
+                const modal = document.getElementById('custom-modal');
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-text').innerText = text;
+                const btn = document.getElementById('modal-btn');
+                
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', () => {
+                    playPop();
+                    modal.classList.add('hidden');
+                    modal.querySelector('div').classList.replace('scale-100', 'scale-95');
+                    if(cb) cb();
+                });
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.querySelector('div').classList.replace('scale-95', 'scale-100'), 10);
+            },
+
+            confirmReturnToMenu() {
+                playPop();
+                this.showModal("¿Volver al Menú?", "Se borrará esta partida. ¿De acuerdo?", () => {
+                    this.init();
+                });
+            },
+
+            confirmRestart() {
+                playPop();
+                this.showModal("¿Limpiar Pizarra?", "Se borrarán todas las letras y puntos.", () => {
+                    this.matchPlayers.forEach(p => p.score = 0);
+                    this.initBoard();
+                });
+            },
+
+            selectMode(mode) {
+                playPop();
+                this.mode = mode;
+                let numPlayers = 2;
+                if(mode === 'SUPER4') numPlayers = 4;
+                if(mode === 'TORNEO') numPlayers = 8;
+
+                this.els.setupInputs.innerHTML = '';
+                for(let i = 0; i < numPlayers; i++) {
+                    const c = COLORS[i % COLORS.length];
+                    this.els.setupInputs.innerHTML += `
+                        <div class="flex flex-col bg-slate-50 p-3 rounded-2xl border-2 border-slate-200">
+                            <label class="text-lg font-bold text-slate-500 mb-1">Jugador/Equipo ${i+1}</label>
+                            <input type="text" id="p-name-${i}" placeholder="Nombre..." value="Jugador ${i+1}" 
+                                class="border-2 border-slate-300 rounded-xl p-3 text-xl title-font outline-none focus:border-sky-500"
+                                style="border-left: 8px solid ${c};">
+                        </div>
+                    `;
+                }
+                this.showView('setup');
+            },
+
+            startPlay() {
+                playPop();
+                let numPlayers = (this.mode === 'PARES') ? 2 : (this.mode === 'SUPER4' ? 4 : 8);
+                this.allPlayers = [];
+                for(let i=0; i<numPlayers; i++) {
+                    let name = document.getElementById(`p-name-${i}`).value.trim() || `Jugador ${i+1}`;
+                    this.allPlayers.push({ name, color: COLORS[i % COLORS.length] });
+                }
+
+                if(this.mode === 'TORNEO') {
+                    this.tournamentPhase = 0;
+                    this.tournamentWinners = [];
+                    this.prepareTournamentPhase();
+                } else {
+                    this.matchPlayers = this.allPlayers.map(p => ({...p, score: 0}));
+                    this.initBoard();
+                    this.showView('game');
+                }
+            },
+
+            prepareTournamentPhase() {
+                this.showView('tournament');
+                let title = "";
+                let pList = [];
+                
+                if(this.tournamentPhase === 0) {
+                    title = "Semifinal 1 (4 Jugadores)";
+                    pList = this.allPlayers.slice(0, 4);
+                } else if (this.tournamentPhase === 1) {
+                    title = "Semifinal 2 (4 Jugadores)";
+                    pList = this.allPlayers.slice(4, 8);
+                } else if (this.tournamentPhase === 2) {
+                    title = "¡GRAN FINAL! (2 Jugadores)";
+                    pList = this.tournamentWinners;
+                }
+
+                document.getElementById('tourney-subtitle').innerText = title;
+                
+                const nextMatchDiv = document.getElementById('tourney-next-match');
+                nextMatchDiv.innerHTML = '';
+                pList.forEach(p => {
+                    nextMatchDiv.innerHTML += `<span class="px-4 py-2 rounded-xl text-white shadow-md text-2xl" style="background-color: ${p.color}">${p.name}</span>`;
+                });
+
+                this.matchPlayers = pList.map(p => ({...p, score: 0}));
+            },
+
+            startMatch() {
+                playPop();
+                this.initBoard();
+                this.showView('game');
+            },
+
+            initBoard() {
+                this.board = new Array(COLS * ROWS).fill('');
+                this.claimedOsos = [];
+                this.linesToDraw = [];
+                this.currentPlayerIdx = 0;
+                this.action = 'O';
+                this.claimSelection = [];
+                this.letterPlacedThisTurn = false;
+                document.querySelector('input[value="O"]').checked = true;
+
+                this.renderBoard();
+                this.updateUI();
+                
+                this.els.motivationalMsg.innerText = "¡Que empiece el juego!";
+                this.els.claimLabel.classList.remove('pulse-attention');
+            },
+
+            renderBoard() {
+                this.els.board.innerHTML = '';
+                for(let i=0; i<COLS * ROWS; i++) {
+                    let cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.id = `cell-${i}`;
+                    cell.onclick = () => this.handleCellClick(i);
+                    this.els.board.appendChild(cell);
+                }
+                this.drawLines();
+            },
+
+            updateUI() {
+                // Actualizar Marcador
+                this.els.scoreboard.innerHTML = '';
+                this.matchPlayers.forEach((p, idx) => {
+                    const isCurrent = (idx === this.currentPlayerIdx);
+                    this.els.scoreboard.innerHTML += `
+                        <div class="flex flex-col items-center p-2 md:px-4 md:py-2 rounded-xl transition-all ${isCurrent ? 'scale-110 shadow-lg z-10' : 'bg-white shadow-sm opacity-80'}"
+                             style="${isCurrent ? `background-color:${p.color}; color:white;` : `border-bottom: 4px solid ${p.color};`}">
+                            <span class="text-sm md:text-lg font-bold truncate max-w-[100px] md:max-w-[150px] text-center">${p.name}</span>
+                            <span class="text-3xl md:text-4xl title-font leading-none mt-1">${p.score}</span>
+                        </div>
+                    `;
+                });
+
+                // Actualizar Turno
+                const cp = this.matchPlayers[this.currentPlayerIdx];
+                this.els.currentPlayerName.innerText = cp.name;
+                this.els.currentPlayerName.style.color = cp.color;
+                this.els.feedbackBanner.style.borderColor = cp.color;
+                this.els.feedbackBanner.style.backgroundColor = `${cp.color}10`; // Fondo ultra pastel
+                
+                // Efecto "rebote" al cambiar turno
+                this.els.feedbackBanner.classList.remove('scale-100');
+                this.els.feedbackBanner.classList.add('scale-[1.03]');
+                setTimeout(() => this.els.feedbackBanner.classList.replace('scale-[1.03]', 'scale-100'), 200);
+                
+                // Actualizar Tablero
+                for(let i=0; i<this.board.length; i++) {
+                    const cell = document.getElementById(`cell-${i}`);
+                    if (cell) {
+                        cell.innerText = this.board[i];
+                        if(this.board[i] !== '') {
+                            cell.classList.add('filled', 'text-slate-800');
+                        } else {
+                            cell.classList.remove('filled', 'text-slate-800');
+                        }
+                        
+                        // Estado visual de selección de OSO
+                        if(this.claimSelection.includes(i)) {
+                            cell.classList.add('claiming');
+                        } else {
+                            cell.classList.remove('claiming');
+                        }
+                    }
+                }
+            },
+
+            changeAction(val) {
+                if (val !== 'CLAIM' && this.letterPlacedThisTurn) {
+                    playError();
+                    this.els.motivationalMsg.innerText = "Ya pusiste una letra. Busca un OSO o pasa turno.";
+                    // Restaurar botón anterior visualmente
+                    document.querySelector(`input[value="${this.action}"]`).checked = true;
+                    return;
+                }
+
+                playPop();
+                this.action = val;
+                this.claimSelection = [];
+                
+                if (val === 'CLAIM') {
+                    this.els.motivationalMsg.innerText = "Toca las 3 letras para formar O-S-O.";
+                }
+
+                this.updateUI();
+            },
+
+            handleCellClick(i) {
+                if (this.action === 'O' || this.action === 'S') {
+                    if (this.board[i] !== '') {
+                        playError();
+                        this.els.motivationalMsg.innerText = "¡Esa casilla ya está ocupada!";
+                        return;
+                    }
+                    if (this.letterPlacedThisTurn) {
+                        playError();
+                        return;
+                    }
+                    
+                    // Colocar letra
+                    this.board[i] = this.action;
+                    this.letterPlacedThisTurn = true;
+                    playPlaceLetter();
+                    
+                    // Sugerir visualmente que ahora busque OSO
+                    document.querySelector('input[value="CLAIM"]').checked = true;
+                    this.action = 'CLAIM';
+                    this.els.motivationalMsg.innerText = "¡Muy bien! ¿Ves algún OSO escondido?";
+                    this.els.claimLabel.classList.add('pulse-attention'); // Llamar la atención de los niños
+                    
+                    this.updateUI();
+                    this.checkGameEnd();
+                    
+                } else if (this.action === 'CLAIM') {
+                    if (this.board[i] === '') return; // Ignorar celdas vacías
+                    if (this.claimSelection.includes(i)) return; // Ignorar ya seleccionadas
+                    
+                    this.claimSelection.push(i);
+                    playPop();
+                    
+                    if (this.claimSelection.length === 3) {
+                        this.validateClaim();
+                    } else {
+                        this.updateUI();
+                    }
+                }
+            },
+
+            validateClaim() {
+                const [i1, i2, i3] = this.claimSelection;
+                // Ordenar por índice para facilitar validación de geometría
+                const sorted = [i1, i2, i3].sort((a,b) => a - b);
+                const s_i1 = sorted[0];
+                const s_i2 = sorted[1];
+                const s_i3 = sorted[2];
+
+                // Coordenadas (Columna, Fila)
+                const c1 = s_i1 % COLS, r1 = Math.floor(s_i1 / COLS);
+                const c2 = s_i2 % COLS, r2 = Math.floor(s_i2 / COLS);
+                const c3 = s_i3 % COLS, r3 = Math.floor(s_i3 / COLS);
+
+                // Validar que pone O-S-O
+                let isValidWord = (this.board[s_i1] === 'O' && this.board[s_i2] === 'S' && this.board[s_i3] === 'O');
+                
+                // Validar que están en línea recta contigua (horizontal, vertical o diagonal)
+                let isLine = false;
+                const distCol12 = c2 - c1;
+                const distRow12 = r2 - r1;
+                const distCol23 = c3 - c2;
+                const distRow23 = r3 - r2;
+
+                if (distCol12 === distCol23 && distRow12 === distRow23) {
+                    // Distancia máxima de 1 celda entre vecinos
+                    if (Math.abs(distCol12) <= 1 && Math.abs(distRow12) <= 1) {
+                        isLine = true;
+                    }
+                }
+
+                const signature = `${s_i1}-${s_i2}-${s_i3}`;
+                const alreadyClaimed = this.claimedOsos.includes(signature);
+
+                if (isValidWord && isLine && !alreadyClaimed) {
+                    playScore();
+                    this.claimedOsos.push(signature);
+                    
+                    let cp = this.matchPlayers[this.currentPlayerIdx];
+                    cp.score++;
+                    this.linesToDraw.push({ i1: s_i1, i3: s_i3, color: cp.color });
+                    
+                    this.els.motivationalMsg.innerText = `¡Bravísimo ${cp.name}! +1 Punto.`;
+                    this.claimSelection = [];
+                    this.els.claimLabel.classList.remove('pulse-attention');
+                    
+                    this.drawLines();
+                    this.checkGameEnd(); 
+                } else {
+                    playError();
+                    this.els.motivationalMsg.innerText = alreadyClaimed 
+                        ? "¡Ese OSO ya estaba cazado! Busca otro." 
+                        : "Uy, eso no es un OSO válido.";
+                    this.claimSelection = [];
+                }
+                
+                this.updateUI();
+            },
+
+            drawLines() {
+                this.els.svgOverlay.innerHTML = '';
+                this.linesToDraw.forEach(line => {
+                    const c1 = line.i1 % COLS, r1 = Math.floor(line.i1 / COLS);
+                    const c3 = line.i3 % COLS, r3 = Math.floor(line.i3 / COLS);
+                    
+                    // Calcular el centro de las celdas en porcentajes
+                    const cx1 = (c1 + 0.5) * (100 / COLS);
+                    const cy1 = (r1 + 0.5) * (100 / ROWS);
+                    const cx3 = (c3 + 0.5) * (100 / COLS);
+                    const cy3 = (r3 + 0.5) * (100 / ROWS);
+
+                    const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    svgLine.setAttribute("x1", `${cx1}%`);
+                    svgLine.setAttribute("y1", `${cy1}%`);
+                    svgLine.setAttribute("x2", `${cx3}%`);
+                    svgLine.setAttribute("y2", `${cy3}%`);
+                    svgLine.setAttribute("stroke", line.color);
+                    svgLine.setAttribute("stroke-width", "18"); // Más grueso para MDI
+                    svgLine.setAttribute("stroke-linecap", "round");
+                    svgLine.setAttribute("opacity", "0.5"); // Transparencia suave
+                    
+                    this.els.svgOverlay.appendChild(svgLine);
+                });
+            },
+
+            endTurn() {
+                if (!this.letterPlacedThisTurn) {
+                    playError();
+                    this.els.motivationalMsg.innerText = "¡Debes poner una letra antes de terminar tu turno!";
+                    return;
+                }
+                playPop();
+                this.nextTurn();
+            },
+
+            nextTurn() {
+                this.claimSelection = [];
+                this.currentPlayerIdx = (this.currentPlayerIdx + 1) % this.matchPlayers.length;
+                this.letterPlacedThisTurn = false; 
+                this.els.claimLabel.classList.remove('pulse-attention');
+                
+                this.els.motivationalMsg.innerText = this.messages[Math.floor(Math.random() * this.messages.length)];
+                
+                // Reiniciar a acción de poner 'O' por defecto
+                document.querySelector('input[value="O"]').checked = true;
+                this.action = 'O';
+                
+                this.updateUI();
+                this.checkGameEnd();
+            },
+
+            // Lógica para detectar si quedan OSOs posibles por reclamar
+            getAvailableOsosCount() {
+                let count = 0;
+                for(let i=0; i<this.board.length; i++) {
+                    if(this.board[i] === 'S') {
+                        const c = i % COLS, r = Math.floor(i / COLS);
+                        const dirs = [ [1,0], [0,1], [1,1], [1,-1] ];
+                        dirs.forEach(d => {
+                            const c1 = c - d[0], r1 = r - d[1];
+                            const c3 = c + d[0], r3 = r + d[1];
+                            
+                            if(c1>=0 && c1<COLS && r1>=0 && r1<ROWS && c3>=0 && c3<COLS && r3>=0 && r3<ROWS) {
+                                const idx1 = r1*COLS + c1;
+                                const idx3 = r3*COLS + c3;
+                                if(this.board[idx1] === 'O' && this.board[idx3] === 'O') {
+                                    const minI = Math.min(idx1, idx3);
+                                    const maxI = Math.max(idx1, idx3);
+                                    const sig = `${minI}-${i}-${maxI}`;
+                                    if(!this.claimedOsos.includes(sig)) {
+                                        count++;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+                return count;
+            },
+
+            checkGameEnd() {
+                const isBoardFull = !this.board.includes('');
+                const remainingOsos = this.getAvailableOsosCount();
+
+                if (isBoardFull && remainingOsos === 0) {
+                    this.handleMatchEnd();
+                } else if (isBoardFull && remainingOsos > 0) {
+                    this.els.motivationalMsg.innerText = `¡Tablero lleno! Aún quedan ${remainingOsos} OSOs por encontrar.`;
+                }
+            },
+
+            handleMatchEnd() {
+                playWin();
+                let maxScore = -1;
+                this.matchPlayers.forEach(p => { if(p.score > maxScore) maxScore = p.score; });
+                let winners = this.matchPlayers.filter(p => p.score === maxScore);
+                
+                let matchWinner = winners[0];
+                let msg = "";
+
+                if(winners.length > 1) {
+                    // Desempate aleatorio "La ruleta de la suerte" escolar
+                    matchWinner = winners[Math.floor(Math.random() * winners.length)];
+                    msg = `¡Habéis empatado a ${maxScore} puntos! Pero por pura suerte, la victoria es para ${matchWinner.name}. ¡Todos sois ganadores!`;
+                } else {
+                    msg = `¡Súper victoria para ${matchWinner.name} con ${maxScore} puntos!`;
+                }
+
+                this.showModal("¡Partida Terminada!", msg, () => {
+                    if (this.mode === 'TORNEO') {
+                        this.tournamentWinners.push(matchWinner);
+                        this.tournamentPhase++;
+                        if (this.tournamentPhase > 2) {
+                            this.showModal("🏆 ¡CAMPEÓN ABSOLUTO! 🏆", `¡${matchWinner.name} ha ganado el gran torneo de clase!`, () => {
+                                this.init();
+                            });
+                        } else {
+                            this.prepareTournamentPhase();
+                        }
+                    } else {
+                        this.init();
+                    }
+                });
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            GameApp.init();
+        });
+
+    </script>
+</body>
+</html>
