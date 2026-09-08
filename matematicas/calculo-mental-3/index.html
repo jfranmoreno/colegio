@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mates Divertidas - 3º Primaria</title>
+    <!-- Tailwind CSS para diseño rápido y adaptativo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand (ideal para lectura escolar, limpia y redondeada) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+
+        /* Efectos 3D táctiles (MDI Friendly - botones gruesos) */
+        .btn-3d {
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom-width: 6px;
+        }
+        .btn-3d:active {
+            transform: translateY(6px);
+            border-bottom-width: 0px;
+            margin-bottom: 6px;
+        }
+
+        /* Animaciones para pestañas y revelación de respuestas */
+        .tab-active {
+            background-color: #ffffff;
+            color: #8b5cf6; /* violet-500 */
+            border-bottom: 4px solid #8b5cf6;
+            transform: scale(1.02) translateY(2px);
+            z-index: 10;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+        }
+        .tab-inactive {
+            background-color: #e2e8f0;
+            color: #64748b; /* slate-500 */
+            border-bottom: 4px solid #cbd5e1;
+        }
+
+        .answer-reveal {
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.1); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Ocultar elementos UI al imprimir fichas */
+        @media print {
+            body { background: white !important; }
+            #app-container, #print-modal, .no-print { display: none !important; }
+            .page-break { page-break-before: always !important; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
+    
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl border-4 border-white overflow-hidden relative">
+        
+        <!-- Cabecera -->
+        <header class="text-center p-6 md:p-8 bg-[#8b5cf6] text-white relative border-b-8 border-violet-700 shadow-sm z-20">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2 drop-shadow-md">
+                ⚡ Desafíos de Cálculo: 3º Primaria
+            </h1>
+            <p class="text-xl font-semibold text-violet-200 mb-6 drop-shadow">Estrategias ABN y agilidad mental</p>
+            
+            <div class="max-w-xl mx-auto relative">
+                <select id="level-selector" class="w-full p-4 text-xl font-bold text-violet-900 bg-white rounded-2xl shadow-inner border-4 border-violet-300 focus:ring-4 focus:ring-amber-400 focus:outline-none appearance-none cursor-pointer">
+                    <!-- Opciones inyectadas por JS -->
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-violet-600">
+                    <svg class="fill-current h-8 w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+            </div>
+
+            <button id="open-print-modal-btn" class="mt-6 mx-auto bg-[#fbbf24] text-amber-900 font-bold py-3 px-8 rounded-2xl shadow-lg border-b-4 border-[#d97706] hover:bg-[#f59e0b] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
+                🖨️ Crear Fichas PDF
+            </button>
+        </header>
+
+        <!-- Pestañas de Navegación -->
+        <div class="flex text-xl md:text-2xl font-bold z-10 relative bg-slate-100">
+            <button id="tab-practico" class="flex-1 py-5 rounded-tr-3xl transition-all duration-300">
+                🧠 Estrategia
+            </button>
+            <button id="tab-reto" class="flex-1 py-5 rounded-tl-3xl transition-all duration-300">
+                🎯 Reto Interactivo
+            </button>
+        </div>
+
+        <!-- PESTAÑA: Teoría/Estrategia -->
+        <div id="content-practico" class="p-6 md:p-10 min-h-[400px] bg-slate-50"></div>
+
+        <!-- PESTAÑA: Reto / Juego -->
+        <div id="content-reto" class="p-6 md:p-10 min-h-[450px] bg-slate-50 hidden flex-col justify-between">
+            <div class="text-center flex-1 flex flex-col justify-center">
+                
+                <div class="inline-block bg-violet-100 text-violet-800 font-bold px-6 py-2 rounded-full mb-6 border-2 border-violet-200 shadow-sm text-lg mx-auto">
+                    Operación <span id="progress-text">1 de 20</span>
+                </div>
+                
+                <!-- Pizarra Principal -->
+                <div id="problem-container" class="bg-white p-8 md:p-12 rounded-[2.5rem] mb-6 shadow-md border-4 border-slate-200 relative min-h-[200px] flex items-center justify-center">
+                    <p class="text-6xl md:text-8xl font-bold text-slate-700 tracking-tight" id="problem-text">300 + 700</p>
+                </div>
+                
+                <!-- Zona de Respuesta -->
+                <div id="answer-container" class="h-24 md:h-32 flex items-center justify-center mb-4">
+                    <p id="answer-text" class="text-6xl md:text-8xl font-bold text-[#10b981] opacity-0 drop-shadow-sm">= 1000</p>
+                </div>
+
+                <!-- Botones MDI (Grandes para tocar fácil) -->
+                <div class="flex flex-col md:flex-row gap-4 justify-center mt-2">
+                    <button id="show-answer-btn" class="w-full md:w-auto bg-[#3b82f6] text-white font-bold py-6 px-12 rounded-2xl text-2xl md:text-3xl btn-3d border-[#2563eb]">
+                        👁️ Ver Respuesta
+                    </button>
+                    <button id="next-problem-btn" class="w-full md:w-auto bg-[#10b981] text-white font-bold py-6 px-12 rounded-2xl text-2xl md:text-3xl btn-3d border-[#059669] hidden">
+                        Siguiente ➡️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Controles Secundarios -->
+            <div class="mt-8 pt-6 border-t-4 border-slate-200 flex flex-col md:flex-row gap-4 justify-center">
+                <button id="new-challenge-btn" class="w-full md:w-auto bg-slate-200 text-slate-700 font-bold py-4 px-8 rounded-xl btn-3d border-slate-300 text-xl flex items-center justify-center gap-2 hover:bg-slate-300">
+                    🔄 Reiniciar Nivel
+                </button>
+                <button id="pro-challenge-btn" class="w-full md:w-auto bg-[#f43f5e] text-white font-bold py-4 px-8 rounded-xl btn-3d border-[#be123c] text-xl flex items-center justify-center gap-2">
+                    🔥 Modo PRO (Difícil)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL IMPRESIÓN DE FICHAS -->
+    <div id="print-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border-4 border-violet-400 overflow-hidden">
+            <div class="p-6 md:p-8 border-b-4 border-slate-100 bg-violet-50">
+                <h2 class="text-3xl font-bold text-violet-900 flex items-center gap-3">
+                    🖨️ Generador de Fichas (3º EP)
+                </h2>
+                <p class="text-slate-600 mt-2 font-semibold text-lg">Crea documentos listos para imprimir con soluciones incluidas para el docente.</p>
+            </div>
+            
+            <div class="p-6 md:p-8 overflow-y-auto flex-1 bg-slate-50">
+                <div id="print-error-msg" class="hidden mb-6 p-4 bg-red-100 text-red-700 border-2 border-red-300 rounded-xl font-bold text-lg">
+                    ⚠️ Selecciona al menos una categoría de la lista.
+                </div>
+
+                <div class="mb-8 bg-amber-50 p-6 rounded-2xl border-4 border-amber-200">
+                    <label for="print-versions" class="block font-bold text-amber-900 mb-3 text-xl">¿Cuántos modelos distintos necesitas?</label>
+                    <select id="print-versions" class="w-full p-4 border-4 border-amber-300 rounded-xl focus:ring-4 focus:ring-amber-400 outline-none text-slate-800 font-bold text-lg bg-white">
+                        <option value="1">1 modelo único</option>
+                        <option value="2">2 modelos distintos (Anti-copia)</option>
+                        <option value="3">3 modelos distintos</option>
+                        <option value="4">4 modelos distintos</option>
+                    </select>
+                </div>
+
+                <h3 class="font-bold text-slate-700 mb-4 text-xl flex items-center gap-2"><span>📝</span> Estrategias a incluir:</h3>
+                <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 bg-white p-4 rounded-2xl border-2 border-slate-200">
+                    <!-- Checkboxes generados dinámicamente -->
+                </div>
+
+                <div class="bg-rose-50 p-6 rounded-2xl border-4 border-rose-200">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="print-pro-cb" class="form-checkbox h-8 w-8 text-rose-600 rounded-lg focus:ring-rose-500 border-4 border-rose-300">
+                        <span class="ml-4 font-bold text-rose-900 text-xl">Usar números del Modo PRO 🔥</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 bg-slate-100 border-t-4 border-slate-200 flex flex-col md:flex-row justify-end gap-4">
+                <button id="cancel-print-btn" class="px-8 py-4 rounded-xl text-slate-600 font-bold hover:bg-slate-200 transition-colors border-4 border-slate-300 text-xl">
+                    Cancelar
+                </button>
+                <button id="generate-print-btn" class="px-8 py-4 rounded-xl bg-violet-600 text-white font-bold btn-3d border-violet-800 hover:bg-violet-500 text-xl flex justify-center items-center gap-2">
+                    ✨ Generar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- API AUDIO FEEDBACK ---
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            function playSuccessSound() {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.type = 'triangle'; // Sonido un poco más suave y redondo
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2); // A5
+                
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            }
+
+            // --- UTILIDADES ---
+            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            
+            // Generador de Interfaz de Teoría
+            function buildTheoryUI(title, subtitle, operation, steps, tip) {
+                return `
+                    <div class="bg-white rounded-3xl p-6 md:p-10 shadow-sm border-4 border-violet-100">
+                        <h2 class="text-3xl md:text-4xl font-bold text-violet-800 mb-2">${title}</h2>
+                        <p class="text-xl md:text-2xl text-slate-600 mb-8 font-semibold">${subtitle}</p>
+
+                        <div class="bg-emerald-50 rounded-3xl p-6 md:p-8 border-4 border-emerald-200 mb-8 relative">
+                            <div class="absolute -top-5 left-6 bg-emerald-500 text-white font-bold px-6 py-2 rounded-xl shadow-sm border-2 border-emerald-600">PASO A PASO</div>
+                            <h3 class="text-4xl md:text-5xl font-bold text-emerald-900 mb-6 mt-4 text-center tracking-wide">${operation}</h3>
+                            <ul class="space-y-4">
+                                ${steps.map(s => `
+                                    <li class="flex items-start bg-white p-4 rounded-xl shadow-sm border-2 border-emerald-100">
+                                        <span class="mr-4 text-3xl">👉</span>
+                                        <span class="text-slate-700 font-semibold text-lg md:text-xl">${s}</span>
+                                    </li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="bg-amber-50 rounded-3xl p-6 border-4 border-amber-300 flex flex-col md:flex-row gap-6 items-center">
+                            <div class="text-6xl animate-bounce">💡</div>
+                            <div>
+                                <h3 class="font-bold text-amber-900 text-2xl mb-1">El truco</h3>
+                                <p class="text-xl text-amber-800 font-medium">${tip}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- CURRÍCULO 3º PRIMARIA (10 PASOS ABN) ---
+            const levels = [
+                {
+                    title: "3.1 Amigos del 1000",
+                    subtitle: "Traslación del patrón del 10 y 100 al millar.",
+                    practicoHTML: buildTheoryUI(
+                        "Los Amigos del 1000", 
+                        "Centenas completas que se juntan para formar una unidad de millar.",
+                        "300 + 700 = ?",
+                        [
+                            "Piensa en los amigos del 10: <strong class='text-emerald-700'>3 + 7 = 10</strong>.",
+                            "Como hablamos de centenas, le añadimos dos ceros.",
+                            "¡Es el mismo patrón! <strong class='text-emerald-700'>300 + 700 = 1000</strong>."
+                        ],
+                        "Si conoces las parejas que suman 10 (1+9, 2+8, 4+6...), ¡ya conoces las que suman 1000!"
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let c1 = rand(1, 9) * 100;
+                            // Alternar entre preguntar la suma o el sumando que falta
+                            if (Math.random() > 0.5) res.push({text: `${c1} + ${1000-c1}`, answer: 1000});
+                            else res.push({text: `${c1} + _ = 1000`, answer: 1000-c1});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = []; // PRO: Amigos del 10000 (decenas de millar)
+                        for(let i=0; i<20; i++) {
+                            let c1 = rand(1, 9) * 1000;
+                            if (Math.random() > 0.5) res.push({text: `${c1} + ${10000-c1}`, answer: 10000});
+                            else res.push({text: `${c1} + _ = 10000`, answer: 10000-c1});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.2 Decenas que cruzan la centena",
+                    subtitle: "Traspaso del límite del 100 sumando decenas completas.",
+                    practicoHTML: buildTheoryUI(
+                        "Cruzar el 100", 
+                        "Sumar decenas redondas grandes que superan la centena.",
+                        "80 + 50 = ?",
+                        [
+                            "Tapa los ceros mentalmente.",
+                            "Suma los números: <strong class='text-emerald-700'>8 + 5 = 13</strong>.",
+                            "Devuelve el cero al resultado: <strong class='text-emerald-700'>130</strong>."
+                        ],
+                        "Sumar decenas es igual que sumar unidades, solo tienes que acordarte de poner el cero al final."
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let d1 = rand(5, 9); let d2 = rand(11-d1, 9); // Asegura rebasar 10
+                            res.push({text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let d1 = rand(12, 19); let d2 = rand(5, 12); 
+                            res.push({text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.3 Sumar centenas a nº 3 cifras",
+                    subtitle: "Acumulación directa en la posición de las centenas.",
+                    practicoHTML: buildTheoryUI(
+                        "Sumar solo al jefe", 
+                        "Al sumar centenas exactas, las decenas y unidades no cambian.",
+                        "342 + 200 = ?",
+                        [
+                            "El 200 tiene ceros en las decenas y unidades.",
+                            "Así que el <strong class='text-emerald-700'>42</strong> del primer número baja directo al resultado.",
+                            "Solo sumamos las centenas: <strong class='text-emerald-700'>3 + 2 = 5</strong>.",
+                            "Juntamos todo: <strong class='text-emerald-700'>542</strong>."
+                        ],
+                        "Enfócate solo en el primer número (las centenas). ¡La cola del número se copia igual!"
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n = rand(111, 799);
+                            let maxC = 9 - Math.floor(n/100);
+                            let c = rand(1, maxC) * 100;
+                            res.push({text: `${n} + ${c}`, answer: n+c});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n = rand(111, 899);
+                            let c = rand(3, 9) * 100; // Puede rebasar al millar
+                            res.push({text: `${n} + ${c}`, answer: n+c});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.4 Restar centenas a nº 3 cifras",
+                    subtitle: "Detracción directa en las centenas.",
+                    practicoHTML: buildTheoryUI(
+                        "Restar solo al jefe", 
+                        "Igual que la suma, al restar centenas exactas (acabadas en 00), la parte de atrás se salva.",
+                        "857 - 400 = ?",
+                        [
+                            "El 400 tiene ceros, así que al <strong class='text-emerald-700'>57</strong> no le quitamos nada.",
+                            "Restamos solo las centenas: <strong class='text-emerald-700'>800 - 400 = 400</strong>.",
+                            "Pegamos el 57 que guardamos: <strong class='text-emerald-700'>457</strong>."
+                        ],
+                        "¡Las decenas y unidades están a salvo! Pásalas directamente al resultado."
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n = rand(311, 999);
+                            let maxC = Math.floor(n/100) - 1;
+                            let c = rand(1, maxC > 0 ? maxC : 1) * 100;
+                            res.push({text: `${n} - ${c}`, answer: n-c});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n = rand(1211, 1999); // Desde millares
+                            let c = rand(4, 9) * 100;
+                            res.push({text: `${n} - ${c}`, answer: n-c});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.5 Sumar con cambio (2 cifras)",
+                    subtitle: "Suma ABN acumulativa en dos pasos.",
+                    practicoHTML: buildTheoryUI(
+                        "Suma en dos saltos", 
+                        "Partimos el segundo número para sumarlo poco a poco.",
+                        "47 + 28 = ?",
+                        [
+                            "Descomponemos el 28 en <strong class='text-emerald-700'>20 y 8</strong>.",
+                            "Primer salto (sumamos decenas): <strong class='text-emerald-700'>47 + 20 = 67</strong>.",
+                            "Segundo salto (sumamos unidades): <strong class='text-emerald-700'>67 + 8 = 75</strong>."
+                        ],
+                        "El cerebro suma mejor si le damos la comida en trozos pequeños. ¡Suma primero las decenas!"
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let u1 = rand(3, 9); let d1 = rand(1, 7);
+                            let u2 = rand(11-u1, 9); // Obliga a rebasar decena
+                            let d2 = rand(1, 8-d1);
+                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
+                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n1 = rand(45, 145); let n2 = rand(35, 89);
+                            if((n1%10)+(n2%10) < 10) n2 += 5; // Forzar cambio
+                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.6 Restar con cambio (2 cifras)",
+                    subtitle: "Resta progresiva por descomposición del sustraendo.",
+                    practicoHTML: buildTheoryUI(
+                        "Resta en dos saltos", 
+                        "Descomponemos el número que restamos para bajar como por una escalera.",
+                        "62 - 27 = ?",
+                        [
+                            "Rompemos el 27 en <strong class='text-emerald-700'>20 y 7</strong>.",
+                            "Bajón grande (decenas): <strong class='text-emerald-700'>62 - 20 = 42</strong>.",
+                            "Bajón pequeño (unidades): <strong class='text-emerald-700'>42 - 7 = 35</strong>."
+                        ],
+                        "Bajar de 10 en 10 primero es mucho más fácil. Deja las unidades sueltas para el final."
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let u1 = rand(1, 7); let d1 = rand(4, 9);
+                            let u2 = rand(u1+1, 9); // Obliga al cambio
+                            let d2 = rand(1, d1-2);
+                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
+                            res.push({text: `${n1} - ${n2}`, answer: n1-n2});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n1 = rand(112, 195);
+                            let u2 = rand((n1%10)+1, 9);
+                            let d2 = rand(2, 7);
+                            let n2 = d2*10 + u2;
+                            res.push({text: `${n1} - ${n2}`, answer: n1-n2});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.7 Tablas extendidas ABN",
+                    subtitle: "Se multiplica el dígito y se aplica el patrón posicional.",
+                    practicoHTML: buildTheoryUI(
+                        "Multiplicar con ceros", 
+                        "Usamos las tablas normales y luego añadimos los ceros del patrón.",
+                        "4 x 30 = ?",
+                        [
+                            "Olvídate del cero por un momento.",
+                            "Aplica la tabla básica: <strong class='text-emerald-700'>4 x 3 = 12</strong>.",
+                            "Recupera el cero del 30 y ponlo al final: <strong class='text-emerald-700'>120</strong>."
+                        ],
+                        "El cero es como un vagón de tren; apártalo para multiplicar y engánchalo al final."
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let u = rand(2, 9); let d = rand(2, 9)*10;
+                            if (Math.random() > 0.5) res.push({text: `${u} x ${d}`, answer: u*d});
+                            else res.push({text: `${d} x ${u}`, answer: u*d});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let u = rand(4, 9); let c = rand(2, 9)*100;
+                            res.push({text: `${u} x ${c}`, answer: u*c});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.8 Producto por 1 cifra (Descomp.)",
+                    subtitle: "Aplicación mental de la propiedad distributiva.",
+                    practicoHTML: buildTheoryUI(
+                        "Multiplicar por partes", 
+                        "Rompemos el número de dos cifras para multiplicar más fácil.",
+                        "14 x 3 = ?",
+                        [
+                            "Rompemos el 14 en <strong class='text-emerald-700'>10 y 4</strong>.",
+                            "Multiplicamos la decena: <strong class='text-emerald-700'>10 x 3 = 30</strong>.",
+                            "Multiplicamos la unidad: <strong class='text-emerald-700'>4 x 3 = 12</strong>.",
+                            "Sumamos los dos resultados: <strong class='text-emerald-700'>30 + 12 = 42</strong>."
+                        ],
+                        "Es la propiedad distributiva: repartimos el trabajo en dos multiplicaciones sencillas."
+                    ),
+                    gen: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n = rand(12, 29); let u = rand(2, 6);
+                            res.push({text: `${n} x ${u}`, answer: n*u});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        for(let i=0; i<20; i++) {
+                            let n = rand(32, 89); let u = rand(3, 8);
+                            res.push({text: `${n} x ${u}`, answer: n*u});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.9 Mitades de centenas pares",
+                    subtitle: "Asociación directa con la mitad básica.",
+                    practicoHTML: buildTheoryUI(
+                        "Partir centenas por la mitad", 
+                        "Si el primer número es par, su mitad es directa y rapidísima.",
+                        "Mitad de 600 = ?",
+                        [
+                            "Fíjate en el número principal (el 6).",
+                            "Piensa en su mitad básica: <strong class='text-emerald-700'>la mitad de 6 es 3</strong>.",
+                            "Como son centenas, devuelve los ceros: <strong class='text-emerald-700'>300</strong>."
+                        ],
+                        "¡Solo tienes que saberte las mitades del 2, 4, 6 y 8!"
+                    ),
+                    gen: () => {
+                        let res = [];
+                        const evens = [200, 400, 600, 800, 1000];
+                        for(let i=0; i<20; i++) {
+                            let n = evens[rand(0, 4)];
+                            res.push({text: `Mitad de ${n}`, answer: n/2});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        const evens = [1200, 1400, 1600, 1800, 2400, 2600];
+                        for(let i=0; i<20; i++) {
+                            let n = evens[rand(0, 5)];
+                            res.push({text: `Mitad de ${n}`, answer: n/2});
+                        }
+                        return res;
+                    }
+                },
+                {
+                    title: "3.10 Mitades de 3 cifras (sencillos)",
+                    subtitle: "Descomposición en sumandos simétricos fáciles.",
+                    practicoHTML: buildTheoryUI(
+                        "Mitad por descomposición", 
+                        "Partimos el número en centena y decenas para calcular la mitad de cada parte.",
+                        "Mitad de 150 = ?",
+                        [
+                            "Descomponemos el 150 en <strong class='text-emerald-700'>100 y 50</strong>.",
+                            "Mitad de 100 = <strong class='text-emerald-700'>50</strong>.",
+                            "Mitad de 50 = <strong class='text-emerald-700'>25</strong>.",
+                            "Sumamos las dos mitades: <strong class='text-emerald-700'>50 + 25 = 75</strong>."
+                        ],
+                        "Aprende de memoria que la mitad de 100 es 50, y la mitad de 50 es 25. ¡Aparecen muchísimo!"
+                    ),
+                    gen: () => {
+                        let res = [];
+                        const targets = [150, 350, 550, 240, 260, 420, 460, 480]; // Fáciles de 3 cifras
+                        for(let i=0; i<20; i++) {
+                            let n = targets[rand(0, targets.length-1)];
+                            res.push({text: `Mitad de ${n}`, answer: n/2});
+                        }
+                        return res;
+                    },
+                    genPro: () => {
+                        let res = [];
+                        const targets = [370, 530, 750, 950, 390, 570]; // Más complejos
+                        for(let i=0; i<20; i++) {
+                            let n = targets[rand(0, targets.length-1)];
+                            res.push({text: `Mitad de ${n}`, answer: n/2});
+                        }
+                        return res;
+                    }
+                }
+            ];
+
+            // --- VARIABLES DE INTERFAZ ---
+            const levelSelector = document.getElementById('level-selector');
+            const tabPractico = document.getElementById('tab-practico');
+            const tabReto = document.getElementById('tab-reto');
+            const contentPractico = document.getElementById('content-practico');
+            const contentReto = document.getElementById('content-reto');
+            const progressText = document.getElementById('progress-text');
+            const problemText = document.getElementById('problem-text');
+            const answerText = document.getElementById('answer-text');
+            const showAnswerBtn = document.getElementById('show-answer-btn');
+            const nextProblemBtn = document.getElementById('next-problem-btn');
+            const printLevelsContainer = document.getElementById('print-levels-container');
+
+            let currentProblems = [];
+            let currentProblemIndex = 0;
+
+            // --- INICIALIZAR ---
+            function init() {
+                levels.forEach((level, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.textContent = level.title;
+                    levelSelector.appendChild(opt);
+
+                    const cbWrap = document.createElement('label');
+                    cbWrap.className = 'flex items-center cursor-pointer p-3 hover:bg-violet-50 rounded-xl transition-colors border-2 border-transparent hover:border-violet-200';
+                    cbWrap.innerHTML = `
+                        <input type="checkbox" value="${index}" class="print-level-cb form-checkbox h-6 w-6 text-violet-600 rounded-md focus:ring-violet-500">
+                        <span class="ml-3 text-slate-700 font-bold text-lg truncate" title="${level.title}">${level.title}</span>
+                    `;
+                    printLevelsContainer.appendChild(cbWrap);
+                });
+
+                levelSelector.addEventListener('change', () => loadLevel(parseInt(levelSelector.value)));
+                
+                tabPractico.addEventListener('click', showPractico);
+                tabReto.addEventListener('click', showReto);
+                showAnswerBtn.addEventListener('click', showAnswer);
+                nextProblemBtn.addEventListener('click', nextProblem);
+                
+                document.getElementById('new-challenge-btn').addEventListener('click', () => startNewChallenge(false));
+                document.getElementById('pro-challenge-btn').addEventListener('click', () => startNewChallenge(true));
+
+                // Modal
+                document.getElementById('open-print-modal-btn').addEventListener('click', () => {
+                    document.getElementById('print-error-msg').classList.add('hidden');
+                    document.getElementById('print-modal').classList.remove('hidden');
+                });
+                document.getElementById('cancel-print-btn').addEventListener('click', () => {
+                    document.getElementById('print-modal').classList.add('hidden');
+                });
+                document.getElementById('generate-print-btn').addEventListener('click', generatePrintDocument);
+
+                loadLevel(0);
+                showPractico();
+            }
+
+            function loadLevel(idx) {
+                contentPractico.innerHTML = levels[idx].practicoHTML;
+                startNewChallenge(false);
+                showPractico();
+            }
+
+            function startNewChallenge(isPro) {
+                const idx = parseInt(levelSelector.value);
+                currentProblems = isPro ? levels[idx].genPro() : levels[idx].gen();
+                currentProblemIndex = 0;
+                displayProblem();
+                showReto();
+            }
+
+            function displayProblem() {
+                if (currentProblemIndex < currentProblems.length) {
+                    const p = currentProblems[currentProblemIndex];
+                    // Si el texto incluye "_" es una operación para rellenar hueco
+                    if (p.text.includes('_')) {
+                        problemText.innerHTML = p.text.replace('_', '<span class="text-slate-300">___</span>');
+                    } else {
+                        problemText.textContent = p.text;
+                    }
+                    
+                    progressText.textContent = `${currentProblemIndex + 1} de 20`;
+                    answerText.classList.remove('answer-reveal');
+                    answerText.classList.add('opacity-0');
+                    answerText.textContent = `= ${p.answer}`;
+                    
+                    showAnswerBtn.classList.remove('hidden');
+                    nextProblemBtn.classList.add('hidden');
+                } else {
+                    problemText.textContent = '¡Misión Cumplida! 🏆';
+                    progressText.textContent = 'Fin del reto';
+                    answerText.classList.add('opacity-0');
+                    showAnswerBtn.classList.add('hidden');
+                    nextProblemBtn.classList.add('hidden');
+                }
+            }
+            
+            function showAnswer() {
+                answerText.classList.remove('opacity-0');
+                answerText.classList.add('answer-reveal');
+                playSuccessSound();
+                showAnswerBtn.classList.add('hidden');
+                nextProblemBtn.classList.remove('hidden');
+            }
+
+            function nextProblem() {
+                currentProblemIndex++;
+                displayProblem();
+            }
+
+            function showPractico() {
+                contentPractico.classList.remove('hidden');
+                contentReto.classList.add('hidden');
+                contentReto.classList.remove('flex');
+                tabPractico.classList.add('tab-active', 'z-10');
+                tabPractico.classList.remove('tab-inactive', 'z-0');
+                tabReto.classList.add('tab-inactive', 'z-0');
+                tabReto.classList.remove('tab-active', 'z-10');
+            }
+
+            function showReto() {
+                contentReto.classList.remove('hidden');
+                contentReto.classList.add('flex');
+                contentPractico.classList.add('hidden');
+                tabReto.classList.add('tab-active', 'z-10');
+                tabReto.classList.remove('tab-inactive', 'z-0');
+                tabPractico.classList.add('tab-inactive', 'z-0');
+                tabPractico.classList.remove('tab-active', 'z-10');
+            }
+
+            // --- GENERADOR PDF (FICHAS) ---
+            function generatePrintDocument() {
+                const checks = document.querySelectorAll('.print-level-cb:checked');
+                const err = document.getElementById('print-error-msg');
+                
+                if (checks.length === 0) {
+                    err.classList.remove('hidden');
+                    return;
+                }
+                err.classList.add('hidden');
+
+                const isPro = document.getElementById('print-pro-cb').checked;
+                const numVersions = parseInt(document.getElementById('print-versions').value);
+                const titles = Array.from(checks).map(cb => levels[parseInt(cb.value)].title.replace(/^\d+\.\d+\s*/, ''));
+
+                let html = '';
+                let solutions = `
+                    <div class="page-break w-full mx-auto font-sans text-slate-900 pt-6">
+                        <div class="border-b-4 border-emerald-500 pb-3 mb-6 flex justify-between items-end">
+                            <h1 class="text-3xl font-bold text-emerald-800 uppercase">SOLUCIONARIO DOCENTE</h1>
+                            <p class="text-lg text-slate-700 font-bold">${isPro ? '🔥 Nivel Avanzado' : ''}</p>
+                        </div>
+                        <div class="grid grid-cols-${numVersions > 1 ? '2' : '1'} gap-6">
+                `;
+
+                for (let v = 1; v <= numVersions; v++) {
+                    let pools = [];
+                    checks.forEach(cb => {
+                        const lvl = levels[parseInt(cb.value)];
+                        pools.push((isPro ? lvl.genPro() : lvl.gen()).sort(() => Math.random() - 0.5));
+                    });
+
+                    let final = [];
+                    let pIdx = 0;
+                    while(final.length < 20 && pools.some(a => a.length > 0)) {
+                        let cur = pools[pIdx % pools.length];
+                        if (cur.length > 0) final.push(cur.pop());
+                        pIdx++;
+                    }
+                    final.sort(() => Math.random() - 0.5); // Barajeado final
+
+                    const breakCls = v > 1 ? 'page-break pt-6' : '';
+                    
+                    html += `
+                        <div class="${breakCls} w-full mx-auto font-sans text-slate-900">
+                            <div class="border-b-4 border-violet-500 pb-3 mb-5 flex justify-between items-end">
+                                <div>
+                                    <h1 class="text-3xl font-bold text-violet-900 uppercase">CÁLCULO MENTAL - 3º EP</h1>
+                                    <p class="text-lg text-slate-700 font-semibold mt-1">
+                                        Estrategias: ${titles.join(', ')}
+                                    </p>
+                                </div>
+                                <div class="text-right text-slate-500 font-bold bg-slate-100 px-4 py-2 rounded-xl border-2 border-slate-200">
+                                    Modelo ${v}
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mb-10 text-xl font-semibold">
+                                <div class="flex-1 mr-8 flex items-end">
+                                    <span class="mr-3 text-slate-800">Nombre:</span> 
+                                    <div class="flex-1 border-b-2 border-slate-400"></div>
+                                </div>
+                                <div class="w-64 flex items-end">
+                                    <span class="mr-3 text-slate-800">Fecha:</span> 
+                                    <div class="flex-1 border-b-2 border-slate-400"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-x-16 gap-y-12 text-2xl font-bold px-4">
+                    `;
+
+                    let solCol = `
+                        <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
+                            <h3 class="font-bold text-xl mb-4 border-b-2 border-slate-300 pb-2 text-slate-800">Modelo ${v}</h3>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
+                    `;
+
+                    final.forEach((p, i) => {
+                        let cleanText = p.text.replace('_', '___');
+                        html += `
+                            <div class="flex items-center">
+                                <span class="w-10 inline-block font-bold text-slate-300 text-right pr-3">${i + 1}.</span>
+                                <span class="flex-1 text-right pr-4 text-3xl tracking-wide">${cleanText} = </span>
+                                <span class="w-28 border-b-4 border-dashed border-slate-300 inline-block"></span>
+                            </div>
+                        `;
+                        solCol += `
+                            <div class="flex">
+                                <span class="w-8 text-slate-400 font-bold">${i + 1}.</span> 
+                                <span class="flex-1 font-medium">${p.text} =</span> 
+                                <span class="font-bold text-emerald-600 ml-2">${p.answer}</span>
+                            </div>
+                        `;
+                    });
+
+                    html += `</div></div>`;
+                    solCol += `</div></div>`;
+                    solutions += solCol;
+                }
+
+                solutions += `</div></div>`;
+                html += solutions;
+
+                const docStr = `<!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8"><title>Fichas 3º Primaria</title>
+                    <script src="https://cdn.tailwindcss.com"></s`+`cript>
+                    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        body { font-family: 'Quicksand', sans-serif; }
+                        @media print {
+                            @page { size: A4; margin: 1.5cm; }
+                            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                            .page-break { page-break-before: always !important; }
+                            .no-print { display: none !important; }
+                        }
+                    </style>
+                </head>
+                <body class="bg-white p-4">
+                    <div class="no-print text-center py-6 bg-violet-50 border-b-4 border-violet-200 mb-8 rounded-2xl">
+                        <p class="text-violet-800 font-bold text-2xl mb-2">🖨️ Fichas Generadas</p>
+                        <button onclick="window.print()" class="bg-emerald-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-600 mt-2">Imprimir Documento</button>
+                    </div>
+                    ${html}
+                    <script>setTimeout(() => window.print(), 1000);</s`+`cript>
+                </body>
+                </html>`;
+
+                const blob = new Blob([docStr], { type: 'text/html' });
+                window.open(URL.createObjectURL(blob), '_blank');
+                document.getElementById('print-modal').classList.add('hidden');
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
