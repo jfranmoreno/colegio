@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🧪 Laboratorio de Palabras 🔬</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&display=swap');
+
+        /* === VARIABLES DE COLOR === */
+        :root {
+            /* Colores de fondo pastel mágicos */
+            --bg-1: #FF9A9E;
+            --bg-2: #FECFEF;
+            --bg-3: #A1C4FD;
+            --bg-4: #C2E9FB;
+            
+            /* Colores de Gramática (Más vibrantes y amigables) */
+            --noun-color: #ff5252;     
+            --noun-shadow: #cc3f3f;
+            --adj-color: #ff9f43;      
+            --adj-shadow: #cc7e33;
+            --verb-color: #10ac84;     
+            --verb-shadow: #0a7a5d;
+            
+            --neutral-color: #48dbfb;
+            --neutral-shadow: #2cb1cf;
+            
+            --text-dark: #2f3640;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        /* === RESET Y TIPOGRAFÍA === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(-45deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* === CONTENEDORES PRINCIPALES === */
+        header {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+            border-bottom: 3px solid rgba(255,255,255,0.5);
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 3px 3px 0 #ff9f43, -2px -2px 0 #48dbfb, 2px -2px 0 #ff5252, -2px 2px 0 #10ac84;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* === MENÚ PRINCIPAL === */
+        .menu-grid {
+            display: flex;
+            gap: 35px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+        }
+
+        .menu-btn {
+            background: var(--card-bg);
+            border: 4px solid #fff;
+            border-radius: 35px;
+            padding: 35px 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 12px 0 rgba(0,0,0,0.1), 0 20px 25px rgba(0,0,0,0.15);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 17px 0 rgba(0,0,0,0.1), 0 25px 30px rgba(0,0,0,0.15);
+        }
+
+        .menu-btn:active {
+            transform: translateY(12px);
+            box-shadow: 0 0px 0 transparent, 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .menu-icon {
+            font-size: 5rem;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.15));
+        }
+
+        /* === ELEMENTOS COMUNES JUEGO === */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 15px 30px;
+            border-radius: 30px;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.05);
+            border: 3px solid #fff;
+        }
+
+        .btn-back {
+            background: #ff7675;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 25px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #d63031;
+            transition: all 0.1s;
+        }
+        
+        .btn-back:active { transform: translateY(6px); box-shadow: 0 0 0 #d63031; }
+
+        .score-board {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            background: #ffeaa7;
+            padding: 10px 25px;
+            border-radius: 20px;
+            color: #d35400;
+            box-shadow: inset 0 -4px 0 rgba(0,0,0,0.1);
+        }
+
+        /* === COMPONENTES DE JUEGO === */
+        .word-display {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 6rem;
+            color: var(--text-dark);
+            background: var(--card-bg);
+            padding: 30px 80px;
+            border-radius: 40px;
+            box-shadow: 0 15px 0 rgba(0,0,0,0.05), 0 20px 30px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+            text-transform: capitalize;
+            border: 5px solid #fff;
+            letter-spacing: 2px;
+        }
+
+        .tubes-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tube-btn {
+            border: 4px solid rgba(255,255,255,0.5);
+            border-radius: 40px;
+            padding: 30px 45px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            color: white;
+            cursor: pointer;
+            min-width: 280px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .btn-noun { background: var(--noun-color); box-shadow: 0 12px 0 var(--noun-shadow); }
+        .btn-adj { background: var(--adj-color); box-shadow: 0 12px 0 var(--adj-shadow); }
+        .btn-verb { background: var(--verb-color); box-shadow: 0 12px 0 var(--verb-shadow); }
+
+        .tube-btn:active {
+            transform: translateY(12px);
+            box-shadow: 0 0px 0 transparent;
+        }
+
+        .sentence-builder, .sentence-display {
+            background: var(--card-bg);
+            min-height: 140px;
+            width: 100%;
+            max-width: 1100px;
+            border-radius: 35px;
+            border: 4px dashed #a4b0be;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 800;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            max-width: 1100px;
+        }
+
+        .word-piece {
+            background: #fff;
+            color: var(--text-dark);
+            padding: 18px 35px;
+            border-radius: 20px;
+            font-size: 2.4rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #d1d8dd;
+            border: 2px solid #e1e8ed;
+            transition: all 0.1s;
+        }
+
+        .word-piece:active {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 transparent;
+        }
+        
+        .word-piece.placed { display: none; }
+
+        .gap {
+            display: inline-block;
+            min-width: 160px;
+            height: 60px;
+            border-bottom: 6px dashed #747d8c;
+            margin: 0 15px;
+            vertical-align: bottom;
+        }
+
+        .color-noun { color: var(--noun-color); font-weight: 900; text-shadow: 1px 1px 0 rgba(0,0,0,0.05); }
+        .color-adj { color: var(--adj-color); font-weight: 900; text-shadow: 1px 1px 0 rgba(0,0,0,0.05); }
+        .color-verb { color: var(--verb-color); font-weight: 900; text-shadow: 1px 1px 0 rgba(0,0,0,0.05); }
+
+        .btn-action {
+            background: #9b59b6;
+            box-shadow: 0 12px 0 #8e44ad;
+            color: white;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 35px;
+            padding: 20px 60px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.1s;
+        }
+        .btn-action:active { transform: translateY(12px); box-shadow: 0 0 0 transparent; }
+
+        /* === INSTRUCCIÓN G4 === */
+        .g4-instruction {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            background: var(--card-bg);
+            padding: 15px 35px;
+            border-radius: 25px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.05);
+            color: var(--text-dark);
+            border: 3px solid #fff;
+        }
+
+        /* === FEEDBACK OVERLAY === */
+        .feedback-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .feedback-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .feedback-icon {
+            font-size: 18rem;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
+            animation: popIcon 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIcon {
+            0% { transform: scale(0) rotate(-20deg); }
+            80% { transform: scale(1.1) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 
+            10%, 90% { transform: translate3d(-5px, 0, 0); }
+            20%, 80% { transform: translate3d(10px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-20px, 0, 0); }
+            40%, 60% { transform: translate3d(20px, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧪 Laboratorio de Palabras 🔬</h1>
+    </header>
+
+    <!-- PANTALLA: MENÚ -->
+    <main id="screen-menu" class="screen active">
+        <div class="menu-grid">
+            <button class="menu-btn" onclick="startGame(1)">
+                <span class="menu-icon">🧪</span>
+                <span>Tipos de Palabras</span>
+            </button>
+            <button class="menu-btn" onclick="startGame(2)">
+                <span class="menu-icon">🧩</span>
+                <span>Ordenar Oraciones</span>
+            </button>
+            <button class="menu-btn" onclick="startGame(3)">
+                <span class="menu-icon">🕵️‍♂️</span>
+                <span>Detective de Concordancia</span>
+            </button>
+            <button class="menu-btn" onclick="startGame(4)">
+                <span class="menu-icon">🎯</span>
+                <span>Caza-Palabras</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- PANTALLA: JUEGO 1 (Clasificador) -->
+    <main id="screen-game1" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Aciertos: <span id="score1">0</span> / <span id="total1">10</span></div>
+        </div>
+        <div id="g1-word" class="word-display">Palabra</div>
+        <div class="tubes-container">
+            <!-- Botones gigantes para interacción MDI -->
+            <button class="tube-btn btn-noun" onclick="checkG1('noun')">Sustantivo (Rojo)</button>
+            <button class="tube-btn btn-adj" onclick="checkG1('adj')">Adjetivo (Naranja)</button>
+            <button class="tube-btn btn-verb" onclick="checkG1('verb')">Verbo (Verde)</button>
+        </div>
+    </main>
+
+    <!-- PANTALLA: JUEGO 2 (Coherencia - Ordenar) -->
+    <main id="screen-game2" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Aciertos: <span id="score2">0</span> / <span id="total2">5</span></div>
+        </div>
+        <!-- Zona de construcción donde irán las palabras pulsadas -->
+        <div id="g2-builder" class="sentence-builder"></div>
+        <!-- Banco de palabras desordenadas -->
+        <div id="g2-pool" class="word-pool"></div>
+        <button class="btn-action" onclick="checkG2()">¡Comprobar Fórmula!</button>
+    </main>
+
+    <!-- PANTALLA: JUEGO 3 (Concordancia) -->
+    <main id="screen-game3" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Aciertos: <span id="score3">0</span> / <span id="total3">5</span></div>
+        </div>
+        <div id="g3-sentence" class="sentence-display">La niña lee un <span class="gap"></span> interesante.</div>
+        <div id="g3-options" class="word-pool" style="margin-top:40px;">
+            <!-- Opciones generadas dinámicamente -->
+        </div>
+    </main>
+
+    <!-- PANTALLA: JUEGO 4 (Caza-Palabras) -->
+    <main id="screen-game4" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Aciertos: <span id="score4">0</span> / <span id="total4">10</span></div>
+        </div>
+        <h2 id="g4-instruction" class="g4-instruction"></h2>
+        <div id="g4-sentence" class="sentence-builder" style="padding: 40px; gap: 20px;"></div>
+    </main>
+
+    <!-- OVERLAY DE FEEDBACK -->
+    <div id="feedback" class="feedback-overlay">
+        <div id="feedback-icon" class="feedback-icon">✅</div>
+    </div>
+
+    <script>
+        /* ========================================================
+           BASE DE DATOS DE PALABRAS Y DICCIONARIO DE COLORES
+           (Docente: Puedes añadir o modificar palabras aquí)
+        ======================================================== */
+        
+        // Diccionario para colorear automáticamente (Sustantivos, Adjetivos, Verbos)
+        const dictionary = {
+            nouns: ['perro', 'mesa', 'colegio', 'niño', 'libro', 'casa', 'pelota', 'flor', 'gato', 'coche', 'perros', 'niños', 'gatos', 'flores', 'coches', 'niña', 'amigos', 'parque', 'manzanas', 'pájaro', 'sol', 'manzana'],
+            adjectives: ['grande', 'feliz', 'azul', 'rápido', 'bonito', 'alto', 'pequeño', 'divertido', 'suave', 'brillante', 'rápidos', 'rápida', 'rápidas', 'pequeña', 'pequeñas', 'rojas', 'rojo', 'rojos', 'verdes', 'listo', 'hermosas'],
+            verbs: ['saltar', 'comer', 'jugar', 'leer', 'dormir', 'correr', 'cantar', 'reír', 'escribir', 'mirar', 'salta', 'lee', 'comen', 'corre', 'son', 'es', 'juegan', 'cantan', 'vuela', 'compran', 'cae', 'sale']
+        };
+
+        // Función para aplicar color gramatical al texto
+        function colorizeText(text) {
+            let cleanText = text.replace(/[.,]/g, ''); // Quita puntuación para evaluar
+            let lowerText = cleanText.toLowerCase();
+            
+            if (dictionary.nouns.includes(lowerText)) {
+                return `<span class="color-noun">${text}</span>`;
+            } else if (dictionary.adjectives.includes(lowerText)) {
+                return `<span class="color-adj">${text}</span>`;
+            } else if (dictionary.verbs.includes(lowerText)) {
+                return `<span class="color-verb">${text}</span>`;
+            }
+            return text; // Palabras neutras (artículos, preposiciones, etc)
+        }
+
+        // Datos: Juego 1 (Tipos de palabras)
+        const dbGame1 = [
+            { word: "Colegio", type: "noun" }, { word: "Alegre", type: "adj" }, { word: "Escribir", type: "verb" },
+            { word: "Mochila", type: "noun" }, { word: "Divertido", type: "adj" }, { word: "Correr", type: "verb" },
+            { word: "Profesor", type: "noun" }, { word: "Rápido", type: "adj" }, { word: "Estudiar", type: "verb" },
+            { word: "Cuaderno", type: "noun" }, { word: "Brillante", type: "adj" }, { word: "Pintar", type: "verb" }
+        ];
+
+        // Datos: Juego 2 (Coherencia - Ordenar oraciones)
+        const dbGame2 = [
+            "El perro feliz salta.",
+            "La niña lee un libro.",
+            "Los niños juegan en el parque.",
+            "Mi coche rojo corre mucho.",
+            "Las flores rojas son bonitas.",
+            "El gato pequeño duerme.",
+            "La pelota azul es grande.",
+            "Mi amigo feliz canta.",
+            "El pájaro bonito vuela.",
+            "La mesa grande es azul."
+        ];
+
+        // Datos: Juego 3 (Concordancia)
+        const dbGame3 = [
+            { part1: "Los perros son muy", part2: ".", options: ["rápido", "rápidos", "rápidas", "rápida"], answer: "rápidos" },
+            { part1: "La casa es muy", part2: ".", options: ["pequeño", "pequeños", "pequeña", "pequeñas"], answer: "pequeña" },
+            { part1: "Unos niños", part2: "al balón.", options: ["juega", "juegas", "jugamos", "juegan"], answer: "juegan" },
+            { part1: "Las manzanas", part2: "están ricas.", options: ["rojo", "rojos", "rojas", "roja"], answer: "rojas" },
+            { part1: "El pájaro", part2: "alto.", options: ["vuelan", "vuelo", "vuela", "volamos"], answer: "vuela" },
+            { part1: "El gato es muy", part2: ".", options: ["suave", "suaves", "suava", "suavo"], answer: "suave" },
+            { part1: "Los coches", part2: "rápido.", options: ["corre", "corren", "corremos", "corres"], answer: "corren" },
+            { part1: "Unas flores", part2: "en el jardín.", options: ["bonitas", "bonito", "bonitos", "bonita"], answer: "bonitas" },
+            { part1: "Mi amigo", part2: "un libro.", options: ["leen", "lee", "leemos", "leéis"], answer: "lee" },
+            { part1: "La pelota", part2: "es nueva.", options: ["roja", "rojo", "rojos", "rojas"], answer: "roja" }
+        ];
+
+        // Datos: Juego 4 (Identificador de palabras en oración)
+        const dbGame4 = [
+            { sentence: "El perro feliz salta.", noun: "perro", adj: "feliz", verb: "salta" },
+            { sentence: "La niña pequeña lee.", noun: "niña", adj: "pequeña", verb: "lee" },
+            { sentence: "Un gato rápido corre.", noun: "gato", adj: "rápido", verb: "corre" },
+            { sentence: "El coche azul es bonito.", noun: "coche", adj: "azul", verb: "es" },
+            { sentence: "Las flores rojas son hermosas.", noun: "flores", adj: "rojas", verb: "son" },
+            { sentence: "El pájaro azul vuela.", noun: "pájaro", adj: "azul", verb: "vuela" },
+            { sentence: "Un niño divertido juega.", noun: "niño", adj: "divertido", verb: "juega" },
+            { sentence: "La manzana roja cae.", noun: "manzana", adj: "roja", verb: "cae" },
+            { sentence: "El sol brillante sale.", noun: "sol", adj: "brillante", verb: "sale" },
+            { sentence: "Mi amigo feliz canta.", noun: "amigo", adj: "feliz", verb: "canta" }
+        ];
+
+        /* ========================================================
+           SISTEMA DE AUDIO WEB (Sin archivos externos)
+        ======================================================== */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            if(type === 'win') {
+                // Sonido de Acierto (Timbre agudo y feliz)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Do5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // Mi5
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            } else {
+                // Sonido de Error (Zumbido grave)
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            }
+        }
+
+        /* ========================================================
+           CONTROLADOR GLOBAL DE ESTADO
+        ======================================================== */
+        let state = {
+            game: 0,
+            currentIndex: 0,
+            score: 0,
+            items: [], // Elementos aleatorizados de la ronda
+            g2Selected: [], // Palabras seleccionadas en Juego 2
+            g4Step: 0 // Paso actual en Juego 4
+        };
+
+        function showMenu() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-menu').classList.add('active');
+        }
+
+        function startGame(gameNumber) {
+            state.game = gameNumber;
+            state.score = 0;
+            state.currentIndex = 0;
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-game${gameNumber}`).classList.add('active');
+
+            if(gameNumber === 1) setupGame1();
+            if(gameNumber === 2) setupGame2();
+            if(gameNumber === 3) setupGame3();
+            if(gameNumber === 4) setupGame4();
+        }
+
+        // Función para barajar arrays (Algoritmo Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Feedback visual y sonoro
+        function showFeedback(isCorrect, callback) {
+            const overlay = document.getElementById('feedback');
+            const icon = document.getElementById('feedback-icon');
+            
+            if(isCorrect) {
+                playSound('win');
+                icon.textContent = '🌟';
+                state.score++;
+            } else {
+                playSound('error');
+                icon.textContent = '❌';
+                // Efecto de temblor en pantalla
+                const activeScreen = document.querySelector('.screen.active');
+                activeScreen.classList.add('shake');
+                setTimeout(() => activeScreen.classList.remove('shake'), 500);
+            }
+            
+            overlay.classList.add('show');
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                if(callback) callback(isCorrect);
+            }, 1200);
+        }
+
+        function updateScore(gameNum, total) {
+            document.getElementById(`score${gameNum}`).innerText = state.score;
+            document.getElementById(`total${gameNum}`).innerText = total;
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 1: CLASIFICADOR (Tipos de Palabras)
+        ======================================================== */
+        function setupGame1() {
+            if(state.currentIndex === 0) {
+                state.items = shuffle([...dbGame1]).slice(0, 10); // 10 palabras por ronda
+            }
+            
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Juego Terminado! Has acertado ${state.score} de ${state.items.length}. ¡Gran Trabajo en el Laboratorio!`);
+                return showMenu();
+            }
+
+            updateScore(1, state.items.length);
+            let currentWord = state.items[state.currentIndex].word;
+            
+            // Mostrar palabra con su color si queremos pista, o neutral. 
+            // Para evaluación, la mostramos neutral (negro oscuro)
+            document.getElementById('g1-word').innerHTML = currentWord;
+        }
+
+        function checkG1(selectedType) {
+            const correctType = state.items[state.currentIndex].type;
+            const isCorrect = (selectedType === correctType);
+            
+            showFeedback(isCorrect, () => {
+                state.currentIndex++;
+                setupGame1();
+            });
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 2: COHERENCIA (Ordenar Oración)
+        ======================================================== */
+        function setupGame2() {
+            if(state.currentIndex === 0) {
+                state.items = shuffle([...dbGame2]).slice(0, 10); // 10 oraciones
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Fórmula completada! Aciertos: ${state.score}/${state.items.length}. ¡Eres un gran científico!`);
+                return showMenu();
+            }
+
+            updateScore(2, state.items.length);
+            state.g2Selected = [];
+            
+            const builder = document.getElementById('g2-builder');
+            const pool = document.getElementById('g2-pool');
+            builder.innerHTML = '';
+            pool.innerHTML = '';
+
+            // Preparar palabras
+            let sentence = state.items[state.currentIndex];
+            // Separar palabras conservando signos al final de la palabra si es posible
+            let words = sentence.split(" ");
+            let scrambled = shuffle([...words]);
+
+            scrambled.forEach((word, index) => {
+                let btn = document.createElement('div');
+                btn.className = 'word-piece';
+                // Coloreamos dinámicamente las fichas
+                btn.innerHTML = colorizeText(word);
+                btn.dataset.word = word;
+                btn.dataset.id = index;
+                
+                // Evento táctil/clic para MDI
+                btn.onclick = () => selectWordG2(btn);
+                pool.appendChild(btn);
+            });
+        }
+
+        function selectWordG2(btn) {
+            // Mueve la palabra de la reserva (pool) al constructor (builder)
+            btn.classList.add('placed');
+            
+            const builder = document.getElementById('g2-builder');
+            let builtPiece = document.createElement('div');
+            builtPiece.className = 'word-piece';
+            builtPiece.innerHTML = btn.innerHTML;
+            
+            // Si la tocas en el constructor, vuelve a la reserva
+            builtPiece.onclick = () => {
+                builder.removeChild(builtPiece);
+                btn.classList.remove('placed');
+                state.g2Selected = state.g2Selected.filter(w => w !== btn.dataset.word);
+            };
+            
+            builder.appendChild(builtPiece);
+            state.g2Selected.push(btn.dataset.word);
+        }
+
+        function checkG2() {
+            const originalSentence = state.items[state.currentIndex];
+            const builtSentence = state.g2Selected.join(" ");
+            
+            if(state.g2Selected.length === 0) return; // No hacer nada si está vacío
+
+            const isCorrect = (builtSentence === originalSentence);
+            
+            showFeedback(isCorrect, (correct) => {
+                if(correct) {
+                    state.currentIndex++;
+                    setupGame2();
+                } else {
+                    // Si falla, limpiar el constructor para que lo intente de nuevo
+                    document.getElementById('g2-builder').innerHTML = '';
+                    document.querySelectorAll('.word-piece.placed').forEach(el => el.classList.remove('placed'));
+                    state.g2Selected = [];
+                }
+            });
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 3: CONCORDANCIA
+        ======================================================== */
+        function setupGame3() {
+            if(state.currentIndex === 0) {
+                state.items = shuffle([...dbGame3]).slice(0, 10); // 10 retos
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Casos resueltos! Aciertos: ${state.score}/${state.items.length}. ¡El mejor detective!`);
+                return showMenu();
+            }
+
+            updateScore(3, state.items.length);
+            
+            const q = state.items[state.currentIndex];
+            
+            // Construir oración con hueco y aplicar colores
+            const sentenceHtml = `${colorizeText(q.part1)} <span class="gap"></span> ${colorizeText(q.part2)}`;
+            document.getElementById('g3-sentence').innerHTML = sentenceHtml;
+
+            const optionsContainer = document.getElementById('g3-options');
+            optionsContainer.innerHTML = '';
+            
+            let scrambledOptions = shuffle([...q.options]);
+            
+            scrambledOptions.forEach(opt => {
+                let btn = document.createElement('button');
+                btn.className = 'word-piece';
+                btn.innerHTML = colorizeText(opt);
+                btn.onclick = () => checkG3(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkG3(selectedOpt) {
+            const isCorrect = (selectedOpt === state.items[state.currentIndex].answer);
+            
+            // Poner la palabra en el hueco brevemente para efecto visual
+            const gap = document.querySelector('.gap');
+            gap.innerHTML = colorizeText(selectedOpt);
+            gap.style.border = "none";
+            gap.style.padding = "0 10px";
+
+            showFeedback(isCorrect, (correct) => {
+                if(correct) {
+                    state.currentIndex++;
+                    setupGame3();
+                } else {
+                    // Restablecer el hueco
+                    gap.innerHTML = "";
+                    gap.style.borderBottom = "6px solid var(--text-dark)";
+                }
+            });
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 4: CAZA-PALABRAS
+        ======================================================== */
+        function setupGame4() {
+            if(state.currentIndex === 0) {
+                state.items = shuffle([...dbGame4]).slice(0, 10);
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Cacería terminada! Aciertos: ${state.score}/${state.items.length}. ¡Eres un maestro de las palabras!`);
+                return showMenu();
+            }
+
+            updateScore(4, state.items.length);
+            state.g4Step = 0;
+            updateG4Instruction();
+
+            const builder = document.getElementById('g4-sentence');
+            builder.innerHTML = '';
+            
+            let sentence = state.items[state.currentIndex].sentence;
+            let words = sentence.split(" ");
+            
+            words.forEach((word) => {
+                let btn = document.createElement('div');
+                btn.className = 'word-piece';
+                btn.style.backgroundColor = "var(--card-bg)"; // Empiezan neutros y legibles
+                btn.style.color = "var(--text-dark)";
+                btn.innerText = word; 
+                
+                // Limpiar puntuación para comprobar
+                let cleanWord = word.replace(/[.,]/g, '').toLowerCase();
+                
+                btn.onclick = () => checkG4(btn, cleanWord);
+                builder.appendChild(btn);
+            });
+        }
+
+        function updateG4Instruction() {
+            const instEl = document.getElementById('g4-instruction');
+            if (state.g4Step === 0) {
+                instEl.innerHTML = `Paso 1: Toca el <span style="color: var(--noun-color); font-weight:900;">SUSTANTIVO</span> (Rojo)`;
+            } else if (state.g4Step === 1) {
+                instEl.innerHTML = `Paso 2: Toca el <span style="color: var(--adj-color); font-weight:900;">ADJETIVO</span> (Naranja)`;
+            } else if (state.g4Step === 2) {
+                instEl.innerHTML = `Paso 3: Toca el <span style="color: var(--verb-color); font-weight:900;">VERBO</span> (Verde)`;
+            }
+        }
+
+        function checkG4(btn, clickedWord) {
+            if (btn.classList.contains('g4-found')) return; // Ya fue seleccionada correctamente, ignorar clics extra
+
+            const currentData = state.items[state.currentIndex];
+            let targetWord = "";
+            let targetColor = "";
+            let targetShadow = "";
+
+            if (state.g4Step === 0) {
+                targetWord = currentData.noun.toLowerCase();
+                targetColor = "var(--noun-color)";
+                targetShadow = "var(--noun-shadow)";
+            } else if (state.g4Step === 1) {
+                targetWord = currentData.adj.toLowerCase();
+                targetColor = "var(--adj-color)";
+                targetShadow = "var(--adj-shadow)";
+            } else if (state.g4Step === 2) {
+                targetWord = currentData.verb.toLowerCase();
+                targetColor = "var(--verb-color)";
+                targetShadow = "var(--verb-shadow)";
+            }
+
+            const isCorrect = (clickedWord === targetWord);
+
+            if (isCorrect) {
+                btn.classList.add('g4-found'); // Usamos una clase nueva que NO tiene display:none
+                btn.style.backgroundColor = targetColor;
+                btn.style.color = "white";
+                btn.style.borderColor = targetColor;
+                btn.style.boxShadow = `0 8px 0 ${targetShadow}`;
+                
+                playSound('win');
+                state.g4Step++;
+
+                if (state.g4Step === 3) {
+                    // Ha completado los 3 pasos
+                    showFeedback(true, () => {
+                        state.currentIndex++;
+                        setupGame4();
+                    });
+                } else {
+                    // Avanza al siguiente paso
+                    updateG4Instruction();
+                }
+            } else {
+                showFeedback(false);
+            }
+        }
+
+        // Inicializar
+        showMenu();
+
+    </script>
+</body>
+</html>
