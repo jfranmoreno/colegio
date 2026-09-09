@@ -123,7 +123,7 @@
             font-size: 2.2rem;
             color: var(--text-dark);
             cursor: pointer;
-            width: 320px;
+            width: 300px; /* Reducido un poco para que quepan 5 botones bien */
             text-align: center;
             box-shadow: 0 12px 0 rgba(0,0,0,0.1), 0 20px 25px rgba(0,0,0,0.15);
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -201,6 +201,7 @@
             text-transform: capitalize;
             border: 5px solid #fff;
             letter-spacing: 2px;
+            text-align: center;
         }
 
         .tubes-container {
@@ -308,8 +309,8 @@
         }
         .btn-action:active { transform: translateY(12px); box-shadow: 0 0 0 transparent; }
 
-        /* === INSTRUCCIÓN G4 === */
-        .g4-instruction {
+        /* === INSTRUCCIÓN G4 & G5 === */
+        .instruction-title {
             font-family: 'Fredoka', sans-serif;
             font-size: 2.8rem;
             margin-bottom: 25px;
@@ -380,11 +381,16 @@
             </button>
             <button class="menu-btn" onclick="startGame(3)">
                 <span class="menu-icon">🕵️‍♂️</span>
-                <span>Detective de Concordancia</span>
+                <span>Concordancia</span>
             </button>
             <button class="menu-btn" onclick="startGame(4)">
                 <span class="menu-icon">🎯</span>
                 <span>Caza-Palabras</span>
+            </button>
+            <!-- NUEVO JUEGO AÑADIDO -->
+            <button class="menu-btn" onclick="startGame(5)">
+                <span class="menu-icon">✍️</span>
+                <span>Fábrica de Frases</span>
             </button>
         </div>
     </main>
@@ -397,7 +403,6 @@
         </div>
         <div id="g1-word" class="word-display">Palabra</div>
         <div class="tubes-container">
-            <!-- Botones gigantes para interacción MDI -->
             <button class="tube-btn btn-noun" onclick="checkG1('noun')">Sustantivo (Rojo)</button>
             <button class="tube-btn btn-adj" onclick="checkG1('adj')">Adjetivo (Naranja)</button>
             <button class="tube-btn btn-verb" onclick="checkG1('verb')">Verbo (Verde)</button>
@@ -410,9 +415,7 @@
             <button class="btn-back" onclick="showMenu()">← Volver</button>
             <div class="score-board">Aciertos: <span id="score2">0</span> / <span id="total2">5</span></div>
         </div>
-        <!-- Zona de construcción donde irán las palabras pulsadas -->
         <div id="g2-builder" class="sentence-builder"></div>
-        <!-- Banco de palabras desordenadas -->
         <div id="g2-pool" class="word-pool"></div>
         <button class="btn-action" onclick="checkG2()">¡Comprobar Fórmula!</button>
     </main>
@@ -435,8 +438,19 @@
             <button class="btn-back" onclick="showMenu()">← Volver</button>
             <div class="score-board">Aciertos: <span id="score4">0</span> / <span id="total4">10</span></div>
         </div>
-        <h2 id="g4-instruction" class="g4-instruction"></h2>
+        <h2 id="g4-instruction" class="instruction-title"></h2>
         <div id="g4-sentence" class="sentence-builder" style="padding: 40px; gap: 20px;"></div>
+    </main>
+
+    <!-- PANTALLA: JUEGO 5 (Fábrica de Frases) -->
+    <main id="screen-game5" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Completadas: <span id="score5">0</span> / <span id="total5">10</span></div>
+        </div>
+        <h2 class="instruction-title">¡Inventa una frase supercreativa con estas palabras!</h2>
+        <div id="g5-word" class="word-display" style="border-color: var(--noun-color);"></div>
+        <button class="btn-action" style="background-color: var(--noun-color); box-shadow: 0 12px 0 var(--noun-shadow);" onclick="nextG5()">¡Frase completada! ✨</button>
     </main>
 
     <!-- OVERLAY DE FEEDBACK -->
@@ -447,19 +461,20 @@
     <script>
         /* ========================================================
            BASE DE DATOS DE PALABRAS Y DICCIONARIO DE COLORES
-           (Docente: Puedes añadir o modificar palabras aquí)
         ======================================================== */
         
-        // Diccionario para colorear automáticamente (Sustantivos, Adjetivos, Verbos)
+        // Diccionario para colorear automáticamente
+        // (Se han añadido los sustantivos del juego 5 para que se pinten de rojo)
         const dictionary = {
-            nouns: ['perro', 'mesa', 'colegio', 'niño', 'libro', 'casa', 'pelota', 'flor', 'gato', 'coche', 'perros', 'niños', 'gatos', 'flores', 'coches', 'niña', 'amigos', 'parque', 'manzanas', 'pájaro', 'sol', 'manzana'],
+            nouns: ['perro', 'mesa', 'colegio', 'niño', 'libro', 'casa', 'pelota', 'flor', 'gato', 'coche', 'perros', 'niños', 'gatos', 'flores', 'coches', 'niña', 'amigos', 'parque', 'manzanas', 'pájaro', 'sol', 'manzana', 
+            'astronauta', 'montaña', 'dinosaurios', 'estrellas', 'monstruo', 'bruja', 'piratas', 'sirenas', 'castillo', 'nave', 'exploradores', 'gafas', 'dragón', 'científica', 'tesoro', 'selva', 'robots', 'arañas', 'relámpago', 'guitarra'],
             adjectives: ['grande', 'feliz', 'azul', 'rápido', 'bonito', 'alto', 'pequeño', 'divertido', 'suave', 'brillante', 'rápidos', 'rápida', 'rápidas', 'pequeña', 'pequeñas', 'rojas', 'rojo', 'rojos', 'verdes', 'listo', 'hermosas'],
             verbs: ['saltar', 'comer', 'jugar', 'leer', 'dormir', 'correr', 'cantar', 'reír', 'escribir', 'mirar', 'salta', 'lee', 'comen', 'corre', 'son', 'es', 'juegan', 'cantan', 'vuela', 'compran', 'cae', 'sale']
         };
 
         // Función para aplicar color gramatical al texto
         function colorizeText(text) {
-            let cleanText = text.replace(/[.,]/g, ''); // Quita puntuación para evaluar
+            let cleanText = text.replace(/[.,]/g, ''); 
             let lowerText = cleanText.toLowerCase();
             
             if (dictionary.nouns.includes(lowerText)) {
@@ -469,10 +484,10 @@
             } else if (dictionary.verbs.includes(lowerText)) {
                 return `<span class="color-verb">${text}</span>`;
             }
-            return text; // Palabras neutras (artículos, preposiciones, etc)
+            return text; 
         }
 
-        // Datos: Juego 1 (Tipos de palabras)
+        // Datos: Juego 1
         const dbGame1 = [
             { word: "Colegio", type: "noun" }, { word: "Alegre", type: "adj" }, { word: "Escribir", type: "verb" },
             { word: "Mochila", type: "noun" }, { word: "Divertido", type: "adj" }, { word: "Correr", type: "verb" },
@@ -480,7 +495,7 @@
             { word: "Cuaderno", type: "noun" }, { word: "Brillante", type: "adj" }, { word: "Pintar", type: "verb" }
         ];
 
-        // Datos: Juego 2 (Coherencia - Ordenar oraciones)
+        // Datos: Juego 2
         const dbGame2 = [
             "El perro feliz salta.",
             "La niña lee un libro.",
@@ -494,7 +509,7 @@
             "La mesa grande es azul."
         ];
 
-        // Datos: Juego 3 (Concordancia)
+        // Datos: Juego 3
         const dbGame3 = [
             { part1: "Los perros son muy", part2: ".", options: ["rápido", "rápidos", "rápidas", "rápida"], answer: "rápidos" },
             { part1: "La casa es muy", part2: ".", options: ["pequeño", "pequeños", "pequeña", "pequeñas"], answer: "pequeña" },
@@ -508,7 +523,7 @@
             { part1: "La pelota", part2: "es nueva.", options: ["roja", "rojo", "rojos", "rojas"], answer: "roja" }
         ];
 
-        // Datos: Juego 4 (Identificador de palabras en oración)
+        // Datos: Juego 4
         const dbGame4 = [
             { sentence: "El perro feliz salta.", noun: "perro", adj: "feliz", verb: "salta" },
             { sentence: "La niña pequeña lee.", noun: "niña", adj: "pequeña", verb: "lee" },
@@ -522,8 +537,17 @@
             { sentence: "Mi amigo feliz canta.", noun: "amigo", adj: "feliz", verb: "canta" }
         ];
 
+        // Datos: Juego 5 (Fábrica de Frases - 20 Sustantivos con artículo)
+        const dbGame5 = [
+            "El astronauta", "La montaña", "Los dinosaurios", "Las estrellas",
+            "El monstruo", "La bruja", "Los piratas", "Las sirenas",
+            "Un castillo", "Una nave", "Unos exploradores", "Unas gafas",
+            "El dragón", "La científica", "El tesoro", "La selva",
+            "Los robots", "Las arañas", "El relámpago", "La guitarra"
+        ];
+
         /* ========================================================
-           SISTEMA DE AUDIO WEB (Sin archivos externos)
+           SISTEMA DE AUDIO WEB 
         ======================================================== */
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
@@ -535,16 +559,14 @@
             gain.connect(audioCtx.destination);
             
             if(type === 'win') {
-                // Sonido de Acierto (Timbre agudo y feliz)
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Do5
-                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // Mi5
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); 
                 gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.5);
             } else {
-                // Sonido de Error (Zumbido grave)
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(150, audioCtx.currentTime);
                 gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
@@ -561,9 +583,9 @@
             game: 0,
             currentIndex: 0,
             score: 0,
-            items: [], // Elementos aleatorizados de la ronda
-            g2Selected: [], // Palabras seleccionadas en Juego 2
-            g4Step: 0 // Paso actual en Juego 4
+            items: [], 
+            g2Selected: [], 
+            g4Step: 0 
         };
 
         function showMenu() {
@@ -582,9 +604,9 @@
             if(gameNumber === 2) setupGame2();
             if(gameNumber === 3) setupGame3();
             if(gameNumber === 4) setupGame4();
+            if(gameNumber === 5) setupGame5();
         }
 
-        // Función para barajar arrays (Algoritmo Fisher-Yates)
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex != 0) {
@@ -595,7 +617,6 @@
             return array;
         }
 
-        // Feedback visual y sonoro
         function showFeedback(isCorrect, callback) {
             const overlay = document.getElementById('feedback');
             const icon = document.getElementById('feedback-icon');
@@ -607,7 +628,6 @@
             } else {
                 playSound('error');
                 icon.textContent = '❌';
-                // Efecto de temblor en pantalla
                 const activeScreen = document.querySelector('.screen.active');
                 activeScreen.classList.add('shake');
                 setTimeout(() => activeScreen.classList.remove('shake'), 500);
@@ -626,11 +646,11 @@
         }
 
         /* ========================================================
-           LÓGICA JUEGO 1: CLASIFICADOR (Tipos de Palabras)
+           LÓGICA JUEGO 1
         ======================================================== */
         function setupGame1() {
             if(state.currentIndex === 0) {
-                state.items = shuffle([...dbGame1]).slice(0, 10); // 10 palabras por ronda
+                state.items = shuffle([...dbGame1]).slice(0, 10); 
             }
             
             if(state.currentIndex >= state.items.length) {
@@ -640,9 +660,6 @@
 
             updateScore(1, state.items.length);
             let currentWord = state.items[state.currentIndex].word;
-            
-            // Mostrar palabra con su color si queremos pista, o neutral. 
-            // Para evaluación, la mostramos neutral (negro oscuro)
             document.getElementById('g1-word').innerHTML = currentWord;
         }
 
@@ -657,11 +674,11 @@
         }
 
         /* ========================================================
-           LÓGICA JUEGO 2: COHERENCIA (Ordenar Oración)
+           LÓGICA JUEGO 2
         ======================================================== */
         function setupGame2() {
             if(state.currentIndex === 0) {
-                state.items = shuffle([...dbGame2]).slice(0, 10); // 10 oraciones
+                state.items = shuffle([...dbGame2]).slice(0, 10);
             }
 
             if(state.currentIndex >= state.items.length) {
@@ -677,28 +694,23 @@
             builder.innerHTML = '';
             pool.innerHTML = '';
 
-            // Preparar palabras
             let sentence = state.items[state.currentIndex];
-            // Separar palabras conservando signos al final de la palabra si es posible
             let words = sentence.split(" ");
             let scrambled = shuffle([...words]);
 
             scrambled.forEach((word, index) => {
                 let btn = document.createElement('div');
                 btn.className = 'word-piece';
-                // Coloreamos dinámicamente las fichas
                 btn.innerHTML = colorizeText(word);
                 btn.dataset.word = word;
                 btn.dataset.id = index;
                 
-                // Evento táctil/clic para MDI
                 btn.onclick = () => selectWordG2(btn);
                 pool.appendChild(btn);
             });
         }
 
         function selectWordG2(btn) {
-            // Mueve la palabra de la reserva (pool) al constructor (builder)
             btn.classList.add('placed');
             
             const builder = document.getElementById('g2-builder');
@@ -706,7 +718,6 @@
             builtPiece.className = 'word-piece';
             builtPiece.innerHTML = btn.innerHTML;
             
-            // Si la tocas en el constructor, vuelve a la reserva
             builtPiece.onclick = () => {
                 builder.removeChild(builtPiece);
                 btn.classList.remove('placed');
@@ -721,7 +732,7 @@
             const originalSentence = state.items[state.currentIndex];
             const builtSentence = state.g2Selected.join(" ");
             
-            if(state.g2Selected.length === 0) return; // No hacer nada si está vacío
+            if(state.g2Selected.length === 0) return; 
 
             const isCorrect = (builtSentence === originalSentence);
             
@@ -730,7 +741,6 @@
                     state.currentIndex++;
                     setupGame2();
                 } else {
-                    // Si falla, limpiar el constructor para que lo intente de nuevo
                     document.getElementById('g2-builder').innerHTML = '';
                     document.querySelectorAll('.word-piece.placed').forEach(el => el.classList.remove('placed'));
                     state.g2Selected = [];
@@ -739,11 +749,11 @@
         }
 
         /* ========================================================
-           LÓGICA JUEGO 3: CONCORDANCIA
+           LÓGICA JUEGO 3
         ======================================================== */
         function setupGame3() {
             if(state.currentIndex === 0) {
-                state.items = shuffle([...dbGame3]).slice(0, 10); // 10 retos
+                state.items = shuffle([...dbGame3]).slice(0, 10); 
             }
 
             if(state.currentIndex >= state.items.length) {
@@ -755,7 +765,6 @@
             
             const q = state.items[state.currentIndex];
             
-            // Construir oración con hueco y aplicar colores
             const sentenceHtml = `${colorizeText(q.part1)} <span class="gap"></span> ${colorizeText(q.part2)}`;
             document.getElementById('g3-sentence').innerHTML = sentenceHtml;
 
@@ -776,7 +785,6 @@
         function checkG3(selectedOpt) {
             const isCorrect = (selectedOpt === state.items[state.currentIndex].answer);
             
-            // Poner la palabra en el hueco brevemente para efecto visual
             const gap = document.querySelector('.gap');
             gap.innerHTML = colorizeText(selectedOpt);
             gap.style.border = "none";
@@ -787,15 +795,14 @@
                     state.currentIndex++;
                     setupGame3();
                 } else {
-                    // Restablecer el hueco
                     gap.innerHTML = "";
-                    gap.style.borderBottom = "6px solid var(--text-dark)";
+                    gap.style.borderBottom = "6px dashed #747d8c";
                 }
             });
         }
 
         /* ========================================================
-           LÓGICA JUEGO 4: CAZA-PALABRAS
+           LÓGICA JUEGO 4
         ======================================================== */
         function setupGame4() {
             if(state.currentIndex === 0) {
@@ -820,11 +827,10 @@
             words.forEach((word) => {
                 let btn = document.createElement('div');
                 btn.className = 'word-piece';
-                btn.style.backgroundColor = "var(--card-bg)"; // Empiezan neutros y legibles
+                btn.style.backgroundColor = "var(--card-bg)";
                 btn.style.color = "var(--text-dark)";
                 btn.innerText = word; 
                 
-                // Limpiar puntuación para comprobar
                 let cleanWord = word.replace(/[.,]/g, '').toLowerCase();
                 
                 btn.onclick = () => checkG4(btn, cleanWord);
@@ -844,7 +850,7 @@
         }
 
         function checkG4(btn, clickedWord) {
-            if (btn.classList.contains('g4-found')) return; // Ya fue seleccionada correctamente, ignorar clics extra
+            if (btn.classList.contains('g4-found')) return; 
 
             const currentData = state.items[state.currentIndex];
             let targetWord = "";
@@ -868,7 +874,7 @@
             const isCorrect = (clickedWord === targetWord);
 
             if (isCorrect) {
-                btn.classList.add('g4-found'); // Usamos una clase nueva que NO tiene display:none
+                btn.classList.add('g4-found'); 
                 btn.style.backgroundColor = targetColor;
                 btn.style.color = "white";
                 btn.style.borderColor = targetColor;
@@ -878,18 +884,51 @@
                 state.g4Step++;
 
                 if (state.g4Step === 3) {
-                    // Ha completado los 3 pasos
                     showFeedback(true, () => {
                         state.currentIndex++;
                         setupGame4();
                     });
                 } else {
-                    // Avanza al siguiente paso
                     updateG4Instruction();
                 }
             } else {
                 showFeedback(false);
             }
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 5: FÁBRICA DE FRASES
+        ======================================================== */
+        function setupGame5() {
+            if(state.currentIndex === 0) {
+                // Toma 10 combinaciones aleatorias del banco de 20
+                state.items = shuffle([...dbGame5]).slice(0, 10); 
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Fábrica de frases cerrada! Has sido muy creativo inventando oraciones.`);
+                return showMenu();
+            }
+
+            updateScore(5, state.items.length);
+            
+            let currentPhrase = state.items[state.currentIndex];
+            
+            // Usamos colorizeText para que la palabra se pinte gracias a que la 
+            // añadimos al diccionario de 'nouns' más arriba. Separamos por espacio 
+            // para que analice la palabra y el artículo independientemente.
+            let words = currentPhrase.split(" ");
+            let coloredPhrase = words.map(w => colorizeText(w)).join(" ");
+
+            document.getElementById('g5-word').innerHTML = coloredPhrase;
+        }
+
+        function nextG5() {
+            // No hay evaluación, es un juego abierto, así que siempre es "correcto"
+            showFeedback(true, () => {
+                state.currentIndex++;
+                setupGame5();
+            });
         }
 
         // Inicializar
