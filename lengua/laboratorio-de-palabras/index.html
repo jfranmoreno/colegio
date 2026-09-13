@@ -423,6 +423,11 @@
                 <span class="menu-icon">🏷️</span>
                 <span>Los Artículos</span>
             </button>
+            <!-- NUEVO JUEGO 8 AÑADIDO: CAMBIA Y CORRE -->
+            <button class="menu-btn" onclick="startGame(8)">
+                <span class="menu-icon">⏱️</span>
+                <span>Cambia y corre</span>
+            </button>
         </div>
     </main>
 
@@ -510,6 +515,28 @@
         <div id="g7-word" class="word-display" style="color: var(--noun-color); border-color: var(--noun-color);">Palabra</div>
         <div class="g6-grid" id="g7-options">
             <!-- Los botones se generarán dinámicamente con JavaScript -->
+        </div>
+    </main>
+
+    <!-- PANTALLA: JUEGO 8 (Cambia y Corre) -->
+    <main id="screen-game8" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Ronda: <span id="score8">1</span> / <span id="total8">10</span></div>
+        </div>
+        <h2 class="instruction-title">¡Pizarras listas! ⏱️ Transformad la palabra:</h2>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%;">
+            <div id="g8-word" class="word-display" style="border-color: var(--noun-color); margin-bottom: 0;">Palabra</div>
+            
+            <div id="g8-condition" style="font-family: 'Fredoka', sans-serif; font-size: 2.8rem; font-weight: 900; color: #9b59b6; background: white; padding: 15px 40px; border-radius: 25px; border: 4px dashed #9b59b6; box-shadow: 0 8px 0 rgba(0,0,0,0.05);">➔ a Femenino Plural</div>
+            
+            <div id="g8-answer" class="word-display" style="border-color: var(--verb-color); background: #f1f2f6; color: transparent; text-shadow: 0 0 20px rgba(0,0,0,0.2); transition: all 0.3s; margin-bottom: 0; min-height: 140px; display: flex; align-items: center; justify-content: center; width: 100%; max-width: 600px;">???</div>
+        </div>
+        
+        <div style="display: flex; gap: 20px; margin-top: 30px;">
+            <button id="btn-g8-reveal" class="btn-action" style="background-color: var(--adj-color); box-shadow: 0 12px 0 var(--adj-shadow);" onclick="revealG8()">Ver Respuesta 👁️</button>
+            <button id="btn-g8-next" class="btn-action" style="background-color: var(--verb-color); box-shadow: 0 12px 0 var(--verb-shadow); display: none;" onclick="nextG8()">Siguiente Ronda ⏭️</button>
         </div>
     </main>
 
@@ -646,6 +673,23 @@
             { word: "sillas", type: "indef", answer: "unas" }
         ];
 
+        // Datos: Juego 8 (Cambia y Corre) - Dificultad Progresiva (SIN SHUFFLE)
+        const dbGame8 = [
+            { word: "niño", condition: "Femenino Singular", answer: "niña" },
+            { word: "perro", condition: "Masculino Plural", answer: "perros" },
+            { word: "maestras", condition: "Masculino Singular", answer: "maestro" },
+            { word: "amiga", condition: "Masculino Plural", answer: "amigos" },
+            { word: "leones", condition: "Femenino Singular", answer: "leona" },
+            { word: "abuela", condition: "Masculino Plural", answer: "abuelos" },
+            // ¡Comienzan las trampas!
+            { word: "actor", condition: "Femenino Plural", answer: "actrices" },
+            { word: "rey", condition: "Femenino Plural", answer: "reinas" },
+            { word: "pez", condition: "Masculino Plural", answer: "peces" },
+            { word: "tigre", condition: "Femenino Singular", answer: "tigresa" },
+            { word: "lápiz", condition: "Masculino Plural", answer: "lápices" },
+            { word: "emperador", condition: "Femenino Singular", answer: "emperatriz" }
+        ];
+
         /* ========================================================
            SISTEMA DE AUDIO WEB 
         ======================================================== */
@@ -707,6 +751,7 @@
             if(gameNumber === 5) setupGame5();
             if(gameNumber === 6) setupGame6();
             if(gameNumber === 7) setupGame7();
+            if(gameNumber === 8) setupGame8();
         }
 
         function shuffle(array) {
@@ -1122,6 +1167,64 @@
                     setupGame7();
                 }
             });
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 8: CAMBIA Y CORRE (PIZARRAS)
+        ======================================================== */
+        function setupGame8() {
+            if(state.currentIndex === 0) {
+                // Para este juego NO barajamos (no usamos shuffle),
+                // mantenemos el orden para asegurar la dificultad progresiva y las trampas al final.
+                state.items = dbGame8;
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Fin del tiempo! ¡Todos los equipos lo han hecho genial guardando las pizarras!`);
+                return showMenu();
+            }
+
+            // Aquí el marcador muestra la ronda, no los puntos (ya que los puntos son físicos)
+            document.getElementById('score8').innerText = state.currentIndex + 1;
+            document.getElementById('total8').innerText = state.items.length;
+            
+            let currentItem = state.items[state.currentIndex];
+            
+            document.getElementById('g8-word').innerHTML = currentItem.word;
+            document.getElementById('g8-condition').innerHTML = `➔ a <strong>${currentItem.condition}</strong>`;
+            
+            // Ocultar respuesta
+            let answerBox = document.getElementById('g8-answer');
+            answerBox.innerHTML = "???";
+            answerBox.style.color = "transparent";
+            answerBox.style.textShadow = "0 0 20px rgba(0,0,0,0.2)";
+            answerBox.style.background = "#f1f2f6";
+            
+            // Alternar botones
+            document.getElementById('btn-g8-reveal').style.display = "block";
+            document.getElementById('btn-g8-next').style.display = "none";
+        }
+
+        function revealG8() {
+            let currentItem = state.items[state.currentIndex];
+            let answerBox = document.getElementById('g8-answer');
+            
+            // Mostrar respuesta
+            answerBox.innerHTML = colorizeText(currentItem.answer);
+            answerBox.style.color = "var(--text-dark)";
+            answerBox.style.textShadow = "none";
+            answerBox.style.background = "var(--card-bg)";
+            
+            playSound('win'); // Efecto de acierto sonoro general
+            
+            // Alternar botones
+            document.getElementById('btn-g8-reveal').style.display = "none";
+            document.getElementById('btn-g8-next').style.display = "block";
+        }
+
+        function nextG8() {
+            state.currentIndex++;
+            setupGame8();
         }
 
         // Inicializar
