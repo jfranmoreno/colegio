@@ -60,7 +60,7 @@
         /* === CONTENEDORES PRINCIPALES === */
         header {
             text-align: center;
-            padding: 25px;
+            padding: 15px;
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -71,7 +71,7 @@
 
         h1 {
             font-family: 'Fredoka', sans-serif;
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             color: #fff;
             text-shadow: 3px 3px 0 #ff9f43, -2px -2px 0 #48dbfb, 2px -2px 0 #ff5252, -2px 2px 0 #10ac84;
             display: flex;
@@ -91,8 +91,9 @@
             flex: 1;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 30px;
+            justify-content: flex-start; /* Evita que el scroll corte por arriba */
+            padding: 20px;
+            overflow-y: auto; /* Habilita el scroll vertical si la pantalla es muy pequeña */
             animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
@@ -108,29 +109,30 @@
         /* === MENÚ PRINCIPAL === */
         .menu-grid {
             display: flex;
-            gap: 35px;
+            gap: 25px;
             justify-content: center;
             flex-wrap: wrap;
             max-width: 1200px;
+            margin: auto; /* Centrado vertical seguro con el scroll */
         }
 
         .menu-btn {
             background: var(--card-bg);
             border: 4px solid #fff;
             border-radius: 35px;
-            padding: 35px 20px;
+            padding: 25px 15px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: var(--text-dark);
             cursor: pointer;
-            width: 300px; /* Reducido un poco para que quepan 5 botones bien */
+            width: 260px;
             text-align: center;
             box-shadow: 0 12px 0 rgba(0,0,0,0.1), 0 20px 25px rgba(0,0,0,0.15);
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .menu-btn:hover {
@@ -144,7 +146,7 @@
         }
 
         .menu-icon {
-            font-size: 5rem;
+            font-size: 4rem;
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.15));
         }
 
@@ -155,9 +157,10 @@
             align-items: center;
             width: 100%;
             max-width: 1100px;
-            margin-bottom: 30px;
+            margin-top: auto; /* Centrado vertical seguro */
+            margin-bottom: 20px;
             background: var(--card-bg);
-            padding: 15px 30px;
+            padding: 10px 25px;
             border-radius: 30px;
             box-shadow: 0 8px 0 rgba(0,0,0,0.05);
             border: 3px solid #fff;
@@ -168,9 +171,9 @@
             color: white;
             border: none;
             border-radius: 20px;
-            padding: 12px 25px;
+            padding: 10px 20px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             cursor: pointer;
             box-shadow: 0 6px 0 #d63031;
             transition: all 0.1s;
@@ -180,9 +183,9 @@
 
         .score-board {
             font-family: 'Fredoka', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             background: #ffeaa7;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 20px;
             color: #d35400;
             box-shadow: inset 0 -4px 0 rgba(0,0,0,0.1);
@@ -191,13 +194,13 @@
         /* === COMPONENTES DE JUEGO === */
         .word-display {
             font-family: 'Fredoka', sans-serif;
-            font-size: 6rem;
+            font-size: 4.5rem;
             color: var(--text-dark);
             background: var(--card-bg);
-            padding: 30px 80px;
+            padding: 20px 60px;
             border-radius: 40px;
             box-shadow: 0 15px 0 rgba(0,0,0,0.05), 0 20px 30px rgba(0,0,0,0.1);
-            margin-bottom: 60px;
+            margin-bottom: 30px;
             text-transform: capitalize;
             border: 5px solid #fff;
             letter-spacing: 2px;
@@ -206,20 +209,21 @@
 
         .tubes-container {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: auto; /* Centrado vertical seguro */
         }
 
         .tube-btn {
             border: 4px solid rgba(255,255,255,0.5);
             border-radius: 40px;
-            padding: 30px 45px;
+            padding: 20px 35px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: white;
             cursor: pointer;
-            min-width: 280px;
+            min-width: 240px;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
@@ -233,9 +237,24 @@
             box-shadow: 0 0px 0 transparent;
         }
 
+        /* === ESTILOS JUEGO 6 === */
+        .g6-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto auto auto;
+        }
+
+        .btn-g6-ms { background: #48dbfb; box-shadow: 0 12px 0 #0abde3; }
+        .btn-g6-fs { background: #ff9ff3; box-shadow: 0 12px 0 #f368e0; }
+        .btn-g6-mp { background: #0abde3; box-shadow: 0 12px 0 #01a3a4; }
+        .btn-g6-fp { background: #f368e0; box-shadow: 0 12px 0 #e056fd; }
+
         .sentence-builder, .sentence-display {
             background: var(--card-bg);
-            min-height: 140px;
+            min-height: 110px;
             width: 100%;
             max-width: 1100px;
             border-radius: 35px;
@@ -244,11 +263,11 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
+            gap: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
             font-family: 'Nunito', sans-serif;
-            font-size: 3.2rem;
+            font-size: 2.8rem;
             font-weight: 800;
             box-shadow: inset 0 5px 15px rgba(0,0,0,0.05);
         }
@@ -256,17 +275,18 @@
         .word-pool {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
             max-width: 1100px;
+            margin-bottom: auto;
         }
 
         .word-piece {
             background: #fff;
             color: var(--text-dark);
-            padding: 18px 35px;
+            padding: 12px 25px;
             border-radius: 20px;
-            font-size: 2.4rem;
+            font-size: 2rem;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 8px 0 #d1d8dd;
@@ -283,10 +303,10 @@
 
         .gap {
             display: inline-block;
-            min-width: 160px;
-            height: 60px;
-            border-bottom: 6px dashed #747d8c;
-            margin: 0 15px;
+            min-width: 130px;
+            height: 45px;
+            border-bottom: 5px dashed #747d8c;
+            margin: 0 12px;
             vertical-align: bottom;
         }
 
@@ -299,12 +319,13 @@
             box-shadow: 0 12px 0 #8e44ad;
             color: white;
             border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 35px;
-            padding: 20px 60px;
+            border-radius: 30px;
+            padding: 15px 50px;
             font-family: 'Fredoka', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             cursor: pointer;
-            margin-top: 30px;
+            margin-top: 20px;
+            margin-bottom: auto;
             transition: all 0.1s;
         }
         .btn-action:active { transform: translateY(12px); box-shadow: 0 0 0 transparent; }
@@ -312,11 +333,11 @@
         /* === INSTRUCCIÓN G4 & G5 === */
         .instruction-title {
             font-family: 'Fredoka', sans-serif;
-            font-size: 2.8rem;
-            margin-bottom: 25px;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
             text-align: center;
             background: var(--card-bg);
-            padding: 15px 35px;
+            padding: 10px 30px;
             border-radius: 25px;
             box-shadow: 0 6px 0 rgba(0,0,0,0.05);
             color: var(--text-dark);
@@ -392,6 +413,16 @@
                 <span class="menu-icon">✍️</span>
                 <span>Fábrica de Frases</span>
             </button>
+            <!-- NUEVO JUEGO AÑADIDO: GÉNERO Y NÚMERO -->
+            <button class="menu-btn" onclick="startGame(6)">
+                <span class="menu-icon">🗂️</span>
+                <span>Género y Número</span>
+            </button>
+            <!-- NUEVO JUEGO 7 AÑADIDO: ARTÍCULOS -->
+            <button class="menu-btn" onclick="startGame(7)">
+                <span class="menu-icon">🏷️</span>
+                <span>Los Artículos</span>
+            </button>
         </div>
     </main>
 
@@ -451,6 +482,35 @@
         <h2 class="instruction-title">¡Inventa una frase supercreativa con estas palabras!</h2>
         <div id="g5-word" class="word-display" style="border-color: var(--noun-color);"></div>
         <button class="btn-action" style="background-color: var(--noun-color); box-shadow: 0 12px 0 var(--noun-shadow);" onclick="nextG5()">¡Frase completada! ✨</button>
+    </main>
+
+    <!-- PANTALLA: JUEGO 6 (Género y Número) -->
+    <main id="screen-game6" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Aciertos: <span id="score6">0</span> / <span id="total6">10</span></div>
+        </div>
+        <h2 class="instruction-title">¿Cuál es el género y número de este sustantivo?</h2>
+        <div id="g6-word" class="word-display" style="color: var(--noun-color); border-color: var(--noun-color);">Palabra</div>
+        <div class="g6-grid">
+            <button class="tube-btn btn-g6-ms" onclick="checkG6('ms')">Masculino<br>Singular</button>
+            <button class="tube-btn btn-g6-fs" onclick="checkG6('fs')">Femenino<br>Singular</button>
+            <button class="tube-btn btn-g6-mp" onclick="checkG6('mp')">Masculino<br>Plural</button>
+            <button class="tube-btn btn-g6-fp" onclick="checkG6('fp')">Femenino<br>Plural</button>
+        </div>
+    </main>
+
+    <!-- PANTALLA: JUEGO 7 (Artículos) -->
+    <main id="screen-game7" class="screen">
+        <div class="game-header">
+            <button class="btn-back" onclick="showMenu()">← Volver</button>
+            <div class="score-board">Aciertos: <span id="score7">0</span> / <span id="total7">10</span></div>
+        </div>
+        <h2 id="g7-instruction" class="instruction-title">¿Qué artículo le corresponde?</h2>
+        <div id="g7-word" class="word-display" style="color: var(--noun-color); border-color: var(--noun-color);">Palabra</div>
+        <div class="g6-grid" id="g7-options">
+            <!-- Los botones se generarán dinámicamente con JavaScript -->
+        </div>
     </main>
 
     <!-- OVERLAY DE FEEDBACK -->
@@ -546,6 +606,46 @@
             "Los robots", "Las arañas", "El relámpago", "La guitarra"
         ];
 
+        // Datos: Juego 6 (Género y Número)
+        const dbGame6 = [
+            { word: "perro", ans: "ms" }, { word: "gatas", ans: "fp" },
+            { word: "libros", ans: "mp" }, { word: "mesa", ans: "fs" },
+            { word: "camiones", ans: "mp" }, { word: "flor", ans: "fs" },
+            { word: "árbol", ans: "ms" }, { word: "estrellas", ans: "fp" },
+            { word: "lápiz", ans: "ms" }, { word: "mochilas", ans: "fp" },
+            { word: "nube", ans: "fs" }, { word: "zapatos", ans: "mp" },
+            { word: "sol", ans: "ms" }, { word: "manzanas", ans: "fp" },
+            { word: "niño", ans: "ms" }, { word: "niñas", ans: "fp" },
+            { word: "cuadernos", ans: "mp" }, { word: "pizarra", ans: "fs" },
+            { word: "reloj", ans: "ms" }, { word: "sillas", ans: "fp" },
+            { word: "coche", ans: "ms" }, { word: "canciones", ans: "fp" },
+            { word: "luz", ans: "fs" }, { word: "leones", ans: "mp" }
+        ];
+
+        // Datos: Juego 7 (Artículos Determinados e Indeterminados)
+        const dbGame7 = [
+            { word: "árbol", type: "def", answer: "el" },
+            { word: "mesa", type: "def", answer: "la" },
+            { word: "perros", type: "def", answer: "los" },
+            { word: "mariposas", type: "def", answer: "las" },
+            { word: "camión", type: "def", answer: "el" },
+            { word: "mochila", type: "def", answer: "la" },
+            { word: "zapatos", type: "def", answer: "los" },
+            { word: "nubes", type: "def", answer: "las" },
+            { word: "sol", type: "def", answer: "el" },
+            { word: "luna", type: "def", answer: "la" },
+            { word: "gato", type: "indef", answer: "un" },
+            { word: "flor", type: "indef", answer: "una" },
+            { word: "niños", type: "indef", answer: "unos" },
+            { word: "estrellas", type: "indef", answer: "unas" },
+            { word: "lápiz", type: "indef", answer: "un" },
+            { word: "bicicleta", type: "indef", answer: "una" },
+            { word: "libros", type: "indef", answer: "unos" },
+            { word: "gomas", type: "indef", answer: "unas" },
+            { word: "pájaro", type: "indef", answer: "un" },
+            { word: "sillas", type: "indef", answer: "unas" }
+        ];
+
         /* ========================================================
            SISTEMA DE AUDIO WEB 
         ======================================================== */
@@ -605,6 +705,8 @@
             if(gameNumber === 3) setupGame3();
             if(gameNumber === 4) setupGame4();
             if(gameNumber === 5) setupGame5();
+            if(gameNumber === 6) setupGame6();
+            if(gameNumber === 7) setupGame7();
         }
 
         function shuffle(array) {
@@ -928,6 +1030,97 @@
             showFeedback(true, () => {
                 state.currentIndex++;
                 setupGame5();
+            });
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 6: GÉNERO Y NÚMERO
+        ======================================================== */
+        function setupGame6() {
+            if(state.currentIndex === 0) {
+                // Toma 10 palabras aleatorias del banco de 24
+                state.items = shuffle([...dbGame6]).slice(0, 10);
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Clasificación terminada! Aciertos: ${state.score}/${state.items.length}. ¡Excelente trabajo!`);
+                return showMenu();
+            }
+
+            updateScore(6, state.items.length);
+            
+            let currentWord = state.items[state.currentIndex].word;
+            document.getElementById('g6-word').innerHTML = currentWord;
+        }
+
+        function checkG6(selectedAnswer) {
+            const correctAnswer = state.items[state.currentIndex].ans;
+            const isCorrect = (selectedAnswer === correctAnswer);
+            
+            showFeedback(isCorrect, (correct) => {
+                if(correct) {
+                    state.currentIndex++;
+                    setupGame6();
+                }
+                // Si falla la pantalla tiembla y emite sonido (showFeedback), pero no avanza
+                // hasta que los alumnos toquen la opción correcta.
+            });
+        }
+
+        /* ========================================================
+           LÓGICA JUEGO 7: LOS ARTÍCULOS
+        ======================================================== */
+        function setupGame7() {
+            if(state.currentIndex === 0) {
+                // Toma 10 palabras aleatorias del banco
+                state.items = shuffle([...dbGame7]).slice(0, 10);
+            }
+
+            if(state.currentIndex >= state.items.length) {
+                alert(`¡Etiquetas colocadas! Aciertos: ${state.score}/${state.items.length}. ¡Genial!`);
+                return showMenu();
+            }
+
+            updateScore(7, state.items.length);
+            
+            let currentItem = state.items[state.currentIndex];
+            document.getElementById('g7-word').innerHTML = currentItem.word;
+
+            const instruction = document.getElementById('g7-instruction');
+            const optionsGrid = document.getElementById('g7-options');
+            optionsGrid.innerHTML = ''; // Limpiar opciones anteriores
+
+            let options = [];
+            // Comprobamos si el reto pide determinado o indeterminado
+            if (currentItem.type === 'def') {
+                instruction.innerHTML = 'Elige el artículo <strong style="color: #9b59b6;">determinado</strong> correcto';
+                options = ['El', 'La', 'Los', 'Las'];
+            } else {
+                instruction.innerHTML = 'Elige el artículo <strong style="color: #9b59b6;">indeterminado</strong> correcto';
+                options = ['Un', 'Una', 'Unos', 'Unas'];
+            }
+
+            // Reutilizamos las clases de colores del juego 6 (MS=Azul, FS=Rosa, MP=Azul oscuro, FP=Rosa oscuro)
+            const btnColors = ['btn-g6-ms', 'btn-g6-fs', 'btn-g6-mp', 'btn-g6-fp'];
+
+            options.forEach((opt, index) => {
+                let btn = document.createElement('button');
+                btn.className = `tube-btn ${btnColors[index]}`;
+                btn.innerHTML = opt;
+                btn.onclick = () => checkG7(opt.toLowerCase());
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function checkG7(selectedAnswer) {
+            const correctAnswer = state.items[state.currentIndex].answer;
+            const isCorrect = (selectedAnswer === correctAnswer);
+            
+            showFeedback(isCorrect, (correct) => {
+                if(correct) {
+                    state.currentIndex++;
+                    setupGame7();
+                }
             });
         }
 
