@@ -6,39 +6,31 @@
     <title>TIRA DE LA CUERDA 🏆 Duelo Matemático de Primaria</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Nunito -->
+    <!-- Google Fonts: Quicksand & Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900;1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
     <!-- Iconos FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
-            --team-blue: #1D4ED8;
-            --team-blue-light: #EFF6FF;
-            --team-red: #B91C1C;
-            --team-red-light: #FEF2F2;
-            --rope-shadow: #78350F;
-        }
-
         * {
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Nunito', 'Quicksand', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
-            background: radial-gradient(circle at 50% 20%, #FFFBEB 0%, #FEF3C7 60%, #FDE68A 100%);
+            background: radial-gradient(circle at 50% 15%, #FFFDF5 0%, #FEF3C7 55%, #FDE68A 100%);
             touch-action: manipulation;
-            user-select: none;
-            -webkit-user-select: none;
             overflow: hidden;
         }
 
-        /* Mecánica y textura de la cuerda */
+        /* --- FÍSICA Y DISEÑO DE LA CUERDA --- */
         .rope-track {
             position: relative;
-            height: 30px;
+            height: 32px;
             background: repeating-linear-gradient(45deg, #92400E 0px, #92400E 15px, #B45309 15px, #B45309 30px);
             border-radius: 9999px;
             box-shadow: inset 0 3px 6px rgba(0,0,0,0.35), 0 4px 10px rgba(180,83,9,0.25);
@@ -47,14 +39,14 @@
 
         .flag-knot {
             position: absolute;
-            top: -20px;
+            top: -22px;
             left: 50%;
             transform: translateX(-50%);
-            width: 48px;
-            height: 70px;
+            width: 50px;
+            height: 74px;
             background: #E11D48;
             clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%);
-            transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 20;
             filter: drop-shadow(0 5px 6px rgba(0,0,0,0.3));
         }
@@ -65,22 +57,18 @@
             top: 8px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 18px;
+            font-size: 19px;
         }
 
-        /* Animaciones cinéticas */
+        /* --- ANIMACIONES CINÉTICAS --- */
         .char-icon {
-            font-size: 3.4rem;
+            font-size: 3.5rem;
             filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15));
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .pulling-left {
-            animation: animPullLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .pulling-right {
-            animation: animPullRight 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
+        .pulling-left { animation: animPullLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+        .pulling-right { animation: animPullRight 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
 
         @keyframes animPullLeft {
             0% { transform: scale(1) translateX(0); }
@@ -93,7 +81,7 @@
             100% { transform: scale(1) translateX(0); }
         }
 
-        /* Displays de Operación */
+        /* --- DISPLAY DE PREGUNTAS Y PANTALLAS --- */
         .question-display {
             font-size: 2.85rem;
             font-weight: 1000;
@@ -142,7 +130,7 @@
             80% { transform: translateX(8px); }
         }
 
-        /* Botones táctiles de gran tamaño para MDI */
+        /* --- BOTONES TÁCTILES MDI (>65px) --- */
         .key-btn {
             background-color: #FFFFFF;
             border: 3px solid #E2E8F0;
@@ -169,18 +157,14 @@
             border-color: #BFDBFE;
             border-bottom-color: #93C5FD;
         }
-        .key-blue:active {
-            background-color: #DBEAFE;
-        }
+        .key-blue:active { background-color: #DBEAFE; }
 
         .key-red {
             color: #991B1B;
             border-color: #FECACA;
             border-bottom-color: #FCA5A5;
         }
-        .key-red:active {
-            background-color: #FEE2E2;
-        }
+        .key-red:active { background-color: #FEE2E2; }
 
         .key-action-ok {
             background: linear-gradient(180deg, #10B981 0%, #059669 100%);
@@ -188,9 +172,7 @@
             border-color: #047857;
             border-bottom-width: 6px;
         }
-        .key-action-ok:active {
-            background: #059669;
-        }
+        .key-action-ok:active { background: #059669; }
 
         .key-action-del {
             background-color: #F1F5F9;
@@ -203,9 +185,7 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: 3px solid transparent;
         }
-        .tab-card:hover {
-            transform: translateY(-3px);
-        }
+        .tab-card:hover { transform: translateY(-3px); }
         .tab-card.selected {
             border-color: #F59E0B;
             background-color: #FEF3C7;
@@ -216,71 +196,71 @@
 <body class="h-screen w-screen flex flex-col items-center justify-between p-2 md:p-4">
 
     <!-- ========================================================
-         PANTALLA PRINCIPAL: CONFIGURACIÓN Y SELECCIÓN DE NIVELES
+         PANTALLA DE CONFIGURACIÓN Y MENÚ PRINCIPAL
          ======================================================== -->
     <div id="start-screen" class="w-full max-w-5xl bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-amber-300 flex flex-col justify-between my-auto overflow-y-auto max-h-[96vh]">
         <div class="text-center mb-4">
             <h1 class="text-4xl md:text-5xl font-black text-amber-600 tracking-wide">🏆 TIRA DE LA CUERDA</h1>
-            <p class="text-slate-600 text-lg md:text-xl font-bold mt-1">Duelo cooperativo y por equipos de cálculo mental</p>
+            <p class="text-slate-600 text-lg md:text-xl font-bold mt-1">Duelo de cálculo mental para Monitor Interactivo y Tablets</p>
         </div>
 
-        <!-- PESTAÑAS DE NIVEL -->
+        <!-- 1. SELECCIÓN DE NIVEL -->
         <div class="mb-4">
             <label class="block text-slate-800 font-black text-lg mb-2 text-center md:text-left">
-                🎯 1. ELIGE EL NIVEL O ÁREA A TRABAJAR:
+                🎯 1. ELIGE EL NIVEL CURRICULAR:
             </label>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <!-- Nivel 2.º Primaria -->
+                <!-- 2.º Primaria -->
                 <div onclick="selectPreset('primaria2')" id="preset-primaria2" class="tab-card bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-300">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">🌱</span>
                         <div>
                             <h3 class="font-black text-emerald-900 text-lg">2.º de Primaria</h3>
-                            <p class="text-xs text-emerald-700 font-semibold leading-snug">Sumas/restas con y sin llevada, series y tablas 2, 5 y 10.</p>
+                            <p class="text-xs text-emerald-700 font-semibold leading-snug">Sumas/restas con/sin llevada, series y tablas 2, 5 y 10.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Nivel 3.º Primaria -->
+                <!-- 3.º Primaria -->
                 <div onclick="selectPreset('primaria3')" id="preset-primaria3" class="tab-card bg-sky-50 p-4 rounded-2xl border-2 border-sky-300 selected">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">🚀</span>
                         <div>
                             <h3 class="font-black text-sky-900 text-lg">3.º de Primaria</h3>
-                            <p class="text-xs text-sky-700 font-semibold leading-snug">Tablas 1-10, división exacta, dobles/mitades y combinadas.</p>
+                            <p class="text-xs text-sky-700 font-semibold leading-snug">Tablas 1-10, divisiones, dobles/mitades y combinadas.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Modo Personalizado -->
+                <!-- Personalizado -->
                 <div onclick="selectPreset('custom')" id="preset-custom" class="tab-card bg-purple-50 p-4 rounded-2xl border-2 border-purple-300">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">⚙️</span>
                         <div>
                             <h3 class="font-black text-purple-900 text-lg">Personalizado</h3>
-                            <p class="text-xs text-purple-700 font-semibold leading-snug">Configura la operación exacta, dígitos, enteros o decimales.</p>
+                            <p class="text-xs text-purple-700 font-semibold leading-snug">Operaciones aisladas, cifras a medida, enteros o decimales.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SUBMENÚ 3.º DE PRIMARIA: SELECCIÓN DE OPERACIONES MODULARES -->
+        <!-- 3.º PRIMARIA: SUBMENÚ MODULAR -->
         <div id="primaria3-modular-panel" class="bg-sky-50/90 border-2 border-sky-300 p-4 rounded-2xl mb-4">
             <label class="block text-sky-950 font-black text-base mb-2">
-                <i class="fas fa-sliders mr-2"></i>Contenido curricular específico de 3.º de Primaria:
+                <i class="fas fa-sliders mr-2"></i>Contenido de 3.º de Primaria para esta sesión:
             </label>
             <select id="primaria3-submode" class="w-full p-3 rounded-xl border-2 border-sky-300 bg-white text-base font-extrabold text-sky-900 outline-none">
-                <option value="all" selected>🌟 Modo Mixto / Repaso Global de 3.º (Todas intercaladas)</option>
+                <option value="all" selected>🌟 Modo Mixto / Repaso Global de 3.º (Todas las operaciones)</option>
                 <option value="mult_tables">✖️ Solo Tablas de multiplicar (del 1 al 10)</option>
-                <option value="div_exact">➗ Solo Divisiones exactas (cálculo elemental)</option>
+                <option value="div_exact">➗ Solo Divisiones exactas elementales</option>
                 <option value="double_half">👥 Solo Dobles y Mitades</option>
                 <option value="sum_sub_3d">➕➖ Solo Sumas y Restas (hasta 3 cifras)</option>
-                <option value="combo_basic">🧮 Solo Operaciones Combinadas elementales</option>
+                <option value="combo_basic">🧮 Solo Operaciones combinadas elementales</option>
             </select>
         </div>
 
-        <!-- SUBMENÚ MODO PERSONALIZADO: OPERACIONES SEPARADAS -->
+        <!-- PERSONALIZADO: SUBMENÚ (MULT Y DIV SEPARADAS) -->
         <div id="custom-modular-panel" class="hidden bg-purple-50/90 border-2 border-purple-300 p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-purple-950 font-black text-sm mb-1">Operación concreta:</label>
@@ -294,7 +274,7 @@
                 </select>
             </div>
             <div>
-                <label class="block text-purple-950 font-black text-sm mb-1">Rango de dificultad (Cifras):</label>
+                <label class="block text-purple-950 font-black text-sm mb-1">Cifras:</label>
                 <div class="flex justify-around items-center h-12 bg-white rounded-xl border-2 border-purple-300 px-3">
                     <label class="cursor-pointer flex items-center gap-2 font-black text-purple-900 text-sm">
                         <input type="radio" name="digits" value="1" class="w-5 h-5 accent-purple-600"> 1 cifra
@@ -309,28 +289,40 @@
             </div>
         </div>
 
-        <!-- AJUSTES DE MODALIDAD Y PUNTOS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-            <div class="bg-amber-50 p-3 rounded-2xl border-2 border-amber-200 flex items-center justify-between px-4">
-                <span class="font-black text-amber-900 text-base"><i class="fas fa-bullseye mr-2"></i>Puntos de ventaja para ganar:</span>
-                <select id="win-goal" class="bg-white border-2 border-amber-300 rounded-xl px-3 py-1 font-black text-amber-900 text-base">
-                    <option value="2">2 puntos (Partida ultra rápida)</option>
-                    <option value="3" selected>3 puntos (Estándar recomendada)</option>
-                    <option value="5">5 puntos (Duelo largo)</option>
+        <!-- AJUSTES DE MODALIDAD Y DIFICULTAD MÁQUINA -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+            <div class="bg-amber-50 p-3 rounded-2xl border-2 border-amber-200 flex flex-col justify-between">
+                <span class="font-black text-amber-900 text-xs uppercase mb-1"><i class="fas fa-bullseye mr-1"></i>Puntos para ganar:</span>
+                <select id="win-goal" class="bg-white border-2 border-amber-300 rounded-xl px-2 py-1 font-black text-amber-900 text-sm">
+                    <option value="2">2 puntos (Rápida)</option>
+                    <option value="3" selected>3 puntos (Estándar)</option>
+                    <option value="5">5 puntos (Desafío)</option>
                 </select>
             </div>
-            <div class="bg-blue-50 p-3 rounded-2xl border-2 border-blue-200 flex items-center justify-between px-4">
-                <span class="font-black text-blue-950 text-base"><i class="fas fa-stopwatch mr-2"></i>Modo por turnos (Medición de tiempo):</span>
+            <div class="bg-blue-50 p-3 rounded-2xl border-2 border-blue-200 flex items-center justify-between px-3">
+                <span class="font-black text-blue-950 text-xs uppercase leading-tight"><i class="fas fa-stopwatch mr-1"></i>Modo por turnos<br><span class="text-[10px] text-slate-500 font-semibold">(Solo 1 vs 1 humano)</span></span>
                 <input type="checkbox" id="timed-mode" class="w-6 h-6 accent-blue-600 rounded cursor-pointer">
+            </div>
+            <!-- Selector Dificultad IA -->
+            <div class="bg-rose-50 p-3 rounded-2xl border-2 border-rose-200 flex flex-col justify-between">
+                <span class="font-black text-rose-900 text-xs uppercase mb-1"><i class="fas fa-microchip mr-1"></i>Dificultad Máquina:</span>
+                <select id="bot-difficulty" class="bg-white border-2 border-rose-300 rounded-xl px-2 py-1 font-black text-rose-900 text-sm">
+                    <option value="easy">🌱 Aprendiz (Tranquilo)</option>
+                    <option value="medium" selected>⚡ Colega (Medio)</option>
+                    <option value="hard">🔥 Relámpago (Experto)</option>
+                </select>
             </div>
         </div>
 
         <!-- BOTONES DE LANZAMIENTO -->
-        <div class="flex flex-col md:flex-row gap-4 justify-center">
-            <button onclick="startStandardGame()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-2xl py-4 px-8 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-3">
-                <i class="fas fa-play"></i> Partida Rápida (1 vs 1)
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button onclick="startGameMode('pvp')" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 text-white font-black text-xl py-4 px-4 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2">
+                <i class="fas fa-user-friends"></i> 1 vs 1 Humano
             </button>
-            <button onclick="openTournamentSetup()" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-2xl py-4 px-8 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-3">
+            <button onclick="startGameMode('pve')" class="bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 text-white font-black text-xl py-4 px-4 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2 ring-4 ring-rose-200">
+                <i class="fas fa-robot"></i> Contra la Máquina
+            </button>
+            <button onclick="openTournamentSetup()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 text-white font-black text-xl py-4 px-4 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2">
                 <i class="fas fa-trophy"></i> Torneo de Aula
             </button>
         </div>
@@ -341,10 +333,10 @@
          ======================================================== -->
     <div id="tournament-setup" class="hidden w-full max-w-2xl bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-orange-300 text-center my-auto">
         <h2 class="text-3xl font-black text-orange-600 mb-1">🏆 Campeonato de Aula</h2>
-        <p class="text-slate-500 font-bold mb-4 text-sm">Añade a los alumnos o equipos para sortear las eliminatorias</p>
+        <p class="text-slate-500 font-bold mb-4 text-sm">Inscribe alumnos o equipos para la fase eliminatoria</p>
         
         <div class="flex gap-2 mb-4">
-            <input type="text" id="new-player-input" placeholder="Nombre del alumno/pareja..." class="flex-1 p-3 border-2 border-orange-300 rounded-xl text-lg font-bold outline-none focus:border-orange-500" onkeydown="if(event.key==='Enter') addTournamentPlayer()">
+            <input type="text" id="new-player-input" placeholder="Nombre del alumno o equipo..." class="flex-1 p-3 border-2 border-orange-300 rounded-xl text-lg font-bold outline-none focus:border-orange-500" onkeydown="if(event.key==='Enter') addTournamentPlayer()">
             <button onclick="addTournamentPlayer()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 font-black rounded-xl text-lg transition active:scale-95">
                 <i class="fas fa-plus mr-1"></i> Añadir
             </button>
@@ -352,7 +344,7 @@
 
         <div class="bg-orange-50/80 rounded-2xl p-4 mb-5 border border-orange-200 min-h-[140px] max-h-[250px] overflow-y-auto">
             <div class="flex justify-between items-center mb-2 px-2 text-xs font-black text-orange-800">
-                <span>JUGADORES INSCRITOS (<span id="player-count">0</span>)</span>
+                <span>INSCRITOS (<span id="player-count">0</span>)</span>
                 <span>Mínimo 2 participantes</span>
             </div>
             <ul id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left"></ul>
@@ -369,11 +361,11 @@
     </div>
 
     <!-- ========================================================
-         PANTALLA DE CUADRO (BRACKET)
+         CUADRO ELIMINATORIO DEL TORNEO
          ======================================================== -->
     <div id="tournament-bracket" class="hidden w-full max-w-4xl bg-white p-6 rounded-3xl shadow-2xl border-4 border-indigo-300 text-center my-auto max-h-[96vh] overflow-y-auto">
         <h2 id="bracket-round-title" class="text-3xl font-black text-indigo-700 mb-1">Cuartos de Final</h2>
-        <p class="text-slate-500 font-bold mb-5">Enfrentamiento en curso</p>
+        <p class="text-slate-500 font-bold mb-5">Enfrentamiento activo</p>
 
         <div id="bracket-matches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-left"></div>
 
@@ -383,11 +375,11 @@
     </div>
 
     <!-- ========================================================
-         PANTALLA PRINCIPAL DE JUEGO (MDI DUAL TOUCH)
+         PANTALLA DE JUEGO (MDI TÁCTIL DUAL)
          ======================================================== -->
     <div id="game-screen" class="hidden w-full h-full max-w-7xl flex-col justify-between py-1">
         
-        <!-- CABECERA: CUERDA Y MARCADORES -->
+        <!-- CABECERA: MARCADORES Y CUERDA -->
         <div class="bg-white/95 rounded-2xl shadow-lg p-3 md:p-4 mb-2 border-2 border-amber-200 relative shrink-0">
             <button onclick="showExitModal()" class="absolute top-2 right-2 text-slate-400 hover:text-rose-500 text-2xl p-1 transition" title="Salir al menú">
                 <i class="fas fa-circle-xmark"></i>
@@ -396,8 +388,8 @@
             <div class="flex justify-between items-center px-4 md:px-12 mb-1">
                 <!-- Lado Izquierdo (Azul) -->
                 <div id="visual-p1" class="flex items-center gap-3 w-1/3">
-                    <div class="char-icon text-blue-600">
-                        <i class="fas fa-robot"></i>
+                    <div id="avatar-p1" class="char-icon text-blue-600">
+                        <i class="fas fa-user-graduate"></i>
                     </div>
                     <div class="text-left overflow-hidden">
                         <span class="text-xs font-black uppercase text-blue-500 tracking-wider">Equipo 1</span>
@@ -412,19 +404,19 @@
                     </span>
                 </div>
 
-                <!-- Lado Derecho (Rojo) -->
+                <!-- Lado Derecho (Rojo / Máquina) -->
                 <div id="visual-p2" class="flex items-center justify-end gap-3 w-1/3 text-right">
                     <div class="overflow-hidden">
-                        <span class="text-xs font-black uppercase text-rose-500 tracking-wider">Equipo 2</span>
+                        <span id="label-role-p2" class="text-xs font-black uppercase text-rose-500 tracking-wider">Equipo 2</span>
                         <h2 id="name-team-p2" class="text-xl md:text-3xl font-black text-rose-900 truncate">ROJO</h2>
                     </div>
-                    <div class="char-icon text-rose-600">
+                    <div id="avatar-p2" class="char-icon text-rose-600">
                         <i class="fas fa-dragon"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Mecánica visual de la cuerda -->
+            <!-- Cuerda y Pañuelo -->
             <div class="relative w-full px-6 md:px-12 mt-2">
                 <div class="rope-track">
                     <div id="rope-flag" class="flag-knot"></div>
@@ -437,12 +429,12 @@
             </div>
         </div>
 
-        <!-- ÁREA TÁCTIL SIMULTÁNEA PARA MDI -->
+        <!-- ÁREA DE JUEGO SIMULTÁNEA -->
         <div class="flex-1 grid grid-cols-2 gap-3 md:gap-6 items-center">
             
-            <!-- PANEL EQUIPO AZUL (JUGADOR 1) -->
+            <!-- PANEL JUGADOR 1 (AZUL / HUMANO) -->
             <div class="h-full max-h-[580px] bg-blue-50/90 border-4 border-blue-200 rounded-3xl p-3 md:p-4 flex flex-col justify-between shadow-lg relative">
-                <!-- Cortina de turno (solo modo tiempo) -->
+                <!-- Overlay Turnos -->
                 <div id="turn-overlay-p1" class="hidden absolute inset-0 bg-white/85 backdrop-blur-sm rounded-3xl z-30 flex flex-col items-center justify-center">
                     <i class="fas fa-hourglass-start text-5xl text-blue-400 animate-spin mb-3"></i>
                     <p class="text-2xl font-black text-blue-900">Esperando turno...</p>
@@ -457,7 +449,7 @@
                     <div id="screen-input-p1" class="input-display-screen text-slate-800 mb-2">?</div>
                 </div>
 
-                <!-- Teclado Táctil 1 -->
+                <!-- Teclado Táctil J1 -->
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="onScreenKey(1, '7')" class="key-btn key-blue">7</button>
                     <button onclick="onScreenKey(1, '8')" class="key-btn key-blue">8</button>
@@ -480,25 +472,32 @@
                 </div>
             </div>
 
-            <!-- PANEL EQUIPO ROJO (JUGADOR 2) -->
+            <!-- PANEL JUGADOR 2 (ROJO / O MÁQUINA) -->
             <div class="h-full max-h-[580px] bg-rose-50/90 border-4 border-rose-200 rounded-3xl p-3 md:p-4 flex flex-col justify-between shadow-lg relative">
-                <!-- Cortina de turno (solo modo tiempo) -->
+                <!-- Overlay Turnos -->
                 <div id="turn-overlay-p2" class="hidden absolute inset-0 bg-white/85 backdrop-blur-sm rounded-3xl z-30 flex flex-col items-center justify-center">
                     <i class="fas fa-hourglass-start text-5xl text-rose-400 animate-spin mb-3"></i>
                     <p class="text-2xl font-black text-rose-900">Esperando turno...</p>
                 </div>
 
+                <!-- Overlay Bot Pensando (Solo Modo Máquina) -->
+                <div id="bot-status-overlay" class="hidden absolute inset-0 bg-rose-900/5 backdrop-blur-[1px] rounded-3xl z-20 flex-col items-center justify-end pb-8 pointer-events-none">
+                    <div class="bg-rose-600 text-white px-5 py-2 rounded-full font-black text-sm shadow-md animate-pulse">
+                        <i class="fas fa-brain mr-1"></i> ROBOT CALCULANDO...
+                    </div>
+                </div>
+
                 <div>
                     <div class="flex justify-between items-center mb-1">
-                        <span class="bg-rose-600 text-white text-xs font-black px-3 py-0.5 rounded-full">JUGADOR 2</span>
+                        <span id="badge-p2" class="bg-rose-600 text-white text-xs font-black px-3 py-0.5 rounded-full">JUGADOR 2</span>
                         <div id="feedback-p2" class="text-xl md:text-2xl font-black text-rose-600 h-8"></div>
                     </div>
                     <div id="question-text-p2" class="question-display text-center text-slate-800 py-1">--</div>
                     <div id="screen-input-p2" class="input-display-screen text-slate-800 mb-2">?</div>
                 </div>
 
-                <!-- Teclado Táctil 2 -->
-                <div class="grid grid-cols-3 gap-2">
+                <!-- Teclado Táctil J2 -->
+                <div id="keypad-p2-container" class="grid grid-cols-3 gap-2">
                     <button onclick="onScreenKey(2, '7')" class="key-btn key-red">7</button>
                     <button onclick="onScreenKey(2, '8')" class="key-btn key-red">8</button>
                     <button onclick="onScreenKey(2, '9')" class="key-btn key-red">9</button>
@@ -524,10 +523,8 @@
     </div>
 
     <!-- ========================================================
-         MODALES DE RESULTADOS Y CONFIRMACIONES
+         MODALES DE RESULTADOS
          ======================================================== -->
-    
-    <!-- Modal Fin de Partida -->
     <div id="modal-match-end" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl border-4 border-amber-400">
             <div id="winner-trophy-icon" class="text-7xl mb-2">🏆</div>
@@ -548,7 +545,6 @@
         </div>
     </div>
 
-    <!-- Modal Campeón de Torneo -->
     <div id="modal-champion" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-gradient-to-b from-amber-100 to-amber-200 border-8 border-amber-400 rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl">
             <span class="text-8xl animate-bounce inline-block mb-2">👑</span>
@@ -561,20 +557,18 @@
         </div>
     </div>
 
-    <!-- Modal Confirmar Salida -->
     <div id="modal-confirm-exit" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-2 border-slate-300">
             <i class="fas fa-circle-question text-5xl text-amber-500 mb-3"></i>
             <h3 class="text-2xl font-black text-slate-800 mb-2">¿Salir de la partida?</h3>
-            <p class="text-slate-500 font-bold mb-6 text-sm">Se cancelará el progreso actual y se volverá a la configuración.</p>
+            <p class="text-slate-500 font-bold mb-6 text-sm">Se cancelará el progreso y volverás al menú.</p>
             <div class="flex gap-3 justify-center">
-                <button onclick="hideExitModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 font-extrabold text-slate-700 py-3 rounded-xl">Seguir jugando</button>
-                <button onclick="returnToMenu()" class="flex-1 bg-rose-500 hover:bg-rose-600 font-extrabold text-white py-3 rounded-xl">Sí, salir</button>
+                <button onclick="hideExitModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 font-extrabold text-slate-700 py-3 rounded-xl">Seguir</button>
+                <button onclick="returnToMenu()" class="flex-1 bg-rose-500 hover:bg-rose-600 font-extrabold text-white py-3 rounded-xl">Salir</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Resultado Ronda Por Tiempo -->
     <div id="modal-round-timed" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-md w-full text-center shadow-2xl border-4 border-blue-300">
             <h3 class="text-2xl font-black text-slate-800 mb-4">⏱️ Resultado de la Ronda</h3>
@@ -596,24 +590,20 @@
     </div>
 
     <!-- ========================================================
-         SCRIPTING: LÓGICA PEDAGÓGICA Y PROCEDURAL DE JUEGO
+         SCRIPTING: MOTOR DE JUEGO, SONIDO E INTELIGENCIA ARTIFICIAL
          ======================================================== -->
     <script>
         /**
-         * GENERADOR PROCEDURAL DE AUDIO (Web Audio API)
+         * SINTETIZADOR PROCEDURAL (Web Audio API)
          */
         class SoundEngine {
-            constructor() {
-                this.ctx = null;
-            }
+            constructor() { this.ctx = null; }
             init() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
                     this.ctx = new AudioCtx();
                 }
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
+                if (this.ctx.state === 'suspended') this.ctx.resume();
             }
             playTone(freq, type, duration, startVol = 0.2, endVol = 0.001) {
                 try {
@@ -658,10 +648,12 @@
         }
         const audio = new SoundEngine();
 
-        /* --- VARIABLES DE CONTROL Y ESTADO --- */
-        let activePreset = 'primaria3'; 
+        /* --- VARIABLES DE ESTADO --- */
+        let activePreset = 'primaria3';
         let winGoal = 3;
         let isTimedMode = false;
+        let isBotOpponent = false; 
+        let botTimer = null; 
         let ropeScore = 0; 
         
         let p1Input = "", p2Input = "";
@@ -684,7 +676,7 @@
 
         const cheerList = ["¡GENIAL!", "¡A TOPE!", "¡QUÉ TIRO!", "¡VAMOS!", "¡EXCELENTE!"];
 
-        /* --- CONTROL DE PRESETS Y MODOS --- */
+        /* --- PREAJUSTES --- */
         function selectPreset(preset) {
             activePreset = preset;
             document.querySelectorAll('.tab-card').forEach(el => el.classList.remove('selected'));
@@ -706,153 +698,97 @@
             audio.click();
         }
 
-        /* --- GENERACIÓN DE OPERACIONES DIDÁCTICAS --- */
+        /* --- GENERADOR MATEMÁTICO DIDÁCTICO --- */
         function generateMathProblem() {
             let res = { text: "", answer: 0 };
             const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
             const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
             if (activePreset === 'primaria2') {
-                // ==================== 2.º DE PRIMARIA ====================
                 const mode = pick(['sum_sub_100', 'sum_sub_1000', 'tables_easy', 'series']);
-                
                 if (mode === 'sum_sub_100') {
                     if (Math.random() > 0.45) {
-                        const a = rand(15, 65);
-                        const b = rand(11, 34);
-                        res.text = `${a} + ${b}`;
-                        res.answer = a + b;
+                        const a = rand(15, 65); const b = rand(11, 34);
+                        res.text = `${a} + ${b}`; res.answer = a + b;
                     } else {
-                        const a = rand(20, 99);
-                        const b = rand(10, a - 1);
-                        res.text = `${a} - ${b}`;
-                        res.answer = a - b;
+                        const a = rand(20, 99); const b = rand(10, a - 1);
+                        res.text = `${a} - ${b}`; res.answer = a - b;
                     }
                 } else if (mode === 'sum_sub_1000') {
-                    const c1 = rand(1, 6) * 100;
-                    const c2 = rand(1, 3) * 100;
-                    if (Math.random() > 0.5) {
-                        res.text = `${c1} + ${c2}`;
-                        res.answer = c1 + c2;
-                    } else {
-                        res.text = `${c1 + c2} - ${c2}`;
-                        res.answer = c1;
-                    }
+                    const c1 = rand(1, 6) * 100; const c2 = rand(1, 3) * 100;
+                    if (Math.random() > 0.5) { res.text = `${c1} + ${c2}`; res.answer = c1 + c2; }
+                    else { res.text = `${c1 + c2} - ${c2}`; res.answer = c1; }
                 } else if (mode === 'tables_easy') {
-                    const t = pick([2, 5, 10]);
-                    const n = rand(1, 10);
-                    res.text = `${t} × ${n}`;
-                    res.answer = t * n;
+                    const t = pick([2, 5, 10]); const n = rand(1, 10);
+                    res.text = `${t} × ${n}`; res.answer = t * n;
                 } else {
-                    const step = pick([2, 5, 10]);
-                    const base = rand(2, 6) * step;
-                    res.text = `${base}, ${base + step}, ... ?`;
-                    res.answer = base + (step * 2);
+                    const step = pick([2, 5, 10]); const base = rand(2, 6) * step;
+                    res.text = `${base}, ${base + step}, ... ?`; res.answer = base + (step * 2);
                 }
 
             } else if (activePreset === 'primaria3') {
-                // ==================== 3.º DE PRIMARIA (MODULAR) ====================
                 const submode = document.getElementById('primaria3-submode').value;
                 let taskType = submode;
-
                 if (submode === 'all') {
                     taskType = pick(['mult_tables', 'div_exact', 'double_half', 'sum_sub_3d', 'combo_basic']);
                 }
 
                 if (taskType === 'mult_tables') {
-                    const a = rand(2, 9);
-                    const b = rand(2, 9);
-                    res.text = `${a} × ${b}`;
-                    res.answer = a * b;
+                    const a = rand(2, 9); const b = rand(2, 9);
+                    res.text = `${a} × ${b}`; res.answer = a * b;
                 } else if (taskType === 'div_exact') {
-                    const divisor = rand(2, 9);
-                    const cociente = rand(2, 9);
-                    const dividendo = divisor * cociente;
-                    res.text = `${dividendo} : ${divisor}`;
-                    res.answer = cociente;
+                    const divisor = rand(2, 9); const cociente = rand(2, 9);
+                    res.text = `${divisor * cociente} : ${divisor}`; res.answer = cociente;
                 } else if (taskType === 'double_half') {
                     if (Math.random() > 0.5) {
-                        const n = rand(12, 49);
-                        res.text = `Doble de ${n}`;
-                        res.answer = n * 2;
+                        const n = rand(12, 49); res.text = `Doble de ${n}`; res.answer = n * 2;
                     } else {
-                        const even = rand(8, 48) * 2;
-                        res.text = `Mitad de ${even}`;
-                        res.answer = even / 2;
+                        const even = rand(8, 48) * 2; res.text = `Mitad de ${even}`; res.answer = even / 2;
                     }
                 } else if (taskType === 'sum_sub_3d') {
-                    const a = rand(120, 650);
-                    const b = rand(110, 320);
-                    if (Math.random() > 0.5) {
-                        res.text = `${a} + ${b}`;
-                        res.answer = a + b;
-                    } else {
-                        res.text = `${a + b} - ${b}`;
-                        res.answer = a;
-                    }
+                    const a = rand(120, 650); const b = rand(110, 320);
+                    if (Math.random() > 0.5) { res.text = `${a} + ${b}`; res.answer = a + b; }
+                    else { res.text = `${a + b} - ${b}`; res.answer = a; }
                 } else if (taskType === 'combo_basic') {
-                    const a = rand(5, 25);
-                    const b = rand(2, 6);
-                    const c = rand(2, 5);
-                    res.text = `${a} + ${b} × ${c}`;
-                    res.answer = a + (b * c);
+                    const a = rand(5, 25); const b = rand(2, 6); const c = rand(2, 5);
+                    res.text = `${a} + ${b} × ${c}`; res.answer = a + (b * c);
                 }
 
             } else {
-                // ==================== PERSONALIZADO (OPERACIONES SEPARADAS) ====================
                 const op = document.getElementById('custom-operation-type').value;
                 const digits = parseInt(document.querySelector('input[name="digits"]:checked').value);
                 const max = Math.pow(10, digits) - 1;
                 const min = Math.pow(10, digits - 1);
 
                 if (op === 'sum_sub') {
-                    const a = rand(min, max);
-                    const b = rand(min, max);
-                    if (Math.random() > 0.5) {
-                        res.text = `${a} + ${b}`;
-                        res.answer = a + b;
-                    } else {
-                        const top = Math.max(a, b);
-                        const bot = Math.min(a, b);
-                        res.text = `${top} - ${bot}`;
-                        res.answer = top - bot;
-                    }
+                    const a = rand(min, max); const b = rand(min, max);
+                    if (Math.random() > 0.5) { res.text = `${a} + ${b}`; res.answer = a + b; }
+                    else { const top = Math.max(a, b); const bot = Math.min(a, b); res.text = `${top} - ${bot}`; res.answer = top - bot; }
                 } else if (op === 'mult') {
-                    // MULTIPLICACIÓN SEPARADA
                     const a = rand(min, digits > 2 ? 80 : max);
                     const b = digits === 1 ? rand(2, 9) : (digits === 2 ? rand(2, 12) : rand(2, 9));
-                    res.text = `${a} × ${b}`;
-                    res.answer = a * b;
+                    res.text = `${a} × ${b}`; res.answer = a * b;
                 } else if (op === 'div') {
-                    // DIVISIÓN SEPARADA
                     const divisor = digits === 1 ? rand(2, 9) : (digits === 2 ? rand(2, 12) : rand(2, 9));
                     const cociente = rand(min, digits > 2 ? 60 : max);
-                    const dividendo = divisor * cociente;
-                    res.text = `${dividendo} : ${divisor}`;
-                    res.answer = cociente;
+                    res.text = `${divisor * cociente} : ${divisor}`; res.answer = cociente;
                 } else if (op === 'combined') {
-                    const a = rand(10, 30);
-                    const b = rand(2, 9);
-                    const c = rand(2, 8);
-                    res.text = `${a} + ${b} × ${c}`;
-                    res.answer = a + (b * c);
+                    const a = rand(10, 30); const b = rand(2, 9); const c = rand(2, 8);
+                    res.text = `${a} + ${b} × ${c}`; res.answer = a + (b * c);
                 } else if (op === 'integers') {
                     const a = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
                     const b = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
-                    res.text = `(${a}) + (${b})`;
-                    res.answer = a + b;
+                    res.text = `(${a}) + (${b})`; res.answer = a + b;
                 } else if (op === 'decimals') {
                     const a = parseFloat((Math.random() * 20).toFixed(1));
                     const b = parseFloat((Math.random() * 20).toFixed(1));
-                    res.text = `${a} + ${b}`;
-                    res.answer = parseFloat((a + b).toFixed(1));
+                    res.text = `${a} + ${b}`; res.answer = parseFloat((a + b).toFixed(1));
                 }
             }
-
             return res;
         }
 
-        /* --- ADAPTACIÓN DE TECLADOS PARA MONITOR MDI --- */
+        /* --- ADAPTACIÓN DE TECLADOS PARA MONITOR TÁCTIL --- */
         function adaptKeypadsForMDI() {
             const hideExtras = (activePreset === 'primaria2' || activePreset === 'primaria3');
             const op = document.getElementById('custom-operation-type').value;
@@ -867,10 +803,26 @@
                 dotBtn.style.visibility = shouldShowDot ? 'visible' : (hideExtras ? 'hidden' : 'visible');
                 signBtn.style.visibility = shouldShowSign ? 'visible' : (hideExtras ? 'hidden' : 'visible');
             });
+
+            // Ajuste específico de la máquina
+            const botOverlay = document.getElementById('bot-status-overlay');
+            const keypadP2 = document.getElementById('keypad-p2-container');
+            if (isBotOpponent) {
+                botOverlay.classList.remove('hidden');
+                botOverlay.classList.add('flex');
+                keypadP2.style.opacity = '0.35';
+                keypadP2.style.pointerEvents = 'none';
+            } else {
+                botOverlay.classList.add('hidden');
+                botOverlay.classList.remove('flex');
+                keypadP2.style.opacity = '1';
+                keypadP2.style.pointerEvents = 'auto';
+            }
         }
 
         /* --- ENTRADA TÁCTIL --- */
         function onScreenKey(player, key) {
+            if (isBotOpponent && player === 2) return; // Bloqueado para la máquina
             audio.click();
             if (isTimedMode && activeTurn !== player) return;
             if (player === 1 && isP1Locked) return;
@@ -878,23 +830,13 @@
 
             let current = player === 1 ? p1Input : p2Input;
 
-            if (key === 'DEL') {
-                current = current.slice(0, -1);
-            } else if (key === '-') {
-                current = current.startsWith('-') ? current.substring(1) : '-' + current;
-            } else if (key === '.') {
-                if (!current.includes('.')) current += key;
-            } else {
-                if (current.length < 7) current += key;
-            }
+            if (key === 'DEL') current = current.slice(0, -1);
+            else if (key === '-') current = current.startsWith('-') ? current.substring(1) : '-' + current;
+            else if (key === '.') { if (!current.includes('.')) current += key; }
+            else { if (current.length < 7) current += key; }
 
-            if (player === 1) {
-                p1Input = current;
-                updateDisplay(1);
-            } else {
-                p2Input = current;
-                updateDisplay(2);
-            }
+            if (player === 1) { p1Input = current; updateDisplay(1); }
+            else { p2Input = current; updateDisplay(2); }
         }
 
         function updateDisplay(player) {
@@ -904,7 +846,7 @@
             screen.classList.remove('wrong-shake', 'correct-pulse');
         }
 
-        /* --- COMPROBACIÓN DE RESPUESTA --- */
+        /* --- COMPROBACIÓN DE RESPUESTAS --- */
         function submitAnswer(player) {
             if (isTimedMode && activeTurn !== player) return;
             if (player === 1 && isP1Locked) return;
@@ -955,7 +897,7 @@
                         }, 600);
                     } else {
                         isP2Locked = true;
-                        document.getElementById('feedback-p2').innerText = cheerList[Math.floor(Math.random() * cheerList.length)];
+                        document.getElementById('feedback-p2').innerText = isBotOpponent ? "¡BIP BOP!" : cheerList[Math.floor(Math.random() * cheerList.length)];
                         triggerTugMotion(1);
                         setTimeout(() => {
                             document.getElementById('feedback-p2').innerText = "";
@@ -968,14 +910,55 @@
             } else {
                 audio.wrong();
                 screen.classList.add('wrong-shake');
-                if (player === 1) {
-                    p1Input = "";
-                    updateDisplay(1);
-                } else {
-                    p2Input = "";
-                    updateDisplay(2);
-                }
+                if (player === 1) { p1Input = ""; updateDisplay(1); }
+                else { p2Input = ""; updateDisplay(2); }
             }
+        }
+
+        /* --- INTELIGENCIA ARTIFICIAL (RIVAL VIRTUAL) --- */
+        function triggerBotDecision() {
+            if (!isBotOpponent || Math.abs(ropeScore) >= winGoal) return;
+            clearTimeout(botTimer);
+
+            const difficulty = document.getElementById('bot-difficulty').value;
+            let thinkTime = 4000;
+            let failProb = 0.15;
+
+            if (difficulty === 'easy') {
+                thinkTime = Math.random() * 2500 + 4500; // 4.5s a 7s
+                failProb = 0.25;
+            } else if (difficulty === 'medium') {
+                thinkTime = Math.random() * 2000 + 3000; // 3s a 5s
+                failProb = 0.12;
+            } else {
+                thinkTime = Math.random() * 1200 + 1800; // 1.8s a 3s
+                failProb = 0.04;
+            }
+
+            // Simulación de "tecleo" del robot
+            botTimer = setTimeout(() => {
+                if (!isBotOpponent || isP2Locked) return;
+
+                const willFail = Math.random() < failProb;
+                if (willFail) {
+                    // Fallo simulado
+                    p2Input = (q2.answer + (Math.random() > 0.5 ? 2 : -1)).toString();
+                    updateDisplay(2);
+                    submitAnswer(2);
+                    // Reintento tras equivocarse
+                    botTimer = setTimeout(() => {
+                        if (!isBotOpponent) return;
+                        p2Input = q2.answer.toString();
+                        updateDisplay(2);
+                        submitAnswer(2);
+                    }, 1400);
+                } else {
+                    // Acierto
+                    p2Input = q2.answer.toString();
+                    updateDisplay(2);
+                    submitAnswer(2);
+                }
+            }, thinkTime);
         }
 
         /* --- FÍSICA Y MOVIMIENTO DE LA CUERDA --- */
@@ -995,6 +978,7 @@
             }
 
             if (Math.abs(ropeScore) >= winGoal) {
+                clearTimeout(botTimer);
                 setTimeout(() => {
                     handleMatchFinished(ropeScore < 0 ? 1 : 2);
                 }, 350);
@@ -1007,7 +991,7 @@
             document.getElementById('rope-flag').style.left = `${Math.min(Math.max(newPos, 8), 92)}%`;
         }
 
-        /* --- GESTIÓN DE TURNOS POR TIEMPO --- */
+        /* --- TURNOS POR TIEMPO --- */
         function startTimedPlayerTurn(player) {
             activeTurn = player;
             timedStartTime = Date.now();
@@ -1050,9 +1034,7 @@
             if (pendingTimedWinner === 2) triggerTugMotion(1);
 
             if (Math.abs(ropeScore) < winGoal) {
-                setTimeout(() => {
-                    startTimedPlayerTurn(1);
-                }, 400);
+                setTimeout(() => { startTimedPlayerTurn(1); }, 400);
             }
         }
 
@@ -1060,29 +1042,44 @@
         function loadQuestionForPlayer(player) {
             const problem = generateMathProblem();
             if (player === 1) {
-                q1 = problem;
-                p1Input = "";
+                q1 = problem; p1Input = "";
                 document.getElementById('question-text-p1').innerText = q1.text;
                 updateDisplay(1);
             } else {
-                q2 = problem;
-                p2Input = "";
+                q2 = problem; p2Input = "";
                 document.getElementById('question-text-p2').innerText = q2.text;
                 updateDisplay(2);
+                if (isBotOpponent && !isTimedMode) {
+                    triggerBotDecision();
+                }
             }
         }
 
-        /* --- FLUJO DE PARTIDA --- */
+        /* --- FLUJO DE JUEGO --- */
         function syncGameSettings() {
             winGoal = parseInt(document.getElementById('win-goal').value);
             isTimedMode = document.getElementById('timed-mode').checked;
             document.getElementById('game-goal-indicator').innerText = `OBJETIVO: ${winGoal} PUNTOS`;
         }
 
-        function startStandardGame() {
+        function startGameMode(mode) {
             syncGameSettings();
-            p1Name = "EQUIPO AZUL";
-            p2Name = "EQUIPO ROJO";
+            if (mode === 'pve') {
+                isBotOpponent = true;
+                isTimedMode = false; // La máquina juega en tiempo real simultáneo
+                p1Name = "ALUMNO / EQUIPO";
+                p2Name = "ROBOT IA";
+                document.getElementById('avatar-p2').innerHTML = '<i class="fas fa-robot"></i>';
+                document.getElementById('label-role-p2').innerText = "RIVAL VIRTUAL";
+                document.getElementById('badge-p2').innerText = "MÁQUINA";
+            } else {
+                isBotOpponent = false;
+                p1Name = "EQUIPO AZUL";
+                p2Name = "EQUIPO ROJO";
+                document.getElementById('avatar-p2').innerHTML = '<i class="fas fa-dragon"></i>';
+                document.getElementById('label-role-p2').innerText = "EQUIPO 2";
+                document.getElementById('badge-p2').innerText = "JUGADOR 2";
+            }
             openGameScreen();
         }
 
@@ -1099,6 +1096,7 @@
         }
 
         function setupNewRound() {
+            clearTimeout(botTimer);
             document.getElementById('modal-match-end').classList.add('hidden');
             ropeScore = 0;
             updateFlagOnRope();
@@ -1117,6 +1115,7 @@
 
         function handleMatchFinished(winner) {
             audio.victory();
+            clearTimeout(botTimer);
             const modal = document.getElementById('modal-match-end');
             const winnerName = winner === 1 ? p1Name : p2Name;
             const detail = document.getElementById('winner-detail');
@@ -1126,7 +1125,7 @@
 
             detail.innerText = `¡${winnerName} se lleva el triunfo!`;
             detail.className = `text-2xl font-black mb-6 ${winner === 1 ? 'text-blue-600' : 'text-rose-600'}`;
-            icon.innerText = winner === 1 ? '🤖' : '🐉';
+            icon.innerText = winner === 1 ? '🎓' : (isBotOpponent ? '🤖' : '🐉');
 
             if (tournament.matches.length > 0) {
                 btnRematch.classList.add('hidden');
@@ -1143,6 +1142,7 @@
         /* --- MÓDULO TORNEO --- */
         function openTournamentSetup() {
             syncGameSettings();
+            isBotOpponent = false;
             hideScreens();
             document.getElementById('tournament-setup').classList.remove('hidden');
             document.getElementById('new-player-input').focus();
@@ -1228,7 +1228,7 @@
                 container.innerHTML += `
                     <div class="p-4 rounded-2xl border-3 flex justify-between items-center transition ${isCurrent ? 'border-amber-400 bg-amber-50 shadow-md ring-2 ring-amber-300' : 'border-slate-200 bg-slate-50 opacity-70'}">
                         <div>
-                            <div class="font-black text-blue-700 text-lg"><i class="fas fa-robot mr-2"></i>${m.p1}</div>
+                            <div class="font-black text-blue-700 text-lg"><i class="fas fa-user-graduate mr-2"></i>${m.p1}</div>
                             <div class="text-xs font-bold text-slate-400 pl-6">VS</div>
                             <div class="font-black text-rose-700 text-lg"><i class="fas fa-dragon mr-2"></i>${m.p2}</div>
                         </div>
@@ -1242,7 +1242,7 @@
             if (tournament.winnersThisRound.length > 0 && tournament.currentMatchIdx === 0) {
                 container.innerHTML += `
                     <div class="col-span-1 md:col-span-2 text-center bg-emerald-50 border border-emerald-300 text-emerald-800 p-2 rounded-xl text-sm font-black">
-                        🌟 Pasa directo a la siguiente fase por sorteo: ${tournament.winnersThisRound.join(', ')}
+                        🌟 Pasa directo a la siguiente fase: ${tournament.winnersThisRound.join(', ')}
                     </div>
                 `;
             }
@@ -1268,11 +1268,10 @@
                 tournament.roundNumber++;
                 constructBracket([...tournament.winnersThisRound]);
             }
-
             renderBracketScreen();
         }
 
-        /* --- GESTIÓN DE PANTALLAS Y MODALES --- */
+        /* --- PANTALLAS Y MODALES --- */
         function hideScreens() {
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('tournament-setup').classList.add('hidden');
@@ -1287,6 +1286,7 @@
 
         function returnToMenu() {
             audio.click();
+            clearTimeout(botTimer);
             tournament.matches = [];
             tournament.players = [];
             tournament.winnersThisRound = [];
@@ -1305,7 +1305,7 @@
             document.getElementById('modal-confirm-exit').classList.add('hidden');
         }
 
-        /* --- SOPORTE PARA TECLADO FÍSICO DEL PROFESOR/AULA --- */
+        /* --- TECLADO FÍSICO (AULA / PROFESOR) --- */
         window.addEventListener('keydown', (e) => {
             if (document.getElementById('game-screen').classList.contains('hidden')) return;
             
@@ -1319,7 +1319,7 @@
             }
         });
 
-        // Inicio por defecto
+        // Inicio por defecto en 3.º de Primaria
         selectPreset('primaria3');
     </script>
 </body>
