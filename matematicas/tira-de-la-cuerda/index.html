@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TIRA DE LA CUERDA 🏆 Duelo Matemático de Primaria</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900;1000&display=swap" rel="stylesheet">
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --team-blue: #1D4ED8;
+            --team-blue-light: #EFF6FF;
+            --team-red: #B91C1C;
+            --team-red-light: #FEF2F2;
+            --rope-shadow: #78350F;
+        }
+
+        * {
+            font-family: 'Nunito', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 20%, #FFFBEB 0%, #FEF3C7 60%, #FDE68A 100%);
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+        }
+
+        /* Mecánica y textura de la cuerda */
+        .rope-track {
+            position: relative;
+            height: 30px;
+            background: repeating-linear-gradient(45deg, #92400E 0px, #92400E 15px, #B45309 15px, #B45309 30px);
+            border-radius: 9999px;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.35), 0 4px 10px rgba(180,83,9,0.25);
+            border: 3px solid #78350F;
+        }
+
+        .flag-knot {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 70px;
+            background: #E11D48;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%);
+            transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 20;
+            filter: drop-shadow(0 5px 6px rgba(0,0,0,0.3));
+        }
+
+        .flag-knot::after {
+            content: '⭐';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+        }
+
+        /* Animaciones cinéticas */
+        .char-icon {
+            font-size: 3.4rem;
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15));
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .pulling-left {
+            animation: animPullLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .pulling-right {
+            animation: animPullRight 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes animPullLeft {
+            0% { transform: scale(1) translateX(0); }
+            40% { transform: scale(1.18) translateX(-30px) rotate(-14deg); }
+            100% { transform: scale(1) translateX(0); }
+        }
+        @keyframes animPullRight {
+            0% { transform: scale(1) translateX(0); }
+            40% { transform: scale(1.18) translateX(30px) rotate(14deg); }
+            100% { transform: scale(1) translateX(0); }
+        }
+
+        /* Displays de Operación */
+        .question-display {
+            font-size: 2.85rem;
+            font-weight: 1000;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .input-display-screen {
+            border: 4px solid #CBD5E1;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.9rem;
+            font-weight: 1000;
+            background-color: #FFFFFF;
+            border-radius: 1.25rem;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+
+        .correct-pulse {
+            animation: hitPulse 0.45s ease-out;
+            border-color: #10B981 !important;
+            background-color: #ECFDF5 !important;
+            color: #047857 !important;
+        }
+
+        .wrong-shake {
+            animation: missShake 0.45s ease-in-out;
+            border-color: #EF4444 !important;
+            background-color: #FEF2F2 !important;
+            color: #B91C1C !important;
+        }
+
+        @keyframes hitPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.07); }
+        }
+
+        @keyframes missShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+        }
+
+        /* Botones táctiles de gran tamaño para MDI */
+        .key-btn {
+            background-color: #FFFFFF;
+            border: 3px solid #E2E8F0;
+            border-bottom-width: 6px;
+            border-radius: 1.15rem;
+            font-size: 2.1rem;
+            font-weight: 900;
+            min-height: 66px;
+            touch-action: manipulation;
+            cursor: pointer;
+            transition: transform 0.06s ease, border-color 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key-btn:active {
+            transform: translateY(4px);
+            border-bottom-width: 2px;
+        }
+
+        .key-blue {
+            color: #1E40AF;
+            border-color: #BFDBFE;
+            border-bottom-color: #93C5FD;
+        }
+        .key-blue:active {
+            background-color: #DBEAFE;
+        }
+
+        .key-red {
+            color: #991B1B;
+            border-color: #FECACA;
+            border-bottom-color: #FCA5A5;
+        }
+        .key-red:active {
+            background-color: #FEE2E2;
+        }
+
+        .key-action-ok {
+            background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+            color: #FFFFFF;
+            border-color: #047857;
+            border-bottom-width: 6px;
+        }
+        .key-action-ok:active {
+            background: #059669;
+        }
+
+        .key-action-del {
+            background-color: #F1F5F9;
+            color: #475569;
+            border-color: #CBD5E1;
+        }
+
+        .tab-card {
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+        }
+        .tab-card:hover {
+            transform: translateY(-3px);
+        }
+        .tab-card.selected {
+            border-color: #F59E0B;
+            background-color: #FEF3C7;
+            box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.35);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col items-center justify-between p-2 md:p-4">
+
+    <!-- ========================================================
+         PANTALLA PRINCIPAL: CONFIGURACIÓN Y SELECCIÓN DE NIVELES
+         ======================================================== -->
+    <div id="start-screen" class="w-full max-w-5xl bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-amber-300 flex flex-col justify-between my-auto overflow-y-auto max-h-[96vh]">
+        <div class="text-center mb-4">
+            <h1 class="text-4xl md:text-5xl font-black text-amber-600 tracking-wide">🏆 TIRA DE LA CUERDA</h1>
+            <p class="text-slate-600 text-lg md:text-xl font-bold mt-1">Duelo cooperativo y por equipos de cálculo mental</p>
+        </div>
+
+        <!-- PESTAÑAS DE NIVEL -->
+        <div class="mb-4">
+            <label class="block text-slate-800 font-black text-lg mb-2 text-center md:text-left">
+                🎯 1. ELIGE EL NIVEL O ÁREA A TRABAJAR:
+            </label>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <!-- Nivel 2.º Primaria -->
+                <div onclick="selectPreset('primaria2')" id="preset-primaria2" class="tab-card bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-300">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🌱</span>
+                        <div>
+                            <h3 class="font-black text-emerald-900 text-lg">2.º de Primaria</h3>
+                            <p class="text-xs text-emerald-700 font-semibold leading-snug">Sumas/restas con y sin llevada, series y tablas 2, 5 y 10.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nivel 3.º Primaria -->
+                <div onclick="selectPreset('primaria3')" id="preset-primaria3" class="tab-card bg-sky-50 p-4 rounded-2xl border-2 border-sky-300 selected">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🚀</span>
+                        <div>
+                            <h3 class="font-black text-sky-900 text-lg">3.º de Primaria</h3>
+                            <p class="text-xs text-sky-700 font-semibold leading-snug">Tablas 1-10, división exacta, dobles/mitades y combinadas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modo Personalizado -->
+                <div onclick="selectPreset('custom')" id="preset-custom" class="tab-card bg-purple-50 p-4 rounded-2xl border-2 border-purple-300">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">⚙️</span>
+                        <div>
+                            <h3 class="font-black text-purple-900 text-lg">Personalizado</h3>
+                            <p class="text-xs text-purple-700 font-semibold leading-snug">Configura la operación exacta, dígitos, enteros o decimales.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBMENÚ 3.º DE PRIMARIA: SELECCIÓN DE OPERACIONES MODULARES -->
+        <div id="primaria3-modular-panel" class="bg-sky-50/90 border-2 border-sky-300 p-4 rounded-2xl mb-4">
+            <label class="block text-sky-950 font-black text-base mb-2">
+                <i class="fas fa-sliders mr-2"></i>Contenido curricular específico de 3.º de Primaria:
+            </label>
+            <select id="primaria3-submode" class="w-full p-3 rounded-xl border-2 border-sky-300 bg-white text-base font-extrabold text-sky-900 outline-none">
+                <option value="all" selected>🌟 Modo Mixto / Repaso Global de 3.º (Todas intercaladas)</option>
+                <option value="mult_tables">✖️ Solo Tablas de multiplicar (del 1 al 10)</option>
+                <option value="div_exact">➗ Solo Divisiones exactas (cálculo elemental)</option>
+                <option value="double_half">👥 Solo Dobles y Mitades</option>
+                <option value="sum_sub_3d">➕➖ Solo Sumas y Restas (hasta 3 cifras)</option>
+                <option value="combo_basic">🧮 Solo Operaciones Combinadas elementales</option>
+            </select>
+        </div>
+
+        <!-- SUBMENÚ MODO PERSONALIZADO: OPERACIONES SEPARADAS -->
+        <div id="custom-modular-panel" class="hidden bg-purple-50/90 border-2 border-purple-300 p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-purple-950 font-black text-sm mb-1">Operación concreta:</label>
+                <select id="custom-operation-type" class="w-full p-3 rounded-xl border-2 border-purple-300 bg-white text-base font-extrabold text-purple-900 outline-none">
+                    <option value="sum_sub">➕➖ Sumas y Restas</option>
+                    <option value="mult">✖️ Solo Multiplicaciones</option>
+                    <option value="div">➗ Solo Divisiones</option>
+                    <option value="combined">🧮 Operaciones Combinadas</option>
+                    <option value="integers">❄️ Números Enteros (+ / -)</option>
+                    <option value="decimals">🎯 Números Decimales</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-purple-950 font-black text-sm mb-1">Rango de dificultad (Cifras):</label>
+                <div class="flex justify-around items-center h-12 bg-white rounded-xl border-2 border-purple-300 px-3">
+                    <label class="cursor-pointer flex items-center gap-2 font-black text-purple-900 text-sm">
+                        <input type="radio" name="digits" value="1" class="w-5 h-5 accent-purple-600"> 1 cifra
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-2 font-black text-purple-900 text-sm">
+                        <input type="radio" name="digits" value="2" checked class="w-5 h-5 accent-purple-600"> 2 cifras
+                    </label>
+                    <label class="cursor-pointer flex items-center gap-2 font-black text-purple-900 text-sm">
+                        <input type="radio" name="digits" value="3" class="w-5 h-5 accent-purple-600"> 3 cifras
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- AJUSTES DE MODALIDAD Y PUNTOS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <div class="bg-amber-50 p-3 rounded-2xl border-2 border-amber-200 flex items-center justify-between px-4">
+                <span class="font-black text-amber-900 text-base"><i class="fas fa-bullseye mr-2"></i>Puntos de ventaja para ganar:</span>
+                <select id="win-goal" class="bg-white border-2 border-amber-300 rounded-xl px-3 py-1 font-black text-amber-900 text-base">
+                    <option value="2">2 puntos (Partida ultra rápida)</option>
+                    <option value="3" selected>3 puntos (Estándar recomendada)</option>
+                    <option value="5">5 puntos (Duelo largo)</option>
+                </select>
+            </div>
+            <div class="bg-blue-50 p-3 rounded-2xl border-2 border-blue-200 flex items-center justify-between px-4">
+                <span class="font-black text-blue-950 text-base"><i class="fas fa-stopwatch mr-2"></i>Modo por turnos (Medición de tiempo):</span>
+                <input type="checkbox" id="timed-mode" class="w-6 h-6 accent-blue-600 rounded cursor-pointer">
+            </div>
+        </div>
+
+        <!-- BOTONES DE LANZAMIENTO -->
+        <div class="flex flex-col md:flex-row gap-4 justify-center">
+            <button onclick="startStandardGame()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-2xl py-4 px-8 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-3">
+                <i class="fas fa-play"></i> Partida Rápida (1 vs 1)
+            </button>
+            <button onclick="openTournamentSetup()" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-2xl py-4 px-8 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-3">
+                <i class="fas fa-trophy"></i> Torneo de Aula
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         SETUP DEL TORNEO DE AULA
+         ======================================================== -->
+    <div id="tournament-setup" class="hidden w-full max-w-2xl bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-orange-300 text-center my-auto">
+        <h2 class="text-3xl font-black text-orange-600 mb-1">🏆 Campeonato de Aula</h2>
+        <p class="text-slate-500 font-bold mb-4 text-sm">Añade a los alumnos o equipos para sortear las eliminatorias</p>
+        
+        <div class="flex gap-2 mb-4">
+            <input type="text" id="new-player-input" placeholder="Nombre del alumno/pareja..." class="flex-1 p-3 border-2 border-orange-300 rounded-xl text-lg font-bold outline-none focus:border-orange-500" onkeydown="if(event.key==='Enter') addTournamentPlayer()">
+            <button onclick="addTournamentPlayer()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 font-black rounded-xl text-lg transition active:scale-95">
+                <i class="fas fa-plus mr-1"></i> Añadir
+            </button>
+        </div>
+
+        <div class="bg-orange-50/80 rounded-2xl p-4 mb-5 border border-orange-200 min-h-[140px] max-h-[250px] overflow-y-auto">
+            <div class="flex justify-between items-center mb-2 px-2 text-xs font-black text-orange-800">
+                <span>JUGADORES INSCRITOS (<span id="player-count">0</span>)</span>
+                <span>Mínimo 2 participantes</span>
+            </div>
+            <ul id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left"></ul>
+        </div>
+
+        <div class="flex justify-between items-center">
+            <button onclick="returnToMenu()" class="font-black text-slate-500 hover:text-slate-800 px-4 py-2">
+                <i class="fas fa-arrow-left mr-1"></i> Volver
+            </button>
+            <button id="btn-launch-tourney" onclick="launchTournamentBracket()" disabled class="bg-emerald-500 text-white font-black text-xl py-3 px-8 rounded-xl shadow-lg opacity-40 cursor-not-allowed transition active:scale-95">
+                Generar Cuadro 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         PANTALLA DE CUADRO (BRACKET)
+         ======================================================== -->
+    <div id="tournament-bracket" class="hidden w-full max-w-4xl bg-white p-6 rounded-3xl shadow-2xl border-4 border-indigo-300 text-center my-auto max-h-[96vh] overflow-y-auto">
+        <h2 id="bracket-round-title" class="text-3xl font-black text-indigo-700 mb-1">Cuartos de Final</h2>
+        <p class="text-slate-500 font-bold mb-5">Enfrentamiento en curso</p>
+
+        <div id="bracket-matches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-left"></div>
+
+        <button onclick="playCurrentMatch()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-2xl py-4 px-10 rounded-2xl shadow-xl animate-pulse active:scale-95">
+            ¡Comenzar Duelo! <i class="fas fa-play ml-2"></i>
+        </button>
+    </div>
+
+    <!-- ========================================================
+         PANTALLA PRINCIPAL DE JUEGO (MDI DUAL TOUCH)
+         ======================================================== -->
+    <div id="game-screen" class="hidden w-full h-full max-w-7xl flex-col justify-between py-1">
+        
+        <!-- CABECERA: CUERDA Y MARCADORES -->
+        <div class="bg-white/95 rounded-2xl shadow-lg p-3 md:p-4 mb-2 border-2 border-amber-200 relative shrink-0">
+            <button onclick="showExitModal()" class="absolute top-2 right-2 text-slate-400 hover:text-rose-500 text-2xl p-1 transition" title="Salir al menú">
+                <i class="fas fa-circle-xmark"></i>
+            </button>
+
+            <div class="flex justify-between items-center px-4 md:px-12 mb-1">
+                <!-- Lado Izquierdo (Azul) -->
+                <div id="visual-p1" class="flex items-center gap-3 w-1/3">
+                    <div class="char-icon text-blue-600">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="text-left overflow-hidden">
+                        <span class="text-xs font-black uppercase text-blue-500 tracking-wider">Equipo 1</span>
+                        <h2 id="name-team-p1" class="text-xl md:text-3xl font-black text-blue-900 truncate">AZUL</h2>
+                    </div>
+                </div>
+
+                <!-- Meta Central -->
+                <div class="text-center px-2">
+                    <span id="game-goal-indicator" class="bg-amber-100 text-amber-900 text-xs md:text-sm font-black px-3 py-1 rounded-full border border-amber-300">
+                        OBJETIVO: 3 PUNTOS
+                    </span>
+                </div>
+
+                <!-- Lado Derecho (Rojo) -->
+                <div id="visual-p2" class="flex items-center justify-end gap-3 w-1/3 text-right">
+                    <div class="overflow-hidden">
+                        <span class="text-xs font-black uppercase text-rose-500 tracking-wider">Equipo 2</span>
+                        <h2 id="name-team-p2" class="text-xl md:text-3xl font-black text-rose-900 truncate">ROJO</h2>
+                    </div>
+                    <div class="char-icon text-rose-600">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mecánica visual de la cuerda -->
+            <div class="relative w-full px-6 md:px-12 mt-2">
+                <div class="rope-track">
+                    <div id="rope-flag" class="flag-knot"></div>
+                </div>
+                <div class="flex justify-between text-xs font-black text-slate-400 mt-1 px-1">
+                    <span class="text-blue-600">⬅ TIRA EL EQUIPO AZUL</span>
+                    <span class="text-amber-800">PUNTO MEDIO</span>
+                    <span class="text-rose-600">TIRA EL EQUIPO ROJO ➡</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÁREA TÁCTIL SIMULTÁNEA PARA MDI -->
+        <div class="flex-1 grid grid-cols-2 gap-3 md:gap-6 items-center">
+            
+            <!-- PANEL EQUIPO AZUL (JUGADOR 1) -->
+            <div class="h-full max-h-[580px] bg-blue-50/90 border-4 border-blue-200 rounded-3xl p-3 md:p-4 flex flex-col justify-between shadow-lg relative">
+                <!-- Cortina de turno (solo modo tiempo) -->
+                <div id="turn-overlay-p1" class="hidden absolute inset-0 bg-white/85 backdrop-blur-sm rounded-3xl z-30 flex flex-col items-center justify-center">
+                    <i class="fas fa-hourglass-start text-5xl text-blue-400 animate-spin mb-3"></i>
+                    <p class="text-2xl font-black text-blue-900">Esperando turno...</p>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="bg-blue-600 text-white text-xs font-black px-3 py-0.5 rounded-full">JUGADOR 1</span>
+                        <div id="feedback-p1" class="text-xl md:text-2xl font-black text-blue-600 h-8"></div>
+                    </div>
+                    <div id="question-text-p1" class="question-display text-center text-slate-800 py-1">--</div>
+                    <div id="screen-input-p1" class="input-display-screen text-slate-800 mb-2">?</div>
+                </div>
+
+                <!-- Teclado Táctil 1 -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="onScreenKey(1, '7')" class="key-btn key-blue">7</button>
+                    <button onclick="onScreenKey(1, '8')" class="key-btn key-blue">8</button>
+                    <button onclick="onScreenKey(1, '9')" class="key-btn key-blue">9</button>
+
+                    <button onclick="onScreenKey(1, '4')" class="key-btn key-blue">4</button>
+                    <button onclick="onScreenKey(1, '5')" class="key-btn key-blue">5</button>
+                    <button onclick="onScreenKey(1, '6')" class="key-btn key-blue">6</button>
+
+                    <button onclick="onScreenKey(1, '1')" class="key-btn key-blue">1</button>
+                    <button onclick="onScreenKey(1, '2')" class="key-btn key-blue">2</button>
+                    <button onclick="onScreenKey(1, '3')" class="key-btn key-blue">3</button>
+
+                    <button id="extra-key-sign-1" onclick="onScreenKey(1, '-')" class="key-btn key-blue text-xl">+/-</button>
+                    <button onclick="onScreenKey(1, '0')" class="key-btn key-blue">0</button>
+                    <button id="extra-key-dot-1" onclick="onScreenKey(1, '.')" class="key-btn key-blue text-xl">.</button>
+
+                    <button onclick="onScreenKey(1, 'DEL')" class="key-btn key-action-del text-xl"><i class="fas fa-delete-left"></i></button>
+                    <button onclick="submitAnswer(1)" class="key-btn key-action-ok col-span-2 text-2xl font-black">OK <i class="fas fa-check ml-1"></i></button>
+                </div>
+            </div>
+
+            <!-- PANEL EQUIPO ROJO (JUGADOR 2) -->
+            <div class="h-full max-h-[580px] bg-rose-50/90 border-4 border-rose-200 rounded-3xl p-3 md:p-4 flex flex-col justify-between shadow-lg relative">
+                <!-- Cortina de turno (solo modo tiempo) -->
+                <div id="turn-overlay-p2" class="hidden absolute inset-0 bg-white/85 backdrop-blur-sm rounded-3xl z-30 flex flex-col items-center justify-center">
+                    <i class="fas fa-hourglass-start text-5xl text-rose-400 animate-spin mb-3"></i>
+                    <p class="text-2xl font-black text-rose-900">Esperando turno...</p>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="bg-rose-600 text-white text-xs font-black px-3 py-0.5 rounded-full">JUGADOR 2</span>
+                        <div id="feedback-p2" class="text-xl md:text-2xl font-black text-rose-600 h-8"></div>
+                    </div>
+                    <div id="question-text-p2" class="question-display text-center text-slate-800 py-1">--</div>
+                    <div id="screen-input-p2" class="input-display-screen text-slate-800 mb-2">?</div>
+                </div>
+
+                <!-- Teclado Táctil 2 -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="onScreenKey(2, '7')" class="key-btn key-red">7</button>
+                    <button onclick="onScreenKey(2, '8')" class="key-btn key-red">8</button>
+                    <button onclick="onScreenKey(2, '9')" class="key-btn key-red">9</button>
+
+                    <button onclick="onScreenKey(2, '4')" class="key-btn key-red">4</button>
+                    <button onclick="onScreenKey(2, '5')" class="key-btn key-red">5</button>
+                    <button onclick="onScreenKey(2, '6')" class="key-btn key-red">6</button>
+
+                    <button onclick="onScreenKey(2, '1')" class="key-btn key-red">1</button>
+                    <button onclick="onScreenKey(2, '2')" class="key-btn key-red">2</button>
+                    <button onclick="onScreenKey(2, '3')" class="key-btn key-red">3</button>
+
+                    <button id="extra-key-sign-2" onclick="onScreenKey(2, '-')" class="key-btn key-red text-xl">+/-</button>
+                    <button onclick="onScreenKey(2, '0')" class="key-btn key-red">0</button>
+                    <button id="extra-key-dot-2" onclick="onScreenKey(2, '.')" class="key-btn key-red text-xl">.</button>
+
+                    <button onclick="onScreenKey(2, 'DEL')" class="key-btn key-action-del text-xl"><i class="fas fa-delete-left"></i></button>
+                    <button onclick="submitAnswer(2)" class="key-btn key-action-ok col-span-2 text-2xl font-black">OK <i class="fas fa-check ml-1"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODALES DE RESULTADOS Y CONFIRMACIONES
+         ======================================================== -->
+    
+    <!-- Modal Fin de Partida -->
+    <div id="modal-match-end" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl border-4 border-amber-400">
+            <div id="winner-trophy-icon" class="text-7xl mb-2">🏆</div>
+            <h2 id="winner-headline" class="text-4xl font-black text-slate-800 mb-2">¡VICTORIA FINAL!</h2>
+            <p id="winner-detail" class="text-2xl font-extrabold text-blue-600 mb-6">El Equipo Azul se lleva el tirón decisivo</p>
+
+            <div class="flex flex-col gap-3">
+                <button id="btn-next-match" onclick="continueTournamentFlow()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl py-4 rounded-2xl shadow-lg active:scale-95">
+                    Siguiente Enfrentamiento <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <button id="btn-rematch" onclick="setupNewRound()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl py-4 rounded-2xl shadow-lg active:scale-95">
+                    <i class="fas fa-rotate-right mr-2"></i> Jugar la Revancha
+                </button>
+                <button onclick="returnToMenu()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-2xl">
+                    <i class="fas fa-house mr-1"></i> Volver al Menú Principal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Campeón de Torneo -->
+    <div id="modal-champion" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-amber-100 to-amber-200 border-8 border-amber-400 rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl">
+            <span class="text-8xl animate-bounce inline-block mb-2">👑</span>
+            <h2 class="text-4xl font-black text-amber-900 mb-1">¡CAMPEÓN DEL TORNEO!</h2>
+            <p id="champion-player-name" class="text-4xl font-black text-amber-600 my-4 uppercase tracking-wider">EQUIPO</p>
+            <p class="text-slate-700 font-bold mb-6">¡Enhorabuena por vuestra rapidez y cálculo mental!</p>
+            <button onclick="returnToMenu()" class="bg-amber-500 hover:bg-amber-600 text-white font-black text-2xl py-4 px-10 rounded-2xl shadow-xl active:scale-95">
+                Finalizar Campeonato
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Salida -->
+    <div id="modal-confirm-exit" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-2 border-slate-300">
+            <i class="fas fa-circle-question text-5xl text-amber-500 mb-3"></i>
+            <h3 class="text-2xl font-black text-slate-800 mb-2">¿Salir de la partida?</h3>
+            <p class="text-slate-500 font-bold mb-6 text-sm">Se cancelará el progreso actual y se volverá a la configuración.</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="hideExitModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 font-extrabold text-slate-700 py-3 rounded-xl">Seguir jugando</button>
+                <button onclick="returnToMenu()" class="flex-1 bg-rose-500 hover:bg-rose-600 font-extrabold text-white py-3 rounded-xl">Sí, salir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Resultado Ronda Por Tiempo -->
+    <div id="modal-round-timed" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full text-center shadow-2xl border-4 border-blue-300">
+            <h3 class="text-2xl font-black text-slate-800 mb-4">⏱️ Resultado de la Ronda</h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
+                    <p class="text-xs font-black text-blue-500">TIEMPO AZUL</p>
+                    <p id="timed-time-p1" class="text-3xl font-black text-blue-900">-- s</p>
+                </div>
+                <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200">
+                    <p class="text-xs font-black text-rose-500">TIEMPO ROJO</p>
+                    <p id="timed-time-p2" class="text-3xl font-black text-rose-900">-- s</p>
+                </div>
+            </div>
+            <p id="timed-round-verdict" class="text-2xl font-black text-emerald-600 mb-6">¡El equipo Azul ha sido más rápido!</p>
+            <button onclick="proceedTimedTug()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xl py-4 rounded-2xl shadow-lg active:scale-95">
+                ¡Mover la Cuerda! 💪
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         SCRIPTING: LÓGICA PEDAGÓGICA Y PROCEDURAL DE JUEGO
+         ======================================================== -->
+    <script>
+        /**
+         * GENERADOR PROCEDURAL DE AUDIO (Web Audio API)
+         */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+            playTone(freq, type, duration, startVol = 0.2, endVol = 0.001) {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(startVol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(endVol, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            click() { this.playTone(520, 'sine', 0.04, 0.12); }
+            correct() {
+                this.init();
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, now + i * 0.05);
+                    gain.gain.setValueAtTime(0.16, now + i * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.15);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.05);
+                    osc.stop(now + i * 0.05 + 0.16);
+                });
+            }
+            wrong() { this.playTone(190, 'sawtooth', 0.24, 0.22); }
+            tug() { this.playTone(110, 'sine', 0.32, 0.28); }
+            victory() {
+                this.init();
+                [440, 554.37, 659.25, 880].forEach((n, idx) => {
+                    setTimeout(() => this.playTone(n, 'triangle', 0.35, 0.22), idx * 110);
+                });
+            }
+        }
+        const audio = new SoundEngine();
+
+        /* --- VARIABLES DE CONTROL Y ESTADO --- */
+        let activePreset = 'primaria3'; 
+        let winGoal = 3;
+        let isTimedMode = false;
+        let ropeScore = 0; 
+        
+        let p1Input = "", p2Input = "";
+        let q1 = {}, q2 = {};
+        let isP1Locked = false, isP2Locked = false;
+
+        let p1Name = "EQUIPO AZUL", p2Name = "EQUIPO ROJO";
+        let activeTurn = 1; 
+        let timedStartTime = 0;
+        let timedT1 = 0, timedT2 = 0;
+        let pendingTimedWinner = 0;
+
+        let tournament = {
+            players: [],
+            matches: [],
+            currentMatchIdx: 0,
+            winnersThisRound: [],
+            roundNumber: 1
+        };
+
+        const cheerList = ["¡GENIAL!", "¡A TOPE!", "¡QUÉ TIRO!", "¡VAMOS!", "¡EXCELENTE!"];
+
+        /* --- CONTROL DE PRESETS Y MODOS --- */
+        function selectPreset(preset) {
+            activePreset = preset;
+            document.querySelectorAll('.tab-card').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`preset-${preset}`).classList.add('selected');
+            
+            const p3Panel = document.getElementById('primaria3-modular-panel');
+            const customPanel = document.getElementById('custom-modular-panel');
+
+            if (preset === 'primaria3') {
+                p3Panel.classList.remove('hidden');
+                customPanel.classList.add('hidden');
+            } else if (preset === 'custom') {
+                p3Panel.classList.add('hidden');
+                customPanel.classList.remove('hidden');
+            } else {
+                p3Panel.classList.add('hidden');
+                customPanel.classList.add('hidden');
+            }
+            audio.click();
+        }
+
+        /* --- GENERACIÓN DE OPERACIONES DIDÁCTICAS --- */
+        function generateMathProblem() {
+            let res = { text: "", answer: 0 };
+            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+            if (activePreset === 'primaria2') {
+                // ==================== 2.º DE PRIMARIA ====================
+                const mode = pick(['sum_sub_100', 'sum_sub_1000', 'tables_easy', 'series']);
+                
+                if (mode === 'sum_sub_100') {
+                    if (Math.random() > 0.45) {
+                        const a = rand(15, 65);
+                        const b = rand(11, 34);
+                        res.text = `${a} + ${b}`;
+                        res.answer = a + b;
+                    } else {
+                        const a = rand(20, 99);
+                        const b = rand(10, a - 1);
+                        res.text = `${a} - ${b}`;
+                        res.answer = a - b;
+                    }
+                } else if (mode === 'sum_sub_1000') {
+                    const c1 = rand(1, 6) * 100;
+                    const c2 = rand(1, 3) * 100;
+                    if (Math.random() > 0.5) {
+                        res.text = `${c1} + ${c2}`;
+                        res.answer = c1 + c2;
+                    } else {
+                        res.text = `${c1 + c2} - ${c2}`;
+                        res.answer = c1;
+                    }
+                } else if (mode === 'tables_easy') {
+                    const t = pick([2, 5, 10]);
+                    const n = rand(1, 10);
+                    res.text = `${t} × ${n}`;
+                    res.answer = t * n;
+                } else {
+                    const step = pick([2, 5, 10]);
+                    const base = rand(2, 6) * step;
+                    res.text = `${base}, ${base + step}, ... ?`;
+                    res.answer = base + (step * 2);
+                }
+
+            } else if (activePreset === 'primaria3') {
+                // ==================== 3.º DE PRIMARIA (MODULAR) ====================
+                const submode = document.getElementById('primaria3-submode').value;
+                let taskType = submode;
+
+                if (submode === 'all') {
+                    taskType = pick(['mult_tables', 'div_exact', 'double_half', 'sum_sub_3d', 'combo_basic']);
+                }
+
+                if (taskType === 'mult_tables') {
+                    const a = rand(2, 9);
+                    const b = rand(2, 9);
+                    res.text = `${a} × ${b}`;
+                    res.answer = a * b;
+                } else if (taskType === 'div_exact') {
+                    const divisor = rand(2, 9);
+                    const cociente = rand(2, 9);
+                    const dividendo = divisor * cociente;
+                    res.text = `${dividendo} : ${divisor}`;
+                    res.answer = cociente;
+                } else if (taskType === 'double_half') {
+                    if (Math.random() > 0.5) {
+                        const n = rand(12, 49);
+                        res.text = `Doble de ${n}`;
+                        res.answer = n * 2;
+                    } else {
+                        const even = rand(8, 48) * 2;
+                        res.text = `Mitad de ${even}`;
+                        res.answer = even / 2;
+                    }
+                } else if (taskType === 'sum_sub_3d') {
+                    const a = rand(120, 650);
+                    const b = rand(110, 320);
+                    if (Math.random() > 0.5) {
+                        res.text = `${a} + ${b}`;
+                        res.answer = a + b;
+                    } else {
+                        res.text = `${a + b} - ${b}`;
+                        res.answer = a;
+                    }
+                } else if (taskType === 'combo_basic') {
+                    const a = rand(5, 25);
+                    const b = rand(2, 6);
+                    const c = rand(2, 5);
+                    res.text = `${a} + ${b} × ${c}`;
+                    res.answer = a + (b * c);
+                }
+
+            } else {
+                // ==================== PERSONALIZADO (OPERACIONES SEPARADAS) ====================
+                const op = document.getElementById('custom-operation-type').value;
+                const digits = parseInt(document.querySelector('input[name="digits"]:checked').value);
+                const max = Math.pow(10, digits) - 1;
+                const min = Math.pow(10, digits - 1);
+
+                if (op === 'sum_sub') {
+                    const a = rand(min, max);
+                    const b = rand(min, max);
+                    if (Math.random() > 0.5) {
+                        res.text = `${a} + ${b}`;
+                        res.answer = a + b;
+                    } else {
+                        const top = Math.max(a, b);
+                        const bot = Math.min(a, b);
+                        res.text = `${top} - ${bot}`;
+                        res.answer = top - bot;
+                    }
+                } else if (op === 'mult') {
+                    // MULTIPLICACIÓN SEPARADA
+                    const a = rand(min, digits > 2 ? 80 : max);
+                    const b = digits === 1 ? rand(2, 9) : (digits === 2 ? rand(2, 12) : rand(2, 9));
+                    res.text = `${a} × ${b}`;
+                    res.answer = a * b;
+                } else if (op === 'div') {
+                    // DIVISIÓN SEPARADA
+                    const divisor = digits === 1 ? rand(2, 9) : (digits === 2 ? rand(2, 12) : rand(2, 9));
+                    const cociente = rand(min, digits > 2 ? 60 : max);
+                    const dividendo = divisor * cociente;
+                    res.text = `${dividendo} : ${divisor}`;
+                    res.answer = cociente;
+                } else if (op === 'combined') {
+                    const a = rand(10, 30);
+                    const b = rand(2, 9);
+                    const c = rand(2, 8);
+                    res.text = `${a} + ${b} × ${c}`;
+                    res.answer = a + (b * c);
+                } else if (op === 'integers') {
+                    const a = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
+                    const b = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
+                    res.text = `(${a}) + (${b})`;
+                    res.answer = a + b;
+                } else if (op === 'decimals') {
+                    const a = parseFloat((Math.random() * 20).toFixed(1));
+                    const b = parseFloat((Math.random() * 20).toFixed(1));
+                    res.text = `${a} + ${b}`;
+                    res.answer = parseFloat((a + b).toFixed(1));
+                }
+            }
+
+            return res;
+        }
+
+        /* --- ADAPTACIÓN DE TECLADOS PARA MONITOR MDI --- */
+        function adaptKeypadsForMDI() {
+            const hideExtras = (activePreset === 'primaria2' || activePreset === 'primaria3');
+            const op = document.getElementById('custom-operation-type').value;
+
+            const shouldShowDot = (activePreset === 'custom' && op === 'decimals');
+            const shouldShowSign = (activePreset === 'custom' && op === 'integers');
+
+            [1, 2].forEach(p => {
+                const dotBtn = document.getElementById(`extra-key-dot-${p}`);
+                const signBtn = document.getElementById(`extra-key-sign-${p}`);
+                
+                dotBtn.style.visibility = shouldShowDot ? 'visible' : (hideExtras ? 'hidden' : 'visible');
+                signBtn.style.visibility = shouldShowSign ? 'visible' : (hideExtras ? 'hidden' : 'visible');
+            });
+        }
+
+        /* --- ENTRADA TÁCTIL --- */
+        function onScreenKey(player, key) {
+            audio.click();
+            if (isTimedMode && activeTurn !== player) return;
+            if (player === 1 && isP1Locked) return;
+            if (player === 2 && isP2Locked) return;
+
+            let current = player === 1 ? p1Input : p2Input;
+
+            if (key === 'DEL') {
+                current = current.slice(0, -1);
+            } else if (key === '-') {
+                current = current.startsWith('-') ? current.substring(1) : '-' + current;
+            } else if (key === '.') {
+                if (!current.includes('.')) current += key;
+            } else {
+                if (current.length < 7) current += key;
+            }
+
+            if (player === 1) {
+                p1Input = current;
+                updateDisplay(1);
+            } else {
+                p2Input = current;
+                updateDisplay(2);
+            }
+        }
+
+        function updateDisplay(player) {
+            const screen = document.getElementById(`screen-input-${player}`);
+            const val = player === 1 ? p1Input : p2Input;
+            screen.innerText = val === "" ? "?" : val;
+            screen.classList.remove('wrong-shake', 'correct-pulse');
+        }
+
+        /* --- COMPROBACIÓN DE RESPUESTA --- */
+        function submitAnswer(player) {
+            if (isTimedMode && activeTurn !== player) return;
+            if (player === 1 && isP1Locked) return;
+            if (player === 2 && isP2Locked) return;
+
+            const inputStr = player === 1 ? p1Input : p2Input;
+            const userNum = parseFloat(inputStr);
+            const targetAns = player === 1 ? q1.answer : q2.answer;
+            const screen = document.getElementById(`screen-input-${player}`);
+
+            if (isNaN(userNum)) return;
+
+            if (Math.abs(userNum - targetAns) < 0.01) {
+                audio.correct();
+                screen.classList.add('correct-pulse');
+
+                if (isTimedMode) {
+                    const elapsed = (Date.now() - timedStartTime) / 1000;
+                    if (activeTurn === 1) {
+                        isP1Locked = true;
+                        timedT1 = elapsed;
+                        document.getElementById('feedback-p1').innerText = `${timedT1.toFixed(1)} s`;
+                        setTimeout(() => {
+                            isP1Locked = false;
+                            document.getElementById('feedback-p1').innerText = "";
+                            startTimedPlayerTurn(2);
+                        }, 850);
+                    } else {
+                        isP2Locked = true;
+                        timedT2 = elapsed;
+                        document.getElementById('feedback-p2').innerText = `${timedT2.toFixed(1)} s`;
+                        setTimeout(() => {
+                            isP2Locked = false;
+                            document.getElementById('feedback-p2').innerText = "";
+                            showTimedRoundResultModal(timedT1, timedT2);
+                        }, 850);
+                    }
+
+                } else {
+                    if (player === 1) {
+                        isP1Locked = true;
+                        document.getElementById('feedback-p1').innerText = cheerList[Math.floor(Math.random() * cheerList.length)];
+                        triggerTugMotion(-1);
+                        setTimeout(() => {
+                            document.getElementById('feedback-p1').innerText = "";
+                            isP1Locked = false;
+                            loadQuestionForPlayer(1);
+                        }, 600);
+                    } else {
+                        isP2Locked = true;
+                        document.getElementById('feedback-p2').innerText = cheerList[Math.floor(Math.random() * cheerList.length)];
+                        triggerTugMotion(1);
+                        setTimeout(() => {
+                            document.getElementById('feedback-p2').innerText = "";
+                            isP2Locked = false;
+                            loadQuestionForPlayer(2);
+                        }, 600);
+                    }
+                }
+
+            } else {
+                audio.wrong();
+                screen.classList.add('wrong-shake');
+                if (player === 1) {
+                    p1Input = "";
+                    updateDisplay(1);
+                } else {
+                    p2Input = "";
+                    updateDisplay(2);
+                }
+            }
+        }
+
+        /* --- FÍSICA Y MOVIMIENTO DE LA CUERDA --- */
+        function triggerTugMotion(delta) {
+            audio.tug();
+            ropeScore += delta;
+            updateFlagOnRope();
+
+            if (delta < 0) {
+                const charEl = document.getElementById('visual-p1');
+                charEl.classList.add('pulling-left');
+                setTimeout(() => charEl.classList.remove('pulling-left'), 500);
+            } else {
+                const charEl = document.getElementById('visual-p2');
+                charEl.classList.add('pulling-right');
+                setTimeout(() => charEl.classList.remove('pulling-right'), 500);
+            }
+
+            if (Math.abs(ropeScore) >= winGoal) {
+                setTimeout(() => {
+                    handleMatchFinished(ropeScore < 0 ? 1 : 2);
+                }, 350);
+            }
+        }
+
+        function updateFlagOnRope() {
+            const stepPercent = 36 / winGoal;
+            const newPos = 50 + (ropeScore * stepPercent);
+            document.getElementById('rope-flag').style.left = `${Math.min(Math.max(newPos, 8), 92)}%`;
+        }
+
+        /* --- GESTIÓN DE TURNOS POR TIEMPO --- */
+        function startTimedPlayerTurn(player) {
+            activeTurn = player;
+            timedStartTime = Date.now();
+
+            if (player === 1) {
+                document.getElementById('turn-overlay-p1').classList.add('hidden');
+                document.getElementById('turn-overlay-p2').classList.remove('hidden');
+                loadQuestionForPlayer(1);
+            } else {
+                document.getElementById('turn-overlay-p1').classList.remove('hidden');
+                document.getElementById('turn-overlay-p2').classList.add('hidden');
+                loadQuestionForPlayer(2);
+            }
+        }
+
+        function showTimedRoundResultModal(t1, t2) {
+            document.getElementById('modal-round-timed').classList.remove('hidden');
+            document.getElementById('timed-time-p1').innerText = `${t1.toFixed(2)}s`;
+            document.getElementById('timed-time-p2').innerText = `${t2.toFixed(2)}s`;
+
+            const verdict = document.getElementById('timed-round-verdict');
+            if (t1 < t2) {
+                pendingTimedWinner = 1;
+                verdict.innerText = `¡${p1Name} ha sido más veloz!`;
+                verdict.className = "text-2xl font-black text-blue-600 mb-6";
+            } else if (t2 < t1) {
+                pendingTimedWinner = 2;
+                verdict.innerText = `¡${p2Name} ha sido más veloz!`;
+                verdict.className = "text-2xl font-black text-rose-600 mb-6";
+            } else {
+                pendingTimedWinner = 0;
+                verdict.innerText = `¡Empate técnico exacto!`;
+                verdict.className = "text-2xl font-black text-slate-600 mb-6";
+            }
+        }
+
+        function proceedTimedTug() {
+            document.getElementById('modal-round-timed').classList.add('hidden');
+            if (pendingTimedWinner === 1) triggerTugMotion(-1);
+            if (pendingTimedWinner === 2) triggerTugMotion(1);
+
+            if (Math.abs(ropeScore) < winGoal) {
+                setTimeout(() => {
+                    startTimedPlayerTurn(1);
+                }, 400);
+            }
+        }
+
+        /* --- CARGA DE PREGUNTAS --- */
+        function loadQuestionForPlayer(player) {
+            const problem = generateMathProblem();
+            if (player === 1) {
+                q1 = problem;
+                p1Input = "";
+                document.getElementById('question-text-p1').innerText = q1.text;
+                updateDisplay(1);
+            } else {
+                q2 = problem;
+                p2Input = "";
+                document.getElementById('question-text-p2').innerText = q2.text;
+                updateDisplay(2);
+            }
+        }
+
+        /* --- FLUJO DE PARTIDA --- */
+        function syncGameSettings() {
+            winGoal = parseInt(document.getElementById('win-goal').value);
+            isTimedMode = document.getElementById('timed-mode').checked;
+            document.getElementById('game-goal-indicator').innerText = `OBJETIVO: ${winGoal} PUNTOS`;
+        }
+
+        function startStandardGame() {
+            syncGameSettings();
+            p1Name = "EQUIPO AZUL";
+            p2Name = "EQUIPO ROJO";
+            openGameScreen();
+        }
+
+        function openGameScreen() {
+            hideScreens();
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('flex');
+            
+            document.getElementById('name-team-p1').innerText = p1Name;
+            document.getElementById('name-team-p2').innerText = p2Name;
+
+            adaptKeypadsForMDI();
+            setupNewRound();
+        }
+
+        function setupNewRound() {
+            document.getElementById('modal-match-end').classList.add('hidden');
+            ropeScore = 0;
+            updateFlagOnRope();
+            isP1Locked = false;
+            isP2Locked = false;
+
+            if (isTimedMode) {
+                startTimedPlayerTurn(1);
+            } else {
+                document.getElementById('turn-overlay-p1').classList.add('hidden');
+                document.getElementById('turn-overlay-p2').classList.add('hidden');
+                loadQuestionForPlayer(1);
+                loadQuestionForPlayer(2);
+            }
+        }
+
+        function handleMatchFinished(winner) {
+            audio.victory();
+            const modal = document.getElementById('modal-match-end');
+            const winnerName = winner === 1 ? p1Name : p2Name;
+            const detail = document.getElementById('winner-detail');
+            const icon = document.getElementById('winner-trophy-icon');
+            const btnNext = document.getElementById('btn-next-match');
+            const btnRematch = document.getElementById('btn-rematch');
+
+            detail.innerText = `¡${winnerName} se lleva el triunfo!`;
+            detail.className = `text-2xl font-black mb-6 ${winner === 1 ? 'text-blue-600' : 'text-rose-600'}`;
+            icon.innerText = winner === 1 ? '🤖' : '🐉';
+
+            if (tournament.matches.length > 0) {
+                btnRematch.classList.add('hidden');
+                btnNext.classList.remove('hidden');
+                tournament.winnersThisRound.push(winnerName);
+            } else {
+                btnRematch.classList.remove('hidden');
+                btnNext.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        /* --- MÓDULO TORNEO --- */
+        function openTournamentSetup() {
+            syncGameSettings();
+            hideScreens();
+            document.getElementById('tournament-setup').classList.remove('hidden');
+            document.getElementById('new-player-input').focus();
+        }
+
+        function addTournamentPlayer() {
+            const input = document.getElementById('new-player-input');
+            const val = input.value.trim();
+            if (val) {
+                audio.click();
+                tournament.players.push(val);
+                input.value = "";
+                drawTournamentPlayerList();
+            }
+        }
+
+        function removeTournamentPlayer(idx) {
+            tournament.players.splice(idx, 1);
+            drawTournamentPlayerList();
+        }
+
+        function drawTournamentPlayerList() {
+            const list = document.getElementById('players-list');
+            list.innerHTML = "";
+            tournament.players.forEach((name, i) => {
+                list.innerHTML += `
+                    <li class="bg-white p-2 px-3 rounded-xl border border-orange-200 flex justify-between items-center font-bold text-slate-800">
+                        <span><b class="text-orange-500 mr-2">#${i + 1}</b>${name}</span>
+                        <button onclick="removeTournamentPlayer(${i})" class="text-rose-400 hover:text-rose-600"><i class="fas fa-trash-can"></i></button>
+                    </li>
+                `;
+            });
+            document.getElementById('player-count').innerText = tournament.players.length;
+
+            const btn = document.getElementById('btn-launch-tourney');
+            if (tournament.players.length >= 2) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-40', 'cursor-not-allowed');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-40', 'cursor-not-allowed');
+            }
+        }
+
+        function launchTournamentBracket() {
+            audio.click();
+            tournament.players.sort(() => Math.random() - 0.5);
+            tournament.roundNumber = 1;
+            constructBracket(tournament.players);
+            renderBracketScreen();
+        }
+
+        function constructBracket(playersList) {
+            tournament.matches = [];
+            tournament.winnersThisRound = [];
+            tournament.currentMatchIdx = 0;
+
+            for (let i = 0; i < playersList.length; i += 2) {
+                if (i + 1 < playersList.length) {
+                    tournament.matches.push({ p1: playersList[i], p2: playersList[i + 1] });
+                } else {
+                    tournament.winnersThisRound.push(playersList[i]);
+                }
+            }
+        }
+
+        function renderBracketScreen() {
+            hideScreens();
+            document.getElementById('tournament-bracket').classList.remove('hidden');
+
+            const totalInRound = (tournament.matches.length * 2) + tournament.winnersThisRound.length;
+            let roundTitle = `Ronda ${tournament.roundNumber}`;
+            if (totalInRound <= 2) roundTitle = "🏆 GRAN FINAL DEL AULA";
+            else if (totalInRound <= 4) roundTitle = "⚔️ SEMIFINALES";
+            else if (totalInRound <= 8) roundTitle = "🎯 CUARTOS DE FINAL";
+
+            document.getElementById('bracket-round-title').innerText = roundTitle;
+            const container = document.getElementById('bracket-matches-list');
+            container.innerHTML = "";
+
+            tournament.matches.forEach((m, idx) => {
+                const isCurrent = idx === tournament.currentMatchIdx;
+                container.innerHTML += `
+                    <div class="p-4 rounded-2xl border-3 flex justify-between items-center transition ${isCurrent ? 'border-amber-400 bg-amber-50 shadow-md ring-2 ring-amber-300' : 'border-slate-200 bg-slate-50 opacity-70'}">
+                        <div>
+                            <div class="font-black text-blue-700 text-lg"><i class="fas fa-robot mr-2"></i>${m.p1}</div>
+                            <div class="text-xs font-bold text-slate-400 pl-6">VS</div>
+                            <div class="font-black text-rose-700 text-lg"><i class="fas fa-dragon mr-2"></i>${m.p2}</div>
+                        </div>
+                        <div>
+                            ${isCurrent ? '<span class="bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-full animate-bounce">ACTUAL</span>' : '<span class="text-xs font-bold text-slate-400">En espera</span>'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (tournament.winnersThisRound.length > 0 && tournament.currentMatchIdx === 0) {
+                container.innerHTML += `
+                    <div class="col-span-1 md:col-span-2 text-center bg-emerald-50 border border-emerald-300 text-emerald-800 p-2 rounded-xl text-sm font-black">
+                        🌟 Pasa directo a la siguiente fase por sorteo: ${tournament.winnersThisRound.join(', ')}
+                    </div>
+                `;
+            }
+        }
+
+        function playCurrentMatch() {
+            const current = tournament.matches[tournament.currentMatchIdx];
+            p1Name = current.p1;
+            p2Name = current.p2;
+            openGameScreen();
+        }
+
+        function continueTournamentFlow() {
+            document.getElementById('modal-match-end').classList.add('hidden');
+            tournament.currentMatchIdx++;
+
+            if (tournament.currentMatchIdx >= tournament.matches.length) {
+                if (tournament.winnersThisRound.length === 1) {
+                    document.getElementById('champion-player-name').innerText = tournament.winnersThisRound[0];
+                    document.getElementById('modal-champion').classList.remove('hidden');
+                    return;
+                }
+                tournament.roundNumber++;
+                constructBracket([...tournament.winnersThisRound]);
+            }
+
+            renderBracketScreen();
+        }
+
+        /* --- GESTIÓN DE PANTALLAS Y MODALES --- */
+        function hideScreens() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('tournament-setup').classList.add('hidden');
+            document.getElementById('tournament-bracket').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('flex');
+            document.getElementById('modal-match-end').classList.add('hidden');
+            document.getElementById('modal-champion').classList.add('hidden');
+            document.getElementById('modal-confirm-exit').classList.add('hidden');
+            document.getElementById('modal-round-timed').classList.add('hidden');
+        }
+
+        function returnToMenu() {
+            audio.click();
+            tournament.matches = [];
+            tournament.players = [];
+            tournament.winnersThisRound = [];
+            drawTournamentPlayerList();
+            hideScreens();
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        function showExitModal() {
+            audio.click();
+            document.getElementById('modal-confirm-exit').classList.remove('hidden');
+        }
+
+        function hideExitModal() {
+            audio.click();
+            document.getElementById('modal-confirm-exit').classList.add('hidden');
+        }
+
+        /* --- SOPORTE PARA TECLADO FÍSICO DEL PROFESOR/AULA --- */
+        window.addEventListener('keydown', (e) => {
+            if (document.getElementById('game-screen').classList.contains('hidden')) return;
+            
+            const activePlayer = isTimedMode ? activeTurn : 1;
+            if (!isNaN(e.key)) {
+                onScreenKey(activePlayer, e.key);
+            } else if (e.key === 'Backspace') {
+                onScreenKey(activePlayer, 'DEL');
+            } else if (e.key === 'Enter') {
+                submitAnswer(activePlayer);
+            }
+        });
+
+        // Inicio por defecto
+        selectPreset('primaria3');
+    </script>
+</body>
+</html>
