@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TIRA DE LA CUERDA 🏆 Duelo Matemático de Primaria</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Quicksand & Nunito -->
+    <!-- Google Fonts: Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900;1000&display=swap" rel="stylesheet">
     <!-- Iconos FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         * {
-            font-family: 'Nunito', 'Quicksand', sans-serif;
+            font-family: 'Nunito', sans-serif;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-user-select: none;
+            box-sizing: border-box;
         }
 
         body {
@@ -27,7 +28,7 @@
             overflow: hidden;
         }
 
-        /* --- FÍSICA Y DISEÑO DE LA CUERDA --- */
+        /* --- FÍSICA DE LA CUERDA --- */
         .rope-track {
             position: relative;
             height: 32px;
@@ -60,7 +61,7 @@
             font-size: 19px;
         }
 
-        /* --- ANIMACIONES CINÉTICAS --- */
+        /* --- ANIMACIONES Y ESTILOS UI --- */
         .char-icon {
             font-size: 3.5rem;
             filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15));
@@ -81,11 +82,10 @@
             100% { transform: scale(1) translateX(0); }
         }
 
-        /* --- DISPLAY DE PREGUNTAS Y PANTALLAS --- */
         .question-display {
             font-size: 2.85rem;
             font-weight: 1000;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             line-height: 1.1;
         }
 
@@ -109,7 +109,6 @@
             background-color: #ECFDF5 !important;
             color: #047857 !important;
         }
-
         .wrong-shake {
             animation: missShake 0.45s ease-in-out;
             border-color: #EF4444 !important;
@@ -121,7 +120,6 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.07); }
         }
-
         @keyframes missShake {
             0%, 100% { transform: translateX(0); }
             20% { transform: translateX(-12px); }
@@ -146,57 +144,27 @@
             align-items: center;
             justify-content: center;
         }
-
         .key-btn:active {
             transform: translateY(4px);
             border-bottom-width: 2px;
         }
-
-        .key-blue {
-            color: #1E40AF;
-            border-color: #BFDBFE;
-            border-bottom-color: #93C5FD;
-        }
+        .key-blue { color: #1E40AF; border-color: #BFDBFE; border-bottom-color: #93C5FD; }
         .key-blue:active { background-color: #DBEAFE; }
-
-        .key-red {
-            color: #991B1B;
-            border-color: #FECACA;
-            border-bottom-color: #FCA5A5;
-        }
+        .key-red { color: #991B1B; border-color: #FECACA; border-bottom-color: #FCA5A5; }
         .key-red:active { background-color: #FEE2E2; }
-
-        .key-action-ok {
-            background: linear-gradient(180deg, #10B981 0%, #059669 100%);
-            color: #FFFFFF;
-            border-color: #047857;
-            border-bottom-width: 6px;
-        }
+        .key-action-ok { background: linear-gradient(180deg, #10B981 0%, #059669 100%); color: #FFFFFF; border-color: #047857; border-bottom-width: 6px; }
         .key-action-ok:active { background: #059669; }
+        .key-action-del { background-color: #F1F5F9; color: #475569; border-color: #CBD5E1; }
 
-        .key-action-del {
-            background-color: #F1F5F9;
-            color: #475569;
-            border-color: #CBD5E1;
-        }
-
-        .tab-card {
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 3px solid transparent;
-        }
+        .tab-card { cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 3px solid transparent; }
         .tab-card:hover { transform: translateY(-3px); }
-        .tab-card.selected {
-            border-color: #F59E0B;
-            background-color: #FEF3C7;
-            box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.35);
-        }
+        .tab-card.selected { border-color: #F59E0B; background-color: #FEF3C7; box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.35); }
     </style>
 </head>
 <body class="h-screen w-screen flex flex-col items-center justify-between p-2 md:p-4">
 
     <!-- ========================================================
-         PANTALLA DE CONFIGURACIÓN Y MENÚ PRINCIPAL
+         MENÚ PRINCIPAL Y CONFIGURACIÓN
          ======================================================== -->
     <div id="start-screen" class="w-full max-w-5xl bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-amber-300 flex flex-col justify-between my-auto overflow-y-auto max-h-[96vh]">
         <div class="text-center mb-4">
@@ -204,55 +172,48 @@
             <p class="text-slate-600 text-lg md:text-xl font-bold mt-1">Duelo de cálculo mental para Monitor Interactivo y Tablets</p>
         </div>
 
-        <!-- 1. SELECCIÓN DE NIVEL -->
         <div class="mb-4">
             <label class="block text-slate-800 font-black text-lg mb-2 text-center md:text-left">
                 🎯 1. ELIGE EL NIVEL CURRICULAR:
             </label>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <!-- 2.º Primaria -->
                 <div onclick="selectPreset('primaria2')" id="preset-primaria2" class="tab-card bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-300">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">🌱</span>
                         <div>
                             <h3 class="font-black text-emerald-900 text-lg">2.º de Primaria</h3>
-                            <p class="text-xs text-emerald-700 font-semibold leading-snug">Sumas/restas con/sin llevada, series y tablas 2, 5 y 10.</p>
+                            <p class="text-xs text-emerald-700 font-semibold leading-snug">Sumas/restas, series y tablas 2, 5 y 10.</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- 3.º Primaria -->
                 <div onclick="selectPreset('primaria3')" id="preset-primaria3" class="tab-card bg-sky-50 p-4 rounded-2xl border-2 border-sky-300 selected">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">🚀</span>
                         <div>
                             <h3 class="font-black text-sky-900 text-lg">3.º de Primaria</h3>
-                            <p class="text-xs text-sky-700 font-semibold leading-snug">Tablas 1-10, divisiones, dobles/mitades y combinadas.</p>
+                            <p class="text-xs text-sky-700 font-semibold leading-snug">Tablas, divisiones, dobles/mitades y combinadas.</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- Personalizado -->
                 <div onclick="selectPreset('custom')" id="preset-custom" class="tab-card bg-purple-50 p-4 rounded-2xl border-2 border-purple-300">
                     <div class="flex items-center gap-3">
                         <span class="text-3xl">⚙️</span>
                         <div>
                             <h3 class="font-black text-purple-900 text-lg">Personalizado</h3>
-                            <p class="text-xs text-purple-700 font-semibold leading-snug">Operaciones aisladas, cifras a medida, enteros o decimales.</p>
+                            <p class="text-xs text-purple-700 font-semibold leading-snug">Operaciones aisladas, enteros o decimales.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 3.º PRIMARIA: SUBMENÚ MODULAR -->
         <div id="primaria3-modular-panel" class="bg-sky-50/90 border-2 border-sky-300 p-4 rounded-2xl mb-4">
             <label class="block text-sky-950 font-black text-base mb-2">
-                <i class="fas fa-sliders mr-2"></i>Contenido de 3.º de Primaria para esta sesión:
+                <i class="fas fa-sliders mr-2"></i>Contenido de 3.º de Primaria:
             </label>
             <select id="primaria3-submode" class="w-full p-3 rounded-xl border-2 border-sky-300 bg-white text-base font-extrabold text-sky-900 outline-none">
-                <option value="all" selected>🌟 Modo Mixto / Repaso Global de 3.º (Todas las operaciones)</option>
-                <option value="mult_tables">✖️ Solo Tablas de multiplicar (del 1 al 10)</option>
+                <option value="all" selected>🌟 Modo Mixto / Repaso Global de 3.º (Todas intercaladas)</option>
+                <option value="mult_tables">✖️ Solo Tablas de multiplicar (del 2 al 9)</option>
                 <option value="div_exact">➗ Solo Divisiones exactas elementales</option>
                 <option value="double_half">👥 Solo Dobles y Mitades</option>
                 <option value="sum_sub_3d">➕➖ Solo Sumas y Restas (hasta 3 cifras)</option>
@@ -260,7 +221,6 @@
             </select>
         </div>
 
-        <!-- PERSONALIZADO: SUBMENÚ (MULT Y DIV SEPARADAS) -->
         <div id="custom-modular-panel" class="hidden bg-purple-50/90 border-2 border-purple-300 p-4 rounded-2xl mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-purple-950 font-black text-sm mb-1">Operación concreta:</label>
@@ -289,11 +249,10 @@
             </div>
         </div>
 
-        <!-- AJUSTES DE MODALIDAD Y DIFICULTAD MÁQUINA -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
             <div class="bg-amber-50 p-3 rounded-2xl border-2 border-amber-200 flex flex-col justify-between">
                 <span class="font-black text-amber-900 text-xs uppercase mb-1"><i class="fas fa-bullseye mr-1"></i>Puntos para ganar:</span>
-                <select id="win-goal" class="bg-white border-2 border-amber-300 rounded-xl px-2 py-1 font-black text-amber-900 text-sm">
+                <select id="win-goal" class="bg-white border-2 border-amber-300 rounded-xl px-2 py-1 font-black text-amber-900 text-sm outline-none">
                     <option value="2">2 puntos (Rápida)</option>
                     <option value="3" selected>3 puntos (Estándar)</option>
                     <option value="5">5 puntos (Desafío)</option>
@@ -303,10 +262,9 @@
                 <span class="font-black text-blue-950 text-xs uppercase leading-tight"><i class="fas fa-stopwatch mr-1"></i>Modo por turnos<br><span class="text-[10px] text-slate-500 font-semibold">(Solo 1 vs 1 humano)</span></span>
                 <input type="checkbox" id="timed-mode" class="w-6 h-6 accent-blue-600 rounded cursor-pointer">
             </div>
-            <!-- Selector Dificultad IA -->
             <div class="bg-rose-50 p-3 rounded-2xl border-2 border-rose-200 flex flex-col justify-between">
                 <span class="font-black text-rose-900 text-xs uppercase mb-1"><i class="fas fa-microchip mr-1"></i>Dificultad Máquina:</span>
-                <select id="bot-difficulty" class="bg-white border-2 border-rose-300 rounded-xl px-2 py-1 font-black text-rose-900 text-sm">
+                <select id="bot-difficulty" class="bg-white border-2 border-rose-300 rounded-xl px-2 py-1 font-black text-rose-900 text-sm outline-none">
                     <option value="easy">🌱 Aprendiz (Tranquilo)</option>
                     <option value="medium" selected>⚡ Colega (Medio)</option>
                     <option value="hard">🔥 Relámpago (Experto)</option>
@@ -314,22 +272,21 @@
             </div>
         </div>
 
-        <!-- BOTONES DE LANZAMIENTO -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <button onclick="startGameMode('pvp')" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 text-white font-black text-xl py-4 px-4 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2">
+            <button onclick="startGameMode('pvp')" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 text-white font-black text-xl py-4 px-2 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2">
                 <i class="fas fa-user-friends"></i> 1 vs 1 Humano
             </button>
-            <button onclick="startGameMode('pve')" class="bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 text-white font-black text-xl py-4 px-4 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2 ring-4 ring-rose-200">
-                <i class="fas fa-robot"></i> Contra la Máquina
+            <button onclick="startGameMode('pve')" class="bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 text-white font-black text-xl py-4 px-2 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2 ring-4 ring-rose-200">
+                <i class="fas fa-robot"></i> Máquina IA
             </button>
-            <button onclick="openTournamentSetup()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 text-white font-black text-xl py-4 px-4 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2">
+            <button onclick="openTournamentSetup()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 text-white font-black text-xl py-4 px-2 rounded-2xl shadow-xl transform transition active:scale-95 flex items-center justify-center gap-2">
                 <i class="fas fa-trophy"></i> Torneo de Aula
             </button>
         </div>
     </div>
 
     <!-- ========================================================
-         SETUP DEL TORNEO DE AULA
+         SETUP TORNEO DE AULA
          ======================================================== -->
     <div id="tournament-setup" class="hidden w-full max-w-2xl bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-orange-300 text-center my-auto">
         <h2 class="text-3xl font-black text-orange-600 mb-1">🏆 Campeonato de Aula</h2>
@@ -366,61 +323,48 @@
     <div id="tournament-bracket" class="hidden w-full max-w-4xl bg-white p-6 rounded-3xl shadow-2xl border-4 border-indigo-300 text-center my-auto max-h-[96vh] overflow-y-auto">
         <h2 id="bracket-round-title" class="text-3xl font-black text-indigo-700 mb-1">Cuartos de Final</h2>
         <p class="text-slate-500 font-bold mb-5">Enfrentamiento activo</p>
-
         <div id="bracket-matches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-left"></div>
-
         <button onclick="playCurrentMatch()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-2xl py-4 px-10 rounded-2xl shadow-xl animate-pulse active:scale-95">
             ¡Comenzar Duelo! <i class="fas fa-play ml-2"></i>
         </button>
     </div>
 
     <!-- ========================================================
-         PANTALLA DE JUEGO (MDI TÁCTIL DUAL)
+         PANTALLA DE JUEGO (MDI TÁCTIL)
          ======================================================== -->
     <div id="game-screen" class="hidden w-full h-full max-w-7xl flex-col justify-between py-1">
         
-        <!-- CABECERA: MARCADORES Y CUERDA -->
         <div class="bg-white/95 rounded-2xl shadow-lg p-3 md:p-4 mb-2 border-2 border-amber-200 relative shrink-0">
             <button onclick="showExitModal()" class="absolute top-2 right-2 text-slate-400 hover:text-rose-500 text-2xl p-1 transition" title="Salir al menú">
                 <i class="fas fa-circle-xmark"></i>
             </button>
 
             <div class="flex justify-between items-center px-4 md:px-12 mb-1">
-                <!-- Lado Izquierdo (Azul) -->
                 <div id="visual-p1" class="flex items-center gap-3 w-1/3">
-                    <div id="avatar-p1" class="char-icon text-blue-600">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
+                    <div id="avatar-p1" class="char-icon text-blue-600"><i class="fas fa-user-graduate"></i></div>
                     <div class="text-left overflow-hidden">
                         <span class="text-xs font-black uppercase text-blue-500 tracking-wider">Equipo 1</span>
                         <h2 id="name-team-p1" class="text-xl md:text-3xl font-black text-blue-900 truncate">AZUL</h2>
                     </div>
                 </div>
 
-                <!-- Meta Central -->
                 <div class="text-center px-2">
                     <span id="game-goal-indicator" class="bg-amber-100 text-amber-900 text-xs md:text-sm font-black px-3 py-1 rounded-full border border-amber-300">
                         OBJETIVO: 3 PUNTOS
                     </span>
                 </div>
 
-                <!-- Lado Derecho (Rojo / Máquina) -->
                 <div id="visual-p2" class="flex items-center justify-end gap-3 w-1/3 text-right">
                     <div class="overflow-hidden">
                         <span id="label-role-p2" class="text-xs font-black uppercase text-rose-500 tracking-wider">Equipo 2</span>
                         <h2 id="name-team-p2" class="text-xl md:text-3xl font-black text-rose-900 truncate">ROJO</h2>
                     </div>
-                    <div id="avatar-p2" class="char-icon text-rose-600">
-                        <i class="fas fa-dragon"></i>
-                    </div>
+                    <div id="avatar-p2" class="char-icon text-rose-600"><i class="fas fa-dragon"></i></div>
                 </div>
             </div>
 
-            <!-- Cuerda y Pañuelo -->
             <div class="relative w-full px-6 md:px-12 mt-2">
-                <div class="rope-track">
-                    <div id="rope-flag" class="flag-knot"></div>
-                </div>
+                <div class="rope-track"><div id="rope-flag" class="flag-knot"></div></div>
                 <div class="flex justify-between text-xs font-black text-slate-400 mt-1 px-1">
                     <span class="text-blue-600">⬅ TIRA EL EQUIPO AZUL</span>
                     <span class="text-amber-800">PUNTO MEDIO</span>
@@ -429,12 +373,10 @@
             </div>
         </div>
 
-        <!-- ÁREA DE JUEGO SIMULTÁNEA -->
         <div class="flex-1 grid grid-cols-2 gap-3 md:gap-6 items-center">
             
-            <!-- PANEL JUGADOR 1 (AZUL / HUMANO) -->
+            <!-- PANEL JUGADOR 1 -->
             <div class="h-full max-h-[580px] bg-blue-50/90 border-4 border-blue-200 rounded-3xl p-3 md:p-4 flex flex-col justify-between shadow-lg relative">
-                <!-- Overlay Turnos -->
                 <div id="turn-overlay-p1" class="hidden absolute inset-0 bg-white/85 backdrop-blur-sm rounded-3xl z-30 flex flex-col items-center justify-center">
                     <i class="fas fa-hourglass-start text-5xl text-blue-400 animate-spin mb-3"></i>
                     <p class="text-2xl font-black text-blue-900">Esperando turno...</p>
@@ -449,38 +391,32 @@
                     <div id="screen-input-p1" class="input-display-screen text-slate-800 mb-2">?</div>
                 </div>
 
-                <!-- Teclado Táctil J1 -->
                 <div class="grid grid-cols-3 gap-2">
                     <button onclick="onScreenKey(1, '7')" class="key-btn key-blue">7</button>
                     <button onclick="onScreenKey(1, '8')" class="key-btn key-blue">8</button>
                     <button onclick="onScreenKey(1, '9')" class="key-btn key-blue">9</button>
-
                     <button onclick="onScreenKey(1, '4')" class="key-btn key-blue">4</button>
                     <button onclick="onScreenKey(1, '5')" class="key-btn key-blue">5</button>
                     <button onclick="onScreenKey(1, '6')" class="key-btn key-blue">6</button>
-
                     <button onclick="onScreenKey(1, '1')" class="key-btn key-blue">1</button>
                     <button onclick="onScreenKey(1, '2')" class="key-btn key-blue">2</button>
                     <button onclick="onScreenKey(1, '3')" class="key-btn key-blue">3</button>
-
                     <button id="extra-key-sign-1" onclick="onScreenKey(1, '-')" class="key-btn key-blue text-xl">+/-</button>
                     <button onclick="onScreenKey(1, '0')" class="key-btn key-blue">0</button>
                     <button id="extra-key-dot-1" onclick="onScreenKey(1, '.')" class="key-btn key-blue text-xl">.</button>
-
                     <button onclick="onScreenKey(1, 'DEL')" class="key-btn key-action-del text-xl"><i class="fas fa-delete-left"></i></button>
                     <button onclick="submitAnswer(1)" class="key-btn key-action-ok col-span-2 text-2xl font-black">OK <i class="fas fa-check ml-1"></i></button>
                 </div>
             </div>
 
-            <!-- PANEL JUGADOR 2 (ROJO / O MÁQUINA) -->
+            <!-- PANEL JUGADOR 2 / MÁQUINA -->
             <div class="h-full max-h-[580px] bg-rose-50/90 border-4 border-rose-200 rounded-3xl p-3 md:p-4 flex flex-col justify-between shadow-lg relative">
-                <!-- Overlay Turnos -->
                 <div id="turn-overlay-p2" class="hidden absolute inset-0 bg-white/85 backdrop-blur-sm rounded-3xl z-30 flex flex-col items-center justify-center">
                     <i class="fas fa-hourglass-start text-5xl text-rose-400 animate-spin mb-3"></i>
                     <p class="text-2xl font-black text-rose-900">Esperando turno...</p>
                 </div>
 
-                <!-- Overlay Bot Pensando (Solo Modo Máquina) -->
+                <!-- Overlay Bot Pensando -->
                 <div id="bot-status-overlay" class="hidden absolute inset-0 bg-rose-900/5 backdrop-blur-[1px] rounded-3xl z-20 flex-col items-center justify-end pb-8 pointer-events-none">
                     <div class="bg-rose-600 text-white px-5 py-2 rounded-full font-black text-sm shadow-md animate-pulse">
                         <i class="fas fa-brain mr-1"></i> ROBOT CALCULANDO...
@@ -496,24 +432,19 @@
                     <div id="screen-input-p2" class="input-display-screen text-slate-800 mb-2">?</div>
                 </div>
 
-                <!-- Teclado Táctil J2 -->
                 <div id="keypad-p2-container" class="grid grid-cols-3 gap-2">
                     <button onclick="onScreenKey(2, '7')" class="key-btn key-red">7</button>
                     <button onclick="onScreenKey(2, '8')" class="key-btn key-red">8</button>
                     <button onclick="onScreenKey(2, '9')" class="key-btn key-red">9</button>
-
                     <button onclick="onScreenKey(2, '4')" class="key-btn key-red">4</button>
                     <button onclick="onScreenKey(2, '5')" class="key-btn key-red">5</button>
                     <button onclick="onScreenKey(2, '6')" class="key-btn key-red">6</button>
-
                     <button onclick="onScreenKey(2, '1')" class="key-btn key-red">1</button>
                     <button onclick="onScreenKey(2, '2')" class="key-btn key-red">2</button>
                     <button onclick="onScreenKey(2, '3')" class="key-btn key-red">3</button>
-
                     <button id="extra-key-sign-2" onclick="onScreenKey(2, '-')" class="key-btn key-red text-xl">+/-</button>
                     <button onclick="onScreenKey(2, '0')" class="key-btn key-red">0</button>
                     <button id="extra-key-dot-2" onclick="onScreenKey(2, '.')" class="key-btn key-red text-xl">.</button>
-
                     <button onclick="onScreenKey(2, 'DEL')" class="key-btn key-action-del text-xl"><i class="fas fa-delete-left"></i></button>
                     <button onclick="submitAnswer(2)" class="key-btn key-action-ok col-span-2 text-2xl font-black">OK <i class="fas fa-check ml-1"></i></button>
                 </div>
@@ -529,8 +460,7 @@
         <div class="bg-white rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl border-4 border-amber-400">
             <div id="winner-trophy-icon" class="text-7xl mb-2">🏆</div>
             <h2 id="winner-headline" class="text-4xl font-black text-slate-800 mb-2">¡VICTORIA FINAL!</h2>
-            <p id="winner-detail" class="text-2xl font-extrabold text-blue-600 mb-6">El Equipo Azul se lleva el tirón decisivo</p>
-
+            <p id="winner-detail" class="text-2xl font-extrabold text-blue-600 mb-6">El Equipo Azul gana el duelo</p>
             <div class="flex flex-col gap-3">
                 <button id="btn-next-match" onclick="continueTournamentFlow()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl py-4 rounded-2xl shadow-lg active:scale-95">
                     Siguiente Enfrentamiento <i class="fas fa-arrow-right ml-2"></i>
@@ -550,7 +480,6 @@
             <span class="text-8xl animate-bounce inline-block mb-2">👑</span>
             <h2 class="text-4xl font-black text-amber-900 mb-1">¡CAMPEÓN DEL TORNEO!</h2>
             <p id="champion-player-name" class="text-4xl font-black text-amber-600 my-4 uppercase tracking-wider">EQUIPO</p>
-            <p class="text-slate-700 font-bold mb-6">¡Enhorabuena por vuestra rapidez y cálculo mental!</p>
             <button onclick="returnToMenu()" class="bg-amber-500 hover:bg-amber-600 text-white font-black text-2xl py-4 px-10 rounded-2xl shadow-xl active:scale-95">
                 Finalizar Campeonato
             </button>
@@ -561,7 +490,7 @@
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-2 border-slate-300">
             <i class="fas fa-circle-question text-5xl text-amber-500 mb-3"></i>
             <h3 class="text-2xl font-black text-slate-800 mb-2">¿Salir de la partida?</h3>
-            <p class="text-slate-500 font-bold mb-6 text-sm">Se cancelará el progreso y volverás al menú.</p>
+            <p class="text-slate-500 font-bold mb-6 text-sm">Se cancelará el progreso actual.</p>
             <div class="flex gap-3 justify-center">
                 <button onclick="hideExitModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 font-extrabold text-slate-700 py-3 rounded-xl">Seguir</button>
                 <button onclick="returnToMenu()" class="flex-1 bg-rose-500 hover:bg-rose-600 font-extrabold text-white py-3 rounded-xl">Salir</button>
@@ -590,12 +519,9 @@
     </div>
 
     <!-- ========================================================
-         SCRIPTING: MOTOR DE JUEGO, SONIDO E INTELIGENCIA ARTIFICIAL
+         SCRIPTING: MOTOR DE ESTADOS, SONIDO E IA
          ======================================================== -->
     <script>
-        /**
-         * SINTETIZADOR PROCEDURAL (Web Audio API)
-         */
         class SoundEngine {
             constructor() { this.ctx = null; }
             init() {
@@ -614,10 +540,8 @@
                     osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
                     gain.gain.setValueAtTime(startVol, this.ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(endVol, this.ctx.currentTime + duration);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(); osc.stop(this.ctx.currentTime + duration);
                 } catch(e) {}
             }
             click() { this.playTone(520, 'sine', 0.04, 0.12); }
@@ -631,10 +555,8 @@
                     osc.frequency.setValueAtTime(f, now + i * 0.05);
                     gain.gain.setValueAtTime(0.16, now + i * 0.05);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.15);
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-                    osc.start(now + i * 0.05);
-                    osc.stop(now + i * 0.05 + 0.16);
+                    osc.connect(gain); gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.05); osc.stop(now + i * 0.05 + 0.16);
                 });
             }
             wrong() { this.playTone(190, 'sawtooth', 0.24, 0.22); }
@@ -648,7 +570,8 @@
         }
         const audio = new SoundEngine();
 
-        /* --- VARIABLES DE ESTADO --- */
+        /* --- CONTROL DE ESTADO ESTRICTO --- */
+        let gameState = 'MENU'; // 'MENU' | 'PLAYING' | 'FINISHED'
         let activePreset = 'primaria3';
         let winGoal = 3;
         let isTimedMode = false;
@@ -659,46 +582,25 @@
         let p1Input = "", p2Input = "";
         let q1 = {}, q2 = {};
         let isP1Locked = false, isP2Locked = false;
-
-        let p1Name = "EQUIPO AZUL", p2Name = "EQUIPO ROJO";
         let activeTurn = 1; 
         let timedStartTime = 0;
         let timedT1 = 0, timedT2 = 0;
         let pendingTimedWinner = 0;
+        let p1Name = "EQUIPO AZUL", p2Name = "EQUIPO ROJO";
 
-        let tournament = {
-            players: [],
-            matches: [],
-            currentMatchIdx: 0,
-            winnersThisRound: [],
-            roundNumber: 1
-        };
-
+        let tournament = { players: [], matches: [], currentMatchIdx: 0, winnersThisRound: [], roundNumber: 1 };
         const cheerList = ["¡GENIAL!", "¡A TOPE!", "¡QUÉ TIRO!", "¡VAMOS!", "¡EXCELENTE!"];
 
-        /* --- PREAJUSTES --- */
         function selectPreset(preset) {
             activePreset = preset;
             document.querySelectorAll('.tab-card').forEach(el => el.classList.remove('selected'));
             document.getElementById(`preset-${preset}`).classList.add('selected');
-            
-            const p3Panel = document.getElementById('primaria3-modular-panel');
-            const customPanel = document.getElementById('custom-modular-panel');
-
-            if (preset === 'primaria3') {
-                p3Panel.classList.remove('hidden');
-                customPanel.classList.add('hidden');
-            } else if (preset === 'custom') {
-                p3Panel.classList.add('hidden');
-                customPanel.classList.remove('hidden');
-            } else {
-                p3Panel.classList.add('hidden');
-                customPanel.classList.add('hidden');
-            }
+            document.getElementById('primaria3-modular-panel').classList.toggle('hidden', preset !== 'primaria3');
+            document.getElementById('custom-modular-panel').classList.toggle('hidden', preset !== 'custom');
             audio.click();
         }
 
-        /* --- GENERADOR MATEMÁTICO DIDÁCTICO --- */
+        /* --- GENERADOR MATEMÁTICO (Evita que el resultado copie a un operando) --- */
         function generateMathProblem() {
             let res = { text: "", answer: 0 };
             const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -708,19 +610,16 @@
                 const mode = pick(['sum_sub_100', 'sum_sub_1000', 'tables_easy', 'series']);
                 if (mode === 'sum_sub_100') {
                     if (Math.random() > 0.45) {
-                        const a = rand(15, 65); const b = rand(11, 34);
-                        res.text = `${a} + ${b}`; res.answer = a + b;
+                        const a = rand(15, 65); const b = rand(11, 34); res.text = `${a} + ${b}`; res.answer = a + b;
                     } else {
-                        const a = rand(20, 99); const b = rand(10, a - 1);
-                        res.text = `${a} - ${b}`; res.answer = a - b;
+                        const a = rand(20, 99); const b = rand(10, a - 1); res.text = `${a} - ${b}`; res.answer = a - b;
                     }
                 } else if (mode === 'sum_sub_1000') {
                     const c1 = rand(1, 6) * 100; const c2 = rand(1, 3) * 100;
                     if (Math.random() > 0.5) { res.text = `${c1} + ${c2}`; res.answer = c1 + c2; }
                     else { res.text = `${c1 + c2} - ${c2}`; res.answer = c1; }
                 } else if (mode === 'tables_easy') {
-                    const t = pick([2, 5, 10]); const n = rand(1, 10);
-                    res.text = `${t} × ${n}`; res.answer = t * n;
+                    const t = pick([2, 5, 10]); const n = rand(2, 10); res.text = `${t} × ${n}`; res.answer = t * n;
                 } else {
                     const step = pick([2, 5, 10]); const base = rand(2, 6) * step;
                     res.text = `${base}, ${base + step}, ... ?`; res.answer = base + (step * 2);
@@ -728,23 +627,16 @@
 
             } else if (activePreset === 'primaria3') {
                 const submode = document.getElementById('primaria3-submode').value;
-                let taskType = submode;
-                if (submode === 'all') {
-                    taskType = pick(['mult_tables', 'div_exact', 'double_half', 'sum_sub_3d', 'combo_basic']);
-                }
+                let taskType = submode === 'all' ? pick(['mult_tables', 'div_exact', 'double_half', 'sum_sub_3d', 'combo_basic']) : submode;
 
                 if (taskType === 'mult_tables') {
-                    const a = rand(2, 9); const b = rand(2, 9);
-                    res.text = `${a} × ${b}`; res.answer = a * b;
+                    const a = rand(2, 9); const b = rand(2, 9); res.text = `${a} × ${b}`; res.answer = a * b;
                 } else if (taskType === 'div_exact') {
                     const divisor = rand(2, 9); const cociente = rand(2, 9);
-                    res.text = `${divisor * cociente} : ${divisor}`; res.answer = cociente;
+                    res.text = `${divisor * cociente} ÷ ${divisor}`; res.answer = cociente;
                 } else if (taskType === 'double_half') {
-                    if (Math.random() > 0.5) {
-                        const n = rand(12, 49); res.text = `Doble de ${n}`; res.answer = n * 2;
-                    } else {
-                        const even = rand(8, 48) * 2; res.text = `Mitad de ${even}`; res.answer = even / 2;
-                    }
+                    if (Math.random() > 0.5) { const n = rand(12, 49); res.text = `Doble de ${n}`; res.answer = n * 2; }
+                    else { const even = rand(8, 48) * 2; res.text = `Mitad de ${even}`; res.answer = even / 2; }
                 } else if (taskType === 'sum_sub_3d') {
                     const a = rand(120, 650); const b = rand(110, 320);
                     if (Math.random() > 0.5) { res.text = `${a} + ${b}`; res.answer = a + b; }
@@ -757,79 +649,65 @@
             } else {
                 const op = document.getElementById('custom-operation-type').value;
                 const digits = parseInt(document.querySelector('input[name="digits"]:checked').value);
-                const max = Math.pow(10, digits) - 1;
-                const min = Math.pow(10, digits - 1);
+                const max = Math.pow(10, digits) - 1; 
+                const min = digits === 1 ? 2 : Math.pow(10, digits - 1); // min 2 para evitar identidades *1 o /1
 
                 if (op === 'sum_sub') {
                     const a = rand(min, max); const b = rand(min, max);
                     if (Math.random() > 0.5) { res.text = `${a} + ${b}`; res.answer = a + b; }
-                    else { const top = Math.max(a, b); const bot = Math.min(a, b); res.text = `${top} - ${bot}`; res.answer = top - bot; }
+                    else { const top = Math.max(a, b); const bot = Math.min(a, b); res.text = `${top + bot} - ${bot}`; res.answer = top; }
                 } else if (op === 'mult') {
-                    const a = rand(min, digits > 2 ? 80 : max);
-                    const b = digits === 1 ? rand(2, 9) : (digits === 2 ? rand(2, 12) : rand(2, 9));
+                    const a = rand(min, digits > 2 ? 80 : max); const b = rand(2, digits === 1 ? 9 : 12);
                     res.text = `${a} × ${b}`; res.answer = a * b;
                 } else if (op === 'div') {
-                    const divisor = digits === 1 ? rand(2, 9) : (digits === 2 ? rand(2, 12) : rand(2, 9));
-                    const cociente = rand(min, digits > 2 ? 60 : max);
-                    res.text = `${divisor * cociente} : ${divisor}`; res.answer = cociente;
+                    const divisor = rand(2, digits === 1 ? 9 : 12); const cociente = rand(2, digits > 2 ? 60 : max);
+                    res.text = `${divisor * cociente} ÷ ${divisor}`; res.answer = cociente;
                 } else if (op === 'combined') {
                     const a = rand(10, 30); const b = rand(2, 9); const c = rand(2, 8);
                     res.text = `${a} + ${b} × ${c}`; res.answer = a + (b * c);
                 } else if (op === 'integers') {
-                    const a = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
-                    const b = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
+                    const a = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1); const b = rand(1, 15) * (Math.random() > 0.5 ? 1 : -1);
                     res.text = `(${a}) + (${b})`; res.answer = a + b;
                 } else if (op === 'decimals') {
-                    const a = parseFloat((Math.random() * 20).toFixed(1));
-                    const b = parseFloat((Math.random() * 20).toFixed(1));
+                    const a = parseFloat((Math.random() * 20).toFixed(1)); const b = parseFloat((Math.random() * 20).toFixed(1));
                     res.text = `${a} + ${b}`; res.answer = parseFloat((a + b).toFixed(1));
                 }
             }
             return res;
         }
 
-        /* --- ADAPTACIÓN DE TECLADOS PARA MONITOR TÁCTIL --- */
+        /* --- UI Y TECLADO TÁCTIL --- */
         function adaptKeypadsForMDI() {
             const hideExtras = (activePreset === 'primaria2' || activePreset === 'primaria3');
             const op = document.getElementById('custom-operation-type').value;
-
             const shouldShowDot = (activePreset === 'custom' && op === 'decimals');
             const shouldShowSign = (activePreset === 'custom' && op === 'integers');
 
             [1, 2].forEach(p => {
-                const dotBtn = document.getElementById(`extra-key-dot-${p}`);
-                const signBtn = document.getElementById(`extra-key-sign-${p}`);
-                
-                dotBtn.style.visibility = shouldShowDot ? 'visible' : (hideExtras ? 'hidden' : 'visible');
-                signBtn.style.visibility = shouldShowSign ? 'visible' : (hideExtras ? 'hidden' : 'visible');
+                document.getElementById(`extra-key-dot-${p}`).style.visibility = shouldShowDot ? 'visible' : (hideExtras ? 'hidden' : 'visible');
+                document.getElementById(`extra-key-sign-${p}`).style.visibility = shouldShowSign ? 'visible' : (hideExtras ? 'hidden' : 'visible');
             });
 
-            // Ajuste específico de la máquina
             const botOverlay = document.getElementById('bot-status-overlay');
             const keypadP2 = document.getElementById('keypad-p2-container');
             if (isBotOpponent) {
-                botOverlay.classList.remove('hidden');
-                botOverlay.classList.add('flex');
-                keypadP2.style.opacity = '0.35';
-                keypadP2.style.pointerEvents = 'none';
+                botOverlay.classList.remove('hidden'); botOverlay.classList.add('flex');
+                keypadP2.style.opacity = '0.35'; keypadP2.style.pointerEvents = 'none';
             } else {
-                botOverlay.classList.add('hidden');
-                botOverlay.classList.remove('flex');
-                keypadP2.style.opacity = '1';
-                keypadP2.style.pointerEvents = 'auto';
+                botOverlay.classList.add('hidden'); botOverlay.classList.remove('flex');
+                keypadP2.style.opacity = '1'; keypadP2.style.pointerEvents = 'auto';
             }
         }
 
-        /* --- ENTRADA TÁCTIL --- */
         function onScreenKey(player, key) {
-            if (isBotOpponent && player === 2) return; // Bloqueado para la máquina
+            if (gameState !== 'PLAYING') return;
+            if (isBotOpponent && player === 2) return; 
             audio.click();
             if (isTimedMode && activeTurn !== player) return;
             if (player === 1 && isP1Locked) return;
             if (player === 2 && isP2Locked) return;
 
             let current = player === 1 ? p1Input : p2Input;
-
             if (key === 'DEL') current = current.slice(0, -1);
             else if (key === '-') current = current.startsWith('-') ? current.substring(1) : '-' + current;
             else if (key === '.') { if (!current.includes('.')) current += key; }
@@ -846,8 +724,9 @@
             screen.classList.remove('wrong-shake', 'correct-pulse');
         }
 
-        /* --- COMPROBACIÓN DE RESPUESTAS --- */
+        /* --- LÓGICA DE VALIDACIÓN --- */
         function submitAnswer(player) {
+            if (gameState !== 'PLAYING') return;
             if (isTimedMode && activeTurn !== player) return;
             if (player === 1 && isP1Locked) return;
             if (player === 2 && isP2Locked) return;
@@ -866,47 +745,47 @@
                 if (isTimedMode) {
                     const elapsed = (Date.now() - timedStartTime) / 1000;
                     if (activeTurn === 1) {
-                        isP1Locked = true;
-                        timedT1 = elapsed;
+                        isP1Locked = true; timedT1 = elapsed;
                         document.getElementById('feedback-p1').innerText = `${timedT1.toFixed(1)} s`;
                         setTimeout(() => {
-                            isP1Locked = false;
-                            document.getElementById('feedback-p1').innerText = "";
+                            if (gameState !== 'PLAYING') return;
+                            isP1Locked = false; document.getElementById('feedback-p1').innerText = "";
                             startTimedPlayerTurn(2);
                         }, 850);
                     } else {
-                        isP2Locked = true;
-                        timedT2 = elapsed;
+                        isP2Locked = true; timedT2 = elapsed;
                         document.getElementById('feedback-p2').innerText = `${timedT2.toFixed(1)} s`;
                         setTimeout(() => {
-                            isP2Locked = false;
-                            document.getElementById('feedback-p2').innerText = "";
+                            if (gameState !== 'PLAYING') return;
+                            isP2Locked = false; document.getElementById('feedback-p2').innerText = "";
                             showTimedRoundResultModal(timedT1, timedT2);
                         }, 850);
                     }
-
                 } else {
                     if (player === 1) {
                         isP1Locked = true;
                         document.getElementById('feedback-p1').innerText = cheerList[Math.floor(Math.random() * cheerList.length)];
                         triggerTugMotion(-1);
-                        setTimeout(() => {
-                            document.getElementById('feedback-p1').innerText = "";
-                            isP1Locked = false;
-                            loadQuestionForPlayer(1);
-                        }, 600);
+                        if (gameState === 'PLAYING') {
+                            setTimeout(() => {
+                                if (gameState !== 'PLAYING') return;
+                                document.getElementById('feedback-p1').innerText = "";
+                                isP1Locked = false; loadQuestionForPlayer(1);
+                            }, 600);
+                        }
                     } else {
                         isP2Locked = true;
                         document.getElementById('feedback-p2').innerText = isBotOpponent ? "¡BIP BOP!" : cheerList[Math.floor(Math.random() * cheerList.length)];
                         triggerTugMotion(1);
-                        setTimeout(() => {
-                            document.getElementById('feedback-p2').innerText = "";
-                            isP2Locked = false;
-                            loadQuestionForPlayer(2);
-                        }, 600);
+                        if (gameState === 'PLAYING') {
+                            setTimeout(() => {
+                                if (gameState !== 'PLAYING') return;
+                                document.getElementById('feedback-p2').innerText = "";
+                                isP2Locked = false; loadQuestionForPlayer(2);
+                            }, 600);
+                        }
                     }
                 }
-
             } else {
                 audio.wrong();
                 screen.classList.add('wrong-shake');
@@ -915,147 +794,97 @@
             }
         }
 
-        /* --- INTELIGENCIA ARTIFICIAL (RIVAL VIRTUAL) --- */
+        /* --- INTELIGENCIA ARTIFICIAL SEGURA --- */
         function triggerBotDecision() {
-            if (!isBotOpponent || Math.abs(ropeScore) >= winGoal) return;
+            if (gameState !== 'PLAYING' || !isBotOpponent) return;
             clearTimeout(botTimer);
 
             const difficulty = document.getElementById('bot-difficulty').value;
-            let thinkTime = 4000;
-            let failProb = 0.15;
+            let thinkTime = difficulty === 'easy' ? (Math.random() * 2500 + 4500) : (difficulty === 'medium' ? (Math.random() * 2000 + 3000) : (Math.random() * 1200 + 1800));
+            let failProb = difficulty === 'easy' ? 0.25 : (difficulty === 'medium' ? 0.12 : 0.04);
 
-            if (difficulty === 'easy') {
-                thinkTime = Math.random() * 2500 + 4500; // 4.5s a 7s
-                failProb = 0.25;
-            } else if (difficulty === 'medium') {
-                thinkTime = Math.random() * 2000 + 3000; // 3s a 5s
-                failProb = 0.12;
-            } else {
-                thinkTime = Math.random() * 1200 + 1800; // 1.8s a 3s
-                failProb = 0.04;
-            }
-
-            // Simulación de "tecleo" del robot
             botTimer = setTimeout(() => {
-                if (!isBotOpponent || isP2Locked) return;
+                if (gameState !== 'PLAYING' || !isBotOpponent || isP2Locked) return;
 
-                const willFail = Math.random() < failProb;
-                if (willFail) {
-                    // Fallo simulado
+                if (Math.random() < failProb) {
                     p2Input = (q2.answer + (Math.random() > 0.5 ? 2 : -1)).toString();
-                    updateDisplay(2);
-                    submitAnswer(2);
-                    // Reintento tras equivocarse
+                    updateDisplay(2); submitAnswer(2);
                     botTimer = setTimeout(() => {
-                        if (!isBotOpponent) return;
-                        p2Input = q2.answer.toString();
-                        updateDisplay(2);
-                        submitAnswer(2);
+                        if (gameState !== 'PLAYING' || !isBotOpponent || isP2Locked) return;
+                        p2Input = q2.answer.toString(); updateDisplay(2); submitAnswer(2);
                     }, 1400);
                 } else {
-                    // Acierto
-                    p2Input = q2.answer.toString();
-                    updateDisplay(2);
-                    submitAnswer(2);
+                    p2Input = q2.answer.toString(); updateDisplay(2); submitAnswer(2);
                 }
             }, thinkTime);
         }
 
-        /* --- FÍSICA Y MOVIMIENTO DE LA CUERDA --- */
+        /* --- FÍSICA Y CONTROL DE VICTORIA --- */
         function triggerTugMotion(delta) {
+            if (gameState !== 'PLAYING') return;
             audio.tug();
             ropeScore += delta;
             updateFlagOnRope();
 
             if (delta < 0) {
-                const charEl = document.getElementById('visual-p1');
-                charEl.classList.add('pulling-left');
+                const charEl = document.getElementById('visual-p1'); charEl.classList.add('pulling-left');
                 setTimeout(() => charEl.classList.remove('pulling-left'), 500);
             } else {
-                const charEl = document.getElementById('visual-p2');
-                charEl.classList.add('pulling-right');
+                const charEl = document.getElementById('visual-p2'); charEl.classList.add('pulling-right');
                 setTimeout(() => charEl.classList.remove('pulling-right'), 500);
             }
 
             if (Math.abs(ropeScore) >= winGoal) {
+                gameState = 'FINISHED'; // Congela el estado del juego inmediatamente
                 clearTimeout(botTimer);
-                setTimeout(() => {
-                    handleMatchFinished(ropeScore < 0 ? 1 : 2);
-                }, 350);
+                setTimeout(() => { handleMatchFinished(ropeScore < 0 ? 1 : 2); }, 350);
             }
         }
 
         function updateFlagOnRope() {
             const stepPercent = 36 / winGoal;
-            const newPos = 50 + (ropeScore * stepPercent);
-            document.getElementById('rope-flag').style.left = `${Math.min(Math.max(newPos, 8), 92)}%`;
+            document.getElementById('rope-flag').style.left = `${Math.min(Math.max(50 + (ropeScore * stepPercent), 8), 92)}%`;
         }
 
-        /* --- TURNOS POR TIEMPO --- */
+        /* --- MODOS Y TURNOS --- */
         function startTimedPlayerTurn(player) {
-            activeTurn = player;
-            timedStartTime = Date.now();
-
+            activeTurn = player; timedStartTime = Date.now();
             if (player === 1) {
-                document.getElementById('turn-overlay-p1').classList.add('hidden');
-                document.getElementById('turn-overlay-p2').classList.remove('hidden');
+                document.getElementById('turn-overlay-p1').classList.add('hidden'); document.getElementById('turn-overlay-p2').classList.remove('hidden');
                 loadQuestionForPlayer(1);
             } else {
-                document.getElementById('turn-overlay-p1').classList.remove('hidden');
-                document.getElementById('turn-overlay-p2').classList.add('hidden');
+                document.getElementById('turn-overlay-p1').classList.remove('hidden'); document.getElementById('turn-overlay-p2').classList.add('hidden');
                 loadQuestionForPlayer(2);
             }
         }
 
         function showTimedRoundResultModal(t1, t2) {
             document.getElementById('modal-round-timed').classList.remove('hidden');
-            document.getElementById('timed-time-p1').innerText = `${t1.toFixed(2)}s`;
-            document.getElementById('timed-time-p2').innerText = `${t2.toFixed(2)}s`;
-
+            document.getElementById('timed-time-p1').innerText = `${t1.toFixed(2)}s`; document.getElementById('timed-time-p2').innerText = `${t2.toFixed(2)}s`;
             const verdict = document.getElementById('timed-round-verdict');
-            if (t1 < t2) {
-                pendingTimedWinner = 1;
-                verdict.innerText = `¡${p1Name} ha sido más veloz!`;
-                verdict.className = "text-2xl font-black text-blue-600 mb-6";
-            } else if (t2 < t1) {
-                pendingTimedWinner = 2;
-                verdict.innerText = `¡${p2Name} ha sido más veloz!`;
-                verdict.className = "text-2xl font-black text-rose-600 mb-6";
-            } else {
-                pendingTimedWinner = 0;
-                verdict.innerText = `¡Empate técnico exacto!`;
-                verdict.className = "text-2xl font-black text-slate-600 mb-6";
-            }
+            if (t1 < t2) { pendingTimedWinner = 1; verdict.innerText = `¡${p1Name} ha sido más veloz!`; verdict.className = "text-2xl font-black text-blue-600 mb-6"; }
+            else if (t2 < t1) { pendingTimedWinner = 2; verdict.innerText = `¡${p2Name} ha sido más veloz!`; verdict.className = "text-2xl font-black text-rose-600 mb-6"; }
+            else { pendingTimedWinner = 0; verdict.innerText = `¡Empate técnico exacto!`; verdict.className = "text-2xl font-black text-slate-600 mb-6"; }
         }
 
         function proceedTimedTug() {
             document.getElementById('modal-round-timed').classList.add('hidden');
             if (pendingTimedWinner === 1) triggerTugMotion(-1);
             if (pendingTimedWinner === 2) triggerTugMotion(1);
-
-            if (Math.abs(ropeScore) < winGoal) {
-                setTimeout(() => { startTimedPlayerTurn(1); }, 400);
-            }
+            if (gameState === 'PLAYING') { setTimeout(() => { startTimedPlayerTurn(1); }, 400); }
         }
 
-        /* --- CARGA DE PREGUNTAS --- */
         function loadQuestionForPlayer(player) {
+            if (gameState !== 'PLAYING') return;
             const problem = generateMathProblem();
             if (player === 1) {
-                q1 = problem; p1Input = "";
-                document.getElementById('question-text-p1').innerText = q1.text;
-                updateDisplay(1);
+                q1 = problem; p1Input = ""; document.getElementById('question-text-p1').innerText = q1.text; updateDisplay(1);
             } else {
-                q2 = problem; p2Input = "";
-                document.getElementById('question-text-p2').innerText = q2.text;
-                updateDisplay(2);
-                if (isBotOpponent && !isTimedMode) {
-                    triggerBotDecision();
-                }
+                q2 = problem; p2Input = ""; document.getElementById('question-text-p2').innerText = q2.text; updateDisplay(2);
+                if (isBotOpponent && !isTimedMode) triggerBotDecision();
             }
         }
 
-        /* --- FLUJO DE JUEGO --- */
         function syncGameSettings() {
             winGoal = parseInt(document.getElementById('win-goal').value);
             isTimedMode = document.getElementById('timed-mode').checked;
@@ -1065,17 +894,14 @@
         function startGameMode(mode) {
             syncGameSettings();
             if (mode === 'pve') {
-                isBotOpponent = true;
-                isTimedMode = false; // La máquina juega en tiempo real simultáneo
-                p1Name = "ALUMNO / EQUIPO";
-                p2Name = "ROBOT IA";
+                isBotOpponent = true; isTimedMode = false;
+                p1Name = "HUMANO"; p2Name = "ROBOT IA";
                 document.getElementById('avatar-p2').innerHTML = '<i class="fas fa-robot"></i>';
                 document.getElementById('label-role-p2').innerText = "RIVAL VIRTUAL";
                 document.getElementById('badge-p2').innerText = "MÁQUINA";
             } else {
                 isBotOpponent = false;
-                p1Name = "EQUIPO AZUL";
-                p2Name = "EQUIPO ROJO";
+                p1Name = "EQUIPO AZUL"; p2Name = "EQUIPO ROJO";
                 document.getElementById('avatar-p2').innerHTML = '<i class="fas fa-dragon"></i>';
                 document.getElementById('label-role-p2').innerText = "EQUIPO 2";
                 document.getElementById('badge-p2').innerText = "JUGADOR 2";
@@ -1085,241 +911,121 @@
 
         function openGameScreen() {
             hideScreens();
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('game-screen').classList.add('flex');
-            
-            document.getElementById('name-team-p1').innerText = p1Name;
-            document.getElementById('name-team-p2').innerText = p2Name;
-
+            document.getElementById('game-screen').classList.remove('hidden'); document.getElementById('game-screen').classList.add('flex');
+            document.getElementById('name-team-p1').innerText = p1Name; document.getElementById('name-team-p2').innerText = p2Name;
             adaptKeypadsForMDI();
             setupNewRound();
         }
 
         function setupNewRound() {
+            gameState = 'PLAYING';
             clearTimeout(botTimer);
             document.getElementById('modal-match-end').classList.add('hidden');
-            ropeScore = 0;
-            updateFlagOnRope();
-            isP1Locked = false;
-            isP2Locked = false;
-
-            if (isTimedMode) {
-                startTimedPlayerTurn(1);
-            } else {
-                document.getElementById('turn-overlay-p1').classList.add('hidden');
-                document.getElementById('turn-overlay-p2').classList.add('hidden');
-                loadQuestionForPlayer(1);
-                loadQuestionForPlayer(2);
+            ropeScore = 0; updateFlagOnRope();
+            isP1Locked = false; isP2Locked = false;
+            if (isTimedMode) startTimedPlayerTurn(1);
+            else {
+                document.getElementById('turn-overlay-p1').classList.add('hidden'); document.getElementById('turn-overlay-p2').classList.add('hidden');
+                loadQuestionForPlayer(1); loadQuestionForPlayer(2);
             }
         }
 
         function handleMatchFinished(winner) {
+            gameState = 'FINISHED'; clearTimeout(botTimer);
             audio.victory();
-            clearTimeout(botTimer);
-            const modal = document.getElementById('modal-match-end');
             const winnerName = winner === 1 ? p1Name : p2Name;
-            const detail = document.getElementById('winner-detail');
-            const icon = document.getElementById('winner-trophy-icon');
-            const btnNext = document.getElementById('btn-next-match');
-            const btnRematch = document.getElementById('btn-rematch');
-
-            detail.innerText = `¡${winnerName} se lleva el triunfo!`;
-            detail.className = `text-2xl font-black mb-6 ${winner === 1 ? 'text-blue-600' : 'text-rose-600'}`;
-            icon.innerText = winner === 1 ? '🎓' : (isBotOpponent ? '🤖' : '🐉');
+            document.getElementById('winner-detail').innerText = `¡${winnerName} se lleva el triunfo!`;
+            document.getElementById('winner-detail').className = `text-2xl font-black mb-6 ${winner === 1 ? 'text-blue-600' : 'text-rose-600'}`;
+            document.getElementById('winner-trophy-icon').innerText = winner === 1 ? '🎓' : (isBotOpponent ? '🤖' : '🐉');
 
             if (tournament.matches.length > 0) {
-                btnRematch.classList.add('hidden');
-                btnNext.classList.remove('hidden');
+                document.getElementById('btn-rematch').classList.add('hidden'); document.getElementById('btn-next-match').classList.remove('hidden');
                 tournament.winnersThisRound.push(winnerName);
             } else {
-                btnRematch.classList.remove('hidden');
-                btnNext.classList.add('hidden');
+                document.getElementById('btn-rematch').classList.remove('hidden'); document.getElementById('btn-next-match').classList.add('hidden');
             }
-
-            modal.classList.remove('hidden');
+            document.getElementById('modal-match-end').classList.remove('hidden');
         }
 
         /* --- MÓDULO TORNEO --- */
         function openTournamentSetup() {
-            syncGameSettings();
-            isBotOpponent = false;
-            hideScreens();
-            document.getElementById('tournament-setup').classList.remove('hidden');
-            document.getElementById('new-player-input').focus();
+            syncGameSettings(); isBotOpponent = false; hideScreens();
+            document.getElementById('tournament-setup').classList.remove('hidden'); document.getElementById('new-player-input').focus();
         }
-
         function addTournamentPlayer() {
             const input = document.getElementById('new-player-input');
-            const val = input.value.trim();
-            if (val) {
-                audio.click();
-                tournament.players.push(val);
-                input.value = "";
-                drawTournamentPlayerList();
-            }
+            if (input.value.trim()) { audio.click(); tournament.players.push(input.value.trim()); input.value = ""; drawTournamentPlayerList(); }
         }
-
-        function removeTournamentPlayer(idx) {
-            tournament.players.splice(idx, 1);
-            drawTournamentPlayerList();
-        }
-
+        function removeTournamentPlayer(idx) { tournament.players.splice(idx, 1); drawTournamentPlayerList(); }
         function drawTournamentPlayerList() {
-            const list = document.getElementById('players-list');
-            list.innerHTML = "";
+            const list = document.getElementById('players-list'); list.innerHTML = "";
             tournament.players.forEach((name, i) => {
-                list.innerHTML += `
-                    <li class="bg-white p-2 px-3 rounded-xl border border-orange-200 flex justify-between items-center font-bold text-slate-800">
-                        <span><b class="text-orange-500 mr-2">#${i + 1}</b>${name}</span>
-                        <button onclick="removeTournamentPlayer(${i})" class="text-rose-400 hover:text-rose-600"><i class="fas fa-trash-can"></i></button>
-                    </li>
-                `;
+                list.innerHTML += `<li class="bg-white p-2 px-3 rounded-xl border border-orange-200 flex justify-between items-center font-bold text-slate-800"><span><b class="text-orange-500 mr-2">#${i + 1}</b>${name}</span><button onclick="removeTournamentPlayer(${i})" class="text-rose-400 hover:text-rose-600"><i class="fas fa-trash-can"></i></button></li>`;
             });
             document.getElementById('player-count').innerText = tournament.players.length;
-
-            const btn = document.getElementById('btn-launch-tourney');
-            if (tournament.players.length >= 2) {
-                btn.disabled = false;
-                btn.classList.remove('opacity-40', 'cursor-not-allowed');
-            } else {
-                btn.disabled = true;
-                btn.classList.add('opacity-40', 'cursor-not-allowed');
-            }
+            document.getElementById('btn-launch-tourney').disabled = tournament.players.length < 2;
+            document.getElementById('btn-launch-tourney').classList.toggle('opacity-40', tournament.players.length < 2);
+            document.getElementById('btn-launch-tourney').classList.toggle('cursor-not-allowed', tournament.players.length < 2);
         }
-
         function launchTournamentBracket() {
-            audio.click();
-            tournament.players.sort(() => Math.random() - 0.5);
-            tournament.roundNumber = 1;
-            constructBracket(tournament.players);
-            renderBracketScreen();
+            audio.click(); tournament.players.sort(() => Math.random() - 0.5); tournament.roundNumber = 1;
+            constructBracket(tournament.players); renderBracketScreen();
         }
-
         function constructBracket(playersList) {
-            tournament.matches = [];
-            tournament.winnersThisRound = [];
-            tournament.currentMatchIdx = 0;
-
+            tournament.matches = []; tournament.winnersThisRound = []; tournament.currentMatchIdx = 0;
             for (let i = 0; i < playersList.length; i += 2) {
-                if (i + 1 < playersList.length) {
-                    tournament.matches.push({ p1: playersList[i], p2: playersList[i + 1] });
-                } else {
-                    tournament.winnersThisRound.push(playersList[i]);
-                }
+                if (i + 1 < playersList.length) tournament.matches.push({ p1: playersList[i], p2: playersList[i + 1] });
+                else tournament.winnersThisRound.push(playersList[i]);
             }
         }
-
         function renderBracketScreen() {
-            hideScreens();
-            document.getElementById('tournament-bracket').classList.remove('hidden');
-
+            hideScreens(); document.getElementById('tournament-bracket').classList.remove('hidden');
             const totalInRound = (tournament.matches.length * 2) + tournament.winnersThisRound.length;
-            let roundTitle = `Ronda ${tournament.roundNumber}`;
-            if (totalInRound <= 2) roundTitle = "🏆 GRAN FINAL DEL AULA";
-            else if (totalInRound <= 4) roundTitle = "⚔️ SEMIFINALES";
-            else if (totalInRound <= 8) roundTitle = "🎯 CUARTOS DE FINAL";
-
-            document.getElementById('bracket-round-title').innerText = roundTitle;
-            const container = document.getElementById('bracket-matches-list');
-            container.innerHTML = "";
-
+            document.getElementById('bracket-round-title').innerText = totalInRound <= 2 ? "🏆 GRAN FINAL DEL AULA" : (totalInRound <= 4 ? "⚔️ SEMIFINALES" : "🎯 CUARTOS DE FINAL");
+            const container = document.getElementById('bracket-matches-list'); container.innerHTML = "";
             tournament.matches.forEach((m, idx) => {
                 const isCurrent = idx === tournament.currentMatchIdx;
-                container.innerHTML += `
-                    <div class="p-4 rounded-2xl border-3 flex justify-between items-center transition ${isCurrent ? 'border-amber-400 bg-amber-50 shadow-md ring-2 ring-amber-300' : 'border-slate-200 bg-slate-50 opacity-70'}">
-                        <div>
-                            <div class="font-black text-blue-700 text-lg"><i class="fas fa-user-graduate mr-2"></i>${m.p1}</div>
-                            <div class="text-xs font-bold text-slate-400 pl-6">VS</div>
-                            <div class="font-black text-rose-700 text-lg"><i class="fas fa-dragon mr-2"></i>${m.p2}</div>
-                        </div>
-                        <div>
-                            ${isCurrent ? '<span class="bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-full animate-bounce">ACTUAL</span>' : '<span class="text-xs font-bold text-slate-400">En espera</span>'}
-                        </div>
-                    </div>
-                `;
+                container.innerHTML += `<div class="p-4 rounded-2xl border-3 flex justify-between items-center transition ${isCurrent ? 'border-amber-400 bg-amber-50 shadow-md ring-2 ring-amber-300' : 'border-slate-200 bg-slate-50 opacity-70'}"><div><div class="font-black text-blue-700 text-lg"><i class="fas fa-user-graduate mr-2"></i>${m.p1}</div><div class="text-xs font-bold text-slate-400 pl-6">VS</div><div class="font-black text-rose-700 text-lg"><i class="fas fa-dragon mr-2"></i>${m.p2}</div></div><div>${isCurrent ? '<span class="bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-full animate-bounce">ACTUAL</span>' : '<span class="text-xs font-bold text-slate-400">En espera</span>'}</div></div>`;
             });
-
-            if (tournament.winnersThisRound.length > 0 && tournament.currentMatchIdx === 0) {
-                container.innerHTML += `
-                    <div class="col-span-1 md:col-span-2 text-center bg-emerald-50 border border-emerald-300 text-emerald-800 p-2 rounded-xl text-sm font-black">
-                        🌟 Pasa directo a la siguiente fase: ${tournament.winnersThisRound.join(', ')}
-                    </div>
-                `;
-            }
+            if (tournament.winnersThisRound.length > 0 && tournament.currentMatchIdx === 0) container.innerHTML += `<div class="col-span-1 md:col-span-2 text-center bg-emerald-50 border border-emerald-300 text-emerald-800 p-2 rounded-xl text-sm font-black">🌟 Pasa directo a la siguiente fase: ${tournament.winnersThisRound.join(', ')}</div>`;
         }
-
-        function playCurrentMatch() {
-            const current = tournament.matches[tournament.currentMatchIdx];
-            p1Name = current.p1;
-            p2Name = current.p2;
-            openGameScreen();
-        }
-
+        function playCurrentMatch() { const current = tournament.matches[tournament.currentMatchIdx]; p1Name = current.p1; p2Name = current.p2; openGameScreen(); }
         function continueTournamentFlow() {
-            document.getElementById('modal-match-end').classList.add('hidden');
-            tournament.currentMatchIdx++;
-
+            document.getElementById('modal-match-end').classList.add('hidden'); tournament.currentMatchIdx++;
             if (tournament.currentMatchIdx >= tournament.matches.length) {
                 if (tournament.winnersThisRound.length === 1) {
-                    document.getElementById('champion-player-name').innerText = tournament.winnersThisRound[0];
-                    document.getElementById('modal-champion').classList.remove('hidden');
-                    return;
+                    document.getElementById('champion-player-name').innerText = tournament.winnersThisRound[0]; document.getElementById('modal-champion').classList.remove('hidden'); return;
                 }
-                tournament.roundNumber++;
-                constructBracket([...tournament.winnersThisRound]);
+                tournament.roundNumber++; constructBracket([...tournament.winnersThisRound]);
             }
             renderBracketScreen();
         }
 
-        /* --- PANTALLAS Y MODALES --- */
+        /* --- CONTROL PANTALLAS --- */
         function hideScreens() {
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('tournament-setup').classList.add('hidden');
-            document.getElementById('tournament-bracket').classList.add('hidden');
-            document.getElementById('game-screen').classList.add('hidden');
+            ['start-screen', 'tournament-setup', 'tournament-bracket', 'game-screen', 'modal-match-end', 'modal-champion', 'modal-confirm-exit', 'modal-round-timed'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('game-screen').classList.remove('flex');
-            document.getElementById('modal-match-end').classList.add('hidden');
-            document.getElementById('modal-champion').classList.add('hidden');
-            document.getElementById('modal-confirm-exit').classList.add('hidden');
-            document.getElementById('modal-round-timed').classList.add('hidden');
         }
-
         function returnToMenu() {
-            audio.click();
-            clearTimeout(botTimer);
-            tournament.matches = [];
-            tournament.players = [];
-            tournament.winnersThisRound = [];
-            drawTournamentPlayerList();
-            hideScreens();
-            document.getElementById('start-screen').classList.remove('hidden');
+            audio.click(); gameState = 'MENU'; clearTimeout(botTimer);
+            tournament.matches = []; tournament.players = []; tournament.winnersThisRound = []; drawTournamentPlayerList();
+            hideScreens(); document.getElementById('start-screen').classList.remove('hidden');
         }
+        function showExitModal() { audio.click(); document.getElementById('modal-confirm-exit').classList.remove('hidden'); }
+        function hideExitModal() { audio.click(); document.getElementById('modal-confirm-exit').classList.add('hidden'); }
 
-        function showExitModal() {
-            audio.click();
-            document.getElementById('modal-confirm-exit').classList.remove('hidden');
-        }
-
-        function hideExitModal() {
-            audio.click();
-            document.getElementById('modal-confirm-exit').classList.add('hidden');
-        }
-
-        /* --- TECLADO FÍSICO (AULA / PROFESOR) --- */
+        /* --- TECLADO FÍSICO CORREGIDO --- */
+        // Redirige correctamente el teclado físico permitiendo operar en el teclado principal (MDI) sin fallos en los signos '-' ni '.'
         window.addEventListener('keydown', (e) => {
-            if (document.getElementById('game-screen').classList.contains('hidden')) return;
-            
+            if (gameState !== 'PLAYING') return;
+            const validKeys = ['0','1','2','3','4','5','6','7','8','9','-','.'];
             const activePlayer = isTimedMode ? activeTurn : 1;
-            if (!isNaN(e.key)) {
-                onScreenKey(activePlayer, e.key);
-            } else if (e.key === 'Backspace') {
-                onScreenKey(activePlayer, 'DEL');
-            } else if (e.key === 'Enter') {
-                submitAnswer(activePlayer);
-            }
+            
+            if (validKeys.includes(e.key)) onScreenKey(activePlayer, e.key);
+            else if (e.key === 'Backspace') onScreenKey(activePlayer, 'DEL');
+            else if (e.key === 'Enter') submitAnswer(activePlayer);
         });
 
-        // Inicio por defecto en 3.º de Primaria
         selectPreset('primaria3');
     </script>
 </body>
