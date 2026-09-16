@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cifras y Letras - Aula 3º Primaria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4F46E5; /* Indigo 600 */
+            --secondary: #10B981; /* Emerald 500 */
+            --accent: #F59E0B; /* Amber 500 */
+            --bg-color: #F0FDF4; /* Green 50 */
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: #1F2937;
+            user-select: none;
+            overflow-x: hidden;
+            touch-action: manipulation; /* Evita el zoom al hacer doble tap en tablets */
+        }
+
+        /* Botones amigables para niños y MDI */
+        .btn-kid {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 4px 0px 0px rgba(0,0,0,0.15);
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+        .btn-kid:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px 0px rgba(0,0,0,0);
+        }
+        .btn-kid:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Animaciones para revelar letras/números */
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Fichas de juego (Cifras y Letras) */
+        .game-tile {
+            background: linear-gradient(145deg, #ffffff, #f3f4f6);
+            border: 4px solid #E5E7EB;
+            box-shadow: inset 0 -4px 0 0 #E5E7EB, 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #1F2937;
+        }
+
+        /* Progress bar del temporizador */
+        .timer-bar-container {
+            width: 100%;
+            height: 30px;
+            background-color: #E5E7EB;
+            border-radius: 9999px;
+            overflow: hidden;
+            border: 3px solid #D1D5DB;
+        }
+        .timer-bar {
+            height: 100%;
+            background-color: #10B981;
+            width: 100%;
+            transition: width 1s linear, background-color 0.5s ease;
+        }
+        .timer-bar.warning { background-color: #F59E0B; }
+        .timer-bar.danger { background-color: #EF4444; }
+
+        /* Estilos específicos para impresión (Generador de PDF) */
+        @media print {
+            body > *:not(#print-area) { display: none !important; }
+            #print-area {
+                display: block !important;
+                visibility: visible !important;
+                position: static !important;
+                width: 100%;
+                padding: 20px;
+                background: white;
+            }
+            .print-grid {
+                display: grid;
+                grid-template-columns: 80px 1fr 1fr 100px;
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 20px;
+            }
+            .print-grid th, .print-grid td {
+                border: 2px solid #000;
+                padding: 15px;
+                text-align: center;
+                font-size: 14pt;
+            }
+            .print-grid th { background-color: #f3f4f6 !important; -webkit-print-color-adjust: exact; }
+            .print-row-content { min-height: 80px; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+
+    <!-- PANTALLA 1: CONFIGURACIÓN -->
+    <div id="screen-setup" class="w-full max-w-4xl bg-white rounded-3xl p-8 shadow-2xl border-4 border-indigo-100 text-center space-y-8 block">
+        <h1 class="text-5xl md:text-6xl font-black text-indigo-600 mb-4 drop-shadow-md">
+            🎮 Cifras y Letras 🏫
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-600 font-bold mb-8">Configuración de la Partida</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Equipos -->
+            <div class="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4 flex items-center justify-center gap-2">
+                    👥 Equipos
+                </h2>
+                <div class="flex items-center justify-center gap-4">
+                    <button onclick="adjustSetting('teams', -1)" class="btn-kid bg-red-400 hover:bg-red-500 text-white rounded-full w-14 h-14 text-2xl">-</button>
+                    <span id="setup-teams" class="text-4xl font-black w-12">2</span>
+                    <button onclick="adjustSetting('teams', 1)" class="btn-kid bg-green-400 hover:bg-green-500 text-white rounded-full w-14 h-14 text-2xl">+</button>
+                </div>
+            </div>
+
+            <!-- Rondas -->
+            <div class="bg-amber-50 rounded-2xl p-6 border-2 border-amber-200">
+                <h2 class="text-2xl font-bold text-amber-700 mb-4 flex items-center justify-center gap-2">
+                    🔄 Rondas
+                </h2>
+                <div class="flex items-center justify-center gap-4">
+                    <button onclick="adjustSetting('rounds', -1)" class="btn-kid bg-red-400 hover:bg-red-500 text-white rounded-full w-14 h-14 text-2xl">-</button>
+                    <span id="setup-rounds" class="text-4xl font-black w-12">5</span>
+                    <button onclick="adjustSetting('rounds', 1)" class="btn-kid bg-green-400 hover:bg-green-500 text-white rounded-full w-14 h-14 text-2xl">+</button>
+                </div>
+            </div>
+
+            <!-- Cifras a usar -->
+            <div class="bg-emerald-50 rounded-2xl p-6 border-2 border-emerald-200">
+                <h2 class="text-2xl font-bold text-emerald-700 mb-2 flex items-center justify-center gap-2">
+                    🔢 Cifras
+                </h2>
+                <p class="text-sm text-emerald-600 mb-2 leading-tight">Números para calcular</p>
+                <div class="flex items-center justify-center gap-4">
+                    <button onclick="adjustSetting('operands', -1)" class="btn-kid bg-red-400 hover:bg-red-500 text-white rounded-full w-14 h-14 text-2xl">-</button>
+                    <span id="setup-operands" class="text-4xl font-black w-12">5</span>
+                    <button onclick="adjustSetting('operands', 1)" class="btn-kid bg-green-400 hover:bg-green-500 text-white rounded-full w-14 h-14 text-2xl">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 mt-10">
+            <button onclick="generatePDF()" class="btn-kid bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-4 rounded-2xl text-xl md:text-2xl flex items-center gap-3">
+                🖨️ Crear Plantilla PDF
+            </button>
+            <button onclick="startGame()" class="btn-kid bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-2xl text-2xl md:text-3xl flex items-center gap-3 shadow-indigo-300/50">
+                🚀 ¡Empezar Juego!
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: DASHBOARD (Marcadores y Rondas) -->
+    <div id="screen-dashboard" class="w-full max-w-6xl hidden flex-col space-y-6">
+        
+        <!-- Header -->
+        <div class="bg-white rounded-3xl p-6 shadow-lg border-b-4 border-indigo-200 flex justify-between items-center">
+            <h2 class="text-3xl md:text-4xl font-black text-indigo-700">
+                Ronda <span id="dash-current-round">1</span> de <span id="dash-total-rounds">5</span>
+            </h2>
+            <button onclick="nextRound()" class="btn-kid bg-amber-400 hover:bg-amber-500 text-amber-900 px-6 py-3 rounded-xl text-xl flex items-center gap-2">
+                Siguiente Ronda ⏭️
+            </button>
+        </div>
+
+        <!-- Marcadores -->
+        <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Los equipos se generan dinámicamente aquí -->
+        </div>
+
+        <!-- Controles de Prueba -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+            <button onclick="openCifras()" class="btn-kid bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl p-8 text-3xl md:text-4xl flex flex-col items-center justify-center gap-4 h-48">
+                <span class="text-5xl">🔢</span>
+                Prueba de Cifras
+            </button>
+            <button onclick="openLetras()" class="btn-kid bg-pink-500 hover:bg-pink-600 text-white rounded-3xl p-8 text-3xl md:text-4xl flex flex-col items-center justify-center gap-4 h-48">
+                <span class="text-5xl">🔤</span>
+                Prueba de Letras
+            </button>
+        </div>
+        
+        <div class="text-center mt-4">
+             <button onclick="quitGame()" class="btn-kid bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-xl text-lg">
+                🔙 Finalizar y Salir
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: CIFRAS -->
+    <div id="screen-cifras" class="w-full max-w-5xl hidden flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-emerald-200">
+        <div class="bg-emerald-500 p-6 text-center relative">
+            <h2 class="text-4xl font-black text-white">Prueba de Cifras 🔢</h2>
+            <button onclick="backToDashboard()" class="absolute top-4 left-4 btn-kid bg-white text-emerald-700 px-4 py-2 rounded-xl text-lg">🔙 Volver</button>
+        </div>
+        
+        <div class="p-8 flex flex-col items-center space-y-10">
+            <!-- Número Objetivo -->
+            <div class="flex flex-col items-center">
+                <p class="text-xl font-bold text-gray-500 mb-2 uppercase tracking-wide">Número a conseguir</p>
+                <div id="cifras-target" class="game-tile w-48 h-32 text-6xl md:text-7xl rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 border-emerald-300 text-emerald-800 shadow-emerald-200/50">
+                    ?
+                </div>
+            </div>
+
+            <!-- Números Disponibles -->
+            <div class="w-full text-center">
+                <p class="text-xl font-bold text-gray-500 mb-4 uppercase tracking-wide">Tus números</p>
+                <div id="cifras-operands" class="flex flex-wrap justify-center gap-4 min-h-[100px]">
+                    <!-- Generados dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Controles y Timer -->
+            <div class="w-full flex flex-col items-center space-y-6 bg-gray-50 p-6 rounded-2xl border-2 border-gray-100">
+                <div class="flex gap-4">
+                    <button id="btn-gen-cifras" onclick="generateCifrasGame()" class="btn-kid bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl text-xl flex items-center gap-2">
+                        🎲 Generar Partida
+                    </button>
+                    <button id="btn-timer-cifras" onclick="startTimer('cifras')" disabled class="btn-kid bg-amber-400 hover:bg-amber-500 text-amber-900 px-6 py-3 rounded-xl text-xl flex items-center gap-2">
+                        ⏳ Iniciar Tiempo
+                    </button>
+                    <button id="btn-stop-cifras" onclick="stopTimerEarly('cifras')" class="btn-kid bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl text-xl flex items-center gap-2 hidden">
+                        🛑 Detener
+                    </button>
+                </div>
+                
+                <!-- Barra de tiempo -->
+                <div class="w-full max-w-2xl">
+                    <div class="timer-bar-container">
+                        <div id="cifras-timer-bar" class="timer-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- Pizarra interactiva -->
+                <div class="w-full bg-blue-50 border-4 border-dashed border-blue-300 rounded-3xl p-6 mt-4 min-h-[200px] relative" id="pizarra-cifras">
+                    <p class="text-blue-300 font-bold text-center uppercase tracking-widest absolute w-full top-1/2 left-0 -translate-y-1/2 select-none pointer-events-none">Pizarra (Arrastra números y operadores aquí)</p>
+                    <div class="flex flex-wrap gap-2 relative z-10 justify-center">
+                        <div class="op-tile bg-white border-2 border-blue-400 rounded-xl w-12 h-12 flex items-center justify-center text-3xl font-black text-blue-700">+</div>
+                        <div class="op-tile bg-white border-2 border-blue-400 rounded-xl w-12 h-12 flex items-center justify-center text-3xl font-black text-blue-700">+</div>
+                        <div class="op-tile bg-white border-2 border-blue-400 rounded-xl w-12 h-12 flex items-center justify-center text-3xl font-black text-blue-700">-</div>
+                        <div class="op-tile bg-white border-2 border-blue-400 rounded-xl w-12 h-12 flex items-center justify-center text-3xl font-black text-blue-700">-</div>
+                        <div class="op-tile bg-white border-2 border-blue-400 rounded-xl w-12 h-12 flex items-center justify-center text-3xl font-black text-blue-700">x</div>
+                        <div class="op-tile bg-white border-2 border-blue-400 rounded-xl w-12 h-12 flex items-center justify-center text-3xl font-black text-blue-700">÷</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 4: LETRAS -->
+    <div id="screen-letras" class="w-full max-w-5xl hidden flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-pink-200">
+        <div class="bg-pink-500 p-6 text-center relative">
+            <h2 class="text-4xl font-black text-white">Prueba de Letras 🔤</h2>
+            <button onclick="backToDashboard()" class="absolute top-4 left-4 btn-kid bg-white text-pink-700 px-4 py-2 rounded-xl text-lg">🔙 Volver</button>
+        </div>
+        
+        <div class="p-8 flex flex-col items-center space-y-10">
+            <!-- Letras Disponibles -->
+            <div class="w-full text-center">
+                <p class="text-xl font-bold text-gray-500 mb-6 uppercase tracking-wide">Forma la palabra más larga</p>
+                <!-- Ajuste visual para tablets/MDI: cajas grandes -->
+                <div id="letras-grid" class="flex flex-wrap justify-center gap-3 md:gap-4 min-h-[120px]">
+                    <!-- Cajas de letras (9 por defecto) generadas dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Controles para pedir letras -->
+            <div id="letras-controls" class="flex gap-6">
+                <button onclick="requestLetter('vowel')" class="btn-kid bg-blue-400 hover:bg-blue-500 text-white px-8 py-6 rounded-2xl text-2xl flex flex-col items-center">
+                    <span class="text-4xl mb-2">🅰️</span>
+                    Pedir Vocal
+                </button>
+                <button onclick="requestLetter('consonant')" class="btn-kid bg-purple-400 hover:bg-purple-500 text-white px-8 py-6 rounded-2xl text-2xl flex flex-col items-center">
+                    <span class="text-4xl mb-2">🅱️</span>
+                    Pedir Consonante
+                </button>
+            </div>
+
+            <!-- Timer -->
+            <div class="w-full flex flex-col items-center space-y-6 bg-gray-50 p-6 rounded-2xl border-2 border-gray-100">
+                <div class="flex gap-4">
+                    <button id="btn-timer-letras" onclick="startTimer('letras')" disabled class="btn-kid bg-amber-400 hover:bg-amber-500 text-amber-900 px-6 py-3 rounded-xl text-xl flex items-center gap-2">
+                        ⏳ Iniciar Tiempo
+                    </button>
+                    <button id="btn-stop-letras" onclick="stopTimerEarly('letras')" class="btn-kid bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl text-xl flex items-center gap-2 hidden">
+                        🛑 Detener
+                    </button>
+                </div>
+                
+                <!-- Barra de tiempo -->
+                <div class="w-full max-w-2xl">
+                    <div class="timer-bar-container">
+                        <div id="letras-timer-bar" class="timer-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <button onclick="resetLetras()" class="mt-4 text-gray-400 hover:text-gray-600 underline font-bold">Reiniciar letras</button>
+                
+                <!-- Pizarra interactiva -->
+                <div class="w-full bg-pink-50 border-4 border-dashed border-pink-300 rounded-3xl p-6 mt-4 min-h-[200px] relative" id="pizarra-letras">
+                    <p class="text-pink-300 font-bold text-center uppercase tracking-widest absolute w-full top-1/2 left-0 -translate-y-1/2 select-none pointer-events-none">Pizarra (Arrastra letras aquí para formar palabras)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area oculta para impresión -->
+    <div id="print-area" class="hidden"></div>
+
+    <script>
+        // --- ESTADO DE LA APLICACIÓN ---
+        const state = {
+            config: {
+                teams: 2,
+                rounds: 5,
+                operands: 5, // Número de cifras para operar
+                letrasCount: 9 // Fijo para 3º primaria, da juego sin abrumar
+            },
+            game: {
+                currentRound: 1,
+                teamsData: [],
+                timerInterval: null
+            },
+            cifras: {
+                target: null,
+                operands: []
+            },
+            letras: {
+                currentLetters: [],
+                maxLetters: 9
+            }
+        };
+
+        // --- SISTEMA DE AUDIO (Web Audio API) ---
+        // Genera tonos simples para no depender de archivos mp3 externos.
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(frequency, type = 'sine', duration = 0.1, volume = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            
+            gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        const sounds = {
+            click: () => playTone(600, 'sine', 0.1),
+            pop: () => playTone(800, 'triangle', 0.15, 0.2),
+            scoreUp: () => { playTone(500, 'sine', 0.1); setTimeout(()=>playTone(700, 'sine', 0.2), 100); },
+            scoreDown: () => { playTone(400, 'triangle', 0.2); setTimeout(()=>playTone(300, 'triangle', 0.3), 150); },
+            tick: () => playTone(1000, 'square', 0.05, 0.02),
+            timeUp: () => { playTone(300, 'sawtooth', 0.5, 0.2); setTimeout(()=>playTone(250, 'sawtooth', 0.8, 0.2), 500); }
+        };
+
+        // Agregar sonido a todos los botones
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('button')) {
+                // No reproducir clic genérico si tiene una función específica de puntuación (evita sobreposición sonora)
+                if(!e.target.closest('.score-btn')) sounds.click();
+            }
+        });
+
+        // --- FUNCIONES DE CONFIGURACIÓN ---
+        function adjustSetting(setting, change) {
+            let val = state.config[setting] + change;
+            // Límites
+            if (setting === 'teams') val = Math.max(1, Math.min(6, val));
+            if (setting === 'rounds') val = Math.max(1, Math.min(10, val));
+            if (setting === 'operands') val = Math.max(4, Math.min(7, val));
+            
+            state.config[setting] = val;
+            document.getElementById(`setup-${setting}`).textContent = val;
+        }
+
+        function startGame() {
+            // Inicializar equipos
+            state.game.teamsData = Array.from({length: state.config.teams}, (_, i) => ({
+                id: i + 1,
+                name: `Equipo ${i + 1}`,
+                score: 0,
+                color: getTeamColor(i)
+            }));
+            state.game.currentRound = 1;
+
+            updateDashboardUI();
+            
+            document.getElementById('screen-setup').classList.replace('block', 'hidden');
+            document.getElementById('screen-dashboard').classList.replace('hidden', 'flex');
+        }
+
+        function getTeamColor(index) {
+            const colors = ['bg-blue-100', 'bg-emerald-100', 'bg-pink-100', 'bg-amber-100', 'bg-purple-100', 'bg-cyan-100'];
+            const borderColors = ['border-blue-400', 'border-emerald-400', 'border-pink-400', 'border-amber-400', 'border-purple-400', 'border-cyan-400'];
+            const textColors = ['text-blue-800', 'text-emerald-800', 'text-pink-800', 'text-amber-800', 'text-purple-800', 'text-cyan-800'];
+            return {
+                bg: colors[index % colors.length],
+                border: borderColors[index % borderColors.length],
+                text: textColors[index % textColors.length]
+            };
+        }
+
+        function updateDashboardUI() {
+            document.getElementById('dash-current-round').textContent = state.game.currentRound;
+            document.getElementById('dash-total-rounds').textContent = state.config.rounds;
+
+            const grid = document.getElementById('teams-grid');
+            grid.innerHTML = '';
+
+            state.game.teamsData.forEach(team => {
+                const card = document.createElement('div');
+                card.className = `${team.color.bg} ${team.color.border} border-4 rounded-3xl p-6 shadow-md flex flex-col items-center justify-between transition-transform`;
+                
+                card.innerHTML = `
+                    <div class="w-full flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-black ${team.color.text}">${team.name}</h3>
+                    </div>
+                    <div class="text-6xl font-black mb-6 text-gray-800" id="score-${team.id}">${team.score}</div>
+                    <div class="grid grid-cols-2 gap-2 w-full">
+                        <button onclick="changeScore(${team.id}, -1)" class="score-btn btn-kid bg-red-400 hover:bg-red-500 text-white rounded-xl py-2 text-xl font-bold">-1</button>
+                        <button onclick="changeScore(${team.id}, 1)" class="score-btn btn-kid bg-green-500 hover:bg-green-600 text-white rounded-xl py-2 text-xl font-bold">+1</button>
+                        <button onclick="changeScore(${team.id}, -5)" class="score-btn btn-kid bg-red-300 hover:bg-red-400 text-red-900 rounded-xl py-1 text-lg font-bold">-5</button>
+                        <button onclick="changeScore(${team.id}, 5)" class="score-btn btn-kid bg-green-400 hover:bg-green-500 text-green-900 rounded-xl py-1 text-lg font-bold">+5</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function changeScore(teamId, amount) {
+            if(amount > 0) sounds.scoreUp(); else sounds.scoreDown();
+            const team = state.game.teamsData.find(t => t.id === teamId);
+            if (team) {
+                team.score += amount;
+                // Prevenir puntos negativos para niños pequeños
+                if (team.score < 0) team.score = 0; 
+                
+                const scoreEl = document.getElementById(`score-${teamId}`);
+                scoreEl.textContent = team.score;
+                
+                // Animación simple de actualización
+                scoreEl.classList.remove('pop-in');
+                void scoreEl.offsetWidth; // trigger reflow
+                scoreEl.classList.add('pop-in');
+            }
+        }
+
+        function nextRound() {
+            if (state.game.currentRound < state.config.rounds) {
+                state.game.currentRound++;
+                updateDashboardUI();
+            } else {
+                alert("¡Has llegado a la última ronda! Repasa las puntuaciones.");
+            }
+        }
+
+        function backToDashboard() {
+            stopTimer(); // Detiene cualquier timer activo
+            document.getElementById('screen-cifras').classList.replace('flex', 'hidden');
+            document.getElementById('screen-letras').classList.replace('flex', 'hidden');
+            document.getElementById('screen-dashboard').classList.replace('hidden', 'flex');
+        }
+
+        function quitGame() {
+            stopTimer(); // Limpia los intervalos
+            document.getElementById('screen-dashboard').classList.replace('flex', 'hidden');
+            document.getElementById('screen-cifras').classList.replace('flex', 'hidden');
+            document.getElementById('screen-letras').classList.replace('flex', 'hidden');
+            document.getElementById('screen-setup').classList.replace('hidden', 'block');
+        }
+
+        // --- MOTOR DE PIZARRA (DRAG & DROP TÁCTIL/RATÓN) ---
+        function makeDraggable(el) {
+            let currentX = 0, currentY = 0, initialX, initialY, xOffset = 0, yOffset = 0;
+            
+            // Resetea posición si se vuelve a generar
+            el.style.transform = `translate(0px, 0px)`;
+            el.style.touchAction = "none"; // Fundamental para que no haga scroll en tablet
+            el.style.cursor = "grab";
+            el.style.position = "relative"; // Necesario para que el z-index aplique por encima de todo
+            el.style.zIndex = 10;
+            
+            el.onpointerdown = (e) => {
+                // SOLUCIÓN: Desactivar la animación de entrada para que no bloquee el arrastre
+                el.classList.remove('pop-in');
+                el.style.animation = 'none';
+
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                el.setPointerCapture(e.pointerId);
+                el.style.cursor = "grabbing";
+                el.style.zIndex = 100;
+                
+                el.onpointermove = (e) => {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    el.style.transform = `translate(${currentX}px, ${currentY}px) scale(1.1)`;
+                };
+                
+                el.onpointerup = (e) => {
+                    el.onpointermove = null;
+                    el.onpointerup = null;
+                    el.releasePointerCapture(e.pointerId);
+                    el.style.cursor = "grab";
+                    el.style.zIndex = 10;
+                    el.style.transform = `translate(${currentX}px, ${currentY}px) scale(1)`;
+                };
+            };
+        }
+
+        function startTimer(type) {
+            const btn = document.getElementById(`btn-timer-${type}`);
+            const bar = document.getElementById(`${type}-timer-bar`);
+            const stopBtn = document.getElementById(`btn-stop-${type}`);
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Corriendo...';
+            if (stopBtn) stopBtn.classList.remove('hidden');
+            
+            // 60 segundos por defecto
+            const durationSeconds = 60;
+            let timeRemaining = durationSeconds;
+            
+            bar.style.width = '100%';
+            bar.className = 'timer-bar'; // reset colors
+            
+            clearInterval(state.game.timerInterval);
+            
+            state.game.timerInterval = setInterval(() => {
+                timeRemaining--;
+                const percentage = (timeRemaining / durationSeconds) * 100;
+                bar.style.width = `${percentage}%`;
+                
+                if (timeRemaining === 15) bar.classList.add('warning');
+                if (timeRemaining === 5) bar.classList.add('danger');
+                
+                if (timeRemaining <= 10 && timeRemaining > 0) {
+                    sounds.tick(); // Sonido de tensión en los últimos 10s
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(state.game.timerInterval);
+                    sounds.timeUp();
+                    btn.innerHTML = '⏰ ¡TIEMPO!';
+                    if (stopBtn) stopBtn.classList.add('hidden');
+                    setTimeout(() => {
+                        btn.innerHTML = '⏳ Iniciar Tiempo';
+                        btn.disabled = false;
+                        bar.style.width = '100%';
+                        bar.className = 'timer-bar';
+                    }, 3000);
+                }
+            }, 1000);
+        }
+
+        function stopTimerEarly(type) {
+            clearInterval(state.game.timerInterval);
+            const btn = document.getElementById(`btn-timer-${type}`);
+            const stopBtn = document.getElementById(`btn-stop-${type}`);
+            
+            if(btn) {
+                btn.innerHTML = '⏳ Iniciar Tiempo';
+                btn.disabled = false;
+            }
+            if(stopBtn) stopBtn.classList.add('hidden');
+        }
+
+        function stopTimer() {
+            clearInterval(state.game.timerInterval);
+        }
+
+        function openCifras() {
+            document.getElementById('screen-dashboard').classList.replace('flex', 'hidden');
+            document.getElementById('screen-cifras').classList.replace('hidden', 'flex');
+            
+            // Reset UI
+            document.getElementById('cifras-target').textContent = '?';
+            document.getElementById('cifras-target').classList.remove('pop-in');
+            
+            const opsContainer = document.getElementById('cifras-operands');
+            opsContainer.innerHTML = '';
+            // Crear cajas vacías
+            for(let i=0; i<state.config.operands; i++) {
+                opsContainer.innerHTML += `<div class="game-tile w-20 h-24 md:w-24 md:h-28 text-4xl md:text-5xl rounded-2xl">?</div>`;
+            }
+            
+            document.getElementById('btn-timer-cifras').disabled = true;
+            document.getElementById('cifras-timer-bar').style.width = '100%';
+        }
+
+        function generateCifrasGame() {
+            // Para 3º de Primaria (8-9 años), operaciones accesibles.
+            const basePool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const extraPool = [10, 20, 25, 50]; 
+            
+            state.cifras.operands = [];
+            for (let i = 0; i < state.config.operands; i++) {
+                if (i > 1 && Math.random() < 0.2) {
+                    state.cifras.operands.push(extraPool[Math.floor(Math.random() * extraPool.length)]);
+                } else {
+                    state.cifras.operands.push(basePool[Math.floor(Math.random() * basePool.length)]);
+                }
+            }
+
+            // Generar objetivo garantizando que haya una solución sencilla (sumas y restas con 2 o 3 números)
+            const numOpsToUse = Math.floor(Math.random() * 2) + 2; 
+            const shuffled = [...state.cifras.operands].sort(() => 0.5 - Math.random());
+            let target = shuffled[0];
+            
+            for(let i = 1; i < numOpsToUse; i++) {
+                if (Math.random() > 0.5) target += shuffled[i];
+                else target -= shuffled[i];
+            }
+            
+            // Asegurar que es positivo y coherente
+            if (target < 10) target += 15;
+            state.cifras.target = target;
+
+            renderCifras();
+        }
+
+        function renderCifras() {
+            sounds.pop();
+            const targetEl = document.getElementById('cifras-target');
+            targetEl.textContent = state.cifras.target;
+            targetEl.classList.remove('pop-in');
+            void targetEl.offsetWidth; // reflow
+            targetEl.classList.add('pop-in');
+
+            const opsContainer = document.getElementById('cifras-operands');
+            opsContainer.innerHTML = '';
+            
+            state.cifras.operands.forEach((num, index) => {
+                setTimeout(() => {
+                    sounds.pop();
+                    const tile = document.createElement('div');
+                    tile.className = 'game-tile w-20 h-24 md:w-24 md:h-28 text-4xl md:text-5xl rounded-2xl pop-in';
+                    tile.textContent = num;
+                    opsContainer.appendChild(tile);
+                    makeDraggable(tile); // Fichas arrastrables a la pizarra
+                }, index * 200); 
+            });
+
+            // Activar arrastre para los operadores en la pizarra
+            document.querySelectorAll('.op-tile').forEach(makeDraggable);
+            document.getElementById('btn-timer-cifras').disabled = false;
+        }
+
+        const vowels = ['A', 'A', 'A', 'E', 'E', 'E', 'I', 'I', 'O', 'O', 'O', 'U']; // Ponderadas para español
+        const consonants = ['B', 'C', 'D', 'F', 'G', 'H', 'L', 'L', 'M', 'M', 'N', 'N', 'P', 'R', 'R', 'S', 'S', 'T', 'V', 'Z']; // Letras fáciles
+
+        function openLetras() {
+            document.getElementById('screen-dashboard').classList.replace('flex', 'hidden');
+            document.getElementById('screen-letras').classList.replace('hidden', 'flex');
+            resetLetras();
+        }
+
+        function resetLetras() {
+            state.letras.currentLetters = [];
+            document.getElementById('letras-controls').style.display = 'flex';
+            document.getElementById('btn-timer-letras').disabled = true;
+            document.getElementById('letras-timer-bar').style.width = '100%';
+            renderLetrasGrid();
+        }
+
+        function renderLetrasGrid() {
+            const grid = document.getElementById('letras-grid');
+            grid.innerHTML = '';
+            
+            for(let i=0; i < state.config.letrasCount; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'game-tile w-16 h-20 md:w-20 md:h-24 text-4xl md:text-5xl rounded-xl';
+                if (state.letras.currentLetters[i]) {
+                    tile.textContent = state.letras.currentLetters[i];
+                    tile.classList.add('pop-in');
+                    makeDraggable(tile); // Letras arrastrables a la pizarra
+                } else {
+                    tile.textContent = '?';
+                    tile.style.color = '#D1D5DB'; // gris claro para las vacías
+                }
+                grid.appendChild(tile);
+            }
+
+            // Activar timer cuando se llenan las letras
+            if (state.letras.currentLetters.length === state.config.letrasCount) {
+                document.getElementById('letras-controls').style.display = 'none';
+                document.getElementById('btn-timer-letras').disabled = false;
+            }
+        }
+
+        function requestLetter(type) {
+            if (state.letras.currentLetters.length >= state.config.letrasCount) return;
+
+            let pool = type === 'vowel' ? vowels : consonants;
+            let randomLetter = pool[Math.floor(Math.random() * pool.length)];
+            
+            state.letras.currentLetters.push(randomLetter);
+            sounds.pop();
+            renderLetrasGrid();
+        }
+
+        function generatePDF() {
+            const printDiv = document.getElementById('print-area');
+            const numRounds = state.config.rounds;
+            
+            // Mostrar temporalmente para impresión
+            printDiv.classList.remove('hidden');
+
+            let html = `
+                <div style="text-align: center; font-family: sans-serif;">
+                    <h1 style="color: #4F46E5; margin-bottom: 5px;">🎮 CIFRAS Y LETRAS 🏫</h1>
+                    <h3 style="color: #6B7280; margin-top: 0; margin-bottom: 20px;">Hoja de respuestas del alumno</h3>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14pt;">
+                        <div><strong>Nombre:</strong> ____________________________________</div>
+                        <div><strong>Fecha:</strong> ______________</div>
+                    </div>
+
+                    <table class="print-table">
+                        <thead>
+                            <tr>
+                                <th>Ronda</th>
+                                <th>🔢 Prueba de Cifras (Operaciones)</th>
+                                <th>🔤 Prueba de Letras (Palabra)</th>
+                                <th>Puntos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            for (let i = 1; i <= numRounds; i++) {
+                html += `
+                    <tr class="print-row-content">
+                        <td style="font-weight: bold; font-size: 18pt;">${i}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                `;
+            }
+
+            html += `
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 30px; text-align: right; font-size: 16pt;">
+                        <strong>PUNTUACIÓN TOTAL: ______</strong>
+                    </div>
+                </div>
+            `;
+
+            printDiv.innerHTML = html;
+            
+            // Retraso para que aplique CSS y luego ocultar tras mandar la orden
+            setTimeout(() => {
+                window.print();
+                printDiv.classList.add('hidden');
+            }, 300);
+        }
+
+    </script>
+</body>
+</html>
