@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sustantivos Invasores</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Paleta Neon-Pastel Retro */
+            --bg-color: #1a1a2e;
+            --bg-grid: #16213e;
+            --text-main: #f0f8ff;
+            --btn-rojo: #ff4757;
+            --btn-azul: #1e90ff;
+            --btn-verde: #2ed573;
+            --btn-amarillo: #ffa502;
+            --btn-hover-darken: rgba(0,0,0,0.2);
+            --panel-bg: rgba(22, 33, 62, 0.9);
+            
+            /* Tipografías */
+            --font-retro: 'Press Start 2P', cursive;
+            --font-lectura: 'Nunito', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* Evita seleccionar texto al jugar */
+            -webkit-user-select: none;
+            touch-action: manipulation; /* Optimización táctil */
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Sin scroll para la pantalla del aula */
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(var(--bg-grid) 2px, transparent 2px),
+                linear-gradient(90deg, var(--bg-grid) 2px, transparent 2px);
+            background-size: 50px 50px;
+            font-family: var(--font-lectura);
+            color: var(--text-main);
+        }
+
+        #app-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(26, 26, 46, 0.95);
+            z-index: 10;
+            transition: opacity 0.3s;
+        }
+
+        .screen.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        /* Títulos */
+        h1 {
+            font-family: var(--font-retro);
+            font-size: 3rem;
+            text-align: center;
+            color: #ffd32a;
+            text-shadow: 4px 4px 0px #ff3f34, 8px 8px 0px #3c40c6;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+        
+        @media (max-width: 768px) { h1 { font-size: 2rem; text-shadow: 2px 2px 0px #ff3f34; } }
+
+        h2 {
+            font-family: var(--font-retro);
+            font-size: 1.5rem;
+            color: #0fb9b1;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Botones Interfaz */
+        .btn {
+            font-family: var(--font-retro);
+            font-size: 1.2rem;
+            padding: 20px 40px;
+            margin: 10px;
+            border: 4px solid white;
+            border-radius: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
+            background: #a55eea;
+            color: white;
+            min-width: 250px;
+        }
+
+        .btn:active {
+            transform: translateY(8px);
+            box-shadow: 0 0px 0 rgba(0,0,0,0.4);
+        }
+
+        .btn-rojo { background: var(--btn-rojo); }
+        .btn-azul { background: var(--btn-azul); }
+        .btn-verde { background: var(--btn-verde); }
+        .btn-amarillo { background: var(--btn-amarillo); }
+        
+        .btn-morado { background: #9b59b6; }
+        .btn-naranja { background: #e67e22; }
+
+        #game-ui {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: row; /* Cambio principal para dividir pantalla */
+            z-index: 5;
+        }
+
+        .game-instance {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .split-divider {
+            width: 8px;
+            background: #0fb9b1;
+            height: 100%;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .hidden-flex {
+            display: none !important;
+        }
+
+        .hud {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--panel-bg);
+            border-bottom: 4px solid #0fb9b1;
+            font-family: var(--font-retro);
+            font-size: 1.2rem;
+            gap: 10px;
+        }
+
+        .hud-top-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .objective-display {
+            font-size: 1.3rem;
+            color: #fffa65;
+            animation: pulse 1.5s infinite;
+            text-align: center;
+            width: 100%;
+        }
+
+        .lives-display { color: #ff4d4d; font-size: 1.5rem;}
+        
+        @media (max-width: 768px) { 
+            .hud { padding: 10px; font-size: 0.9rem; } 
+            .objective-display { font-size: 1rem; }
+            .lives-display { font-size: 1.2rem; }
+        }
+
+        .playfield {
+            position: relative;
+            flex-grow: 1;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Estilo de las Palabras que caen */
+        .falling-word {
+            position: absolute;
+            padding: 15px 25px;
+            background: white;
+            color: #1e272e;
+            font-family: var(--font-lectura);
+            font-size: 2.2rem;
+            font-weight: 900;
+            border-radius: 20px;
+            border: 4px solid #808e9b;
+            box-shadow: 0 6px 0 #485460;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            /* Zonas de toque amplias para la pantalla interactiva */
+            min-width: 120px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+
+        .falling-word:active {
+            transform: scale(0.95);
+        }
+
+        /* Efectos visuales de acierto/fallo */
+        .word-correct {
+            background: #0be881; border-color: #05c46b; box-shadow: 0 6px 0 #05c46b; color: white;
+        }
+        .word-wrong {
+            background: #ff3f34; border-color: #ff5e57; box-shadow: 0 6px 0 #ff5e57; color: white;
+        }
+
+        /* Marcador de Equipos */
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .team-score-box {
+            padding: 20px;
+            border-radius: 15px;
+            border: 4px solid white;
+            font-family: var(--font-retro);
+            font-size: 1.2rem;
+            text-align: center;
+            color: white;
+        }
+
+        /* Animaciones CSS */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes screenShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake { animation: screenShake 0.4s; }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <!-- PANTALLA DE INICIO -->
+        <div id="screen-start" class="screen">
+            <h1>SUSTANTIVOS<br>INVASORES</h1>
+            <button id="btn-speed" class="btn" style="background: #e056fd; font-size: 1rem; padding: 15px 30px; margin-bottom: 20px;" onclick="toggleSpeed()">Velocidad: NORMAL ⚡</button>
+            
+            <button class="btn btn-azul" onclick="startGameMode('individual')">Juego Individual</button>
+            <button class="btn btn-verde" onclick="startGameMode('1v1')">1 vs 1 (Pantalla Dividida)</button>
+            <button class="btn btn-amarillo" onclick="showScreen('team-setup')">Juego por Equipos</button>
+        </div>
+
+        <!-- PANTALLA CONFIGURACIÓN DE EQUIPOS -->
+        <div id="screen-team-setup" class="screen hidden">
+            <h2>¿Cuántos equipos juegan?</h2>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 800px;">
+                <button class="btn btn-azul" onclick="setupTeams(2)">2 Equipos</button>
+                <button class="btn btn-rojo" onclick="setupTeams(3)">3 Equipos</button>
+                <button class="btn btn-verde" onclick="setupTeams(4)">4 Equipos</button>
+                <button class="btn btn-amarillo" onclick="setupTeams(5)">5 Equipos</button>
+                <button class="btn btn-morado" onclick="setupTeams(6)">6 Equipos</button>
+            </div>
+            <button class="btn" style="margin-top: 40px; background: #808e9b;" onclick="showScreen('start')">Volver</button>
+        </div>
+
+        <!-- PANTALLA SELECCIÓN DE EQUIPO -->
+        <div id="screen-teams" class="screen hidden">
+            <h2>¿Quién juega ahora?</h2>
+            <div id="dynamic-team-grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 900px; padding: 20px;">
+                <!-- Se rellena con JS -->
+            </div>
+            <button class="btn" style="margin-top: 40px; background: #808e9b;" onclick="showScreen('start')">Volver</button>
+        </div>
+
+        <!-- PANTALLA DE JUEGO (Múltiples Instancias) -->
+        <div id="game-ui" class="hidden">
+            <button onclick="forceQuitGame()" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 50; background: rgba(255,71,87,0.9); color: white; border: 2px solid white; border-radius: 10px; padding: 10px 20px; font-family: var(--font-retro); font-size: 0.8rem; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.5);">SALIR AL MENÚ</button>
+
+            <!-- JUGADOR 1 -->
+            <div class="game-instance" id="instance-0">
+                <div class="hud">
+                    <div class="hud-top-row">
+                        <div>PUNTOS: <span id="score-display-0">0</span></div>
+                        <div id="lives-0" class="lives-display">❤️❤️❤️</div>
+                    </div>
+                    <div id="objective-display-0" class="objective-display">TOCA LOS ...</div>
+                </div>
+                <div class="playfield" id="playfield-0"></div>
+            </div>
+
+            <!-- SEPARADOR 1 VS 1 -->
+            <div id="split-divider" class="split-divider hidden-flex"></div>
+
+            <!-- JUGADOR 2 -->
+            <div class="game-instance hidden-flex" id="instance-1">
+                <div class="hud">
+                    <div class="hud-top-row">
+                        <div>PUNTOS: <span id="score-display-1">0</span></div>
+                        <div id="lives-1" class="lives-display">❤️❤️❤️</div>
+                    </div>
+                    <div id="objective-display-1" class="objective-display">TOCA LOS ...</div>
+                </div>
+                <div class="playfield" id="playfield-1"></div>
+            </div>
+        </div>
+
+        <!-- PANTALLA GAME OVER -->
+        <div id="screen-gameover" class="screen hidden">
+            <h1>¡FIN DEL JUEGO!</h1>
+            <h2 id="final-score-text">Puntuación: 0</h2>
+            
+            <div id="team-scoreboard" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px;" class="hidden">
+                <!-- Se rellena con JS -->
+            </div>
+
+            <button id="btn-next-turn" class="btn btn-verde hidden" onclick="showScreen('teams')">Siguiente Turno</button>
+            <button class="btn btn-azul" style="margin-top:20px" onclick="showScreen('start')">Menú Principal</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- BASE DE DATOS DE PALABRAS (El docente puede añadir más aquí) ---
+        const sustantivosPropios = [
+            "Madrid", "Carlos", "Laura", "España", "Amazonas", "Ebro", 
+            "Toledo", "Marta", "Toby", "Andalucía", "Francia", "Mediterráneo",
+            "Pirineos", "Europa", "Zaragoza", "María", "Júpiter", "Tierra",
+            "Antonio", "Sevilla", "Guadalquivir", "Italia", "Roma", "París",
+            "Mickey", "Snoopy", "Everest", "África", "García", "Pérez",
+            "Atlántico", "Pacífico", "Marte", "Venus", "Luna", "Sol"
+        ];
+        
+        const sustantivosComunes = [
+            "mesa", "perro", "ciudad", "río", "niña", "coche", 
+            "montaña", "colegio", "libro", "lápiz", "zapato", "pelota",
+            "pizarra", "gato", "planeta", "ordenador", "árbol", "camino",
+            "goma", "estuche", "mochila", "silla", "ventana", "puerta",
+            "profesor", "pájaro", "pez", "flor", "parque", "calle",
+            "nube", "lluvia", "viento", "agua", "tierra", "fuego"
+        ];
+
+        // --- SISTEMA DE AUDIO (Web Audio API) ---
+        // Se genera por código, sin dependencias externas
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(250, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'gameover') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 1);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1);
+                osc.start(now);
+                osc.stop(now + 1);
+            }
+        }
+
+        // --- ESTADO DEL JUEGO Y CONFIGURACIÓN ---
+        const allTeamsDef = [
+            {id: 'ROJO', name: '🔴 Equipo Rojo', css: 'btn-rojo'},
+            {id: 'AZUL', name: '🔵 Equipo Azul', css: 'btn-azul'},
+            {id: 'VERDE', name: '🟢 Equipo Verde', css: 'btn-verde'},
+            {id: 'AMARILLO', name: '🟡 Equipo Amarillo', css: 'btn-amarillo'},
+            {id: 'MORADO', name: '🟣 Equipo Morado', css: 'btn-morado'},
+            {id: 'NARANJA', name: '🟠 Equipo Naranja', css: 'btn-naranja'}
+        ];
+        
+        let activeTeams = [];
+        let teamScores = {};
+        
+        let gameMode = 'individual'; // 'individual', 'equipos', '1v1'
+        let currentTeam = '';
+        let gameActive = false;
+        let animationFrameId;
+        
+        let speedSettings = {
+            'lenta': { text: 'Velocidad: LENTA 🐢', baseFall: 1, spawn: 3000 },
+            'normal': { text: 'Velocidad: NORMAL ⚡', baseFall: 2, spawn: 2000 },
+            'rapida': { text: 'Velocidad: RÁPIDA 🔥', baseFall: 3.5, spawn: 1200 }
+        };
+        let currentSpeed = 'normal';
+        let baseFallSpeed = 2;
+        let spawnRate = 2000;
+
+        // Soporte para múltiples pantallas (1 o 2 jugadores)
+        let instances = [];
+
+        // --- STREAMING_CHUNK:Controlador de Pantallas e Inicialización... ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen, #game-ui').forEach(el => el.classList.add('hidden'));
+            if(screenId === 'game') {
+                document.getElementById('game-ui').classList.remove('hidden');
+            } else {
+                document.getElementById('screen-' + screenId).classList.remove('hidden');
+            }
+        }
+
+        function toggleSpeed() {
+            const keys = Object.keys(speedSettings);
+            let idx = keys.indexOf(currentSpeed);
+            idx = (idx + 1) % keys.length;
+            currentSpeed = keys[idx];
+            document.getElementById('btn-speed').textContent = speedSettings[currentSpeed].text;
+        }
+
+        function forceQuitGame() {
+            gameActive = false;
+            cancelAnimationFrame(animationFrameId);
+            showScreen('start');
+        }
+
+        function setupTeams(count) {
+            activeTeams = allTeamsDef.slice(0, count);
+            teamScores = {};
+            
+            const grid = document.getElementById('dynamic-team-grid');
+            grid.innerHTML = '';
+            
+            activeTeams.forEach(team => {
+                teamScores[team.id] = 0;
+                const btn = document.createElement('button');
+                btn.className = `btn ${team.css}`;
+                btn.textContent = team.name;
+                btn.onclick = () => startTeamGame(team.id);
+                grid.appendChild(btn);
+            });
+            
+            showScreen('teams');
+        }
+
+        function startGameMode(mode) {
+            initAudio();
+            gameMode = mode;
+            if (mode === 'individual') {
+                resetGame(1);
+            } else if (mode === '1v1') {
+                resetGame(2);
+            }
+        }
+
+        function startTeamGame(teamId) {
+            initAudio();
+            currentTeam = teamId;
+            resetGame(1);
+        }
+
+        function createInstances(num) {
+            instances = [];
+            for (let i = 0; i < num; i++) {
+                instances.push({
+                    idx: i,
+                    score: 0,
+                    lives: 3,
+                    objective: '',
+                    words: [],
+                    lastSpawn: performance.now() + (i * 1000), // Desfase para 1vs1
+                    objTimer: performance.now(),
+                    ui: {
+                        container: document.getElementById(`instance-${i}`),
+                        playfield: document.getElementById(`playfield-${i}`),
+                        score: document.getElementById(`score-display-${i}`),
+                        lives: document.getElementById(`lives-${i}`),
+                        objective: document.getElementById(`objective-display-${i}`)
+                    }
+                });
+                instances[i].ui.playfield.innerHTML = ''; // Limpiar campos viejos
+            }
+
+            // Configurar layout (pantalla completa o dividida)
+            const inst1 = document.getElementById('instance-1');
+            const divider = document.getElementById('split-divider');
+            if (num === 2) {
+                inst1.classList.remove('hidden-flex');
+                divider.classList.remove('hidden-flex');
+            } else {
+                inst1.classList.add('hidden-flex');
+                divider.classList.add('hidden-flex');
+            }
+        }
+
+        function resetGame(numPlayers) {
+            const isTallScreen = window.innerHeight > 800;
+            // Ajustamos la velocidad base sumando un extra si la pantalla es muy alta (MDI)
+            baseFallSpeed = speedSettings[currentSpeed].baseFall + (isTallScreen ? 1 : 0);
+            spawnRate = speedSettings[currentSpeed].spawn;
+            
+            createInstances(numPlayers);
+            
+            instances.forEach(inst => {
+                updateHUD(inst);
+                switchObjective(inst);
+            });
+            
+            showScreen('game');
+            gameActive = true;
+            gameLoop(performance.now());
+        }
+
+        function updateHUD(inst) {
+            inst.ui.score.textContent = inst.score;
+            inst.ui.lives.textContent = '❤️'.repeat(inst.lives);
+            if (inst.lives <= 0) checkGameOver();
+        }
+
+        function switchObjective(inst) {
+            inst.objective = Math.random() > 0.5 ? 'propios' : 'comunes';
+            const colorP = '#0be881';
+            const colorC = '#4bcffa';
+            
+            // En modo 1vs1 hacemos el texto un poco más corto para que quepa bien
+            if (gameMode === '1v1') {
+                inst.ui.objective.innerHTML = inst.objective === 'propios' 
+                    ? `<span style="color:${colorP}">⭐ PROPIOS ⭐</span>` 
+                    : `<span style="color:${colorC}">🟦 COMUNES 🟦</span>`;
+            } else {
+                inst.ui.objective.innerHTML = inst.objective === 'propios' 
+                    ? `⭐ TOCA LOS <span style="color:${colorP}">PROPIOS</span> ⭐` 
+                    : `🟦 TOCA LOS <span style="color:${colorC}">COMUNES</span> 🟦`;
+            }
+        }
+
+        // --- STREAMING_CHUNK:Lógica principal y bucle del juego (Multi-instancia)... ---
+        function spawnWord(inst) {
+            const isProper = Math.random() > 0.5;
+            const wordList = isProper ? sustantivosPropios : sustantivosComunes;
+            const text = wordList[Math.floor(Math.random() * wordList.length)];
+            
+            const el = document.createElement('div');
+            el.className = 'falling-word';
+            el.textContent = text;
+            
+            inst.ui.playfield.appendChild(el);
+            const maxX = inst.ui.playfield.clientWidth - el.offsetWidth;
+            const x = Math.max(0, Math.floor(Math.random() * maxX));
+            
+            const wordObj = {
+                element: el,
+                x: x,
+                y: -100, 
+                isProper: isProper,
+                speed: baseFallSpeed + (Math.random() * 1.5),
+                clicked: false
+            };
+
+            el.style.left = `${x}px`;
+            el.style.top = `${wordObj.y}px`;
+
+            el.addEventListener('pointerdown', (e) => handleWordClick(e, wordObj, inst));
+            
+            inst.words.push(wordObj);
+        }
+
+        function handleWordClick(event, wordObj, inst) {
+            if (!gameActive || wordObj.clicked) return;
+            event.stopPropagation(); 
+            
+            wordObj.clicked = true;
+            
+            const isTarget = (inst.objective === 'propios' && wordObj.isProper) || 
+                             (inst.objective === 'comunes' && !wordObj.isProper);
+
+            if (isTarget) {
+                playSound('correct');
+                wordObj.element.classList.add('word-correct');
+                inst.score += 10;
+                
+                // Dificultad escalable compartida
+                const totalScore = instances.reduce((sum, i) => sum + i.score, 0);
+                if (totalScore % 50 === 0 && totalScore > 0) {
+                    baseFallSpeed += 0.5;
+                    spawnRate = Math.max(800, spawnRate - 150);
+                }
+            } else {
+                playSound('wrong');
+                wordObj.element.classList.add('word-wrong');
+                loseLife(inst);
+            }
+
+            updateHUD(inst);
+
+            setTimeout(() => {
+                if(wordObj.element.parentNode) wordObj.element.remove();
+                inst.words = inst.words.filter(w => w !== wordObj);
+            }, 300);
+        }
+
+        function loseLife(inst) {
+            inst.lives--;
+            // Tiembla únicamente el lado del alumno que ha fallado
+            inst.ui.container.classList.add('shake');
+            setTimeout(() => inst.ui.container.classList.remove('shake'), 400);
+            updateHUD(inst);
+        }
+
+        // --- STREAMING_CHUNK:Bucle de Animación... ---
+        function gameLoop(currentTime) {
+            if (!gameActive) return;
+
+            instances.forEach(inst => {
+                if (inst.lives <= 0) return; // Si ha perdido, su lado se congela
+
+                // 1. Spawner
+                if (currentTime - inst.lastSpawn > spawnRate) {
+                    spawnWord(inst);
+                    inst.lastSpawn = currentTime;
+                }
+
+                // 2. Cambio de objetivo automático
+                if (currentTime - inst.objTimer > 15000) {
+                    switchObjective(inst);
+                    inst.objTimer = currentTime;
+                }
+
+                // 3. Físicas de caída
+                const bottomLimit = inst.ui.playfield.clientHeight;
+                for (let i = inst.words.length - 1; i >= 0; i--) {
+                    let w = inst.words[i];
+                    if (w.clicked) continue;
+
+                    w.y += w.speed;
+                    w.element.style.top = `${w.y}px`;
+
+                    if (w.y > bottomLimit) {
+                        const isTarget = (inst.objective === 'propios' && w.isProper) || 
+                                         (inst.objective === 'comunes' && !w.isProper);
+                        // Penalizamos solo si era obligatorio tocarlo
+                        if (isTarget) {
+                            playSound('wrong');
+                            loseLife(inst);
+                        }
+
+                        w.element.remove();
+                        inst.words.splice(i, 1);
+                    }
+                }
+            });
+
+            if (gameActive) {
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // --- STREAMING_CHUNK:Resolución de Fin de Partida... ---
+        function checkGameOver() {
+            let isOver = false;
+            let winnerMsg = "";
+
+            if (gameMode === '1v1') {
+                const p1 = instances[0];
+                const p2 = instances[1];
+                
+                // En 1v1 el juego termina en cuanto un jugador pierde sus 3 vidas
+                if (p1.lives <= 0 || p2.lives <= 0) {
+                    isOver = true;
+                    if (p1.lives <= 0 && p2.lives <= 0) {
+                        winnerMsg = p1.score > p2.score ? "¡JUGADOR 1 GANA!" : (p2.score > p1.score ? "¡JUGADOR 2 GANA!" : "¡EMPATE!");
+                    } else if (p1.lives <= 0) {
+                        winnerMsg = "¡JUGADOR 2 GANA POR SUPERVIVENCIA!";
+                    } else {
+                        winnerMsg = "¡JUGADOR 1 GANA POR SUPERVIVENCIA!";
+                    }
+                }
+            } else {
+                if (instances[0].lives <= 0) {
+                    isOver = true;
+                    winnerMsg = `Puntuación: ${instances[0].score}`;
+                }
+            }
+
+            if (isOver) {
+                gameOver(winnerMsg);
+            }
+        }
+
+        function gameOver(message) {
+            gameActive = false;
+            cancelAnimationFrame(animationFrameId);
+            playSound('gameover');
+            
+            document.getElementById('final-score-text').textContent = message;
+            
+            const scoreboard = document.getElementById('team-scoreboard');
+            const btnNext = document.getElementById('btn-next-turn');
+
+            if (gameMode === 'equipos') {
+                // Suman los puntos al total de su equipo
+                teamScores[currentTeam] += instances[0].score;
+                updateTeamScoreboardUI();
+                
+                scoreboard.classList.remove('hidden');
+                btnNext.classList.remove('hidden');
+            } else {
+                scoreboard.classList.add('hidden');
+                btnNext.classList.add('hidden');
+            }
+
+            showScreen('gameover');
+        }
+
+        function updateTeamScoreboardUI() {
+            const board = document.getElementById('team-scoreboard');
+            board.innerHTML = '';
+            activeTeams.forEach(team => {
+                const box = document.createElement('div');
+                box.className = `team-score-box ${team.css}`;
+                // Formato limpio: ej. "🔴 Rojo: 150"
+                const shortName = team.name.replace('Equipo ', '');
+                box.innerHTML = `${shortName}: <span>${teamScores[team.id]}</span>`;
+                board.appendChild(box);
+            });
+        }
+
+        // Evitar comportamientos extraños del clic derecho en la pizarra del aula
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+    </script>
+</body>
+</html>
