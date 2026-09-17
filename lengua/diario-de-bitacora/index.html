@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Aventura Pirata: El Tesoro Gramatical</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    :root {
+      --pixel-font: 'Press Start 2P', monospace;
+      --text-font: 'Quicksand', sans-serif;
+    }
+    
+    body {
+      font-family: var(--text-font);
+      background-color: #1e293b;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overflow: hidden;
+    }
+
+    .retro-title {
+      font-family: var(--pixel-font);
+      text-shadow: 2px 2px 0px #0f172a, 4px 4px 0px rgba(0,0,0,0.3);
+    }
+
+    .pixel-border {
+      box-shadow: 
+        0 -4px 0 0 #1e293b,
+        0 4px 0 0 #1e293b,
+        -4px 0 0 0 #1e293b,
+        4px 0 0 0 #1e293b,
+        0 0 0 4px #000;
+    }
+
+    .adventure-dialog {
+      background: #111827;
+      border: 4px solid #f59e0b;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 8px 16px rgba(0,0,0,0.4);
+    }
+
+    /* Bottle float bobbing animation */
+    @keyframes bobbing {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+    }
+
+    .floating-bottle {
+      animation: bobbing 3.5s ease-in-out infinite;
+      cursor: grab;
+      touch-action: none;
+    }
+    .floating-bottle:active {
+      cursor: grabbing;
+    }
+
+    /* Pirate walking bob */
+    @keyframes pirateStep {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .pirate-walking {
+      animation: pirateStep 0.25s infinite ease-in-out;
+    }
+
+    /* Chest pulse ready highlight */
+    @keyframes chestGlow {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4)); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.9)); transform: scale(1.03); }
+    }
+    .chest-target-active {
+      animation: chestGlow 1.2s infinite ease-in-out;
+      border-color: #f59e0b !important;
+    }
+
+    /* Wave effect */
+    @keyframes waveRoll {
+      0% { transform: translateX(0) scaleY(1); }
+      50% { transform: translateX(-20px) scaleY(1.08); }
+      100% { transform: translateX(0) scaleY(1); }
+    }
+    .sea-wave {
+      animation: waveRoll 6s ease-in-out infinite;
+    }
+
+    /* Particles container */
+    #fx-canvas {
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 40;
+    }
+
+    .texture-sand {
+      position: relative;
+    }
+    .texture-sand::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.15;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .texture-water {
+      position: relative;
+    }
+    .texture-water::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='water'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015 0.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23water)'/%3E%3C/svg%3E");
+      opacity: 0.25;
+      mix-blend-mode: color-burn;
+      pointer-events: none;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-sky-300">
+
+  <div id="start-screen" class="fixed inset-0 z-[100] bg-sky-950/90 flex items-center justify-center p-4 sm:p-8 backdrop-blur-md transition-opacity duration-500">
+    <div class="bg-gradient-to-b from-amber-50 to-amber-100 border-8 border-amber-600 rounded-3xl p-6 sm:p-10 max-w-4xl w-full shadow-[0_0_50px_rgba(0,0,0,0.6)] relative mt-10 sm:mt-0">
+      
+      <!-- Título Superior -->
+      <div class="absolute -top-8 sm:-top-12 left-1/2 -translate-x-1/2 bg-amber-600 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full border-4 border-amber-300 shadow-lg z-10 w-11/12 sm:w-auto text-center">
+        <h2 class="retro-title text-base sm:text-2xl md:text-3xl tracking-widest whitespace-nowrap">⚓ DIARIO DE BITÁCORA ⚓</h2>
+      </div>
+
+      <div class="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
+        
+        <!-- Panel 1: Selector de Jugadores -->
+        <div>
+          <h3 class="text-amber-900 font-black text-base sm:text-xl uppercase mb-3 sm:mb-4 text-center border-b-2 border-amber-200 pb-2">1. ¿Cuántos piratas navegan?</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <button data-val="1" class="btn-player flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-4 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all shadow-md group cursor-pointer">
+              <span class="text-4xl sm:text-5xl mb-2 group-hover:scale-110 transition-transform">👤</span>
+              <span class="font-bold text-slate-800 text-sm sm:text-base">1 Jugador</span>
+            </button>
+            <button data-val="2" class="btn-player flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-4 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all shadow-md group cursor-pointer">
+              <span class="text-4xl sm:text-5xl mb-2 group-hover:scale-110 transition-transform">👥</span>
+              <span class="font-bold text-slate-800 text-sm sm:text-base">2 Jugadores</span>
+            </button>
+            <button data-val="equipos" class="btn-player flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-4 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all shadow-md group cursor-pointer">
+              <span class="text-4xl sm:text-5xl mb-2 group-hover:scale-110 transition-transform">🏴‍☠️</span>
+              <span class="font-bold text-slate-800 text-sm sm:text-base">Por Equipos</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel 2: Selector de Misión -->
+        <div>
+          <h3 class="text-amber-900 font-black text-base sm:text-xl uppercase mb-3 sm:mb-4 text-center border-b-2 border-amber-200 pb-2">2. Elige tu mapa (Misión)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <!-- Misión Activa -->
+            <button data-val="gramatica" class="btn-mission flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-4 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all shadow-md group cursor-pointer">
+              <span class="text-4xl sm:text-5xl mb-2 group-hover:scale-110 transition-transform">📜</span>
+              <span class="font-bold text-slate-800 text-sm sm:text-base">Clasificador Gramatical</span>
+              <span class="text-xs font-semibold text-amber-700 mt-1 hidden sm:block">Sustantivos, Adjetivos y Verbos</span>
+            </button>
+            
+            <!-- Misión Bloqueada (Demostración de escalabilidad) -->
+            <button data-val="ortografia" class="btn-mission flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl border-4 border-amber-300 bg-amber-50 transition-all shadow-md relative overflow-hidden cursor-not-allowed opacity-80">
+              <div class="absolute inset-0 bg-slate-900/10 z-10 flex items-center justify-center backdrop-blur-[1px]">
+                <span class="bg-amber-600 text-white text-[10px] sm:text-xs px-3 py-1 rounded-full font-black border-2 border-white shadow-lg rotate-[-10deg]">¡Muy Pronto!</span>
+              </div>
+              <span class="text-4xl sm:text-5xl mb-2 opacity-50">🧭</span>
+              <span class="font-bold text-slate-500 text-sm sm:text-base">Reto Ortográfico</span>
+              <span class="text-xs font-semibold text-slate-400 mt-1 hidden sm:block">B y V / G y J</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón de Inicio -->
+        <div class="pt-2 sm:pt-4 flex justify-center">
+          <button id="btn-start-game" class="w-full sm:w-2/3 md:w-1/2 py-3 sm:py-5 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-white font-black text-lg sm:text-2xl rounded-2xl border-b-8 border-emerald-700 shadow-xl transition-all flex items-center justify-center gap-3 animate-pulse">
+            <span class="text-2xl sm:text-3xl">⛵</span>
+            <span>¡LEVAR ANCLAS!</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <canvas id="fx-canvas"></canvas>
+
+  <header class="w-full bg-slate-900/90 text-white z-30 border-b-4 border-amber-500 px-4 py-2 flex items-center justify-between shadow-xl">
+    <div class="flex items-center gap-3">
+      <div class="bg-amber-500 text-slate-900 p-2 rounded-lg font-bold text-xl flex items-center gap-1 shadow-inner">
+        <span>🏴‍☠️</span>
+        <span class="hidden sm:inline text-sm uppercase font-black tracking-wider">Misión:</span>
+      </div>
+      <div>
+        <h1 class="retro-title text-yellow-300 text-xs sm:text-base tracking-wider">PLAYA GRAMATICAL</h1>
+        <p class="text-xs text-amber-200 font-semibold hidden md:block">¡Ayuda a Barbarroja a clasificar las botellas en los cofres!</p>
+      </div>
+    </div>
+
+    <!-- Counters and Game Stats -->
+    <div class="flex items-center gap-3 sm:gap-6">
+      <div class="bg-slate-800 border-2 border-amber-400/60 rounded-xl px-3 py-1 text-center shadow">
+        <span class="block text-[10px] text-amber-300 font-bold uppercase tracking-wider">Doblones</span>
+        <div class="flex items-center justify-center gap-1 text-yellow-400 font-black text-lg">
+          <span>🪙</span>
+          <span id="score-val">0</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-800 border-2 border-sky-400/60 rounded-xl px-3 py-1 text-center shadow">
+        <span class="block text-[10px] text-sky-300 font-bold uppercase tracking-wider">Restantes</span>
+        <div class="flex items-center justify-center gap-1 text-sky-200 font-black text-lg">
+          <span>🍾</span>
+          <span id="remaining-val">0</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons (Large Touch Area) -->
+      <div class="flex items-center gap-2">
+        <button id="btn-home" class="w-12 h-12 bg-sky-600 hover:bg-sky-500 active:scale-95 text-white rounded-xl border-2 border-sky-300 flex items-center justify-center text-2xl shadow-md transition-all" title="Volver al Menú">
+          <span>🏠</span>
+        </button>
+        <button id="btn-sound" class="w-12 h-12 bg-amber-600 hover:bg-amber-500 active:scale-95 text-white rounded-xl border-2 border-amber-300 flex items-center justify-center text-xl shadow-md transition-all" title="Activar/Silenciar Sonido">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <button id="btn-reset" class="px-3 h-12 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-sm sm:text-base rounded-xl border-2 border-emerald-300 flex items-center gap-1 shadow-md transition-all" title="Reiniciar Juego">
+          <span>🔄</span>
+          <span class="hidden sm:inline">Nueva Marea</span>
+        </button>
+        <button id="btn-fullscreen" class="w-12 h-12 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white rounded-xl border-2 border-indigo-300 flex items-center justify-center text-xl shadow-md transition-all" title="Pantalla Completa">
+          <span>⛶</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="game-stage" class="relative flex-1 w-full overflow-hidden select-none">
+    
+    <!-- Background: Sky, Clouds & Distant Island -->
+    <div class="absolute inset-0 bg-gradient-to-b from-sky-400 via-sky-200 to-amber-100 z-0">
+      <!-- Distant 90s Mountain/Island silhouette -->
+      <svg class="absolute bottom-40 w-full h-40 opacity-70" preserveAspectRatio="none" viewBox="0 0 1000 200">
+        <polygon points="0,180 80,120 180,170 300,90 420,160 550,110 700,180 850,100 1000,170 1000,200 0,200" fill="#0d9488" />
+        <polygon points="120,190 220,130 360,185 640,120 800,185 1000,150 1000,200 0,200" fill="#14b8a6" opacity="0.6" />
+      </svg>
+      
+      <!-- Retro Cloud 1 -->
+      <div class="absolute top-4 left-10 opacity-80 animate-pulse">
+        <svg width="120" height="50" viewBox="0 0 120 50">
+          <ellipse cx="40" cy="30" rx="30" ry="18" fill="#ffffff"/>
+          <ellipse cx="70" cy="22" rx="25" ry="16" fill="#ffffff"/>
+          <ellipse cx="90" cy="32" rx="20" ry="14" fill="#ffffff"/>
+        </svg>
+      </div>
+      <!-- Retro Cloud 2 -->
+      <div class="absolute top-10 right-24 opacity-80">
+        <svg width="150" height="60" viewBox="0 0 150 60">
+          <ellipse cx="50" cy="35" rx="35" ry="20" fill="#ffffff"/>
+          <ellipse cx="85" cy="25" rx="30" ry="20" fill="#ffffff"/>
+          <ellipse cx="115" cy="38" rx="25" ry="16" fill="#ffffff"/>
+        </svg>
+      </div>
+
+      <!-- Retro Sun with sunglasses -->
+      <div class="absolute top-3 right-8 flex items-center justify-center">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-amber-400 rounded-full border-4 border-amber-500 shadow-lg flex items-center justify-center relative">
+          <div class="absolute w-12 h-4 bg-slate-900 rounded-sm top-5"></div>
+          <div class="w-5 h-2 bg-slate-900 absolute top-5 left-2 border-t-2 border-white"></div>
+          <div class="w-5 h-2 bg-slate-900 absolute top-5 right-2 border-t-2 border-white"></div>
+          <div class="w-6 h-2 border-b-2 border-amber-800 rounded-full mt-7"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Animated Ocean Shoreline -->
+    <div class="absolute bottom-28 sm:bottom-36 left-0 right-0 h-44 z-10 pointer-events-none texture-water">
+      
+      <!-- NUEVO: Barco Pirata en el agua -->
+      <div class="absolute bottom-10 left-10 sm:left-24 w-32 h-32 sm:w-48 sm:h-48 animate-[bobbing_5s_ease-in-out_infinite] z-0 opacity-90">
+        <svg viewBox="0 0 200 200" class="w-full h-full drop-shadow-2xl">
+           <!-- Casco del barco -->
+           <path d="M20,150 L160,150 L180,110 L10,110 Z" fill="#78350f" stroke="#451a03" stroke-width="4"/>
+           <line x1="15" y1="125" x2="175" y2="125" stroke="#451a03" stroke-width="2"/>
+           <line x1="18" y1="140" x2="165" y2="140" stroke="#451a03" stroke-width="2"/>
+           <!-- Mástiles -->
+           <rect x="50" y="30" width="6" height="80" fill="#451a03"/>
+           <rect x="110" y="10" width="8" height="100" fill="#451a03"/>
+           <!-- Velas -->
+           <path d="M53,40 Q90,60 53,80 Z" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+           <path d="M114,20 Q170,50 114,80 Z" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+           <path d="M114,85 Q160,100 114,110 Z" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+           <!-- Bandera Pirata -->
+           <rect x="118" y="15" width="25" height="15" fill="#0f172a"/>
+           <circle cx="130" cy="22" r="4" fill="#ffffff"/>
+           <!-- Cañones -->
+           <circle cx="50" cy="132" r="6" fill="#000"/>
+           <circle cx="90" cy="132" r="6" fill="#000"/>
+           <circle cx="130" cy="132" r="6" fill="#000"/>
+        </svg>
+      </div>
+
+      <svg class="sea-wave w-full h-full relative z-0" preserveAspectRatio="none" viewBox="0 0 1200 240">
+        <!-- Deep Water -->
+        <path d="M0,80 C150,110 350,50 500,90 C650,130 850,70 1000,100 C1100,120 1200,85 1200,240 L0,240 Z" fill="#0284c7" opacity="0.8"/>
+        <!-- Mid Water & Surf -->
+        <path d="M0,110 C180,70 380,130 600,90 C820,50 980,120 1200,100 L1200,240 L0,240 Z" fill="#38bdf8" opacity="0.9"/>
+        <!-- White Foam Fringe -->
+        <path d="M0,125 Q300,170 600,125 T1200,135 L1200,165 Q900,195 600,150 T0,145 Z" fill="#e0f2fe" opacity="0.75"/>
+      </svg>
+    </div>
+
+    <!-- Golden Beach Sand Foreground -->
+    <div class="absolute bottom-0 left-0 right-0 h-56 sm:h-64 bg-gradient-to-t from-amber-300 via-amber-200 to-amber-100 border-t-4 border-amber-400 z-10 texture-sand">
+      <!-- Decorative Sand Details: Shells, Stars, Palms -->
+      <div class="absolute left-6 bottom-4 text-3xl relative z-10">🐚</div>
+      <div class="absolute right-12 bottom-6 text-3xl hover:animate-spin transition-transform relative z-10">⭐</div>
+      <div class="absolute left-1/3 bottom-2 text-2xl opacity-60 animate-bounce relative z-10">🦀</div>
+      <div class="absolute right-[20%] bottom-8 text-4xl opacity-80 pointer-events-none drop-shadow-md z-10">🌴</div>
+      
+      <!-- NUEVO: Castillo de Arena -->
+      <div class="absolute left-1/4 bottom-10 w-20 h-20 drop-shadow-md z-10 pointer-events-none opacity-90 hidden sm:block">
+         <svg viewBox="0 0 100 100" fill="#fcd34d">
+            <path d="M10,90 L90,90 L80,50 L20,50 Z" stroke="#b45309" stroke-width="2"/>
+            <rect x="30" y="20" width="40" height="30" stroke="#b45309" stroke-width="2"/>
+            <!-- Almenas -->
+            <rect x="25" y="10" width="10" height="15" stroke="#b45309" stroke-width="2"/>
+            <rect x="45" y="10" width="10" height="15" stroke="#b45309" stroke-width="2"/>
+            <rect x="65" y="10" width="10" height="15" stroke="#b45309" stroke-width="2"/>
+            <!-- Puerta -->
+            <path d="M40,90 L40,65 C40,60 60,60 60,65 L60,90 Z" fill="#92400e"/>
+            <!-- Bandera -->
+            <line x1="50" y1="10" x2="50" y2="-10" stroke="#000" stroke-width="2"/>
+            <path d="M50,-10 L70,0 L50,5 Z" fill="#ef4444"/>
+         </svg>
+      </div>
+
+      <!-- NUEVO: Barril Pirata -->
+      <div class="absolute right-1/3 bottom-4 w-14 h-16 drop-shadow-lg opacity-90 z-10 pointer-events-none">
+         <svg viewBox="0 0 100 100">
+            <path d="M20,10 Q5,50 20,90 L80,90 Q95,50 80,10 Z" fill="#92400e" stroke="#451a03" stroke-width="4"/>
+            <path d="M20,10 Q50,0 80,10 Z" fill="#b45309" stroke="#451a03" stroke-width="3"/>
+            <!-- Tablones -->
+            <line x1="35" y1="12" x2="35" y2="88" stroke="#451a03" stroke-width="2"/>
+            <line x1="50" y1="10" x2="50" y2="90" stroke="#451a03" stroke-width="2"/>
+            <line x1="65" y1="12" x2="65" y2="88" stroke="#451a03" stroke-width="2"/>
+            <!-- Anillos de metal -->
+            <path d="M12,30 Q50,40 88,30" fill="none" stroke="#64748b" stroke-width="6"/>
+            <path d="M12,70 Q50,80 88,70" fill="none" stroke="#64748b" stroke-width="6"/>
+            <!-- Remaches -->
+            <circle cx="50" cy="35" r="2" fill="#0f172a"/>
+            <circle cx="50" cy="75" r="2" fill="#0f172a"/>
+         </svg>
+      </div>
+
+      <!-- Palm Tree (Left Side) -->
+      <div class="absolute -bottom-6 -left-8 w-44 h-72 pointer-events-none z-20">
+        <svg viewBox="0 0 200 300" class="w-full h-full drop-shadow-md">
+          <!-- Trunk -->
+          <path d="M40,300 Q80,180 70,80 Q90,180 65,300 Z" fill="#92400e" stroke="#78350f" stroke-width="4"/>
+          <!-- Fronds -->
+          <path d="M70,80 Q20,30 -20,60 Q20,65 70,80" fill="#15803d" stroke="#166534" stroke-width="3"/>
+          <path d="M70,80 Q40,10 80,-10 Q85,40 70,80" fill="#16a34a" stroke="#166534" stroke-width="3"/>
+          <path d="M70,80 Q120,20 160,50 Q110,65 70,80" fill="#22c55e" stroke="#166534" stroke-width="3"/>
+          <path d="M70,80 Q140,80 170,120 Q110,105 70,80" fill="#15803d" stroke="#166534" stroke-width="3"/>
+          <circle cx="68" cy="85" r="8" fill="#713f12"/>
+          <circle cx="78" cy="88" r="7" fill="#713f12"/>
+        </svg>
+      </div>
+    </div>
+
+    <div id="play-area" class="relative w-full h-full z-20">
+      
+      <!-- CHESTS CONTAINER (Positioned in the mid-lower sand area) -->
+      <div id="chests-row" class="absolute bottom-2 sm:bottom-4 left-0 right-0 flex justify-around items-end px-4 sm:px-12 max-w-6xl mx-auto pointer-events-auto">
+        
+        <!-- Chest 1: SUSTANTIVOS -->
+        <div data-category="sustantivo" class="chest-dropzone group flex flex-col items-center cursor-pointer transition-transform duration-200" tabindex="0">
+          <div class="relative bg-amber-950/80 p-2 sm:p-3 rounded-2xl border-4 border-amber-700 shadow-2xl flex flex-col items-center min-w-[100px] sm:min-w-[150px] md:min-w-[190px]">
+            <!-- Category Title Ribbon -->
+            <div class="bg-blue-600 text-white font-extrabold text-xs sm:text-base md:text-lg px-3 py-1 rounded-full border-2 border-white shadow-md uppercase tracking-wider mb-1">
+              Sustantivos
+            </div>
+            <!-- Subtitle Helper for 3.º Primaria -->
+            <span class="text-[10px] sm:text-xs text-amber-200 font-bold mb-1">(Cosas, personas, lugares)</span>
+            
+            <!-- Chest SVG Illustration -->
+            <div class="chest-graphic relative w-20 h-16 sm:w-28 sm:h-22 md:w-32 md:h-24 transition-transform group-hover:scale-105">
+              <svg viewBox="0 0 100 80" class="w-full h-full drop-shadow-lg">
+                <!-- Base -->
+                <rect x="10" y="32" width="80" height="42" rx="5" fill="#854d0e" stroke="#3b1d03" stroke-width="4"/>
+                <rect x="10" y="44" width="80" height="8" fill="#a16207"/>
+                <rect x="22" y="32" width="10" height="42" fill="#ca8a04" opacity="0.6"/>
+                <rect x="68" y="32" width="10" height="42" fill="#ca8a04" opacity="0.6"/>
+                <!-- Lid -->
+                <path d="M6,32 Q50,6 94,32 Z" fill="#a16207" stroke="#3b1d03" stroke-width="4"/>
+                <circle cx="50" cy="46" r="6" fill="#facc15" stroke="#713f12" stroke-width="2"/>
+                <rect x="48" y="50" width="4" height="6" fill="#713f12"/>
+              </svg>
+            </div>
+            <!-- Slot counter badge -->
+            <div class="chest-counter mt-1 bg-blue-900 text-yellow-300 font-bold text-xs sm:text-sm px-2 py-0.5 rounded-md border border-blue-400">
+              <span class="count">0</span> guardados
+            </div>
+          </div>
+        </div>
+
+        <!-- Chest 2: ADJETIVOS -->
+        <div data-category="adjetivo" class="chest-dropzone group flex flex-col items-center cursor-pointer transition-transform duration-200" tabindex="0">
+          <div class="relative bg-amber-950/80 p-2 sm:p-3 rounded-2xl border-4 border-amber-700 shadow-2xl flex flex-col items-center min-w-[100px] sm:min-w-[150px] md:min-w-[190px]">
+            <!-- Category Title Ribbon -->
+            <div class="bg-purple-600 text-white font-extrabold text-xs sm:text-base md:text-lg px-3 py-1 rounded-full border-2 border-white shadow-md uppercase tracking-wider mb-1">
+              Adjetivos
+            </div>
+            <!-- Subtitle Helper -->
+            <span class="text-[10px] sm:text-xs text-amber-200 font-bold mb-1">(Cómo es o cómo está)</span>
+            
+            <!-- Chest SVG Illustration -->
+            <div class="chest-graphic relative w-20 h-16 sm:w-28 sm:h-22 md:w-32 md:h-24 transition-transform group-hover:scale-105">
+              <svg viewBox="0 0 100 80" class="w-full h-full drop-shadow-lg">
+                <!-- Base -->
+                <rect x="10" y="32" width="80" height="42" rx="5" fill="#7c2d12" stroke="#3b1d03" stroke-width="4"/>
+                <rect x="10" y="44" width="80" height="8" fill="#9a3412"/>
+                <rect x="22" y="32" width="10" height="42" fill="#ea580c" opacity="0.6"/>
+                <rect x="68" y="32" width="10" height="42" fill="#ea580c" opacity="0.6"/>
+                <!-- Lid -->
+                <path d="M6,32 Q50,6 94,32 Z" fill="#c2410c" stroke="#3b1d03" stroke-width="4"/>
+                <circle cx="50" cy="46" r="6" fill="#facc15" stroke="#713f12" stroke-width="2"/>
+                <rect x="48" y="50" width="4" height="6" fill="#713f12"/>
+              </svg>
+            </div>
+            <!-- Slot counter badge -->
+            <div class="chest-counter mt-1 bg-purple-900 text-yellow-300 font-bold text-xs sm:text-sm px-2 py-0.5 rounded-md border border-purple-400">
+              <span class="count">0</span> guardados
+            </div>
+          </div>
+        </div>
+
+        <!-- Chest 3: VERBOS -->
+        <div data-category="verbo" class="chest-dropzone group flex flex-col items-center cursor-pointer transition-transform duration-200" tabindex="0">
+          <div class="relative bg-amber-950/80 p-2 sm:p-3 rounded-2xl border-4 border-amber-700 shadow-2xl flex flex-col items-center min-w-[100px] sm:min-w-[150px] md:min-w-[190px]">
+            <!-- Category Title Ribbon -->
+            <div class="bg-rose-600 text-white font-extrabold text-xs sm:text-base md:text-lg px-3 py-1 rounded-full border-2 border-white shadow-md uppercase tracking-wider mb-1">
+              Verbos
+            </div>
+            <!-- Subtitle Helper -->
+            <span class="text-[10px] sm:text-xs text-amber-200 font-bold mb-1">(Acciones o estados)</span>
+            
+            <!-- Chest SVG Illustration -->
+            <div class="chest-graphic relative w-20 h-16 sm:w-28 sm:h-22 md:w-32 md:h-24 transition-transform group-hover:scale-105">
+              <svg viewBox="0 0 100 80" class="w-full h-full drop-shadow-lg">
+                <!-- Base -->
+                <rect x="10" y="32" width="80" height="42" rx="5" fill="#064e3b" stroke="#3b1d03" stroke-width="4"/>
+                <rect x="10" y="44" width="80" height="8" fill="#065f46"/>
+                <rect x="22" y="32" width="10" height="42" fill="#10b981" opacity="0.6"/>
+                <rect x="68" y="32" width="10" height="42" fill="#10b981" opacity="0.6"/>
+                <!-- Lid -->
+                <path d="M6,32 Q50,6 94,32 Z" fill="#047857" stroke="#3b1d03" stroke-width="4"/>
+                <circle cx="50" cy="46" r="6" fill="#facc15" stroke="#713f12" stroke-width="2"/>
+                <rect x="48" y="50" width="4" height="6" fill="#713f12"/>
+              </svg>
+            </div>
+            <!-- Slot counter badge -->
+            <div class="chest-counter mt-1 bg-rose-900 text-yellow-300 font-bold text-xs sm:text-sm px-2 py-0.5 rounded-md border border-rose-400">
+              <span class="count">0</span> guardados
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- Cierre correcto de chests-row -->
+
+      <div id="bottles-container" class="absolute inset-0 pointer-events-none z-30">
+        <!-- Bottled messages will be rendered here by JS with absolute positions -->
+      </div>
+
+      <div id="pirate-avatar" class="absolute z-40 transition-all duration-700 ease-out pointer-events-none" style="left: 15%; bottom: 130px; width: 140px; height: 170px;">
+        <div id="pirate-sprite" class="w-full h-full relative">
+          <!-- Active carried bottle placeholder on pirate's hand -->
+          <div id="pirate-carried-item" class="absolute -top-4 -right-6 hidden transition-all scale-100 z-50">
+            <span class="bg-amber-100 text-slate-900 border-2 border-amber-900 text-xs px-2 py-1 rounded font-extrabold shadow-md">📜</span>
+          </div>
+
+          <svg viewBox="0 0 200 240" class="w-full h-full drop-shadow-2xl overflow-visible">
+            <defs>
+              <style>
+                .t-line { stroke: #000; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+                .m-line { stroke: #000; stroke-width: 4; stroke-linejoin: round; stroke-linecap: round; }
+                .skin { fill: #cf9976; }
+                .coat { fill: #9d3e45; }
+                .gold { fill: #ffcc00; }
+                .dark { fill: #292929; }
+                .boot { fill: #7a5439; }
+                .shirt { fill: #ffffff; }
+              </style>
+            </defs>
+
+            <!-- Bandana Tails (Back) -->
+            <path class="coat t-line" d="M 45,130 C 15,125 10,165 25,180 C 25,160 40,150 45,145 Z" />
+            <path class="coat t-line" d="M 45,145 C 20,150 30,195 45,190 C 50,170 55,160 50,150 Z" />
+
+            <!-- Left Arm (On Hip - Viewer Left) -->
+            <path class="coat t-line" d="M 70,140 C 40,150 40,190 60,195 L 75,185 Z" />
+            
+            <!-- Right Arm (With Hook - Viewer Right) -->
+            <path class="coat t-line" d="M 130,140 L 155,180 L 140,190 Z" />
+            <path class="dark t-line" d="M 135,180 L 160,175 L 165,195 L 140,198 Z" />
+            <path d="M 152,196 L 152,210 C 152,225 175,225 175,210 C 175,200 165,195 165,205" fill="none" stroke="#a1a1aa" stroke-width="6" stroke-linecap="round"/>
+
+            <!-- Legs & Boots -->
+            <path class="dark t-line" d="M 85,180 L 75,215 L 95,215 L 100,195 L 105,215 L 125,215 L 115,180 Z" />
+            <path class="boot t-line" d="M 70,210 L 98,210 L 95,225 L 72,225 Z" />
+            <path class="boot t-line" d="M 102,210 L 130,210 L 128,225 L 105,225 Z" />
+            <path class="boot t-line" d="M 72,225 L 95,225 L 95,238 L 65,238 Z" />
+            <path class="boot t-line" d="M 105,225 L 128,225 L 135,238 L 105,238 Z" />
+
+            <!-- Torso (Shirt) -->
+            <path class="shirt t-line" d="M 80,130 L 120,130 L 120,185 L 80,185 Z" />
+            
+            <!-- Belt -->
+            <rect x="78" y="175" width="44" height="12" class="dark t-line" />
+            <rect x="90" y="171" width="20" height="20" fill="none" stroke="#ffcc00" stroke-width="5" rx="3" />
+
+            <!-- Coat -->
+            <path class="coat t-line" d="M 82,130 L 60,195 L 85,195 L 92,130 Z" />
+            <path class="coat t-line" d="M 118,130 L 108,195 L 140,195 L 118,130 Z" />
+            
+            <!-- Coat Gold Trim -->
+            <path d="M 88,132 L 80,190 M 112,132 L 120,190" fill="none" stroke="#ffcc00" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="75" cy="150" r="3" fill="#ffcc00"/>
+            <circle cx="73" cy="165" r="3" fill="#ffcc00"/>
+            <circle cx="71" cy="180" r="3" fill="#ffcc00"/>
+            <circle cx="125" cy="150" r="3" fill="#ffcc00"/>
+            <circle cx="127" cy="165" r="3" fill="#ffcc00"/>
+            <circle cx="129" cy="180" r="3" fill="#ffcc00"/>
+
+            <!-- Ears -->
+            <circle cx="45" cy="100" r="14" class="skin t-line" />
+            <circle cx="155" cy="100" r="14" class="skin t-line" />
+
+            <!-- Head Base -->
+            <rect x="45" y="55" width="110" height="85" rx="40" class="skin t-line" />
+
+            <!-- Face Details -->
+            <!-- Good Eye -->
+            <circle cx="75" cy="100" r="14" class="dark" />
+            <circle cx="70" cy="95" r="4.5" class="shirt" />
+            
+            <!-- Eyepatch -->
+            <path d="M 45,90 L 155,100" fill="none" stroke="#000" stroke-width="3" />
+            <circle cx="130" cy="100" r="18" class="dark" />
+            
+            <!-- Nose & Smile -->
+            <path d="M 97,108 C 97,113 103,113 103,108" fill="none" stroke="#a87b5e" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M 90,120 C 95,130 105,130 110,120" fill="none" stroke="#000" stroke-width="3.5" stroke-linecap="round"/>
+
+            <!-- Hat Base -->
+            <path class="dark t-line" d="M 10,75 C 30,30 65,15 100,15 C 135,15 170,30 190,75 C 205,95 160,85 100,85 C 40,85 -5,95 10,75 Z" />
+            
+            <!-- Hat Gold Trim -->
+            <path d="M 22,72 C 38,40 68,25 100,25 C 132,25 162,40 178,72" fill="none" stroke="#ffcc00" stroke-width="4.5" stroke-linecap="round"/>
+            
+            <!-- Skull & Crossbones -->
+            <path class="m-line" stroke="#ffffff" d="M 85,38 L 115,58 M 115,38 L 85,58" />
+            <circle cx="100" cy="42" r="11" fill="#ffffff" />
+            <rect x="94" y="47" width="12" height="8" fill="#ffffff" rx="2" />
+            <circle cx="96" cy="41" r="2.5" fill="#292929" />
+            <circle cx="104" cy="41" r="2.5" fill="#292929" />
+            <path d="M 99,46 L 101,46 L 101,48 L 99,48 Z" fill="#292929" />
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="w-full adventure-dialog z-30 p-3 sm:p-4 text-white flex flex-col md:flex-row items-center justify-between gap-3 select-none">
+    
+    <!-- Pirate Portrait and Adventure Text Speech Box -->
+    <div class="flex items-center gap-3 w-full md:w-3/4">
+      <!-- Animated Pirate Face Thumbnail -->
+      <div class="w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 bg-sky-200 rounded-xl border-2 border-amber-300 overflow-hidden shadow-inner flex items-center justify-center relative">
+        <svg viewBox="20 10 160 140" class="w-full h-full mt-6 drop-shadow-md">
+           <!-- Reuse just the head part for the portrait -->
+           <rect x="45" y="55" width="110" height="85" rx="40" fill="#cf9976" stroke="#000" stroke-width="6" />
+           <circle cx="75" cy="100" r="14" fill="#292929" />
+           <circle cx="70" cy="95" r="4.5" fill="#ffffff" />
+           <path d="M 45,90 L 155,100" fill="none" stroke="#000" stroke-width="3" />
+           <circle cx="130" cy="100" r="18" fill="#292929" />
+           <path d="M 97,108 C 97,113 103,113 103,108" fill="none" stroke="#a87b5e" stroke-width="2.5" stroke-linecap="round"/>
+           <path d="M 90,120 C 95,130 105,130 110,120" fill="none" stroke="#000" stroke-width="3.5" stroke-linecap="round"/>
+           <path fill="#292929" stroke="#000" stroke-width="6" stroke-linejoin="round" d="M 10,75 C 30,30 65,15 100,15 C 135,15 170,30 190,75 C 205,95 160,85 100,85 C 40,85 -5,95 10,75 Z" />
+           <path d="M 22,72 C 38,40 68,25 100,25 C 132,25 162,40 178,72" fill="none" stroke="#ffcc00" stroke-width="4.5" stroke-linecap="round"/>
+           <path stroke="#ffffff" stroke-width="4" stroke-linejoin="round" d="M 85,38 L 115,58 M 115,38 L 85,58" />
+           <circle cx="100" cy="42" r="11" fill="#ffffff" />
+           <rect x="94" y="47" width="12" height="8" fill="#ffffff" rx="2" />
+           <circle cx="96" cy="41" r="2.5" fill="#292929" />
+           <circle cx="104" cy="41" r="2.5" fill="#292929" />
+        </svg>
+      </div>
+
+      <!-- Dialogue Bubble -->
+      <div class="flex-1 bg-slate-950 border-2 border-amber-500/80 rounded-xl px-4 py-2 shadow-inner min-h-[56px] flex flex-col justify-center">
+        <div class="flex items-center gap-2">
+          <span class="retro-title text-amber-400 text-xs tracking-wider uppercase">Capitán Barbarroja:</span>
+          <span id="turn-badge" class="hidden text-xs px-2 py-0.5 rounded border border-white font-bold shadow-md"></span>
+          <span id="feedback-badge" class="hidden text-xs px-2 py-0.5 rounded-full font-bold">¡Correcto!</span>
+        </div>
+        <p id="dialogue-text" class="text-sm sm:text-base font-bold text-amber-100 leading-snug mt-0.5">
+          "¡Arr marinero! Toca o arrastra una botella de la arena y guárdala en su cofre gramatical."
+        </p>
+      </div>
+    </div>
+
+    <!-- Instructions / Assist Help Button for Teachers & Students -->
+    <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+      <button id="btn-clue" class="flex-1 md:flex-initial px-4 py-3 bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-extrabold rounded-xl border-2 border-amber-300 text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all">
+        <span>💡</span>
+        <span>¿Necesitas una pista?</span>
+      </button>
+    </div>
+  </footer>
+
+  <div id="clue-modal" class="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-amber-50 border-4 border-amber-600 rounded-3xl p-6 max-w-lg w-full shadow-2xl text-slate-900 relative">
+      <h3 class="retro-title text-amber-800 text-sm sm:text-base mb-4 text-center">📜 EL MANUAL DEL PIRATA GRAMATICAL</h3>
+      
+      <div class="space-y-3 text-sm sm:text-base font-bold">
+        <div class="p-3 bg-blue-100 rounded-2xl border-2 border-blue-400 flex items-start gap-3">
+          <span class="text-2xl">📦</span>
+          <div>
+            <strong class="text-blue-800 uppercase">Sustantivos:</strong>
+            <p class="text-slate-700 text-xs sm:text-sm font-semibold">Nombran personas, animales, objetos o lugares. (Ej: <em>pirata, delfín, isla, mapa</em>).</p>
+          </div>
+        </div>
+
+        <div class="p-3 bg-purple-100 rounded-2xl border-2 border-purple-400 flex items-start gap-3">
+          <span class="text-2xl">🎨</span>
+          <div>
+            <strong class="text-purple-800 uppercase">Adjetivos:</strong>
+            <p class="text-slate-700 text-xs sm:text-sm font-semibold">Nos dicen cómo son o cómo están las cosas y personas. (Ej: <em>valiente, dorado, misterioso</em>).</p>
+          </div>
+        </div>
+
+        <div class="p-3 bg-rose-100 rounded-2xl border-2 border-rose-400 flex items-start gap-3">
+          <span class="text-2xl">⚡</span>
+          <div>
+            <strong class="text-rose-800 uppercase">Verbos:</strong>
+            <p class="text-slate-700 text-xs sm:text-sm font-semibold">Indican acciones que podemos hacer o sentir. (Ej: <em>navegar, buscar, cantar, saltar</em>).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-center">
+        <button id="btn-close-clue" class="px-6 py-3 bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-extrabold rounded-2xl border-2 border-amber-800 text-base shadow-lg transition-transform">
+          ¡Entendido, Capitán! ⚓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="victory-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-amber-100 to-amber-200 border-8 border-yellow-500 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center relative animate-bounce">
+      <span class="text-6xl sm:text-7xl block mb-2">🏆👑</span>
+      <h2 class="retro-title text-amber-900 text-base sm:text-lg mb-2">¡GRAN VICTORIA PIRATA!</h2>
+      <p class="text-slate-800 font-extrabold text-sm sm:text-base mb-4">
+        ¡Has clasificado todas las botellas con éxito! Todos los tesoros están bien ordenados en sus cofres.
+      </p>
+      
+      <div class="bg-amber-900/10 p-3 rounded-2xl border-2 border-amber-500 mb-6 flex justify-around">
+        <div>
+          <span class="block text-xs font-bold text-amber-800">Doblones Ganados</span>
+          <span id="final-coins" class="text-2xl font-black text-amber-700">120</span>
+        </div>
+        <div>
+          <span class="block text-xs font-bold text-amber-800">Rango</span>
+          <span class="text-lg font-black text-amber-900">Almirante del Mar 🌊</span>
+        </div>
+      </div>
+
+      <button id="btn-play-again" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-black text-lg rounded-2xl border-4 border-emerald-400 shadow-xl transition-transform flex items-center justify-center gap-2">
+        <span>🎮</span>
+        <span>¡Jugar Otra Ronda!</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. BANCO DE PALABRAS EDUCATIVAS (3.º PRIMARIA)
+       Facilidad para que el docente modifique, amplíe o adapte el vocabulario.
+       ========================================================================== */
+    const WORD_BANK = [
+      // Sustantivos (Nombres de cosas, lugares, seres)
+      { word: "Barco", category: "sustantivo", hint: "Es un vehículo que flota en el agua." },
+      { word: "Tesoro", category: "sustantivo", hint: "Es el botín lleno de monedas y joyas." },
+      { word: "Loro", category: "sustantivo", hint: "Es el animal que repite palabras en el hombro." },
+      { word: "Espada", category: "sustantivo", hint: "Es un objeto de metal para defenderse." },
+      { word: "Isla", category: "sustantivo", hint: "Es un lugar de tierra rodeado de mar." },
+      { word: "Delfín", category: "sustantivo", hint: "Es un animal acuático muy simpático." },
+      { word: "Mapa", category: "sustantivo", hint: "Es un dibujo que indica dónde está la X." },
+      { word: "Cañón", category: "sustantivo", hint: "Es un arma grande que dispara bolas de hierro." },
+
+      // Adjetivos (Describen cómo es o cómo está)
+      { word: "Valiente", category: "adjetivo", hint: "Describe a un pirata que no tiene miedo." },
+      { word: "Brillante", category: "adjetivo", hint: "Dice cómo es una moneda reluciente." },
+      { word: "Misterioso", category: "adjetivo", hint: "Explica que algo guarda secretos ocultos." },
+      { word: "Rápido", category: "adjetivo", hint: "Nos dice cómo navega un velero ligero." },
+      { word: "Dorado", category: "adjetivo", hint: "Nos describe el color del oro." },
+      { word: "Peligroso", category: "adjetivo", hint: "Advierte de cómo es un acantilado." },
+      { word: "Salado", category: "adjetivo", hint: "Nos dice qué sabor tiene el agua del mar." },
+      { word: "Gigante", category: "adjetivo", hint: "Describe un tamaño enorme." },
+
+      // Verbos (Acciones que se pueden realizar)
+      { word: "Navegar", category: "verbo", hint: "Es la acción de viajar por el mar." },
+      { word: "Buscar", category: "verbo", hint: "Es la acción de rastrear un tesoro perdido." },
+      { word: "Remar", category: "verbo", hint: "Es la acción de mover los remos en la barca." },
+      { word: "Nadar", category: "verbo", hint: "Es la acción de avanzar en el agua con brazos y piernas." },
+      { word: "Cantar", category: "verbo", hint: "Es la acción de entonar una canción marinera." },
+      { word: "Saltar", category: "verbo", hint: "Es la acción de impulsarse hacia arriba." },
+      { word: "Descubrir", category: "verbo", hint: "Es la acción de encontrar algo nuevo." },
+      { word: "Esconder", category: "verbo", hint: "Es la acción de ocultar un cofre en la arena." }
+    ];
+
+    // Web Audio API synthesizer for 90s style chiptune effects without external files
+    class RetroSoundFX {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playPop() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      playSuccess() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        // Classic retro coin / level up arpeggio
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.08);
+          gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + (idx + 1) * 0.08);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + idx * 0.08);
+          osc.stop(this.ctx.currentTime + (idx + 1) * 0.08);
+        });
+      }
+
+      playError() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.25);
+
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.25);
+      }
+
+      playVictory() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        // Sea shanty fanfare
+        const shanty = [440, 554, 659, 880, 740, 880, 1108];
+        shanty.forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, this.ctx.currentTime + i * 0.12);
+
+          gain.gain.setValueAtTime(0.25, this.ctx.currentTime + i * 0.12);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + (i + 1) * 0.12);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + i * 0.12);
+          osc.stop(this.ctx.currentTime + (i + 1) * 0.12);
+        });
+      }
+    }
+
+    class ParticleSystem {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.particles = [];
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.animate();
+      }
+
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+
+      burst(x, y, count = 25, colors = ['#f59e0b', '#38bdf8', '#10b981', '#fbbf24']) {
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 3 + Math.random() * 6;
+          this.particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 2,
+            size: 6 + Math.random() * 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            life: 1.0,
+            decay: 0.02 + Math.random() * 0.02
+          });
+        }
+      }
+
+      animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.15; // gravity
+          p.life -= p.decay;
+
+          if (p.life <= 0) {
+            this.particles.splice(i, 1);
+            continue;
+          }
+
+          this.ctx.fillStyle = p.color;
+          this.ctx.globalAlpha = p.life;
+          this.ctx.beginPath();
+          this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          this.ctx.fill();
+        }
+        this.ctx.globalAlpha = 1.0;
+        requestAnimationFrame(() => this.animate());
+      }
+    }
+
+    const sound = new RetroSoundFX();
+    const particles = new ParticleSystem(document.getElementById('fx-canvas'));
+
+    // Game Variables
+    const ROUND_BOTTLES_COUNT = 9; // 3 of each grammatical category per round
+    let currentBottles = [];
+    let selectedBottle = null; // for tap-tap mechanism
+    let score = 0;
+    let counts = { sustantivo: 0, adjetivo: 0, verbo: 0 };
+    let isMovingPirate = false;
+    let currentPlayer = 1; // 1 o 2 para modo multijugador
+
+    // DOM Elements
+    const bottlesContainer = document.getElementById('bottles-container');
+    const pirateAvatar = document.getElementById('pirate-avatar');
+    const pirateSprite = document.getElementById('pirate-sprite');
+    const carriedIndicator = document.getElementById('pirate-carried-item');
+    const dialogueText = document.getElementById('dialogue-text');
+    const feedbackBadge = document.getElementById('feedback-badge');
+    const scoreVal = document.getElementById('score-val');
+    const remainingVal = document.getElementById('remaining-val');
+    const chestDropzones = document.querySelectorAll('.chest-dropzone');
+    const clueModal = document.getElementById('clue-modal');
+    const victoryModal = document.getElementById('victory-modal');
+    const turnBadge = document.getElementById('turn-badge');
+
+    function updateTurnUI() {
+      if (selectedPlayers === '1') {
+        turnBadge.classList.add('hidden');
+        return;
+      }
+      
+      turnBadge.classList.remove('hidden');
+      if (currentPlayer === 1) {
+        turnBadge.className = 'text-[10px] sm:text-xs px-2 py-0.5 rounded font-black shadow-md bg-blue-600 text-white border-2 border-blue-300';
+        turnBadge.textContent = selectedPlayers === 'equipos' ? 'EQUIPO AZUL' : 'JUGADOR 1';
+      } else {
+        turnBadge.className = 'text-[10px] sm:text-xs px-2 py-0.5 rounded font-black shadow-md bg-rose-600 text-white border-2 border-rose-300';
+        turnBadge.textContent = selectedPlayers === 'equipos' ? 'EQUIPO ROJO' : 'JUGADOR 2';
+      }
+    }
+
+    function setDialogue(text, type = 'normal') {
+      dialogueText.textContent = `"${text}"`;
+      if (type === 'success') {
+        feedbackBadge.className = 'text-xs px-2 py-0.5 rounded-full font-bold bg-emerald-500 text-white';
+        feedbackBadge.textContent = '¡ACIERTO!';
+        feedbackBadge.classList.remove('hidden');
+      } else if (type === 'error') {
+        feedbackBadge.className = 'text-xs px-2 py-0.5 rounded-full font-bold bg-rose-500 text-white';
+        feedbackBadge.textContent = '¡CASI!';
+        feedbackBadge.classList.remove('hidden');
+      } else {
+        feedbackBadge.classList.add('hidden');
+      }
+    }
+
+    // Moves the pirate sprite to target position smoothly
+    function movePirateTo(xPercent, yPixelsFromBottom, onComplete) {
+      isMovingPirate = true;
+      pirateSprite.classList.add('pirate-walking');
+      
+      // Determine facing direction
+      const currentX = parseFloat(pirateAvatar.style.left) || 15;
+      if (xPercent < currentX) {
+        pirateSprite.style.transform = 'scaleX(-1)';
+      } else {
+        pirateSprite.style.transform = 'scaleX(1)';
+      }
+
+      pirateAvatar.style.left = `${xPercent}%`;
+      pirateAvatar.style.bottom = `${yPixelsFromBottom}px`;
+
+      setTimeout(() => {
+        pirateSprite.classList.remove('pirate-walking');
+        isMovingPirate = false;
+        if (onComplete) onComplete();
+      }, 700);
+    }
+
+    function generateRound() {
+      bottlesContainer.innerHTML = '';
+      counts = { sustantivo: 0, adjetivo: 0, verbo: 0 };
+      updateChestCounters();
+
+      // Pick 3 nouns, 3 adjectives, 3 verbs randomly from the word bank
+      const sustantivos = WORD_BANK.filter(w => w.category === 'sustantivo').sort(() => 0.5 - Math.random()).slice(0, 3);
+      const adjetivos = WORD_BANK.filter(w => w.category === 'adjetivo').sort(() => 0.5 - Math.random()).slice(0, 3);
+      const verbos = WORD_BANK.filter(w => w.category === 'verbo').sort(() => 0.5 - Math.random()).slice(0, 3);
+
+      const roundWords = [...sustantivos, ...adjetivos, ...verbos].sort(() => 0.5 - Math.random());
+      currentBottles = roundWords.map((item, index) => ({
+        ...item,
+        id: `bottle-${index}`
+      }));
+
+      remainingVal.textContent = currentBottles.length;
+
+      // Coordinate slots to prevent overlapping bottles on different screen sizes
+      // 9 spread locations across the sandy shore (range: 10% to 85% width, 220px to 380px from bottom)
+      const positions = [
+        { left: 12, bottom: 230 },
+        { left: 28, bottom: 270 },
+        { left: 45, bottom: 220 },
+        { left: 62, bottom: 260 },
+        { left: 78, bottom: 225 },
+        { left: 20, bottom: 330 },
+        { left: 38, bottom: 340 },
+        { left: 55, bottom: 320 },
+        { left: 72, bottom: 345 }
+      ].sort(() => 0.5 - Math.random());
+
+      currentBottles.forEach((bData, idx) => {
+        const pos = positions[idx];
+        createBottleElement(bData, pos);
+      });
+
+      // Reset pirate position and multiplayer turn
+      currentPlayer = 1;
+      updateTurnUI();
+      
+      movePirateTo(15, 140);
+      carriedIndicator.classList.add('hidden');
+      selectedBottle = null;
+      
+      let modoTexto = "Toca o arrastra una botella";
+      if(selectedPlayers === '2') modoTexto = "¡Turno del Jugador 1! Toca una botella";
+      if(selectedPlayers === 'equipos') modoTexto = "¡Turno del Equipo Azul! Encontrad una botella";
+      
+      setDialogue(`¡Arr! ${modoTexto} para que Barbarroja la recoja.`);
+    }
+
+    function createBottleElement(data, pos) {
+      const bottleEl = document.createElement('div');
+      bottleEl.id = data.id;
+      bottleEl.dataset.category = data.category;
+      bottleEl.dataset.word = data.word;
+      bottleEl.dataset.hint = data.hint;
+      bottleEl.className = 'floating-bottle absolute z-20 pointer-events-auto select-none';
+      bottleEl.style.left = `${pos.left}%`;
+      bottleEl.style.bottom = `${pos.bottom}px`;
+
+      // HTML Structure: Retro Glass Bottle SVG with visible labeled scroll
+      bottleEl.innerHTML = `
+        <div class="relative flex flex-col items-center group cursor-pointer">
+          <!-- Big Label for Classroom / MDI legibility (min 60px touch friendly) -->
+          <div class="bottle-label bg-amber-50 text-slate-900 border-2 border-amber-900 px-3 py-1 rounded-xl shadow-xl font-extrabold text-sm sm:text-base md:text-lg mb-1 tracking-wide flex items-center gap-1.5 transition-transform group-hover:scale-110">
+            <span class="text-xs">📜</span>
+            <span class="capitalize">${data.word}</span>
+          </div>
+
+          <!-- Glass Bottle Vector -->
+          <div class="w-12 h-16 sm:w-14 sm:h-20 drop-shadow-md">
+            <svg viewBox="0 0 50 80" class="w-full h-full">
+              <!-- Cork -->
+              <rect x="20" y="2" width="10" height="8" rx="2" fill="#92400e" stroke="#451a03" stroke-width="1.5"/>
+              <!-- Neck -->
+              <path d="M18,10 L32,10 L32,22 L38,30 L38,72 Q38,78 25,78 Q12,78 12,72 L12,30 L18,22 Z" 
+                    fill="#38bdf8" fill-opacity="0.65" stroke="#0284c7" stroke-width="2.5"/>
+              <!-- Scroll inside the bottle -->
+              <rect x="18" y="34" width="14" height="28" rx="3" fill="#fef3c7" stroke="#b45309" stroke-width="1"/>
+              <line x1="21" y1="40" x2="29" y2="40" stroke="#b45309" stroke-width="1"/>
+              <line x1="21" y1="46" x2="29" y2="46" stroke="#b45309" stroke-width="1"/>
+              <line x1="21" y1="52" x2="29" y2="52" stroke="#b45309" stroke-width="1"/>
+              <!-- Glass shine reflection -->
+              <path d="M16,35 L16,68" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+            </svg>
+          </div>
+        </div>
+      `;
+
+      // 1. Click/Touch Tap handler (Ideal for MDI screens and tablets)
+      bottleEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleBottleSelect(data, bottleEl);
+      });
+
+      // 2. Drag & Drop Support (HTML5 Drag + Touch Fallback)
+      bottleEl.setAttribute('draggable', 'true');
+      bottleEl.addEventListener('dragstart', (e) => {
+        sound.playPop();
+        selectedBottle = { data, element: bottleEl };
+        e.dataTransfer.setData('text/plain', JSON.stringify(data));
+        highlightChests(true);
+      });
+
+      bottleEl.addEventListener('dragend', () => {
+        highlightChests(false);
+      });
+
+      bottlesContainer.appendChild(bottleEl);
+    }
+
+    function handleBottleSelect(data, bottleEl) {
+      if (isMovingPirate) return;
+      sound.playPop();
+
+      // Unselect previous if any
+      document.querySelectorAll('.floating-bottle').forEach(b => {
+        b.querySelector('.bottle-label').classList.remove('ring-4', 'ring-amber-400', 'bg-yellow-200');
+      });
+
+      selectedBottle = { data, element: bottleEl };
+      bottleEl.querySelector('.bottle-label').classList.add('ring-4', 'ring-amber-400', 'bg-yellow-200');
+
+      // Calculate approximate bottle left percentage for pirate to walk over
+      const bottleRect = bottleEl.getBoundingClientRect();
+      const stageRect = document.getElementById('game-stage').getBoundingClientRect();
+      const targetPercent = Math.max(8, Math.min(82, ((bottleRect.left + bottleRect.width / 2 - stageRect.left) / stageRect.width) * 100));
+
+      // Pirate walks towards bottle to pick it up!
+      setDialogue(`¡Recogiendo "${data.word}"! Ahora toca el cofre donde debe guardarse.`);
+      movePirateTo(targetPercent - 5, 140, () => {
+        carriedIndicator.classList.remove('hidden');
+        carriedIndicator.innerHTML = `<span class="bg-amber-100 text-slate-900 border-2 border-amber-900 text-xs px-2 py-1 rounded font-extrabold shadow-md">${data.word}</span>`;
+        highlightChests(true);
+      });
+    }
+
+    function highlightChests(active) {
+      chestDropzones.forEach(chest => {
+        if (active) {
+          chest.classList.add('chest-target-active');
+        } else {
+          chest.classList.remove('chest-target-active');
+        }
+      });
+    }
+
+    function setupChests() {
+      chestDropzones.forEach(chest => {
+        const chestCat = chest.dataset.category;
+
+        // Click / Touch Chest event (Completes Tap-Tap flow)
+        chest.addEventListener('click', () => {
+          if (!selectedBottle) {
+            setDialogue(`Este cofre es de los ${chestCat.toUpperCase()}S. ¡Elige primero una botella de la playa!`);
+            return;
+          }
+          classifyBottle(chestCat, chest);
+        });
+
+        // Drag & Drop events
+        chest.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          chest.classList.add('scale-105');
+        });
+
+        chest.addEventListener('dragleave', () => {
+          chest.classList.remove('scale-105');
+        });
+
+        chest.addEventListener('drop', (e) => {
+          e.preventDefault();
+          chest.classList.remove('scale-105');
+          if (selectedBottle) {
+            classifyBottle(chestCat, chest);
+          }
+        });
+      });
+    }
+
+    function classifyBottle(chosenCategory, chestElement) {
+      if (!selectedBottle) return;
+
+      const { data, element } = selectedBottle;
+      const rect = chestElement.getBoundingClientRect();
+
+      // Pirate walks to the chest
+      const stageRect = document.getElementById('game-stage').getBoundingClientRect();
+      const chestCenterPercent = ((rect.left + rect.width / 2 - stageRect.left) / stageRect.width) * 100;
+
+      movePirateTo(chestCenterPercent - 4, 110, () => {
+        carriedIndicator.classList.add('hidden');
+        highlightChests(false);
+
+        // Verification
+        if (data.category === chosenCategory) {
+          // ACIERTO
+          sound.playSuccess();
+          particles.burst(rect.left + rect.width / 2, rect.top + 40, 30);
+          
+          score += 15;
+          counts[chosenCategory]++;
+          scoreVal.textContent = score;
+          updateChestCounters();
+
+          // Pedagogical success dialogue
+          let explanation = "";
+          if (chosenCategory === "sustantivo") explanation = `"${data.word}" nombra una cosa o ser.`;
+          if (chosenCategory === "adjetivo") explanation = `"${data.word}" describe cómo es algo.`;
+          if (chosenCategory === "verbo") explanation = `"${data.word}" es una acción que podemos realizar.`;
+
+          // Cambio de turno multijugador
+          if (selectedPlayers !== '1') {
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            updateTurnUI();
+            let nextPlayerStr = currentPlayer === 1 ? (selectedPlayers === 'equipos' ? 'Equipo Azul' : 'Jugador 1') : (selectedPlayers === 'equipos' ? 'Equipo Rojo' : 'Jugador 2');
+            setDialogue(`¡Bien! ${explanation} +15 doblones. ¡Turno del ${nextPlayerStr}!`, 'success');
+          } else {
+            setDialogue(`¡Tesoro asegurado! ${explanation} ¡+15 doblones!`, 'success');
+          }
+
+          // Remove classified bottle
+          element.remove();
+          currentBottles = currentBottles.filter(b => b.id !== data.id);
+          remainingVal.textContent = currentBottles.length;
+          selectedBottle = null;
+
+          // Check for Victory
+          if (currentBottles.length === 0) {
+            setTimeout(showVictory, 800);
+          }
+
+        } else {
+          // ERROR - Con enfoque constructivo y pedagógico para 8-9 años
+          sound.playError();
+          
+          let tip = "";
+          if (data.category === 'sustantivo') {
+            tip = `"${data.word}" es un SUSTANTIVO porque nombra una persona, animal o cosa.`;
+          } else if (data.category === 'adjetivo') {
+            tip = `"${data.word}" es un ADJETIVO porque nos dice cómo es o cómo está algo.`;
+          } else {
+            tip = `"${data.word}" es un VERBO porque expresa una acción.`;
+          }
+
+          setDialogue(`¡Rayos y truenos! Ese no es su cofre. Recuerda: ${tip} ¡Inténtalo de nuevo!`, 'error');
+
+          // Shake bottle feedback
+          element.classList.add('animate-bounce');
+          setTimeout(() => element.classList.remove('animate-bounce'), 1000);
+        }
+      });
+    }
+
+    function updateChestCounters() {
+      document.querySelector('[data-category="sustantivo"] .count').textContent = counts.sustantivo;
+      document.querySelector('[data-category="adjetivo"] .count').textContent = counts.adjetivo;
+      document.querySelector('[data-category="verbo"] .count').textContent = counts.verbo;
+    }
+
+    function showVictory() {
+      sound.playVictory();
+      document.getElementById('final-coins').textContent = score;
+      victoryModal.classList.remove('hidden');
+
+      // Continuous celebratory confetti
+      const interval = setInterval(() => {
+        particles.burst(window.innerWidth * Math.random(), window.innerHeight * 0.4, 20);
+      }, 300);
+
+      setTimeout(() => clearInterval(interval), 3500);
+    }
+
+    // Reset round
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      sound.playPop();
+      generateRound();
+    });
+
+    document.getElementById('btn-play-again').addEventListener('click', () => {
+      sound.playPop();
+      victoryModal.classList.add('hidden');
+      generateRound();
+    });
+
+    // Sound toggle
+    document.getElementById('btn-sound').addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      document.getElementById('sound-icon').textContent = sound.enabled ? '🔊' : '🔇';
+      setDialogue(sound.enabled ? '¡Sonidos activados!' : 'Modo silencioso activado.');
+    });
+
+    // Clue Modal
+    document.getElementById('btn-clue').addEventListener('click', () => {
+      sound.playPop();
+      clueModal.classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-clue').addEventListener('click', () => {
+      sound.playPop();
+      clueModal.classList.add('hidden');
+    });
+
+    // Fullscreen for Whiteboards (MDI)
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+    
+    // Volver al Menú Principal (Casita)
+    document.getElementById('btn-home').addEventListener('click', () => {
+      sound.playPop();
+      victoryModal.classList.add('hidden');
+      clueModal.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+      // Pequeño retardo para que la transición de CSS se aplique suavemente
+      setTimeout(() => {
+        startScreen.style.opacity = '1';
+      }, 10);
+    });
+
+    // ==========================================
+    // LÓGICA DE LA PANTALLA DE INICIO (MENÚ)
+    // ==========================================
+    const startScreen = document.getElementById('start-screen');
+    const btnStartGame = document.getElementById('btn-start-game');
+    
+    let selectedPlayers = '1';
+    let selectedMission = 'gramatica';
+
+    const playerBtns = document.querySelectorAll('.btn-player');
+    const missionBtns = document.querySelectorAll('.btn-mission');
+
+    // Función para remarcar visualmente el botón seleccionado
+    function updateSelectionUI(buttons, selectedValue) {
+      buttons.forEach(btn => {
+        if (btn.dataset.val === selectedValue) {
+          btn.classList.add('ring-4', 'ring-amber-500', 'bg-amber-200', 'scale-105');
+          btn.classList.remove('bg-amber-50', 'border-amber-300');
+        } else {
+          btn.classList.remove('ring-4', 'ring-amber-500', 'bg-amber-200', 'scale-105');
+          btn.classList.add('bg-amber-50', 'border-amber-300');
+        }
+      });
+    }
+
+    // Eventos de selección de Jugadores
+    playerBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sound.playPop();
+        selectedPlayers = btn.dataset.val;
+        updateSelectionUI(playerBtns, selectedPlayers);
+      });
+    });
+
+    // Eventos de selección de Misión
+    missionBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.val === 'ortografia') {
+          sound.playError(); // Aviso de botón inactivo
+          return;
+        }
+        sound.playPop();
+        selectedMission = btn.dataset.val;
+        updateSelectionUI(missionBtns, selectedMission);
+      });
+    });
+
+    // Evento principal: Empezar el Juego
+    btnStartGame.addEventListener('click', () => {
+      sound.playVictory();
+      // Efecto de desvanecimiento suave
+      startScreen.style.opacity = '0';
+      
+      setTimeout(() => {
+        startScreen.classList.add('hidden');
+        
+        // ¡ARRANCAMOS EL MOTOR DEL JUEGO!
+        score = 0;
+        scoreVal.textContent = "0";
+        
+        // Evitar duplicar los eventos de los cofres al volver a empezar desde la casita
+        if (!window.chestsSetupDone) {
+          setupChests();
+          window.chestsSetupDone = true;
+        }
+        
+        generateRound();
+        
+      }, 500);
+    });
+
+    // Ahora evitamos que el juego arranque de golpe al cargar la web
+    window.onload = function() {
+      // Solo inicializa la interfaz gráfica del menú
+      updateSelectionUI(playerBtns, selectedPlayers);
+      updateSelectionUI(missionBtns, selectedMission);
+    };
+  </script>
+</body>
+</html>
