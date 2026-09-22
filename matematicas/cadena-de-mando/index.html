@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cadena de Mando - Cálculo Mental y Memoria de Trabajo</title>
+  <!-- Tailwind CSS CDN para maquetación ágil -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Nunito (excelente legibilidad infantil y escolar) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    /* Fondo temático pastel con gradiente dinámico suave */
+    body {
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 50%, #fdf2f8 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Sombras tridimensionales y botones táctiles estilo ludificación infantil */
+    .btn-3d {
+      transition: all 0.12s ease-in-out;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+    }
+    .btn-3d:active, .btn-3d.active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+    }
+
+    .key-btn {
+      min-height: 64px;
+      min-width: 64px;
+      font-size: 1.85rem;
+      font-weight: 800;
+      touch-action: manipulation;
+    }
+
+    /* Animaciones de aparición y feedback */
+    @keyframes popIn {
+      0% { transform: scale(0.65); opacity: 0; }
+      70% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .animate-pulse-soft {
+      animation: pulseSoft 2s infinite ease-in-out;
+    }
+
+    /* Tarjetas de eslabones */
+    .chain-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Confeti Canvas overlay */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800">
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- CABECERA PRINCIPAL: Título, Racha y Controles de Aula -->
+  <header class="w-full bg-white/90 backdrop-blur-md border-b-4 border-indigo-200 shadow-sm px-4 py-3 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Logotipo y Nombre -->
+      <div class="flex items-center space-x-3">
+        <span class="text-3xl sm:text-4xl p-2 bg-indigo-100 rounded-2xl border-2 border-indigo-300 shadow-inner">
+          🕹️
+        </span>
+        <div>
+          <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-indigo-900 leading-tight tracking-tight">
+            Cadena de Mando
+          </h1>
+          <p class="text-xs sm:text-sm font-bold text-indigo-500 flex items-center gap-1">
+            <span>Matemáticas 3.º Primaria</span>
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+            <span>Memoria y Cálculo Mental</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Marcador de Aciertos y Racha -->
+      <div class="flex items-center gap-2 sm:gap-4">
+        <div class="flex items-center bg-amber-50 border-2 border-amber-300 rounded-2xl px-3 py-1.5 shadow-sm">
+          <span class="text-2xl mr-1.5">⭐</span>
+          <div class="text-left">
+            <div class="text-[10px] font-black uppercase tracking-wider text-amber-700">Puntos</div>
+            <div id="score-display" class="text-lg sm:text-xl font-black text-amber-900 leading-none">0</div>
+          </div>
+        </div>
+
+        <div class="flex items-center bg-emerald-50 border-2 border-emerald-300 rounded-2xl px-3 py-1.5 shadow-sm">
+          <span class="text-2xl mr-1.5">🔥</span>
+          <div class="text-left">
+            <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700">Racha</div>
+            <div id="streak-display" class="text-lg sm:text-xl font-black text-emerald-900 leading-none">0</div>
+          </div>
+        </div>
+
+        <!-- Botones de Utilidad de Aula (Sonido, Pantalla Completa, Ayuda Docente) -->
+        <button id="btn-sound" class="btn-3d w-12 h-12 bg-white rounded-2xl border-2 border-slate-200 flex items-center justify-center text-xl hover:bg-slate-50" title="Activar/Silenciar sonido">
+          🔊
+        </button>
+        <button id="btn-fullscreen" class="btn-3d w-12 h-12 bg-white rounded-2xl border-2 border-slate-200 flex items-center justify-center text-xl hover:bg-slate-50" title="Pantalla completa para Monitor Digital">
+          ⛶
+        </button>
+        <button id="btn-info" class="btn-3d w-12 h-12 bg-indigo-50 rounded-2xl border-2 border-indigo-200 text-indigo-700 flex items-center justify-center text-xl font-black hover:bg-indigo-100" title="Instrucciones para el profesor">
+          ❓
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- BARRA DE MODOS Y NIVELES (Optimizada para toque rápido en PDI) -->
+  <nav class="max-w-6xl mx-auto w-full px-4 pt-2 pb-1">
+    <div class="bg-white/80 backdrop-blur-sm p-2 sm:p-3 rounded-3xl border-2 border-indigo-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- Selector de Dificultad -->
+      <div class="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <span class="text-xs font-black text-slate-500 uppercase tracking-wide mr-1 hidden sm:inline">Nivel:</span>
+        <button data-level="1" class="lvl-btn btn-3d active flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl font-black text-sm sm:text-base border-2 border-sky-400 bg-sky-400 text-white shadow-sky-600/30">
+          Nivel 1: Recluta
+        </button>
+        <button data-level="2" class="lvl-btn btn-3d flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl font-black text-sm sm:text-base border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+          Nivel 2: Cabo
+        </button>
+        <button data-level="3" class="lvl-btn btn-3d flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl font-black text-sm sm:text-base border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+          Nivel 3: Capitán
+        </button>
+        <button data-level="4" class="lvl-btn btn-3d flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl font-black text-sm sm:text-base border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50">
+          Nivel 4: General
+        </button>
+      </div>
+
+      <!-- Selector de Modo de Visualización (Paso a Paso vs Cadena Continua) -->
+      <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+        <div class="bg-slate-100 p-1 rounded-2xl flex items-center w-full sm:w-auto">
+          <button id="mode-step" class="btn-3d flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-white text-indigo-900 border border-slate-200 shadow-sm">
+            🧠 Memoria (Paso a Paso)
+          </button>
+          <button id="mode-full" class="btn-3d flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm text-slate-600 hover:text-slate-900">
+            👀 Cadena Visible
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- ÁREA DE JUEGO PRINCIPAL -->
+  <main class="flex-1 max-w-6xl mx-auto w-full px-4 pt-1 pb-4 flex flex-col justify-start">
+
+    <!-- DESCRIPCIÓN PEDAGÓGICA DEL NIVEL ACTIVO -->
+    <div id="level-badge-info" class="text-center my-2">
+      <span class="inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-indigo-100/90 text-indigo-800 border border-indigo-300 shadow-sm">
+        <span id="level-title-text">Nivel 1: Sumas y restas de 1 cifra (3 pasos)</span>
+      </span>
+    </div>
+
+    <!-- TABLERO CENTRAL DE OPERACIONES -->
+    <div class="bg-white rounded-3xl p-4 sm:p-6 md:p-8 border-4 border-indigo-200 shadow-xl relative overflow-hidden flex flex-col items-center justify-center min-h-[290px] sm:min-h-[340px]">
+      
+      <!-- Fondo decorativo sutil -->
+      <div class="absolute -right-12 -top-12 w-48 h-48 bg-indigo-50 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-pink-50 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- ESTADO: PANTALLA DE MEMORIA (PASO A PASO) -->
+      <div id="step-mode-view" class="w-full flex flex-col items-center justify-center">
+        
+        <!-- Indicador de Progreso en la Cadena (Bolas de paso) -->
+        <div id="step-indicators" class="flex items-center gap-2 mb-4 sm:mb-6">
+          <!-- Generado dinámicamente con JS -->
+        </div>
+
+        <!-- Tarjeta Gigante del Eslabón Activo -->
+        <div id="step-card" class="relative group cursor-pointer transition-transform transform active:scale-95">
+          <div class="bg-gradient-to-br from-indigo-500 via-indigo-600 to-indigo-700 text-white rounded-3xl p-6 sm:p-10 border-4 border-indigo-300 shadow-2xl flex flex-col items-center justify-center min-w-[240px] sm:min-w-[320px] min-h-[170px] sm:min-h-[200px]">
+            
+            <span id="step-label" class="text-xs sm:text-sm uppercase tracking-widest font-black text-indigo-200 mb-1">
+              Punto de Partida
+            </span>
+
+            <div id="step-content" class="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight drop-shadow-md">
+              --
+            </div>
+
+            <div id="step-subhint" class="mt-2 text-xs sm:text-sm font-bold text-indigo-200 opacity-90">
+              ¡Guarda este número en tu cabeza! 🧠
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Controles para el modo manual/automático en PDI -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <button id="btn-next-step" class="btn-3d px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-base sm:text-lg border-2 border-indigo-800 flex items-center gap-2 shadow-indigo-600/30">
+            <span>Siguiente eslabón</span>
+            <span class="text-xl">➡️</span>
+          </button>
+          <button id="btn-auto-play" class="btn-3d px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-sm sm:text-base border-2 border-slate-300 flex items-center gap-2">
+            <span>⏱️ Reproducción Auto</span>
+          </button>
+          <button id="btn-repeat-chain" class="btn-3d px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-sm sm:text-base border-2 border-slate-300 flex items-center gap-1.5" title="Volver a ver la cadena desde el inicio">
+            <span>🔄 Repetir</span>
+          </button>
+          <button id="btn-toggle-solution" class="btn-3d px-4 py-3 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-sm sm:text-base border-2 border-amber-300 flex items-center gap-1.5" title="Ver el resultado de todas las operaciones">
+            <span>👁️ Ver Operaciones</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ESTADO: PANTALLA CADENA COMPLETA (Visible todo a la vez) -->
+      <div id="full-mode-view" class="w-full hidden flex-col items-center">
+        <h3 class="text-sm sm:text-base font-extrabold text-slate-500 mb-4 text-center">
+          Sigue la pista de izquierda a derecha calculando mentalmente cada salto:
+        </h3>
+        
+        <div id="full-chain-container" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 w-full max-w-4xl py-2">
+          <!-- Generado dinámicamente con JS -->
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <button id="btn-toggle-solution-full" class="btn-3d px-4 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-sm sm:text-base border-2 border-amber-300 flex items-center gap-1.5">
+            <span>👁️ Mostrar / Ocultar Resultados</span>
+          </button>
+          <span class="text-xs sm:text-sm font-black text-indigo-600 bg-indigo-50 border border-indigo-200 px-4 py-2 rounded-xl">
+            💡 Truco: Cuando tengas el resultado de una ficha, aplícale la siguiente operación.
+          </span>
+        </div>
+      </div>
+
+      <!-- PANEL DESPLEGABLE CON EL RESULTADO DETALLADO DE TODAS LAS OPERACIONES -->
+      <div id="solution-banner" class="w-full max-w-2xl mt-4 pt-3 border-t-2 border-dashed border-indigo-200 hidden">
+        <div class="bg-gradient-to-r from-amber-50 to-indigo-50 rounded-2xl p-4 border-2 border-amber-200 text-left shadow-sm">
+          <div class="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-amber-200">
+            <span class="text-xs font-black uppercase tracking-wider text-amber-800 flex items-center gap-1">
+              <span>📋</span> Resultado de las operaciones:
+            </span>
+            <span id="solution-final-tag" class="text-sm sm:text-base font-black px-3 py-0.5 rounded-full bg-emerald-600 text-white shadow-sm">
+              Total = ?
+            </span>
+          </div>
+          <div id="solution-steps-list" class="flex flex-wrap gap-2 text-xs sm:text-sm font-bold text-slate-700">
+            <!-- Pasos con subtotales generados dinámicamente -->
+          </div>
+          <div id="solution-equation-text" class="mt-2 text-xs sm:text-sm font-black text-indigo-900 bg-white/80 p-2 rounded-xl border border-indigo-100">
+            <!-- Ecuación completa tipo: 8 + 5 - 3 = 10 -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PANEL DE RESPUESTA: CAMPO DE ENTRADA DIRECTA (SIN TECLADO EN PANTALLA) -->
+    <div class="mt-4 bg-white/95 rounded-3xl p-5 sm:p-6 border-3 border-indigo-100 shadow-lg">
+      
+      <div class="max-w-xl mx-auto flex flex-col items-center">
+        
+        <!-- Pregunta y Formulario de Respuesta -->
+        <div class="text-center mb-4">
+          <span class="text-xs uppercase font-black text-indigo-500 tracking-wider">Misión Final</span>
+          <h2 class="text-lg sm:text-2xl font-black text-slate-800">¿Cuál es el resultado de la cadena?</h2>
+        </div>
+
+        <form id="answer-form" onsubmit="event.preventDefault(); checkAnswer();" class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full">
+          <div class="relative">
+            <input 
+              id="user-answer-input" 
+              type="number" 
+              inputmode="numeric" 
+              pattern="[0-9]*"
+              placeholder="?" 
+              autocomplete="off"
+              class="w-36 sm:w-44 h-16 text-3xl sm:text-4xl font-black text-center text-indigo-950 bg-slate-50 border-4 border-indigo-300 rounded-2xl shadow-inner focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all placeholder:text-indigo-200"
+            />
+          </div>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-center">
+            <button type="submit" id="btn-submit" class="btn-3d flex-1 sm:flex-initial px-6 h-16 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white rounded-2xl border-2 border-emerald-700 text-lg sm:text-xl font-black shadow-emerald-500/30 flex items-center justify-center gap-2">
+              <span>Comprobar</span>
+              <span class="text-2xl">✓</span>
+            </button>
+            <button type="button" id="btn-toggle-sign" class="btn-3d px-4 h-16 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl border-2 border-slate-300 font-extrabold text-sm sm:text-base flex items-center justify-center gap-1.5" title="Generar nueva cadena">
+              <span>Nueva</span>
+              <span class="text-lg">↻</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL DE FEEDBACK Y EXPLICACIÓN PASO A PASO (Revisión colaborativa de aula) -->
+  <div id="modal-feedback" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 border-4 shadow-2xl animate-pop text-center relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Icono y Título del resultado -->
+      <div id="modal-icon" class="text-6xl mb-2">🎉</div>
+      <h3 id="modal-title" class="text-2xl sm:text-3xl font-black text-slate-800 mb-1">¡Misión Cumplida!</h3>
+      <p id="modal-subtitle" class="text-sm sm:text-base font-extrabold text-slate-600 mb-6">Tu cálculo ha sido exacto.</p>
+
+      <!-- Desglose paso a paso de la resolución (Para proyectar en la pizarra y verificar entre todos) -->
+      <div class="bg-indigo-50/80 rounded-2xl p-4 border-2 border-indigo-100 text-left mb-6">
+        <h4 class="text-xs font-black uppercase tracking-wider text-indigo-700 mb-3 flex items-center gap-1.5">
+          <span>🔍</span> Comprobemos la cadena en la pizarra:
+        </h4>
+        <div id="breakdown-steps" class="space-y-2">
+          <!-- Se llena dinámicamente con JS -->
+        </div>
+      </div>
+
+      <!-- Botón de siguiente reto -->
+      <button id="btn-next-mission" class="btn-3d w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg sm:text-xl border-2 border-indigo-900 shadow-indigo-600/30">
+        ¡Siguiente Cadena de Mando! 🚀
+      </button>
+
+    </div>
+  </div>
+
+  <!-- MODAL DE AYUDA PEDAGÓGICA PARA EL DOCENTE -->
+  <div id="modal-info" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border-4 border-indigo-200 shadow-2xl animate-pop text-left relative max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-black text-indigo-950 flex items-center gap-2">
+          <span>🍎</span> Guía Didáctica: 3.º Primaria
+        </h3>
+        <button id="btn-close-info" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 text-lg flex items-center justify-center">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-3 text-slate-700 text-sm leading-relaxed font-semibold">
+        <p>
+          <strong class="text-indigo-900">¿Qué trabajamos?</strong><br>
+          Esta aplicación entrena la <em>memoria de trabajo visual-auditiva</em> y la <em>agilidad en el cálculo mental reflexivo</em> según el currículo de 3.º de Educación Primaria.
+        </p>
+
+        <p>
+          <strong class="text-indigo-900">Niveles de progresión:</strong>
+          <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-600 mt-1">
+            <li><strong>Nivel 1 (Recluta):</strong> 3 eslabones. Números y operaciones de 1 cifra (subtotales ≤ 20).</li>
+            <li><strong>Nivel 2 (Cabo):</strong> 4 eslabones. Sumas y restas combinadas de 1 y 2 cifras sencillas (subtotales ≤ 50).</li>
+            <li><strong>Nivel 3 (Capitán):</strong> 4 eslabones. Operaciones de 2 cifras con paso de decena/centena (subtotales ≤ 100).</li>
+            <li><strong>Nivel 4 (General):</strong> 5 eslabones. Reto avanzado de memoria y cálculo mental para el aula.</li>
+          </ul>
+        </p>
+
+        <p>
+          <strong class="text-indigo-900">Dinámica sugerida para PDI:</strong><br>
+          1. Activa el modo <strong>Memoria (Paso a Paso)</strong>.<br>
+          2. Deja que el monitor avance automáticamente o avanza manualmente pidiendo a los alumnos que mantengan el número "secreto" en su mente sin escribirlo.<br>
+          3. Un voluntario sale a pulsar el resultado en el teclado táctil gigante.<br>
+          4. Usa la pantalla de revisión final para validar los pasos en voz alta.
+        </p>
+      </div>
+
+      <button id="btn-close-info-ok" class="btn-3d w-full mt-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-base border-2 border-indigo-900">
+        ¡Entendido, a jugar!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================
+       SISTEMA DE AUDIO CON WEB AUDIO API
+       (Totalmente autónomo, sin archivos externos ni descargas)
+       ======================================================== */
+    const SoundManager = {
+      ctx: null,
+      enabled: true,
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+      },
+
+      playBeep(freq = 440, type = 'sine', duration = 0.12, gainValue = 0.15) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          
+          gain.gain.setValueAtTime(gainValue, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio error:", e);
+        }
+      },
+
+      playClick() {
+        this.playBeep(520, 'triangle', 0.08, 0.12);
+      },
+
+      playStep() {
+        this.playBeep(650, 'sine', 0.15, 0.2);
+      },
+
+      playSuccess() {
+        if (!this.enabled) return;
+        this.init();
+        // Melodía triunfal alegre
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do agudo
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            this.playBeep(freq, 'triangle', 0.22, 0.2);
+          }, idx * 110);
+        });
+      },
+
+      playError() {
+        if (!this.enabled) return;
+        this.init();
+        // Sonido suave y educativo de "inténtalo de nuevo"
+        this.playBeep(260, 'sawtooth', 0.18, 0.15);
+        setTimeout(() => {
+          this.playBeep(220, 'sawtooth', 0.25, 0.15);
+        }, 150);
+      }
+    };
+
+    /* ========================================================
+       CONFIGURACIÓN DE NIVELES PEDAGÓGICOS (3.º PRIMARIA)
+       (Fácilmente configurable por el docente aquí)
+       ======================================================== */
+    const LEVEL_CONFIGS = {
+      1: {
+        title: "Nivel 1: Sumas y restas de 1 cifra (3 pasos)",
+        description: "Recluta del cálculo",
+        stepsCount: 3,
+        initialMin: 3,
+        initialMax: 10,
+        opMaxVal: 9,
+        allowTwoDigits: false,
+        themeColor: "sky"
+      },
+      2: {
+        title: "Nivel 2: Operaciones combinadas de 1 y 2 cifras (4 pasos)",
+        description: "Cabo del cálculo",
+        stepsCount: 4,
+        initialMin: 10,
+        initialMax: 25,
+        opMaxVal: 15,
+        allowTwoDigits: true,
+        themeColor: "emerald"
+      },
+      3: {
+        title: "Nivel 3: Operaciones con números hasta el 100 (4 pasos)",
+        description: "Capitán del cálculo",
+        stepsCount: 4,
+        initialMin: 20,
+        initialMax: 60,
+        opMaxVal: 35,
+        allowTwoDigits: true,
+        themeColor: "indigo"
+      },
+      4: {
+        title: "Nivel 4: Gran Reto de Memoria Rápida (5 pasos)",
+        description: "General de División",
+        stepsCount: 5,
+        initialMin: 30,
+        initialMax: 70,
+        opMaxVal: 45,
+        allowTwoDigits: true,
+        themeColor: "amber"
+      }
+    };
+
+    // Estado global de la aplicación
+    const GameState = {
+      currentLevel: 1,
+      mode: 'step', // 'step' (Memoria) o 'full' (Cadena Visible)
+      chain: [], // Array de eslabones [{ type: 'start', value: 12 }, { type: 'op', op: '+', val: 5, subtotal: 17 }]
+      currentStepIndex: 0,
+      autoPlayTimer: null,
+      isAutoPlaying: false,
+      autoPlaySpeed: 2400, // milisegundos por paso
+      userAnswerInput: '',
+      score: 0,
+      streak: 0,
+      targetResult: 0,
+      isSolutionRevealed: false
+    };
+
+    /* ========================================================
+       GENERADOR DE CADENAS MATEMÁTICAS RIGUROSAS
+       - Garantiza que ningún subtotal sea negativo
+       - Garantiza operaciones coherentes para 3.º de Primaria
+       ======================================================== */
+    function generateNewChain(levelId) {
+      const config = LEVEL_CONFIGS[levelId];
+      const chain = [];
+
+      // 1. Número Inicial
+      const startNum = Math.floor(Math.random() * (config.initialMax - config.initialMin + 1)) + config.initialMin;
+      let currentSubtotal = startNum;
+
+      chain.push({
+        type: 'start',
+        display: `${startNum}`,
+        subtotal: currentSubtotal,
+        label: "Número de partida"
+      });
+
+      // 2. Generación de cada eslabón sucesivo
+      for (let i = 1; i < config.stepsCount; i++) {
+        // Decidir si es suma o resta
+        // Si el subtotal es pequeño, forzar suma para no caer en negativos
+        const minSafeForSubtraction = (config.allowTwoDigits) ? 12 : 5;
+        let operation = (currentSubtotal <= minSafeForSubtraction) ? '+' : (Math.random() > 0.45 ? '+' : '-');
+
+        let operand;
+        if (!config.allowTwoDigits) {
+          // 1 cifra (1 a 9)
+          operand = Math.floor(Math.random() * 8) + 2; // 2 a 9
+        } else {
+          // Si estamos en nivel 2 o 3, combinar números de 1 y 2 cifras
+          const useTwoDigitOperand = (Math.random() > 0.4);
+          if (useTwoDigitOperand) {
+            operand = Math.floor(Math.random() * (config.opMaxVal - 10 + 1)) + 10;
+          } else {
+            operand = Math.floor(Math.random() * 8) + 2;
+          }
+        }
+
+        // Si es resta, asegurar que el operando nunca supere el subtotal (evitar negativos)
+        if (operation === '-') {
+          if (operand >= currentSubtotal) {
+            operand = Math.max(1, Math.floor(currentSubtotal / 2));
+          }
+          currentSubtotal -= operand;
+        } else {
+          // Es suma
+          currentSubtotal += operand;
+        }
+
+        chain.push({
+          type: 'operation',
+          op: operation,
+          val: operand,
+          display: `${operation} ${operand}`,
+          subtotal: currentSubtotal,
+          label: `Paso ${i}`
+        });
+      }
+
+      return {
+        chain,
+        finalResult: currentSubtotal
+      };
+    }
+
+    /* ========================================================
+       ACTUALIZACIÓN VISUAL DEL TABLERO Y CADENA
+       ======================================================== */
+    const UI = {
+      // Elementos DOM
+      scoreDisplay: document.getElementById('score-display'),
+      streakDisplay: document.getElementById('streak-display'),
+      levelTitleText: document.getElementById('level-title-text'),
+      stepModeView: document.getElementById('step-mode-view'),
+      fullModeView: document.getElementById('full-mode-view'),
+      stepIndicators: document.getElementById('step-indicators'),
+      stepCard: document.getElementById('step-card'),
+      stepLabel: document.getElementById('step-label'),
+      stepContent: document.getElementById('step-content'),
+      stepSubhint: document.getElementById('step-subhint'),
+      btnNextStep: document.getElementById('btn-next-step'),
+      btnAutoPlay: document.getElementById('btn-auto-play'),
+      btnRepeatChain: document.getElementById('btn-repeat-chain'),
+      fullChainContainer: document.getElementById('full-chain-container'),
+      userAnswerInput: document.getElementById('user-answer-input'),
+      modalFeedback: document.getElementById('modal-feedback'),
+      modalIcon: document.getElementById('modal-icon'),
+      modalTitle: document.getElementById('modal-title'),
+      modalSubtitle: document.getElementById('modal-subtitle'),
+      breakdownSteps: document.getElementById('breakdown-steps'),
+      modalInfo: document.getElementById('modal-info'),
+      btnSound: document.getElementById('btn-sound'),
+      solutionBanner: document.getElementById('solution-banner'),
+      solutionFinalTag: document.getElementById('solution-final-tag'),
+      solutionStepsList: document.getElementById('solution-steps-list'),
+      solutionEquationText: document.getElementById('solution-equation-text'),
+      btnToggleSolution: document.getElementById('btn-toggle-solution'),
+      btnToggleSolutionFull: document.getElementById('btn-toggle-solution-full'),
+
+      renderLevelHeader() {
+        const conf = LEVEL_CONFIGS[GameState.currentLevel];
+        this.levelTitleText.textContent = conf.title;
+        
+        // Actualizar botones de nivel
+        document.querySelectorAll('.lvl-btn').forEach(btn => {
+          const lvl = parseInt(btn.dataset.level, 10);
+          if (lvl === GameState.currentLevel) {
+            btn.className = "lvl-btn btn-3d active flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl font-black text-sm sm:text-base border-2 border-indigo-500 bg-indigo-500 text-white shadow-indigo-600/30";
+          } else {
+            btn.className = "lvl-btn btn-3d flex-1 sm:flex-initial px-3.5 py-2.5 rounded-2xl font-black text-sm sm:text-base border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
+          }
+        });
+      },
+
+      renderStepIndicators() {
+        this.stepIndicators.innerHTML = '';
+        GameState.chain.forEach((step, idx) => {
+          const dot = document.createElement('div');
+          dot.className = `w-4 h-4 sm:w-5 sm:h-5 rounded-full transition-all duration-300 border-2 ${
+            idx === GameState.currentStepIndex
+              ? 'bg-indigo-600 border-indigo-800 scale-125 shadow-md ring-2 ring-indigo-300'
+              : idx < GameState.currentStepIndex
+              ? 'bg-emerald-400 border-emerald-600'
+              : 'bg-slate-200 border-slate-300'
+          }`;
+          this.stepIndicators.appendChild(dot);
+        });
+      },
+
+      renderCurrentStep() {
+        const item = GameState.chain[GameState.currentStepIndex];
+        if (!item) return;
+
+        // Reset animación
+        this.stepCard.classList.remove('animate-pop');
+        void this.stepCard.offsetWidth; // Reflow trigger
+        this.stepCard.classList.add('animate-pop');
+
+        if (item.type === 'start') {
+          this.stepLabel.textContent = "🚀 Número de partida";
+          this.stepContent.textContent = item.display;
+          this.stepSubhint.textContent = "Guarda este número en tu memoria... ¡y prepárate!";
+        } else {
+          this.stepLabel.textContent = `Operación #${GameState.currentStepIndex}`;
+          this.stepContent.textContent = item.display;
+          this.stepSubhint.textContent = "Calcula el nuevo resultado mentalmente...";
+        }
+
+        // Si ya llegó al último paso
+        if (GameState.currentStepIndex === GameState.chain.length - 1) {
+          this.btnNextStep.innerHTML = `<span>¡Fin de la cadena! ¿Cuál es el total?</span> <span class="text-xl">🎯</span>`;
+          this.btnNextStep.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+          this.btnNextStep.classList.add('bg-amber-500', 'hover:bg-amber-600', 'text-white');
+        } else {
+          this.btnNextStep.innerHTML = `<span>Siguiente eslabón</span> <span class="text-xl">➡️</span>`;
+          this.btnNextStep.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+          this.btnNextStep.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+        }
+
+        this.renderStepIndicators();
+      },
+
+      renderFullChain() {
+        this.fullChainContainer.innerHTML = '';
+        GameState.chain.forEach((item, idx) => {
+          // Ficha del eslabón
+          const card = document.createElement('div');
+          card.className = "flex items-center";
+
+          const badge = document.createElement('div');
+          if (item.type === 'start') {
+            badge.className = "bg-gradient-to-br from-indigo-500 to-indigo-700 text-white font-black text-2xl sm:text-3xl px-5 py-4 rounded-2xl shadow-md border-2 border-indigo-300 min-w-[75px] text-center flex flex-col items-center justify-center";
+            badge.innerHTML = `<span>${item.display}</span>`;
+          } else {
+            const isAdd = item.op === '+';
+            const colorClass = isAdd 
+              ? "from-emerald-500 to-emerald-600 border-emerald-300" 
+              : "from-rose-500 to-rose-600 border-rose-300";
+            
+            badge.className = `bg-gradient-to-br ${colorClass} text-white font-black text-2xl sm:text-3xl px-4 py-3 sm:px-5 sm:py-4 rounded-2xl shadow-md border-2 min-w-[85px] text-center flex flex-col items-center justify-center`;
+            
+            // Si la solución está revelada, mostrar el resultado acumulado debajo de la operación
+            if (GameState.isSolutionRevealed) {
+              badge.innerHTML = `
+                <span>${item.display}</span>
+                <span class="text-xs bg-black/25 px-2 py-0.5 rounded-full mt-1 text-white font-bold tracking-wide">
+                  = ${item.subtotal}
+                </span>
+              `;
+            } else {
+              badge.innerHTML = `<span>${item.display}</span>`;
+            }
+          }
+
+          card.appendChild(badge);
+
+          // Flecha conectora si no es el último
+          if (idx < GameState.chain.length - 1) {
+            const arrow = document.createElement('div');
+            arrow.className = "mx-1.5 sm:mx-2 text-indigo-400 font-black text-2xl sm:text-3xl";
+            arrow.textContent = "➔";
+            card.appendChild(arrow);
+          } else {
+            const equal = document.createElement('div');
+            equal.className = "mx-2 text-indigo-500 font-black text-3xl";
+            equal.textContent = "=";
+            card.appendChild(equal);
+
+            const questionBadge = document.createElement('div');
+            if (GameState.isSolutionRevealed) {
+              questionBadge.className = "bg-emerald-500 text-white border-3 border-emerald-600 font-black text-3xl px-5 py-4 rounded-2xl shadow-lg min-w-[75px] text-center";
+              questionBadge.textContent = GameState.targetResult;
+            } else {
+              questionBadge.className = "bg-amber-100 text-amber-900 border-3 border-dashed border-amber-400 font-black text-3xl px-5 py-4 rounded-2xl shadow-inner min-w-[75px] text-center animate-pulse";
+              questionBadge.textContent = "?";
+            }
+            card.appendChild(questionBadge);
+          }
+
+          this.fullChainContainer.appendChild(card);
+        });
+
+        this.renderSolutionBanner();
+      },
+
+      renderSolutionBanner() {
+        if (!GameState.isSolutionRevealed) {
+          this.solutionBanner.classList.add('hidden');
+          const btnText = `<span>👁️ Ver Operaciones</span>`;
+          if (this.btnToggleSolution) this.btnToggleSolution.innerHTML = btnText;
+          if (this.btnToggleSolutionFull) this.btnToggleSolutionFull.innerHTML = btnText;
+          return;
+        }
+
+        this.solutionBanner.classList.remove('hidden');
+        const btnTextActive = `<span>🙈 Ocultar Operaciones</span>`;
+        if (this.btnToggleSolution) this.btnToggleSolution.innerHTML = btnTextActive;
+        if (this.btnToggleSolutionFull) this.btnToggleSolutionFull.innerHTML = btnTextActive;
+
+        this.solutionFinalTag.textContent = `Resultado final = ${GameState.targetResult}`;
+
+        // Construir badges de cada paso
+        this.solutionStepsList.innerHTML = '';
+        let prev = 0;
+        let equationParts = [];
+
+        GameState.chain.forEach((item) => {
+          if (item.type === 'start') {
+            prev = parseInt(item.display, 10);
+            equationParts.push(item.display);
+            const pill = document.createElement('span');
+            pill.className = "px-2.5 py-1 bg-indigo-100 text-indigo-900 rounded-lg border border-indigo-200";
+            pill.innerHTML = `Inicio: <strong>${prev}</strong>`;
+            this.solutionStepsList.appendChild(pill);
+          } else {
+            equationParts.push(`${item.op} ${item.val}`);
+            const pill = document.createElement('span');
+            pill.className = "px-2.5 py-1 bg-white text-slate-800 rounded-lg border border-slate-300 shadow-sm";
+            pill.innerHTML = `${prev} ${item.op} ${item.val} = <strong class="text-emerald-700">${item.subtotal}</strong>`;
+            this.solutionStepsList.appendChild(pill);
+            prev = item.subtotal;
+          }
+        });
+
+        this.solutionEquationText.innerHTML = `
+          <span class="text-slate-500 mr-2">Ecuación continua:</span>
+          <span class="font-extrabold text-indigo-950">${equationParts.join(' ')} = <span class="text-emerald-600 text-base">${GameState.targetResult}</span></span>
+        `;
+      },
+
+      updateUserAnswerDisplay() {
+        if (this.userAnswerInput) {
+          this.userAnswerInput.value = GameState.userAnswerInput;
+        }
+      },
+
+      updateScoreboard() {
+        this.scoreDisplay.textContent = GameState.score;
+        this.streakDisplay.textContent = GameState.streak;
+      }
+    };
+
+    /* ========================================================
+       LÓGICA DEL FLUJO DE JUEGO Y CONTROLADORES
+       ======================================================== */
+    function startNewRound() {
+      // Detener autoplay si estaba corriendo
+      stopAutoPlay();
+
+      const { chain, finalResult } = generateNewChain(GameState.currentLevel);
+      GameState.chain = chain;
+      GameState.targetResult = finalResult;
+      GameState.currentStepIndex = 0;
+      GameState.userAnswerInput = '';
+      GameState.isSolutionRevealed = false;
+
+      if (UI.userAnswerInput) {
+        UI.userAnswerInput.value = '';
+        setTimeout(() => UI.userAnswerInput.focus(), 100);
+      }
+
+      UI.renderLevelHeader();
+      UI.renderStepIndicators();
+      UI.renderCurrentStep();
+      UI.renderFullChain();
+      UI.updateUserAnswerDisplay();
+      UI.updateScoreboard();
+    }
+
+    function toggleSolution() {
+      GameState.isSolutionRevealed = !GameState.isSolutionRevealed;
+      SoundManager.playClick();
+      UI.renderFullChain();
+    }
+
+    function advanceStep() {
+      if (GameState.currentStepIndex < GameState.chain.length - 1) {
+        GameState.currentStepIndex++;
+        SoundManager.playStep();
+        UI.renderCurrentStep();
+      } else {
+        // Ya está en el último paso, dar feedback auditivo suave
+        SoundManager.playClick();
+      }
+    }
+
+    function repeatChain() {
+      stopAutoPlay();
+      GameState.currentStepIndex = 0;
+      SoundManager.playClick();
+      UI.renderCurrentStep();
+    }
+
+    function toggleAutoPlay() {
+      if (GameState.isAutoPlaying) {
+        stopAutoPlay();
+      } else {
+        startAutoPlay();
+      }
+    }
+
+    function startAutoPlay() {
+      GameState.isAutoPlaying = true;
+      UI.btnAutoPlay.classList.remove('bg-slate-100', 'text-slate-700');
+      UI.btnAutoPlay.classList.add('bg-indigo-600', 'text-white', 'border-indigo-800');
+      UI.btnAutoPlay.innerHTML = `<span>⏸️ Pausar</span>`;
+
+      // Reiniciar al inicio si ya terminó
+      if (GameState.currentStepIndex >= GameState.chain.length - 1) {
+        GameState.currentStepIndex = 0;
+        UI.renderCurrentStep();
+      }
+
+      GameState.autoPlayTimer = setInterval(() => {
+        if (GameState.currentStepIndex < GameState.chain.length - 1) {
+          advanceStep();
+        } else {
+          stopAutoPlay();
+        }
+      }, GameState.autoPlaySpeed);
+    }
+
+    function stopAutoPlay() {
+      GameState.isAutoPlaying = false;
+      if (GameState.autoPlayTimer) {
+        clearInterval(GameState.autoPlayTimer);
+        GameState.autoPlayTimer = null;
+      }
+      UI.btnAutoPlay.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-800');
+      UI.btnAutoPlay.classList.add('bg-slate-100', 'text-slate-700');
+      UI.btnAutoPlay.innerHTML = `<span>⏱️ Auto</span>`;
+    }
+
+    /* ========================================================
+       COMPROBACIÓN Y EXPLICACIÓN PASO A PASO
+       ======================================================== */
+    function checkAnswer() {
+      if (UI.userAnswerInput) {
+        GameState.userAnswerInput = UI.userAnswerInput.value.trim();
+      }
+
+      if (GameState.userAnswerInput === '') {
+        SoundManager.playError();
+        if (UI.userAnswerInput) UI.userAnswerInput.focus();
+        return;
+      }
+
+      const parsedAnswer = parseInt(GameState.userAnswerInput, 10);
+      const isCorrect = (parsedAnswer === GameState.targetResult);
+
+      // Presentar siempre el resultado de las operaciones al final de la comprobación
+      GameState.isSolutionRevealed = true;
+      UI.renderFullChain();
+
+      if (isCorrect) {
+        GameState.score += (GameState.currentLevel * 10) + (GameState.streak * 2);
+        GameState.streak += 1;
+        SoundManager.playSuccess();
+        launchConfetti();
+        showFeedbackModal(true, parsedAnswer);
+      } else {
+        GameState.streak = 0;
+        SoundManager.playError();
+        showFeedbackModal(false, parsedAnswer);
+      }
+
+      UI.updateScoreboard();
+    }
+
+    function showFeedbackModal(isCorrect, userAnswer) {
+      if (isCorrect) {
+        UI.modalIcon.textContent = "🏆";
+        UI.modalTitle.textContent = "¡Excelente Trabajo!";
+        UI.modalTitle.className = "text-2xl sm:text-3xl font-black text-emerald-600 mb-1";
+        UI.modalSubtitle.textContent = `Tu respuesta (${userAnswer}) es completamente correcta. ¡Gran memoria!`;
+      } else {
+        UI.modalIcon.textContent = "🧐";
+        UI.modalTitle.textContent = "¡Casi lo tienes!";
+        UI.modalTitle.className = "text-2xl sm:text-3xl font-black text-amber-600 mb-1";
+        UI.modalSubtitle.textContent = `Pusiste ${userAnswer}, pero el resultado exacto de las operaciones era ${GameState.targetResult}. ¡Veamos los cálculos!`;
+      }
+
+      // Construir el desglose paso a paso pedagógico
+      UI.breakdownSteps.innerHTML = '';
+      let runningTotal = 0;
+
+      GameState.chain.forEach((item, idx) => {
+        const stepRow = document.createElement('div');
+        stepRow.className = "flex items-center justify-between text-sm sm:text-base font-extrabold py-1.5 px-3 rounded-xl bg-white border border-indigo-100";
+
+        if (item.type === 'start') {
+          runningTotal = parseInt(item.display, 10);
+          stepRow.innerHTML = `
+            <span class="text-indigo-600">Comenzamos con:</span>
+            <span class="text-indigo-950 font-black text-lg">${item.display}</span>
+          `;
+        } else {
+          const prev = runningTotal;
+          if (item.op === '+') {
+            runningTotal += item.val;
+          } else {
+            runningTotal -= item.val;
+          }
+
+          stepRow.innerHTML = `
+            <span class="text-slate-700 font-bold">${item.label}: <span class="text-indigo-600">${prev} ${item.op} ${item.val}</span></span>
+            <span class="text-emerald-700 font-black text-lg">= ${runningTotal}</span>
+          `;
+        }
+        UI.breakdownSteps.appendChild(stepRow);
+      });
+
+      // Fila final destacada con el resultado exacto
+      const finalRow = document.createElement('div');
+      finalRow.className = "flex items-center justify-between text-base sm:text-lg font-black py-2.5 px-3.5 rounded-xl bg-emerald-600 text-white shadow-md mt-2";
+      finalRow.innerHTML = `
+        <span class="text-sm sm:text-base">Resultado final de las operaciones:</span>
+        <span class="text-2xl sm:text-3xl font-black">${GameState.targetResult}</span>
+      `;
+      UI.breakdownSteps.appendChild(finalRow);
+
+      UI.modalFeedback.classList.remove('hidden');
+    }
+
+    /* ========================================================
+       EFECTO DE CONFETI EN CANVAS NATIVO (Sin dependencias)
+       ======================================================== */
+    const Confetti = {
+      canvas: document.getElementById('confetti-canvas'),
+      ctx: null,
+      particles: [],
+      animationId: null,
+
+      init() {
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      },
+
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      },
+
+      start() {
+        this.particles = [];
+        const colors = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'];
+        for (let i = 0; i < 90; i++) {
+          this.particles.push({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+            vx: (Math.random() - 0.5) * 16,
+            vy: (Math.random() - 0.7) * 16,
+            size: Math.random() * 8 + 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            vRot: (Math.random() - 0.5) * 10,
+            life: 1,
+            decay: Math.random() * 0.015 + 0.015
+          });
+        }
+
+        if (!this.animationId) {
+          this.loop();
+        }
+      },
+
+      loop() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        for (let i = 0; i < this.particles.length; i++) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // Gravedad
+          p.rotation += p.vRot;
+          p.life -= p.decay;
+
+          this.ctx.save();
+          this.ctx.translate(p.x, p.y);
+          this.ctx.rotate((p.rotation * Math.PI) / 180);
+          this.ctx.fillStyle = p.color;
+          this.ctx.globalAlpha = Math.max(0, p.life);
+          this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          this.ctx.restore();
+        }
+
+        this.particles = this.particles.filter(p => p.life > 0);
+
+        if (this.particles.length > 0) {
+          this.animationId = requestAnimationFrame(() => this.loop());
+        } else {
+          cancelAnimationFrame(this.animationId);
+          this.animationId = null;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+      }
+    };
+
+    function launchConfetti() {
+      Confetti.start();
+    }
+
+    /* ========================================================
+       CONFIGURACIÓN DE EVENTOS TÁCTILES Y DE RATÓN
+       (Compatible con Monitor Digital Interactivo y Tablets)
+       ======================================================== */
+    function initializeEvents() {
+      Confetti.init();
+
+      // Iniciar sonido al primer toque/clic
+      const activateAudio = () => {
+        SoundManager.init();
+        document.removeEventListener('pointerdown', activateAudio);
+      };
+      document.addEventListener('pointerdown', activateAudio, { once: true });
+
+      // Selector de Niveles
+      document.querySelectorAll('.lvl-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const selectedLevel = parseInt(e.currentTarget.dataset.level, 10);
+          if (GameState.currentLevel !== selectedLevel) {
+            GameState.currentLevel = selectedLevel;
+            SoundManager.playClick();
+            startNewRound();
+          }
+        });
+      });
+
+      // Modos de Vista: Memoria (Paso a Paso) vs Cadena Visible
+      const btnModeStep = document.getElementById('mode-step');
+      const btnModeFull = document.getElementById('mode-full');
+
+      btnModeStep.addEventListener('click', () => {
+        GameState.mode = 'step';
+        SoundManager.playClick();
+        btnModeStep.className = "btn-3d flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-white text-indigo-900 border border-slate-200 shadow-sm";
+        btnModeFull.className = "btn-3d flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm text-slate-600 hover:text-slate-900";
+        UI.stepModeView.classList.remove('hidden');
+        UI.fullModeView.classList.add('hidden');
+      });
+
+      btnModeFull.addEventListener('click', () => {
+        GameState.mode = 'full';
+        stopAutoPlay();
+        SoundManager.playClick();
+        btnModeFull.className = "btn-3d flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm bg-white text-indigo-900 border border-slate-200 shadow-sm";
+        btnModeStep.className = "btn-3d flex-1 sm:flex-initial px-3 py-1.5 rounded-xl font-extrabold text-xs sm:text-sm text-slate-600 hover:text-slate-900";
+        UI.stepModeView.classList.add('hidden');
+        UI.fullModeView.classList.remove('hidden');
+      });
+
+      // Controles de Eslabones y Solución protegidos contra referencias nulas
+      if (UI.btnNextStep) UI.btnNextStep.addEventListener('click', advanceStep);
+      if (UI.stepCard) UI.stepCard.addEventListener('click', advanceStep);
+      if (UI.btnRepeatChain) UI.btnRepeatChain.addEventListener('click', repeatChain);
+      if (UI.btnAutoPlay) UI.btnAutoPlay.addEventListener('click', toggleAutoPlay);
+      if (UI.btnToggleSolution) UI.btnToggleSolution.addEventListener('click', toggleSolution);
+      if (UI.btnToggleSolutionFull) UI.btnToggleSolutionFull.addEventListener('click', toggleSolution);
+
+      // Sincronización del campo de respuesta con el estado del juego
+      if (UI.userAnswerInput) {
+        UI.userAnswerInput.addEventListener('input', (e) => {
+          GameState.userAnswerInput = e.target.value.trim();
+        });
+      }
+
+      // Botón Nueva Cadena
+      const btnNewRound = document.getElementById('btn-toggle-sign');
+      if (btnNewRound) {
+        btnNewRound.addEventListener('click', (e) => {
+          e.preventDefault();
+          SoundManager.playClick();
+          startNewRound();
+        });
+      }
+
+      // Enviar resultado
+      const btnSubmit = document.getElementById('btn-submit');
+      if (btnSubmit) {
+        btnSubmit.addEventListener('click', (e) => {
+          e.preventDefault();
+          checkAnswer();
+        });
+      }
+
+      // Botón Siguiente Misión desde el Modal
+      document.getElementById('btn-next-mission').addEventListener('click', () => {
+        SoundManager.playClick();
+        UI.modalFeedback.classList.add('hidden');
+        startNewRound();
+      });
+
+      // Sonido On/Off
+      UI.btnSound.addEventListener('click', () => {
+        SoundManager.enabled = !SoundManager.enabled;
+        UI.btnSound.textContent = SoundManager.enabled ? '🔊' : '🔇';
+        SoundManager.playClick();
+      });
+
+      // Pantalla Completa para Monitor Digital Interactivo
+      const btnFullscreen = document.getElementById('btn-fullscreen');
+      btnFullscreen.addEventListener('click', () => {
+        SoundManager.playClick();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+          btnFullscreen.textContent = '🗗';
+        } else {
+          document.exitFullscreen().catch(() => {});
+          btnFullscreen.textContent = '⛶';
+        }
+      });
+
+      // Modal de Información Didáctica
+      document.getElementById('btn-info').addEventListener('click', () => {
+        SoundManager.playClick();
+        UI.modalInfo.classList.remove('hidden');
+      });
+      document.getElementById('btn-close-info').addEventListener('click', () => {
+        SoundManager.playClick();
+        UI.modalInfo.classList.add('hidden');
+      });
+      document.getElementById('btn-close-info-ok').addEventListener('click', () => {
+        SoundManager.playClick();
+        UI.modalInfo.classList.add('hidden');
+      });
+
+      // Atajos de navegación (espacio / flecha para avanzar paso a paso)
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || (e.key === ' ' && document.activeElement !== UI.userAnswerInput)) {
+          if (GameState.mode === 'step') {
+            advanceStep();
+          }
+        }
+      });
+
+      // Iniciar la primera partida
+      startNewRound();
+    }
+
+    // Inicialización resiliente a entornos iframe y cargas dinámicas
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeEvents);
+    } else {
+      initializeEvents();
+    }
+  </script>
+</body>
+</html>
