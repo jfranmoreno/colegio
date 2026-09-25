@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🕵️‍♀️ Misión: Palabra Secreta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #edf2f7;
+      --card-bg: #ffffff;
+      --text-main: #2d3748;
+      --text-muted: #718096;
+      
+      --c-correct: #10b981; /* Verde */
+      --c-misplaced: #f59e0b; /* Amarillo/Naranja */
+      --c-wrong: #cbd5e1; /* Gris */
+
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      --shadow-btn: 0 5px 0px rgba(0, 0, 0, 0.12);
+      --shadow-btn-pressed: 0 2px 0px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe 0%, #f5f3ff 50%, #fef3c7 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 1120px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      font-size: 2.2rem;
+      background: #fef08a;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(253, 224, 71, 0.5);
+    }
+
+    .title-group h1 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #1e293b;
+      line-height: 1.1;
+    }
+
+    .title-group p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: var(--radius-sm);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      min-height: 44px;
+      font-family: inherit;
+    }
+
+    .btn-icon:hover { background: #e2e8f0; }
+    .btn-icon:active { transform: translateY(2px); }
+
+    .game-layout {
+      width: 100%;
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 900px) {
+      .game-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .control-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .secret-box {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-card);
+      text-align: center;
+      border: 3px solid #334155;
+    }
+
+    .secret-box h2 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .secret-pegs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .secret-peg {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-sm);
+      background: #334155;
+      border: 3px solid #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.4s ease;
+      text-transform: uppercase;
+    }
+
+    .secret-peg.revealed {
+      animation: flipReveal 0.6s ease forwards;
+    }
+
+    .palette-box {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .palette-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #475569;
+      text-align: center;
+    }
+
+    /* Diseño del teclado tipo QWERTY adaptado */
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .btn-key {
+      flex: 1;
+      max-width: 45px;
+      height: 55px;
+      border-radius: 8px;
+      border: none;
+      background: #f1f5f9;
+      color: #1e293b;
+      font-size: 1.3rem;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 4px 0px #cbd5e1;
+      transition: all 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (min-width: 1024px) {
+      .btn-key {
+        height: 65px;
+        font-size: 1.5rem;
+        max-width: 55px;
+      }
+    }
+
+    .btn-key:active {
+      transform: translateY(4px);
+      box-shadow: 0 0px 0px #cbd5e1;
+    }
+
+    .btn-key.wide {
+      flex: 2;
+      max-width: none;
+      font-size: 1rem;
+      background: #e2e8f0;
+      box-shadow: 0 4px 0px #94a3b8;
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-action {
+      height: 58px;
+      border-radius: var(--radius-md);
+      font-size: 1.15rem;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-btn);
+    }
+
+    .btn-check {
+      background: #10b981;
+      color: white;
+      border-bottom: 4px solid #059669;
+    }
+
+    .btn-check:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-check:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    .btn-check:disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      border-bottom: 4px solid #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-check.ready { animation: pulseGlow 1.5s infinite; }
+
+    .legend-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .legend-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .legend-badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: white;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .board-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      height: 100%; 
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 2px dashed #e2e8f0;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .board-header .header-col-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .attempts-list {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .attempt-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 10px;
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      border: 2px solid #e2e8f0;
+      transition: all 0.2s ease;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .attempt-row.active {
+      background: #f0fdf4;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+    }
+
+    .attempt-left-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .attempt-number {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #94a3b8;
+      width: 28px;
+      text-align: center;
+    }
+
+    .attempt-row.active .attempt-number {
+      color: #16a34a;
+    }
+
+    .pegs-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .peg-slot {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-sm);
+      background: #e2e8f0;
+      border: 3px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #1e293b;
+      box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-transform: uppercase;
+    }
+
+    .attempt-row.active .peg-slot {
+      border-color: #86efac;
+      background: #ffffff;
+    }
+
+    .peg-slot.filled {
+      border-color: #64748b;
+      background: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .clues-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #f1f5f9;
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
+      border: 2px solid #e2e8f0;
+    }
+
+    .clue-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 900;
+      color: #94a3b8;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .clue-dot.exact {
+      background: var(--c-correct);
+      color: #ffffff;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+    }
+
+    .clue-dot.misplaced {
+      background: var(--c-misplaced);
+      color: #ffffff;
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+    }
+
+    .clue-dot.wrong {
+      background: var(--c-wrong);
+      color: #64748b;
+      opacity: 0.7;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 16px;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-backdrop.show .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      font-size: 3.5rem;
+      margin-bottom: 8px;
+      display: inline-block;
+      animation: bounce 1s infinite alternate;
+    }
+
+    .modal-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+
+    .modal-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #475569;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    .modal-steps {
+      text-align: left;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    .btn-modal-primary {
+      width: 100%;
+      height: 54px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-bottom: 4px solid #1d4ed8;
+      border-radius: var(--radius-md);
+      font-size: 1.2rem;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: var(--shadow-btn);
+      transition: all 0.15s ease;
+    }
+
+    .btn-modal-primary:active {
+      transform: translateY(3px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.3); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+
+    @keyframes flipReveal {
+      0% { transform: rotateY(0deg); }
+      50% { transform: rotateY(90deg); background: #3b82f6; }
+      100% { transform: rotateY(0deg); }
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <header>
+    <div class="title-group">
+      <div class="logo-badge">📖</div>
+      <div>
+        <h1>Misión: Palabra Secreta</h1>
+        <p>¡Descifra la palabra de 4 letras!</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btn-mode" title="Cambiar modo de pistas">📍 Por Casilla</button>
+      <button class="btn-icon" id="btn-sound" title="Activar/Silenciar Sonido">🔊</button>
+      <button class="btn-icon" id="btn-help" title="¿Cómo se juega?">❓ Guía</button>
+      <button class="btn-icon" id="btn-new" title="Nueva Partida">🔄 Reiniciar</button>
+    </div>
+  </header>
+
+  <main class="game-layout">
+    
+    <!-- Panel Izquierdo: Tablero de intentos -->
+    <section class="board-card">
+      <div class="board-header">
+        <div class="header-col-left">
+          <span>🔢 INTENTO</span>
+          <span>📝 TU PALABRA</span>
+        </div>
+        <span>🔍 PISTAS</span>
+      </div>
+      <div class="attempts-list" id="attempts-container">
+        <!-- Generado por JS -->
+      </div>
+    </section>
+
+    <!-- Panel Derecho: Información secreta y Teclado -->
+    <section class="control-card">
+      
+      <div class="secret-box">
+        <h2>🔒 PALABRA SECRETA</h2>
+        <div class="secret-pegs" id="secret-pegs-container">
+          <div class="secret-peg" id="sec-0">❓</div>
+          <div class="secret-peg" id="sec-1">❓</div>
+          <div class="secret-peg" id="sec-2">❓</div>
+          <div class="secret-peg" id="sec-3">❓</div>
+        </div>
+      </div>
+
+      <div class="palette-box">
+        <div class="palette-title">👉 Toca las letras para formar una palabra:</div>
+        
+        <!-- Teclado Virtual QWERTY adaptado -->
+        <div class="keyboard" id="keyboard-container">
+          <div class="kb-row">
+            <button class="btn-key" data-key="Q">Q</button>
+            <button class="btn-key" data-key="W">W</button>
+            <button class="btn-key" data-key="E">E</button>
+            <button class="btn-key" data-key="R">R</button>
+            <button class="btn-key" data-key="T">T</button>
+            <button class="btn-key" data-key="Y">Y</button>
+            <button class="btn-key" data-key="U">U</button>
+            <button class="btn-key" data-key="I">I</button>
+            <button class="btn-key" data-key="O">O</button>
+            <button class="btn-key" data-key="P">P</button>
+          </div>
+          <div class="kb-row">
+            <button class="btn-key" data-key="A">A</button>
+            <button class="btn-key" data-key="S">S</button>
+            <button class="btn-key" data-key="D">D</button>
+            <button class="btn-key" data-key="F">F</button>
+            <button class="btn-key" data-key="G">G</button>
+            <button class="btn-key" data-key="H">H</button>
+            <button class="btn-key" data-key="J">J</button>
+            <button class="btn-key" data-key="K">K</button>
+            <button class="btn-key" data-key="L">L</button>
+            <button class="btn-key" data-key="Ñ">Ñ</button>
+          </div>
+          <div class="kb-row">
+            <button class="btn-key" data-key="Z">Z</button>
+            <button class="btn-key" data-key="X">X</button>
+            <button class="btn-key" data-key="C">C</button>
+            <button class="btn-key" data-key="V">V</button>
+            <button class="btn-key" data-key="B">B</button>
+            <button class="btn-key" data-key="N">N</button>
+            <button class="btn-key" data-key="M">M</button>
+            <button class="btn-key wide btn-delete" id="btn-delete">⌫ Borrar</button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-action btn-check" id="btn-check" disabled>
+            🚀 Comprobar Palabra
+          </button>
+        </div>
+      </div>
+
+      <div class="legend-card">
+        <div class="legend-title" id="legend-title-text">💡 ¿QUÉ SIGNIFICAN LOS PUNTOS?</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-badge" style="background: var(--c-correct);">✔</span>
+            <span id="legend-desc-exact"><strong>Verde:</strong> ¡Genial! La letra es correcta y está en su sitio.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: var(--c-misplaced);">↔</span>
+            <span id="legend-desc-misplaced"><strong>Amarillo:</strong> La letra está en la palabra, pero en otro lugar.</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-badge" style="background: var(--c-wrong); color: #475569;">✖</span>
+            <span id="legend-desc-wrong"><strong>Gris:</strong> Esta letra no aparece en la palabra secreta.</span>
+          </div>
+        </div>
+        <div class="legend-note" id="legend-footer-note">📍 Fíjate en los puntos: cada uno te da una pista sobre la letra de arriba.</div>
+      </div>
+
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modal-help">
+    <div class="modal-box">
+      <div class="modal-icon">🔎</div>
+      <h2 class="modal-title">¡Club de los Detectives!</h2>
+      <p class="modal-text">Tu misión es descubrir la palabra secreta de 4 letras antes de que se acaben los 8 intentos.</p>
+      
+      <div class="modal-steps">
+        <div>1️⃣ Usa el teclado para escribir una palabra de 4 letras.</div>
+        <div>2️⃣ Pulsa el botón verde <strong>"Comprobar"</strong>.</div>
+        <div>3️⃣ Mira atentamente los puntos de pista. ¡Usa la lógica para adivinar la siguiente!</div>
+      </div>
+
+      <button class="btn-modal-primary" id="btn-close-help">¡Entendido, a jugar! 🚀</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-gameover">
+    <div class="modal-box">
+      <div class="modal-icon" id="go-icon">🏆</div>
+      <h2 class="modal-title" id="go-title">¡Enhorabuena!</h2>
+      <p class="modal-text" id="go-message">¡Habéis descubierto la palabra secreta!</p>
+      <button class="btn-modal-primary" id="btn-restart-game">Jugar otra vez 🔄</button>
+    </div>
+  </div>
+
+  <script>
+    
+    // =========================================================================
+    // 👩‍🏫 ZONA PARA DOCENTES: AÑADE AQUÍ TUS PALABRAS
+    // Puedes añadir, quitar o modificar las palabras de esta lista. 
+    // Asegúrate de que todas tengan exactamente 4 letras mayúsculas.
+    // =========================================================================
+    const DICCIONARIO = [
+      "GATO", "LUNA", "PATO", "LOBO", "ROSA", "MESA", "TIZA", "NUBE",
+      "SOLO", "RANA", "CAJA", "PICO", "BOTA", "LAGO", "SAPO", "PALA",
+      "CASA", "DEDO", "PELO", "BOCA", "COPA", "MAPA", "LATA", "FOCA"
+    ];
+    // =========================================================================
+
+    const CONFIG = {
+      codeLength: 4,
+      maxAttempts: 8
+    };
+
+    let secretCode = []; // Guardará las letras (ej: ['G','A','T','O'])
+    let currentRowIndex = 0;
+    let currentGuess = [];
+    let isGameOver = false;
+    let soundEnabled = true;
+    let positionalMode = true; // Por defecto modo casilla (tipo Wordle), mucho mejor para Lengua.
+
+    // --- Sistema de Audio (Web Audio API) ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.1, delay = 0) {
+      if (!soundEnabled) return;
+      initAudio();
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+      }, delay * 1000);
+    }
+
+    const SoundEffects = {
+      type: () => playTone(600, 'sine', 0.05), // Sonido al teclear
+      delete: () => playTone(300, 'sine', 0.1),
+      check: () => {
+        playTone(440, 'sine', 0.08, 0);
+        playTone(554, 'sine', 0.08, 0.08);
+      },
+      win: () => {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => playTone(freq, 'triangle', 0.25, i * 0.12));
+      },
+      lose: () => {
+        const notes = [400, 350, 300, 240];
+        notes.forEach((freq, i) => playTone(freq, 'sawtooth', 0.25, i * 0.15));
+      }
+    };
+
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerConfetti() {
+      confettiParticles = [];
+      const colors = ['#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6'];
+      for (let i = 0; i < 120; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          r: Math.random() * 8 + 4,
+          dx: (Math.random() - 0.5) * 16,
+          dy: (Math.random() - 0.5) * 16 - 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          tilt: Math.random() * 10,
+          tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
+          tiltAngle: 0
+        });
+      }
+
+      if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let stillActive = false;
+
+      confettiParticles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        p.dy += 0.25;
+        p.tiltAngle += p.tiltAngleIncremental;
+        p.tilt = Math.sin(p.tiltAngle) * 12;
+
+        if (p.y < canvas.height + 20) {
+          stillActive = true;
+          ctx.beginPath();
+          ctx.lineWidth = p.r;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+          ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+          ctx.stroke();
+        }
+      });
+
+      if (stillActive) {
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function initGame() {
+      // Elegir palabra aleatoria del diccionario
+      const palabraElegida = DICCIONARIO[Math.floor(Math.random() * DICCIONARIO.length)];
+      secretCode = palabraElegida.split(''); // Convertir a array de letras
+
+      currentRowIndex = 0;
+      currentGuess = [];
+      isGameOver = false;
+
+      // Limpiar tablero superior (Palabra Secreta)
+      for (let i = 0; i < CONFIG.codeLength; i++) {
+        const secretSlot = document.getElementById(`sec-${i}`);
+        secretSlot.innerHTML = '❓';
+        secretSlot.style.background = '#334155'; // Reset color oculto
+        secretSlot.style.borderColor = '#64748b';
+        secretSlot.classList.remove('revealed');
+      }
+
+      // Reconstruir lista de intentos
+      const attemptsContainer = document.getElementById('attempts-container');
+      attemptsContainer.innerHTML = '';
+
+      for (let i = 0; i < CONFIG.maxAttempts; i++) {
+        const rowEl = document.createElement('div');
+        rowEl.className = `attempt-row ${i === 0 ? 'active' : ''}`;
+        rowEl.id = `row-${i}`;
+
+        const leftGroup = document.createElement('div');
+        leftGroup.className = 'attempt-left-group';
+
+        const numEl = document.createElement('div');
+        numEl.className = 'attempt-number';
+        numEl.innerText = `#${i + 1}`;
+        leftGroup.appendChild(numEl);
+
+        const pegsContainer = document.createElement('div');
+        pegsContainer.className = 'pegs-row';
+
+        for (let j = 0; j < CONFIG.codeLength; j++) {
+          const slot = document.createElement('div');
+          slot.className = 'peg-slot';
+          slot.id = `slot-${i}-${j}`;
+          
+          slot.addEventListener('click', () => {
+            if (i === currentRowIndex && !isGameOver) {
+              removeLetterAt(j);
+            }
+          });
+
+          pegsContainer.appendChild(slot);
+        }
+        leftGroup.appendChild(pegsContainer);
+        rowEl.appendChild(leftGroup);
+
+        const cluesRow = document.createElement('div');
+        cluesRow.className = 'clues-row';
+        for (let c = 0; c < CONFIG.codeLength; c++) {
+          const clueDot = document.createElement('div');
+          clueDot.className = 'clue-dot';
+          clueDot.id = `clue-${i}-${c}`;
+          clueDot.innerHTML = '•';
+          cluesRow.appendChild(clueDot);
+        }
+        rowEl.appendChild(cluesRow);
+
+        attemptsContainer.appendChild(rowEl);
+      }
+
+      updateCheckButton();
+      closeModal('modal-gameover');
+    }
+
+    function addLetterToCurrentRow(letter) {
+      if (isGameOver || currentGuess.length >= CONFIG.codeLength) return;
+
+      SoundEffects.type();
+      currentGuess.push(letter);
+      renderCurrentGuess();
+      updateCheckButton();
+    }
+
+    function removeLastLetter() {
+      if (isGameOver || currentGuess.length === 0) return;
+      SoundEffects.delete();
+      currentGuess.pop();
+      renderCurrentGuess();
+      updateCheckButton();
+    }
+
+    function removeLetterAt(index) {
+      if (index < currentGuess.length) {
+        SoundEffects.delete();
+        currentGuess.splice(index, 1); // Permite borrar una letra en medio si se toca
+        renderCurrentGuess();
+        updateCheckButton();
+      }
+    }
+
+    function renderCurrentGuess() {
+      for (let j = 0; j < CONFIG.codeLength; j++) {
+        const slot = document.getElementById(`slot-${currentRowIndex}-${j}`);
+        if (j < currentGuess.length) {
+          slot.innerHTML = currentGuess[j];
+          slot.classList.add('filled');
+        } else {
+          slot.innerHTML = '';
+          slot.classList.remove('filled');
+        }
+      }
+    }
+
+    function updateCheckButton() {
+      const btnCheck = document.getElementById('btn-check');
+      const isComplete = currentGuess.length === CONFIG.codeLength;
+      btnCheck.disabled = !isComplete;
+      if (isComplete) {
+        btnCheck.classList.add('ready');
+      } else {
+        btnCheck.classList.remove('ready');
+      }
+    }
+
+    // Evaluación "Por Casilla" (Estilo Wordle, idóneo para palabras)
+    function evaluatePositional(secret, guess) {
+      const clues = new Array(secret.length).fill('wrong');
+      const secretAvailable = new Array(secret.length).fill(true);
+
+      // 1. Encontrar aciertos exactos (Verdes)
+      for (let i = 0; i < secret.length; i++) {
+        if (guess[i] === secret[i]) {
+          clues[i] = 'exact';
+          secretAvailable[i] = false;
+        }
+      }
+
+      // 2. Encontrar aciertos descolocados (Amarillos)
+      for (let i = 0; i < secret.length; i++) {
+        if (clues[i] !== 'exact') {
+          for (let j = 0; j < secret.length; j++) {
+            if (secretAvailable[j] && guess[i] === secret[j]) {
+              clues[i] = 'misplaced';
+              secretAvailable[j] = false;
+              break;
+            }
+          }
+        }
+      }
+
+      const exactCount = clues.filter(c => c === 'exact').length;
+      return { clues, exactCount };
+    }
+
+    // Evaluación "Clásica" (Mastermind tradicional: pistas agrupadas)
+    function evaluateClassic(secret, guess) {
+      let exact = 0;
+      let misplaced = 0;
+
+      const secretMatched = new Array(secret.length).fill(false);
+      const guessMatched = new Array(guess.length).fill(false);
+
+      for (let i = 0; i < secret.length; i++) {
+        if (guess[i] === secret[i]) {
+          exact++;
+          secretMatched[i] = true;
+          guessMatched[i] = true;
+        }
+      }
+
+      for (let i = 0; i < guess.length; i++) {
+        if (!guessMatched[i]) {
+          for (let j = 0; j < secret.length; j++) {
+            if (!secretMatched[j] && guess[i] === secret[j]) {
+              misplaced++;
+              secretMatched[j] = true;
+              break;
+            }
+          }
+        }
+      }
+
+      const clues = [];
+      for (let i = 0; i < exact; i++) clues.push('exact');
+      for (let i = 0; i < misplaced; i++) clues.push('misplaced');
+      while (clues.length < secret.length) clues.push('wrong');
+
+      return { clues, exactCount: exact };
+    }
+
+    function checkCurrentRow() {
+      if (currentGuess.length !== CONFIG.codeLength || isGameOver) return;
+
+      SoundEffects.check();
+
+      const evalResult = positionalMode 
+        ? evaluatePositional(secretCode, currentGuess)
+        : evaluateClassic(secretCode, currentGuess);
+
+      const clues = evalResult.clues;
+      const exactMatches = evalResult.exactCount;
+
+      // Colorear las pistas visuales
+      for (let c = 0; c < CONFIG.codeLength; c++) {
+        const clueDot = document.getElementById(`clue-${currentRowIndex}-${c}`);
+        clueDot.className = 'clue-dot ' + clues[c];
+        if (clues[c] === 'exact') {
+          clueDot.innerHTML = '✔';
+        } else if (clues[c] === 'misplaced') {
+          clueDot.innerHTML = '↔';
+        } else {
+          clueDot.innerHTML = '✖';
+        }
+      }
+
+      if (exactMatches === CONFIG.codeLength) {
+        handleGameWin();
+      } else if (currentRowIndex + 1 >= CONFIG.maxAttempts) {
+        handleGameLose();
+      } else {
+        document.getElementById(`row-${currentRowIndex}`).classList.remove('active');
+        currentRowIndex++;
+        currentGuess = [];
+        document.getElementById(`row-${currentRowIndex}`).classList.add('active');
+        updateCheckButton();
+      }
+    }
+
+    function handleGameWin() {
+      isGameOver = true;
+      revealSecretCode();
+      SoundEffects.win();
+      triggerConfetti();
+
+      setTimeout(() => {
+        document.getElementById('go-icon').innerText = '🏆';
+        document.getElementById('go-title').innerText = '¡RETO SUPERADO!';
+        document.getElementById('go-message').innerHTML = `¡Excelente trabajo de equipo! Habéis descubierto la palabra secreta en el <strong>intento ${currentRowIndex + 1}</strong>.`;
+        openModal('modal-gameover');
+      }, 700);
+    }
+
+    function handleGameLose() {
+      isGameOver = true;
+      revealSecretCode();
+      SoundEffects.lose();
+
+      setTimeout(() => {
+        document.getElementById('go-icon').innerText = '🔒';
+        document.getElementById('go-title').innerText = '¡Buen intento, detectives!';
+        document.getElementById('go-message').innerHTML = `Se agotaron los intentos. La palabra secreta era <strong>${secretCode.join('')}</strong>. ¡A por la siguiente!`;
+        openModal('modal-gameover');
+      }, 700);
+    }
+
+    function revealSecretCode() {
+      for (let i = 0; i < CONFIG.codeLength; i++) {
+        const secretSlot = document.getElementById(`sec-${i}`);
+        secretSlot.innerHTML = secretCode[i];
+        secretSlot.style.background = '#3b82f6'; // Fondo azul revelado
+        secretSlot.style.borderColor = '#ffffff';
+        secretSlot.classList.add('revealed');
+      }
+    }
+
+    function updateLegendMode() {
+      const modeBtn = document.getElementById('btn-mode');
+      const titleText = document.getElementById('legend-title-text');
+      const footerNote = document.getElementById('legend-footer-note');
+
+      if (positionalMode) {
+        modeBtn.innerText = '📍 Por Casilla';
+        titleText.innerText = '💡 ¿QUÉ SIGNIFICAN LOS PUNTOS? (Por Casilla)';
+        footerNote.innerText = '📍 Cada punto corresponde a la letra situada exactamente en su misma columna.';
+      } else {
+        modeBtn.innerText = '🎲 Modo Clásico';
+        titleText.innerText = '💡 ¿QUÉ SIGNIFICAN LOS PUNTOS? (Clásico)';
+        footerNote.innerText = '* Las pistas muestran el total de aciertos de la palabra entera (no van en orden).';
+      }
+    }
+
+    function openModal(modalId) { document.getElementById(modalId).classList.add('show'); }
+    function closeModal(modalId) { document.getElementById(modalId).classList.remove('show'); }
+
+    // Eventos e inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // Mapear pulsaciones de teclado virtual
+      const keyBtns = document.querySelectorAll('.btn-key[data-key]');
+      keyBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const letter = btn.dataset.key;
+          addLetterToCurrentRow(letter);
+        });
+      });
+
+      // Mapear teclado físico para agilizar
+      document.addEventListener('keydown', (e) => {
+        if(isGameOver) return;
+        const key = e.key.toUpperCase();
+        if (key >= 'A' && key <= 'Z' || key === 'Ñ') {
+          addLetterToCurrentRow(key);
+        } else if (e.key === 'Backspace') {
+          removeLastLetter();
+        } else if (e.key === 'Enter') {
+          if (currentGuess.length === CONFIG.codeLength) checkCurrentRow();
+        }
+      });
+
+      document.getElementById('btn-delete').addEventListener('click', (e) => {
+        e.preventDefault();
+        removeLastLetter();
+      });
+
+      document.getElementById('btn-check').addEventListener('click', (e) => {
+        e.preventDefault();
+        checkCurrentRow();
+      });
+
+      document.getElementById('btn-mode').addEventListener('click', () => {
+        positionalMode = !positionalMode;
+        updateLegendMode();
+      });
+
+      document.getElementById('btn-help').addEventListener('click', () => openModal('modal-help'));
+      document.getElementById('btn-close-help').addEventListener('click', () => closeModal('modal-help'));
+      
+      document.getElementById('btn-new').addEventListener('click', () => {
+        if (confirm('¿Quieres reiniciar la partida con una nueva palabra?')) {
+          initGame();
+        }
+      });
+      
+      document.getElementById('btn-restart-game').addEventListener('click', () => initGame());
+
+      const soundBtn = document.getElementById('btn-sound');
+      soundBtn.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundBtn.innerText = soundEnabled ? '🔊' : '🔇';
+        soundBtn.style.opacity = soundEnabled ? '1' : '0.6';
+      });
+
+      updateLegendMode();
+      initGame();
+    });
+  </script>
+</body>
+</html>
