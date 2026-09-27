@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>El Gran Relevo de los Sustantivos</title>
+    
+    <!-- Cargando tipografía escolar legible y amigable -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Cargando Tailwind CSS para un diseño responsive y moderno rápido -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f0fdf4; /* Tono pastel verde menta muy suave */
+            background-image: radial-gradient(#dcfce7 2px, transparent 2px);
+            background-size: 40px 40px;
+            overflow: hidden; /* Evitar scroll en PDI */
+            touch-action: manipulation; /* Optimizar toques táctiles */
+            user-select: none; /* Evitar selección de texto al tocar rápido */
+        }
+
+        /* Animaciones personalizadas para feedback visual */
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulseSuccess {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(74, 222, 128, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-15px); }
+            40%, 80% { transform: translateX(15px); }
+        }
+
+        .animate-bounce-in { animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-success { animation: pulseSuccess 0.5s ease-out; background-color: #bbf7d0 !important; color: #166534 !important;}
+        .animate-error { animation: shakeError 0.4s ease-in-out; background-color: #fecdd3 !important; color: #9f1239 !important;}
+
+        /* Botones gigantes para MDI */
+        .btn-giant {
+            transition: all 0.2s;
+            box-shadow: 0 10px 0px rgba(0,0,0,0.1);
+        }
+        .btn-giant:active {
+            transform: translateY(10px);
+            box-shadow: 0 0px 0px rgba(0,0,0,0.1);
+        }
+        
+        .btn-comun { background-color: #fde047; color: #854d0e; border: 4px solid #facc15; }
+        .btn-propio { background-color: #c084fc; color: #4c1d95; border: 4px solid #a855f7; }
+        
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col items-center justify-center relative">
+
+    <!-- PANTALLA DE INICIO -->
+    <div id="screen-start" class="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm z-50 p-8 text-center animate-bounce-in">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl border-8 border-green-400 max-w-4xl w-full">
+            <h1 class="text-5xl md:text-7xl font-black text-green-600 mb-6 drop-shadow-md">
+                🏃‍♀️ Relevo de Palabras 🏃‍♂️
+            </h1>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-700 mb-8">
+                Sustantivos Comunes vs Propios
+            </h2>
+            <div class="text-2xl text-gray-600 mb-10 space-y-4 text-left bg-gray-50 p-6 rounded-2xl">
+                <p><strong>1.</strong> Haced una fila frente a la pantalla.</p>
+                <p><strong>2.</strong> Lee la palabra que aparece en el centro.</p>
+                <p><strong>3.</strong> Toca el botón correcto: 📦 <strong>Común</strong> o 🌟 <strong>Propio</strong>.</p>
+                <p><strong>4.</strong> ¡Si aciertas, choca los cinco con el siguiente compañero y vuelve al final de la fila!</p>
+            </div>
+            <button onclick="startGame()" class="text-4xl font-bold py-6 px-16 bg-green-500 text-white rounded-full shadow-[0_8px_0_#16a34a] hover:bg-green-400 hover:translate-y-1 hover:shadow-[0_4px_0_#16a34a] active:translate-y-2 active:shadow-none transition-all duration-150">
+                ¡EMPEZAR A JUGAR!
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO -->
+    <div id="screen-game" class="hidden w-full h-full flex flex-col">
+        
+        <!-- Barra superior: Progreso, Reinicio y Puntuación -->
+        <div class="w-full p-4 flex justify-between items-center bg-white/80 shadow-md">
+            <div class="text-xl md:text-3xl font-bold text-green-700 bg-green-100 px-4 md:px-6 py-2 rounded-full">
+                Ronda: <span id="ui-round">1/25</span>
+            </div>
+            
+            <button onclick="returnToMenu()" class="text-lg md:text-2xl font-bold text-red-600 bg-red-100 border-4 border-red-300 px-4 md:px-6 py-2 rounded-full shadow-[0_4px_0_#fca5a5] hover:bg-red-200 hover:translate-y-1 hover:shadow-[0_2px_0_#fca5a5] active:translate-y-2 active:shadow-none transition-all duration-150 flex items-center justify-center">
+                🔄 Salir
+            </button>
+
+            <div class="text-xl md:text-3xl font-bold text-blue-700 bg-blue-100 px-4 md:px-6 py-2 rounded-full">
+                Aciertos: <span id="ui-score">0</span>
+            </div>
+        </div>
+
+        <!-- Área Central: Tarjeta de la palabra -->
+        <div class="flex-grow flex items-center justify-center p-4">
+            <div id="word-card" class="bg-white border-8 border-blue-400 rounded-[3rem] shadow-2xl p-12 md:p-20 flex items-center justify-center w-full max-w-4xl h-64 md:h-96 transition-colors duration-300">
+                <span id="current-word" class="text-6xl md:text-9xl font-black text-gray-800 text-center select-none">
+                    Palabra
+                </span>
+            </div>
+        </div>
+
+        <!-- Área Inferior: Botones Gigantes -->
+        <div class="w-full p-4 md:p-8 grid grid-cols-2 gap-4 md:gap-8 h-64 md:h-80">
+            <button onclick="checkAnswer('comun')" class="btn-giant btn-comun rounded-[2rem] flex flex-col items-center justify-center p-4">
+                <span class="text-6xl md:text-8xl mb-2">📦</span>
+                <span class="text-4xl md:text-6xl font-black">COMÚN</span>
+            </button>
+            <button onclick="checkAnswer('propio')" class="btn-giant btn-propio rounded-[2rem] flex flex-col items-center justify-center p-4">
+                <span class="text-6xl md:text-8xl mb-2">🌟</span>
+                <span class="text-4xl md:text-6xl font-black">PROPIO</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- PANTALLA FINAL -->
+    <div id="screen-end" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md z-50 p-8 text-center">
+        <div class="bg-white p-12 rounded-3xl shadow-2xl border-8 border-yellow-400 max-w-4xl w-full animate-bounce-in">
+            <span class="text-8xl mb-6 block">🏆</span>
+            <h1 class="text-5xl md:text-7xl font-black text-yellow-600 mb-6">
+                ¡Gran Trabajo de Equipo!
+            </h1>
+            <p class="text-3xl md:text-4xl text-gray-700 font-bold mb-8">
+                Habéis clasificado todas las palabras.
+            </p>
+            <p class="text-4xl md:text-5xl text-blue-600 font-black mb-12 bg-blue-100 py-4 rounded-full">
+                Aciertos: <span id="final-score">0</span> / 25
+            </p>
+            <button onclick="resetGame()" class="text-4xl font-bold py-6 px-16 bg-blue-500 text-white rounded-full shadow-[0_8px_0_#2563eb] hover:bg-blue-400 hover:translate-y-1 hover:shadow-[0_4px_0_#2563eb] active:translate-y-2 active:shadow-none transition-all duration-150">
+                ¡JUGAR OTRA VEZ!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DICCIONARIO DE PALABRAS (100 Comunes y 100 Propios)
+        const wordPool = [
+            // 100 Sustantivos Comunes (minúscula)
+            { word: "perro", type: "comun" }, { word: "colegio", type: "comun" }, { word: "ciudad", type: "comun" },
+            { word: "planeta", type: "comun" }, { word: "río", type: "comun" }, { word: "montaña", type: "comun" },
+            { word: "maestro", type: "comun" }, { word: "coche", type: "comun" }, { word: "niña", type: "comun" },
+            { word: "gato", type: "comun" }, { word: "ordenador", type: "comun" }, { word: "pueblo", type: "comun" },
+            { word: "libro", type: "comun" }, { word: "mochila", type: "comun" }, { word: "pelota", type: "comun" },
+            { word: "árbol", type: "comun" }, { word: "mesa", type: "comun" }, { word: "silla", type: "comun" },
+            { word: "ventana", type: "comun" }, { word: "puerta", type: "comun" }, { word: "lápiz", type: "comun" },
+            { word: "goma", type: "comun" }, { word: "estuche", type: "comun" }, { word: "pizarra", type: "comun" },
+            { word: "tiza", type: "comun" }, { word: "reloj", type: "comun" }, { word: "zapato", type: "comun" },
+            { word: "pantalón", type: "comun" }, { word: "camisa", type: "comun" }, { word: "abrigo", type: "comun" },
+            { word: "bufanda", type: "comun" }, { word: "guante", type: "comun" }, { word: "sombrero", type: "comun" },
+            { word: "nube", type: "comun" }, { word: "sol", type: "comun" }, { word: "luna", type: "comun" },
+            { word: "estrella", type: "comun" }, { word: "cielo", type: "comun" }, { word: "tierra", type: "comun" },
+            { word: "mar", type: "comun" }, { word: "playa", type: "comun" }, { word: "arena", type: "comun" },
+            { word: "ola", type: "comun" }, { word: "pez", type: "comun" }, { word: "pájaro", type: "comun" },
+            { word: "insecto", type: "comun" }, { word: "flor", type: "comun" }, { word: "hoja", type: "comun" },
+            { word: "rama", type: "comun" }, { word: "bosque", type: "comun" }, { word: "selva", type: "comun" },
+            { word: "desierto", type: "comun" }, { word: "isla", type: "comun" }, { word: "lago", type: "comun" },
+            { word: "cascada", type: "comun" }, { word: "puente", type: "comun" }, { word: "calle", type: "comun" },
+            { word: "plaza", type: "comun" }, { word: "parque", type: "comun" }, { word: "edificio", type: "comun" },
+            { word: "casa", type: "comun" }, { word: "piso", type: "comun" }, { word: "techo", type: "comun" },
+            { word: "pared", type: "comun" }, { word: "suelo", type: "comun" }, { word: "cocina", type: "comun" },
+            { word: "baño", type: "comun" }, { word: "dormitorio", type: "comun" }, { word: "cama", type: "comun" },
+            { word: "armario", type: "comun" }, { word: "espejo", type: "comun" }, { word: "cuadro", type: "comun" },
+            { word: "foto", type: "comun" }, { word: "cámara", type: "comun" }, { word: "teléfono", type: "comun" },
+            { word: "radio", type: "comun" }, { word: "televisión", type: "comun" }, { word: "carta", type: "comun" },
+            { word: "sobre", type: "comun" }, { word: "sello", type: "comun" }, { word: "buzón", type: "comun" },
+            { word: "paquete", type: "comun" }, { word: "regalo", type: "comun" }, { word: "juguete", type: "comun" },
+            { word: "muñeca", type: "comun" }, { word: "tren", type: "comun" }, { word: "avión", type: "comun" },
+            { word: "barco", type: "comun" }, { word: "bicicleta", type: "comun" }, { word: "moto", type: "comun" },
+            { word: "tractor", type: "comun" }, { word: "camión", type: "comun" }, { word: "autobús", type: "comun" },
+            { word: "conductor", type: "comun" }, { word: "pasajero", type: "comun" }, { word: "billete", type: "comun" },
+            { word: "maleta", type: "comun" }, { word: "viaje", type: "comun" }, { word: "vacaciones", type: "comun" },
+            { word: "fiesta", type: "comun" },
+            
+            // 100 Sustantivos Propios (Mayúscula inicial)
+            { word: "Tobby", type: "propio" }, { word: "España", type: "propio" }, { word: "Madrid", type: "propio" },
+            { word: "Marte", type: "propio" }, { word: "Ebro", type: "propio" }, { word: "Everest", type: "propio" },
+            { word: "Laura", type: "propio" }, { word: "Seat", type: "propio" }, { word: "Marta", type: "propio" },
+            { word: "Garfield", type: "propio" }, { word: "Apple", type: "propio" }, { word: "Andalucía", type: "propio" },
+            { word: "Cervantes", type: "propio" }, { word: "Europa", type: "propio" }, { word: "Mediterráneo", type: "propio" },
+            { word: "Carlos", type: "propio" }, { word: "María", type: "propio" }, { word: "Juan", type: "propio" },
+            { word: "Lucía", type: "propio" }, { word: "Pedro", type: "propio" }, { word: "Ana", type: "propio" },
+            { word: "Diego", type: "propio" }, { word: "Sofía", type: "propio" }, { word: "Javier", type: "propio" },
+            { word: "Paula", type: "propio" }, { word: "Alejandro", type: "propio" }, { word: "Carmen", type: "propio" },
+            { word: "David", type: "propio" }, { word: "Elena", type: "propio" }, { word: "Daniel", type: "propio" },
+            { word: "Alba", type: "propio" }, { word: "Pablo", type: "propio" }, { word: "Sara", type: "propio" },
+            { word: "Hugo", type: "propio" }, { word: "Daniela", type: "propio" }, { word: "Mario", type: "propio" },
+            { word: "Valeria", type: "propio" }, { word: "Álvaro", type: "propio" }, { word: "Irene", type: "propio" },
+            { word: "Marcos", type: "propio" }, { word: "Rosa", type: "propio" }, { word: "Roberto", type: "propio" },
+            { word: "Teresa", type: "propio" }, { word: "Andrés", type: "propio" }, { word: "Raquel", type: "propio" },
+            { word: "Fernando", type: "propio" }, { word: "Beatriz", type: "propio" }, { word: "Jorge", type: "propio" },
+            { word: "Isabel", type: "propio" }, { word: "Miguel", type: "propio" }, { word: "Silvia", type: "propio" },
+            { word: "Ramón", type: "propio" }, { word: "Victoria", type: "propio" }, { word: "Víctor", type: "propio" },
+            { word: "Cristina", type: "propio" }, { word: "Óscar", type: "propio" }, { word: "Natalia", type: "propio" },
+            { word: "Héctor", type: "propio" }, { word: "Patricia", type: "propio" }, { word: "Rubén", type: "propio" },
+            { word: "Mónica", type: "propio" }, { word: "Iván", type: "propio" }, { word: "Lorena", type: "propio" },
+            { word: "Raúl", type: "propio" }, { word: "Celia", type: "propio" }, { word: "Enrique", type: "propio" },
+            { word: "Nuria", type: "propio" }, { word: "Alberto", type: "propio" }, { word: "Eva", type: "propio" },
+            { word: "Arturo", type: "propio" }, { word: "Alicia", type: "propio" }, { word: "Gonzalo", type: "propio" },
+            { word: "Clara", type: "propio" }, { word: "Félix", type: "propio" }, { word: "Marina", type: "propio" },
+            { word: "Julio", type: "propio" }, { word: "Inés", type: "propio" }, { word: "César", type: "propio" },
+            { word: "Begoña", type: "propio" }, { word: "Emilio", type: "propio" }, { word: "Lola", type: "propio" },
+            { word: "Tomás", type: "propio" }, { word: "Blanca", type: "propio" }, { word: "Alfonso", type: "propio" },
+            { word: "Paloma", type: "propio" }, { word: "Vicente", type: "propio" }, { word: "Rita", type: "propio" },
+            { word: "Roque", type: "propio" }, { word: "Nerea", type: "propio" }, { word: "Simón", type: "propio" },
+            { word: "Aurora", type: "propio" }, { word: "Mateo", type: "propio" }, { word: "Luna", type: "propio" },
+            { word: "Gael", type: "propio" }, { word: "Mía", type: "propio" }, { word: "Leo", type: "propio" },
+            { word: "Zoe", type: "propio" }, { word: "Bruno", type: "propio" }, { word: "Alma", type: "propio" },
+            { word: "Francia", type: "propio" }
+        ];
+
+        /* Variables de estado del juego */
+        let gameWords = [];
+        let currentIndex = 0;
+        let score = 0;
+        const TOTAL_ROUNDS = 25; // Número de palabras por partida
+        let isAnimating = false; // Previene dobles toques
+
+        /* Referencias a elementos del DOM */
+        const screenStart = document.getElementById('screen-start');
+        const screenGame = document.getElementById('screen-game');
+        const screenEnd = document.getElementById('screen-end');
+        const uiRound = document.getElementById('ui-round');
+        const uiScore = document.getElementById('ui-score');
+        const currentWordEl = document.getElementById('current-word');
+        const wordCard = document.getElementById('word-card');
+        const finalScoreEl = document.getElementById('final-score');
+
+        /* API DE AUDIO WEB (Generación de sonidos sin archivos externos) */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playCorrectSound() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            // Efecto tipo "Ding"
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Do5
+            osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // Do6
+            
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playErrorSound() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.type = 'sawtooth';
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            // Efecto tipo "Buzz/Error"
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+            
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        /* LÓGICA DEL JUEGO */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startGame() {
+            initAudio(); // Inicializamos el audio al primer click del usuario
+            
+            // Preparar palabras mezcladas
+            let tempPool = [...wordPool];
+            shuffleArray(tempPool);
+            gameWords = tempPool.slice(0, TOTAL_ROUNDS);
+            
+            currentIndex = 0;
+            score = 0;
+            updateUI();
+            
+            screenStart.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+            
+            showWord();
+        }
+
+        function showWord() {
+            currentWordEl.textContent = gameWords[currentIndex].word;
+            
+            // Reiniciar animaciones de la tarjeta
+            wordCard.className = "bg-white border-8 border-blue-400 rounded-[3rem] shadow-2xl p-12 md:p-20 flex items-center justify-center w-full max-w-4xl h-64 md:h-96 transition-colors duration-300 animate-bounce-in";
+            
+            // Remover clase de animación después de que termine para poder reutilizarla
+            setTimeout(() => {
+                wordCard.classList.remove('animate-bounce-in');
+            }, 600);
+        }
+
+        function checkAnswer(selectedType) {
+            if (isAnimating) return; // Evita clics múltiples rápidos
+            isAnimating = true;
+            
+            const currentObj = gameWords[currentIndex];
+            const isCorrect = selectedType === currentObj.type;
+
+            if (isCorrect) {
+                // ACIERTO
+                score++;
+                playCorrectSound();
+                wordCard.classList.add('animate-success');
+                
+                setTimeout(() => {
+                    wordCard.classList.remove('animate-success');
+                    nextRound();
+                }, 800);
+
+            } else {
+                // ERROR
+                playErrorSound();
+                wordCard.classList.add('animate-error');
+                
+                // Mostrar brevemente la respuesta correcta en color
+                const errorColor = currentObj.type === 'propio' ? 'text-purple-600' : 'text-yellow-600';
+                currentWordEl.classList.add(errorColor);
+                
+                setTimeout(() => {
+                    wordCard.classList.remove('animate-error');
+                    currentWordEl.classList.remove(errorColor);
+                    nextRound();
+                }, 1000);
+            }
+        }
+
+        function nextRound() {
+            currentIndex++;
+            updateUI();
+
+            if (currentIndex < TOTAL_ROUNDS) {
+                showWord();
+                isAnimating = false;
+            } else {
+                endGame();
+            }
+        }
+
+        function updateUI() {
+            uiRound.textContent = `${Math.min(currentIndex + 1, TOTAL_ROUNDS)}/${TOTAL_ROUNDS}`;
+            uiScore.textContent = score;
+        }
+
+        function endGame() {
+            screenGame.classList.add('hidden');
+            screenEnd.classList.remove('hidden');
+            finalScoreEl.textContent = score;
+            
+            // Sonido festivo simple de victoria
+            setTimeout(() => playCorrectSound(), 100);
+            setTimeout(() => playCorrectSound(), 300);
+            setTimeout(() => playCorrectSound(), 500);
+            isAnimating = false;
+        }
+
+        function resetGame() {
+            screenEnd.classList.add('hidden');
+            startGame();
+        }
+
+        function returnToMenu() {
+            // Oculta las pantallas de juego o final y muestra la de inicio
+            screenGame.classList.add('hidden');
+            screenEnd.classList.add('hidden');
+            screenStart.classList.remove('hidden');
+            isAnimating = false; // Resetea el bloqueo de toques
+        }
+    </script>
+</body>
+</html>
