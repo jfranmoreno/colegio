@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sociograma de Aula - MDI & Tablet</title>
+    <title>Sociograma de Aula - Pro & Kids</title>
     <!-- Tipografía infantil y muy legible para MDI -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -12,12 +12,10 @@
         :root {
             --bg-color: #F0F8FF; /* Azul hielo suave */
             --primary: #4A90E2;  /* Azul interactivo */
-            --primary-dark: #357ABD;
             --secondary: #FFB347; /* Naranja pastel */
             --success: #77DD77;  /* Verde pastel (Positivos) */
             --danger: #FF6961;   /* Rojo pastel (Negativos) */
             --text-dark: #2C3E50;
-            --text-light: #FFFFFF;
             --shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
             --border-radius: 20px;
         }
@@ -25,20 +23,16 @@
         * {
             box-sizing: border-box; margin: 0; padding: 0;
             font-family: 'Nunito', sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Evitar destellos táctiles */
+            -webkit-tap-highlight-color: transparent; 
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            height: 100vh; display: flex; flex-direction: column;
-            overflow: hidden; /* Fija la app al tamaño de la pantalla */
+            background-color: var(--bg-color); color: var(--text-dark);
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
         }
 
-        /* === INTERFAZ GENERAL (Oculta al imprimir) === */
-        #app-container {
-            display: flex; flex-direction: column; height: 100vh;
-        }
+        /* === INTERFAZ GENERAL === */
+        #app-container { display: flex; flex-direction: column; height: 100vh; }
 
         header {
             background-color: white; padding: 15px 30px;
@@ -96,25 +90,34 @@
         .btn-dark { background-color: var(--text-dark); }
         .btn-secondary { background-color: var(--secondary); color: #8C4000; }
 
-        /* === ZONA DE IMPORTAR/EXPORTAR JSON === */
-        .json-controls {
-            display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center;
-        }
+        /* === GESTIÓN DE DATOS Y CHIPS DE ALUMNOS === */
+        .json-controls { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center; }
         .file-upload-wrapper {
             border: 4px dashed var(--primary); padding: 25px; text-align: center;
             border-radius: var(--border-radius); background-color: #F8FBFF;
             cursor: pointer; flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center;
         }
         input[type="file"] { display: none; }
+        
+        /* Nuevos estilos para los chips de alumnos con botón de edición */
         .student-chip {
-            background: #E8F5E9; color: #2E7D32; padding: 8px 18px; font-size: 1.1rem;
-            border-radius: 20px; font-weight: bold; border: 2px solid #A5D6A7;
+            display: flex; align-items: center; justify-content: space-between; gap: 15px;
+            padding: 10px 20px; font-size: 1.2rem; border-radius: 20px; font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
+        .student-chip.done { background: #E8F5E9; border: 2px solid #A5D6A7; color: #2E7D32; }
+        .student-chip.pending { background: #FFF3E0; border: 2px solid #FFCC80; color: #E65100; }
+        
+        .edit-btn {
+            background: white; border: 2px solid #A5D6A7; border-radius: 12px;
+            padding: 8px 15px; cursor: pointer; font-family: 'Nunito'; font-weight: 900;
+            color: #2E7D32; transition: 0.2s; font-size: 1rem;
+        }
+        .edit-btn:hover { background: #C8E6C9; transform: scale(1.05); }
+        .edit-btn:active { transform: scale(0.95); }
 
         /* === MODO PROFESOR (Formulario) === */
-        .teacher-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;
-        }
+        .teacher-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         .teacher-col { background: #f9f9f9; padding: 15px; border-radius: 15px; border: 3px solid #eee; }
         .teacher-col h3 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
         select {
@@ -125,9 +128,7 @@
         select:focus { border-color: var(--primary); }
 
         /* === MODO ALUMNO (Grid Táctil) === */
-        .student-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-bottom: 30px;
-        }
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .student-btn {
             background-color: white; border: 4px solid #E0E0E0; border-radius: 15px;
             padding: 20px 10px; font-size: 1.3rem; font-weight: 800; color: var(--text-dark);
@@ -149,10 +150,7 @@
         #graph-view, #table-view { display: none; }
         #graph-view.active, #table-view.active { display: block; animation: fadeIn 0.3s; }
 
-        #graph-container {
-            width: 100%; height: 500px; background: white; border-radius: var(--border-radius);
-            border: 2px solid #E0E0E0; overflow: hidden;
-        }
+        #graph-container { width: 100%; height: 500px; background: white; border-radius: var(--border-radius); border: 2px solid #E0E0E0; overflow: hidden; }
 
         table { width: 100%; border-collapse: collapse; font-size: 1.1rem; }
         th, td { padding: 14px; text-align: center; border-bottom: 1px solid #eee; }
@@ -161,26 +159,25 @@
         .badge.pop { background: #E4F8EB; color: #15833C; }
         .badge.rej { background: #FFEBEE; color: #C62828; }
 
-        /* === VISTA DE IMPRESIÓN (A4) === */
+        /* === VISTA DE IMPRESIÓN === */
         #print-layout { display: none; }
         @media print {
             body { background: white; color: black; font-size: 14pt; }
             #app-container { display: none !important; }
             #print-layout { display: block !important; width: 100%; padding: 20px; }
             .print-header { text-align: center; margin-bottom: 30px; }
-            .print-header h1 { font-size: 26pt; margin: 0; color: black; border: none; }
+            .print-header h1 { font-size: 26pt; margin: 0; }
             .print-name { margin-bottom: 30px; font-size: 16pt; font-weight: bold;}
             .print-name span { display: inline-block; width: 400px; border-bottom: 2px solid black; }
             .print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
             .print-box { border: 3px solid #ccc; padding: 20px; border-radius: 15px; }
-            .print-box h4 { margin-bottom: 15px; font-size: 14pt; }
             .print-line { margin-bottom: 15px; font-size: 14pt; border-bottom: 1px dashed #999; padding-bottom: 5px; width: 100%; color: #555; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ================= VISTA DE IMPRESIÓN ================= -->
+    <!-- VISTA IMPRESIÓN A4 -->
     <div id="print-layout">
         <div class="print-header">
             <h1>Sociograma de Aula</h1>
@@ -207,10 +204,10 @@
         </div>
     </div>
 
-    <!-- ================= APP INTERACTIVA ================= -->
+    <!-- APP INTERACTIVA -->
     <div id="app-container">
         <header>
-            <h1>🌟 SOCIOGRAMA 🌟</h1>
+            <h1>🌟 Sociograma Pro</h1>
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('configTab')">⚙️ Datos / JSON</button>
                 <button class="tab-btn" onclick="switchTab('teacherTab')">👩🏻‍🏫 Modo Profe</button>
@@ -219,36 +216,28 @@
             </div>
         </header>
 
-        <!-- PESTAÑA 1: CONFIGURACIÓN Y GESTIÓN DE DATOS -->
+        <!-- PESTAÑA 1: GESTIÓN DE DATOS -->
         <div id="configTab" class="view active">
             <div class="card">
                 <h2>Cargar y Guardar Datos</h2>
-                <p>Carga tu lista de clase o reanuda un sociograma previo guardado. Puedes guardar el progreso en cualquier momento.</p>
-                
                 <div class="json-controls">
-                    <!-- Importar (Cargar) -->
                     <label class="file-upload-wrapper">
-                        <h3 style="color: var(--primary);">📁 Cargar Archivo (Lista o Progreso JSON)</h3>
+                        <h3 style="color: var(--primary);">📁 Cargar JSON (Lista o Progreso)</h3>
                         <input type="file" accept=".json" onchange="loadJSON(event)">
                     </label>
-                    
-                    <!-- Exportar (Guardar) -->
                     <button class="action-btn btn-success" onclick="exportJSON()" style="flex: 1; min-width: 300px;">
                         💾 Guardar Progreso (Descargar JSON)
                     </button>
                 </div>
 
                 <div style="border-top: 2px solid #eee; margin-top: 20px; padding-top: 20px;">
-                    <h3 style="text-align: center; margin-bottom: 15px;">Alumnos Cargados (<span id="count-alumnos">0</span>) - Fichas completadas (<span id="count-fichas">0</span>)</h3>
-                    <div id="student-list-container" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <h3 style="text-align: center; margin-bottom: 15px;">Alumnos (<span id="count-alumnos">0</span>) - Fichas completadas (<span id="count-fichas">0</span>)</h3>
+                    <div id="student-list-container" style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
                         <em style="color:#999;">Ningún dato cargado aún.</em>
                     </div>
                 </div>
             </div>
-
             <div class="card" style="text-align: center;">
-                <h2>Imprimir Fichas (Papel)</h2>
-                <p>Genera las encuestas en A4 listas para repartir en clase.</p>
                 <button class="action-btn btn-dark" onclick="window.print()">🖨️ Imprimir Fichas A4</button>
             </div>
         </div>
@@ -256,30 +245,27 @@
         <!-- PESTAÑA 2: MODO PROFE -->
         <div id="teacherTab" class="view">
             <div class="card">
-                <h2>Introducir Ficha de Papel</h2>
-                <p>Usa los desplegables para volcar las encuestas de papel sin cometer errores tipográficos.</p>
+                <h2>Introducir / Modificar Ficha</h2>
+                <p>Selecciona un alumno. Si ya hizo la ficha, se cargarán sus datos para que puedas <strong>corregirlos</strong>.</p>
                 
                 <div style="text-align:center; margin-bottom:20px; background:#f4f4f4; padding:20px; border-radius:15px;">
                     <h3 style="margin-bottom:10px;">¿De quién es esta ficha?</h3>
-                    <select id="teacher-voter" style="max-width:350px; border-color:var(--primary); border-width:3px; font-weight:bold;"></select>
+                    <!-- Añadido evento onchange para cargar los datos del alumno automáticamente -->
+                    <select id="teacher-voter" style="max-width:350px; border-color:var(--primary); border-width:3px; font-weight:bold;" onchange="loadStudentDataIntoForm(this.value)"></select>
                 </div>
 
                 <div class="teacher-grid">
                     <div class="teacher-col" style="border-color: var(--success);">
-                        <h3>😊 GUSTA JUGAR</h3>
-                        <div id="col-playPlus"></div>
+                        <h3>😊 GUSTA JUGAR</h3><div id="col-playPlus"></div>
                     </div>
                     <div class="teacher-col" style="border-color: var(--danger);">
-                        <h3>😔 NO JUEGA</h3>
-                        <div id="col-playMinus"></div>
+                        <h3>😔 NO JUEGA</h3><div id="col-playMinus"></div>
                     </div>
                     <div class="teacher-col" style="border-color: var(--success);">
-                        <h3>🤝 GUSTA EQUIPO</h3>
-                        <div id="col-teamPlus"></div>
+                        <h3>🤝 GUSTA EQUIPO</h3><div id="col-teamPlus"></div>
                     </div>
                     <div class="teacher-col" style="border-color: var(--danger);">
-                        <h3>🛑 NO EQUIPO</h3>
-                        <div id="col-teamMinus"></div>
+                        <h3>🛑 NO EQUIPO</h3><div id="col-teamMinus"></div>
                     </div>
                 </div>
 
@@ -295,9 +281,7 @@
                 <h3 id="step-counter" style="text-align:center; color:#777; margin-bottom:5px; font-size:1.4rem;">Paso 1 de 5</h3>
                 <h2 id="q-title" style="margin-bottom:5px; font-size:2rem; color:var(--primary-dark);"></h2>
                 <p id="q-sub" style="font-size:1.3rem;"></p>
-                
                 <div class="student-grid" id="student-grid-container"></div>
-                
                 <div style="text-align:center;">
                     <button class="action-btn btn-secondary" id="btn-next" onclick="nextStudentStep()" style="display:none;">Siguiente ➡️</button>
                 </div>
@@ -312,32 +296,27 @@
         <div id="analysisTab" class="view">
             <div class="card" style="max-width: 1200px;">
                 <h2>Resultados del Grupo</h2>
-                
                 <div class="analysis-controls">
                     <button class="toggle-btn active" onclick="switchAnalysisView('graph-view', this)">🕸️ Red Gráfica</button>
                     <button class="toggle-btn" onclick="switchAnalysisView('table-view', this)">📊 Tabla de Datos</button>
                 </div>
-
-                <!-- VISTA: TABLA -->
+                <!-- TABLA -->
                 <div id="table-view">
                     <div style="overflow-x: auto;">
                         <table id="results-table">
                             <thead>
                                 <tr>
                                     <th>Alumno/a</th>
-                                    <th>Juegan (+)</th>
-                                    <th>No Juegan (-)</th>
-                                    <th>Equipo (+)</th>
-                                    <th>No Equipo (-)</th>
+                                    <th>Juegan (+)</th><th>No Juegan (-)</th>
+                                    <th>Equipo (+)</th><th>No Equipo (-)</th>
                                     <th>Índice Global</th>
                                 </tr>
                             </thead>
-                            <tbody><!-- Llenado por JS --></tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- VISTA: GRÁFICO (SVG) -->
+                <!-- GRÁFICO -->
                 <div id="graph-view" class="active">
                     <div class="analysis-controls" style="margin-top:10px; padding:15px; background:#f9f9f9; border-radius:15px;">
                         <span style="font-weight:bold; font-size:1.2rem; margin-right:10px; align-self:center;">Ver relación:</span>
@@ -346,16 +325,11 @@
                         <button class="toggle-btn act-graph" onclick="drawGraph('teamPlus', this)" style="border-color:var(--success);">🤝 Equipo (+)</button>
                         <button class="toggle-btn act-graph" onclick="drawGraph('teamMinus', this)" style="border-color:var(--danger);">🛑 No equipo (-)</button>
                     </div>
-                    
                     <div id="graph-container">
                         <svg id="network-svg" width="100%" height="100%" viewBox="0 0 800 500">
                             <defs>
-                                <marker id="arrowGreen" viewBox="0 0 10 10" refX="25" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#77DD77" />
-                                </marker>
-                                <marker id="arrowRed" viewBox="0 0 10 10" refX="25" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#FF6961" />
-                                </marker>
+                                <marker id="arrowGreen" viewBox="0 0 10 10" refX="25" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#77DD77" /></marker>
+                                <marker id="arrowRed" viewBox="0 0 10 10" refX="25" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#FF6961" /></marker>
                             </defs>
                         </svg>
                     </div>
@@ -364,137 +338,114 @@
         </div>
     </div>
 
-    <!-- Enlace oculto para descargas -->
     <a id="downloadAnchor" style="display:none"></a>
 
-    <!-- ================= LOGICA JAVASCRIPT ================= -->
     <script>
         // --- 1. ESTADO GLOBAL ---
         let students = []; 
         let records = []; 
 
-        // --- 2. AUDIO FEEDBACK NATIVO ---
+        // --- 2. AUDIO FEEDBACK ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(type) {
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
             
             if(type === 'pop') {
                 osc.frequency.setValueAtTime(600, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.1);
             } else if (type === 'success') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.4);
             }
         }
 
-        // --- 3. GESTIÓN DE DATOS (IMPORT/EXPORT JSON) ---
+        // --- 3. IMPORT / EXPORT & UI REFRESH ---
         function loadJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            const file = event.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) { students = data.map(i => typeof i === 'string' ? i : (i.nombre || i.name)); records = []; } 
+                    else if (data.students && data.records) { students = data.students; records = data.records; } 
+                    else throw new Error();
                     
-                    if (Array.isArray(data)) {
-                        // Formato antiguo o lista simple: ["Ana", "Juan"]
-                        students = data.map(item => typeof item === 'string' ? item : (item.nombre || item.name));
-                        records = []; // Resetea progreso porque es lista nueva
-                    } else if (data.students && data.records) {
-                        // Formato de backup completo: { students: [], records: [] }
-                        students = data.students;
-                        records = data.records;
-                    } else {
-                        throw new Error("Formato inválido");
-                    }
-                    
-                    students.sort();
-                    refreshUI();
-                    playTone('success');
-                } catch (error) {
-                    alert("Error al cargar el archivo. Comprueba que es un JSON válido.");
-                }
+                    students.sort(); refreshUI(); playTone('success');
+                } catch (err) { alert("Error al cargar JSON válido."); }
             };
-            reader.readAsText(file);
-            event.target.value = ''; // Permite recargar el mismo archivo
+            reader.readAsText(file); event.target.value = '';
         }
 
         function exportJSON() {
-            if (students.length === 0) {
-                alert("No hay datos para guardar."); return;
-            }
-            
-            const dataToSave = {
-                version: 1,
-                date: new Date().toISOString(),
-                students: students,
-                records: records
-            };
-
+            if (students.length === 0) { alert("No hay datos para guardar."); return; }
+            const dataToSave = { version: 1, date: new Date().toISOString(), students: students, records: records };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave, null, 2));
-            const dlAnchorElem = document.getElementById('downloadAnchor');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `sociograma_${new Date().toISOString().slice(0,10)}.json`);
-            dlAnchorElem.click();
+            const dlAnchor = document.getElementById('downloadAnchor');
+            dlAnchor.setAttribute("href", dataStr); dlAnchor.setAttribute("download", `sociograma_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchor.click();
         }
 
         function refreshUI() {
-            // Actualizar contadores
             document.getElementById('count-alumnos').innerText = students.length;
             document.getElementById('count-fichas').innerText = records.length;
             
-            // Chips indicando quién ha hecho la ficha
             const completedNames = records.map(r => r.name);
             const html = students.map(s => {
-                const done = completedNames.includes(s) ? '✔️' : '⏳';
-                return `<span class="student-chip">${done} ${s}</span>`;
+                const hasRecord = completedNames.includes(s);
+                // Si tiene registro, mostramos el botón de editar
+                if (hasRecord) {
+                    return `
+                        <div class="student-chip done">
+                            <span>✔️ ${s}</span>
+                            <button class="edit-btn" onclick="editStudent('${s}')" title="Modificar selección de ${s}">✏️ Editar</button>
+                        </div>`;
+                } else {
+                    return `<div class="student-chip pending"><span>⏳ ${s}</span></div>`;
+                }
             }).join('');
             document.getElementById('student-list-container').innerHTML = html;
 
-            // Activar/Desactivar Wizard
             document.getElementById('student-wizard').style.display = students.length > 0 ? 'block' : 'none';
             document.getElementById('student-warning').style.display = students.length > 0 ? 'none' : 'block';
 
-            // Actualizar Desplegables del Modo Profe
-            setupTeacherForm();
-            // Preparar Wizard
-            initStudentWizard();
+            setupTeacherForm(); initStudentWizard();
         }
 
-        // --- 4. NAVEGACIÓN ---
+        // --- NAVEGACIÓN Y EDICIÓN RÁPIDA ---
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('header .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            
+            // Activar botón de pestaña correspondiente (para cuando se cambia programáticamente)
+            const btnIndex = ['configTab', 'teacherTab', 'studentTab', 'analysisTab'].indexOf(tabId);
+            if(btnIndex >= 0) document.querySelectorAll('header .tab-btn')[btnIndex].classList.add('active');
 
-            if(tabId === 'analysisTab') {
-                generateTable();
-                drawGraph('playPlus', document.querySelector('.act-graph.active'));
-            } else if (tabId === 'configTab') {
-                refreshUI(); // Actualizar chips al volver
-            }
+            if(tabId === 'analysisTab') { generateTable(); drawGraph('playPlus', document.querySelector('.act-graph.active')); }
+            else if (tabId === 'configTab') { refreshUI(); }
         }
 
         function switchAnalysisView(viewId, btn) {
-            document.getElementById('table-view').classList.remove('active');
-            document.getElementById('graph-view').classList.remove('active');
+            document.getElementById('table-view').classList.remove('active'); document.getElementById('graph-view').classList.remove('active');
             document.getElementById(viewId).classList.add('active');
-            btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
         }
 
-        // --- 5. MODO PROFESOR ---
+        // Función disparada por el botón "✏️ Editar"
+        function editStudent(name) {
+            switchTab('teacherTab');
+            const voterSelect = document.getElementById('teacher-voter');
+            voterSelect.value = name;
+            loadStudentDataIntoForm(name);
+        }
+
+        // --- 4. MODO PROFESOR (AUTO-FILL Y GUARDADO) ---
         function setupTeacherForm() {
             const options = '<option value="">-- Vacío --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('');
             document.getElementById('teacher-voter').innerHTML = '<option value="">-- Elige alumno/a --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -504,6 +455,29 @@
                 for(let i=0; i<5; i++) html += `<select class="sel-${col}">${options}</select>`;
                 document.getElementById('col-' + col).innerHTML = html;
             });
+        }
+
+        // Recupera datos si el alumno ya había hecho la ficha
+        function loadStudentDataIntoForm(studentName) {
+            // 1. Limpiar todos los selects primero
+            document.querySelectorAll('.teacher-col select').forEach(s => s.value = '');
+            
+            if(!studentName) return;
+
+            // 2. Buscar si existe un registro previo
+            const existingRecord = records.find(r => r.name === studentName);
+            
+            // 3. Si existe, rellenar los desplegables correspondientes
+            if(existingRecord) {
+                const cols = ['playPlus', 'playMinus', 'teamPlus', 'teamMinus'];
+                cols.forEach(col => {
+                    const selects = document.querySelectorAll(`.sel-${col}`);
+                    const savedValues = existingRecord[col] || [];
+                    for(let i = 0; i < savedValues.length && i < selects.length; i++) {
+                        selects[i].value = savedValues[i];
+                    }
+                });
+            }
         }
 
         function saveTeacherRecord() {
@@ -524,7 +498,7 @@
                 teamPlus: getVals('.sel-teamPlus'), teamMinus: getVals('.sel-teamMinus')
             };
 
-            records = records.filter(r => r.name !== voter); // Sobrescribir
+            records = records.filter(r => r.name !== voter); // Sobrescribir si ya existía
             records.push(record);
             playTone('success');
             
@@ -532,11 +506,11 @@
             document.querySelectorAll('.teacher-col select').forEach(s => s.value = '');
             
             const btn = event.currentTarget;
-            btn.innerText = "¡Ficha Guardada! ✔️";
-            setTimeout(() => btn.innerText = "💾 Guardar Ficha", 2000);
+            btn.innerText = "¡Ficha Guardada/Actualizada! ✔️";
+            setTimeout(() => btn.innerText = "💾 Guardar Ficha", 2500);
         }
 
-        // --- 6. MODO ALUMNO (WIZARD) ---
+        // --- 5. MODO ALUMNO (WIZARD) ---
         const q_config = [
             { t: "¿Quién eres?", s: "Toca tu nombre", max: 1 },
             { t: "😊 JUEGO (+)", s: "Elige hasta 5 para jugar", max: 5, k: "playPlus", type: "plus" },
@@ -547,34 +521,22 @@
         
         let stu_step = 0, stu_voter = "", stu_selections = [], stu_temp = {};
 
-        function initStudentWizard() {
-            stu_step = 0; stu_voter = ""; stu_temp = {}; renderStudentStep();
-        }
+        function initStudentWizard() { stu_step = 0; stu_voter = ""; stu_temp = {}; renderStudentStep(); }
 
         function renderStudentStep() {
             if(students.length === 0) return;
-            const q = q_config[stu_step];
-            stu_selections = [];
+            const q = q_config[stu_step]; stu_selections = [];
             
             document.getElementById('step-counter').innerText = `Paso ${stu_step + 1} de 5`;
-            document.getElementById('q-title').innerText = q.t;
-            document.getElementById('q-sub').innerText = q.s;
+            document.getElementById('q-title').innerText = q.t; document.getElementById('q-sub').innerText = q.s;
             document.getElementById('btn-next').style.display = 'none';
             document.getElementById('btn-next').innerText = stu_step === 4 ? "¡Terminar y Guardar! 🚀" : "Siguiente ➡️";
 
-            const grid = document.getElementById('student-grid-container');
-            grid.innerHTML = "";
-
+            const grid = document.getElementById('student-grid-container'); grid.innerHTML = "";
             students.forEach(s => {
-                const btn = document.createElement('button');
-                btn.className = 'student-btn';
-                btn.innerText = s;
-                
-                if (stu_step > 0 && s === stu_voter) {
-                    btn.disabled = true; btn.innerText = "⭐ Eres tú";
-                } else {
-                    btn.onclick = () => handleStudentTap(s, btn, q.max, q.type);
-                }
+                const btn = document.createElement('button'); btn.className = 'student-btn'; btn.innerText = s;
+                if (stu_step > 0 && s === stu_voter) { btn.disabled = true; btn.innerText = "⭐ Eres tú"; } 
+                else { btn.onclick = () => handleStudentTap(s, btn, q.max, q.type); }
                 grid.appendChild(btn);
             });
         }
@@ -583,16 +545,10 @@
             playTone('pop');
             const idx = stu_selections.indexOf(name);
             const cssClass = type === 'plus' ? 'selected-plus' : 'selected-minus';
-
-            if (idx > -1) {
-                stu_selections.splice(idx, 1); btn.classList.remove(cssClass);
-            } else {
-                if (stu_step === 0) {
-                    stu_voter = name; btn.classList.add('selected-plus');
-                    setTimeout(nextStudentStep, 400); return;
-                } else if (stu_selections.length < max) {
-                    stu_selections.push(name); btn.classList.add(cssClass);
-                }
+            if (idx > -1) { stu_selections.splice(idx, 1); btn.classList.remove(cssClass); } 
+            else {
+                if (stu_step === 0) { stu_voter = name; btn.classList.add('selected-plus'); setTimeout(nextStudentStep, 400); return; } 
+                else if (stu_selections.length < max) { stu_selections.push(name); btn.classList.add(cssClass); }
             }
             document.getElementById('btn-next').style.display = 'inline-block';
         }
@@ -600,108 +556,63 @@
         function nextStudentStep() {
             if (stu_step > 0) stu_temp[q_config[stu_step].k] = [...stu_selections];
             stu_step++;
-            
-            if (stu_step < q_config.length) {
-                renderStudentStep();
-                document.getElementById('btn-next').style.display = 'inline-block';
-            } else {
-                records = records.filter(r => r.name !== stu_voter);
-                stu_temp.name = stu_voter;
-                records.push(stu_temp);
-                playTone('success');
-                alert(`¡Gracias ${stu_voter}! Pásale la tablet a otro compi.`);
-                initStudentWizard();
+            if (stu_step < q_config.length) { renderStudentStep(); document.getElementById('btn-next').style.display = 'inline-block'; } 
+            else {
+                records = records.filter(r => r.name !== stu_voter); stu_temp.name = stu_voter; records.push(stu_temp);
+                playTone('success'); alert(`¡Gracias ${stu_voter}! Pásale la tablet a otro compi.`); initStudentWizard();
             }
         }
 
-        // --- 7. ANÁLISIS: TABLA ---
+        // --- 6. ANÁLISIS ---
         function generateTable() {
-            const tbody = document.querySelector('#results-table tbody');
-            tbody.innerHTML = '';
+            const tbody = document.querySelector('#results-table tbody'); tbody.innerHTML = '';
             if (students.length === 0) return;
-
-            let stats = {};
-            students.forEach(s => stats[s] = { name: s, pP: 0, pM: 0, tP: 0, tM: 0 });
-
+            let stats = {}; students.forEach(s => stats[s] = { name: s, pP: 0, pM: 0, tP: 0, tM: 0 });
             records.forEach(r => {
-                r.playPlus?.forEach(n => { if(stats[n]) stats[n].pP++; });
-                r.playMinus?.forEach(n => { if(stats[n]) stats[n].pM++; });
-                r.teamPlus?.forEach(n => { if(stats[n]) stats[n].tP++; });
-                r.teamMinus?.forEach(n => { if(stats[n]) stats[n].tM++; });
+                r.playPlus?.forEach(n => { if(stats[n]) stats[n].pP++; }); r.playMinus?.forEach(n => { if(stats[n]) stats[n].pM++; });
+                r.teamPlus?.forEach(n => { if(stats[n]) stats[n].tP++; }); r.teamMinus?.forEach(n => { if(stats[n]) stats[n].tM++; });
             });
-
             let results = Object.values(stats);
             results.sort((a, b) => ((b.pP + b.tP) - (b.pM + b.tM)) - ((a.pP + a.tP) - (a.pM + a.tM)));
-
             results.forEach(s => {
-                const total = (s.pP + s.tP) - (s.pM + s.tM);
-                const badge = total > 0 ? 'badge pop' : (total < 0 ? 'badge rej' : 'badge');
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold;">${s.name}</td>
-                        <td style="color:var(--success)">+${s.pP}</td>
-                        <td style="color:var(--danger)">-${s.pM}</td>
-                        <td style="color:var(--success)">+${s.tP}</td>
-                        <td style="color:var(--danger)">-${s.tM}</td>
-                        <td><span class="${badge}">${total > 0 ? '+'+total : total}</span></td>
-                    </tr>`;
+                const total = (s.pP + s.tP) - (s.pM + s.tM); const badge = total > 0 ? 'badge pop' : (total < 0 ? 'badge rej' : 'badge');
+                tbody.innerHTML += `<tr><td style="font-weight:bold;">${s.name}</td><td style="color:var(--success)">+${s.pP}</td><td style="color:var(--danger)">-${s.pM}</td><td style="color:var(--success)">+${s.tP}</td><td style="color:var(--danger)">-${s.tM}</td><td><span class="${badge}">${total > 0 ? '+'+total : total}</span></td></tr>`;
             });
         }
 
-        // --- 8. ANÁLISIS: GRÁFICO SVG ---
         function drawGraph(relationKey, btn) {
-            if(btn) {
-                document.querySelectorAll('.act-graph').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-
-            const svg = document.getElementById('network-svg');
-            const defs = svg.querySelector('defs').outerHTML;
-            svg.innerHTML = defs; 
-
+            if(btn) { document.querySelectorAll('.act-graph').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+            const svg = document.getElementById('network-svg'); const defs = svg.querySelector('defs').outerHTML; svg.innerHTML = defs; 
             if (students.length === 0) return;
-
-            const isPositive = relationKey.includes('Plus');
-            const cx = 400, cy = 250, radius = 180;
-            let coords = {};
-
+            const isPositive = relationKey.includes('Plus'); const cx = 400, cy = 250, radius = 180; let coords = {};
             students.forEach((s, i) => {
                 const angle = (i / students.length) * (2 * Math.PI) - (Math.PI / 2);
                 coords[s] = { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
             });
-
             records.forEach(r => {
-                const origen = r.name;
-                const destinos = r[relationKey] || [];
-                
+                const origen = r.name; const destinos = r[relationKey] || [];
                 destinos.forEach(d => {
                     if (coords[origen] && coords[d]) {
                         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                         line.setAttribute('x1', coords[origen].x); line.setAttribute('y1', coords[origen].y);
                         line.setAttribute('x2', coords[d].x); line.setAttribute('y2', coords[d].y);
                         line.setAttribute('stroke', isPositive ? 'rgba(119, 221, 119, 0.7)' : 'rgba(255, 105, 97, 0.7)');
-                        line.setAttribute('stroke-width', '2');
-                        line.setAttribute('marker-end', isPositive ? 'url(#arrowGreen)' : 'url(#arrowRed)');
+                        line.setAttribute('stroke-width', '2'); line.setAttribute('marker-end', isPositive ? 'url(#arrowGreen)' : 'url(#arrowRed)');
                         svg.appendChild(line);
                     }
                 });
             });
-
             students.forEach(s => {
                 const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', coords[s].x); circle.setAttribute('cy', coords[s].y);
                 circle.setAttribute('r', '15'); circle.setAttribute('fill', 'white');
                 circle.setAttribute('stroke', 'var(--text-dark)'); circle.setAttribute('stroke-width', '3');
-
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('x', coords[s].x); text.setAttribute('y', coords[s].y + 30);
                 text.setAttribute('text-anchor', 'middle'); text.setAttribute('font-family', 'Nunito, sans-serif');
                 text.setAttribute('font-size', '14px'); text.setAttribute('font-weight', 'bold');
-                text.setAttribute('paint-order', 'stroke'); text.setAttribute('stroke', 'white');
-                text.setAttribute('stroke-width', '4px'); text.textContent = s;
-
+                text.setAttribute('paint-order', 'stroke'); text.setAttribute('stroke', 'white'); text.setAttribute('stroke-width', '4px'); text.textContent = s;
                 g.appendChild(circle); g.appendChild(text); svg.appendChild(g);
             });
         }
