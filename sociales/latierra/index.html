@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Los Movimientos de la Tierra - 3º de Primaria</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js para animación 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Tone.js para efectos de sonido divertidos -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Iconos Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Canvas Confetti para el quiz -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap');
+
+    * {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Optimización para monitores SMART MX interactivos */
+    .smart-btn {
+      touch-action: manipulation;
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .smart-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Glows y estilos del espacio */
+    .space-glow {
+      box-shadow: 0 0 25px rgba(253, 224, 71, 0.35);
+    }
+    .earth-glow {
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+    }
+    
+    /* Scrollbar oculta */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Animación de pulso para llamadas de atención */
+    @keyframes pulse-attention {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .animate-touch-me {
+      animation: pulse-attention 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-white overflow-hidden h-screen w-screen flex flex-col">
+  <!-- Barra superior con botones grandes para pantalla SMART -->
+  <header class="h-20 bg-slate-900/90 border-b border-indigo-900/60 backdrop-blur px-4 sm:px-6 flex items-center justify-between z-20 shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 text-2xl shadow-lg">
+        <i class="ph-bold ph-globe-hemisphere-west"></i>
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-wide text-yellow-300 flex items-center gap-2">
+          La Tierra en Movimiento
+          <span class="text-xs bg-indigo-600/80 text-white px-2 py-0.5 rounded-full font-sans uppercase font-bold tracking-wider">3º Primaria</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-300 font-medium">Toca, gira y aprende con la pizarra SMART</p>
+      </div>
+    </div>
+
+    <!-- Selector de Modos de Aprendizaje con botones táctiles grandes -->
+    <div class="flex items-center gap-2 sm:gap-3 bg-slate-950/70 p-1.5 rounded-2xl border border-slate-800">
+      <button id="btn-mode-rotation" onclick="app.setMode('rotation')" class="smart-btn px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 bg-blue-600 text-white shadow-lg shadow-blue-500/30">
+        <i class="ph-bold ph-arrows-clockwise text-xl"></i>
+        <span>1. Rotación (Día/Noche)</span>
+      </button>
+
+      <button id="btn-mode-translation" onclick="app.setMode('translation')" class="smart-btn px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800">
+        <i class="ph-bold ph-planet text-xl"></i>
+        <span>2. Traslación (Estaciones)</span>
+      </button>
+
+      <button id="btn-mode-quiz" onclick="app.setMode('quiz')" class="smart-btn px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 text-yellow-300 hover:bg-yellow-500/20">
+        <i class="ph-bold ph-game-controller text-xl"></i>
+        <span>¡Juego SMART!</span>
+      </button>
+    </div>
+
+    <!-- Opciones generales: Audio, Voz y Pantalla Completa -->
+    <div class="flex items-center gap-2">
+      <button id="btn-voice" onclick="app.speakCurrentInfo()" title="Escuchar explicación" class="smart-btn w-12 h-12 rounded-xl bg-purple-600 hover:bg-purple-500 flex items-center justify-center text-xl text-white shadow-md">
+        <i class="ph-bold ph-speaker-high"></i>
+      </button>
+      <button id="btn-sound" onclick="app.toggleSound()" title="Efectos de sonido" class="smart-btn w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-xl text-amber-400 border border-slate-700">
+        <i id="icon-sound" class="ph-bold ph-bell"></i>
+      </button>
+      <button onclick="app.toggleFullScreen()" title="Pantalla completa para la SMART Board" class="smart-btn w-12 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-xl text-cyan-400 border border-slate-700">
+        <i class="ph-bold ph-arrows-out-simple"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Área de Simulación Interactiva -->
+  <main class="relative flex-1 w-full overflow-hidden">
+    <!-- Contenedor WebGL Three.js -->
+    <div id="webgl-container" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+    <!-- Indicador táctil para pizarra: Arrastra para girar -->
+    <div id="touch-hint" class="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-md border border-yellow-400/40 text-yellow-300 px-5 py-2 rounded-full font-bold text-sm sm:text-base flex items-center gap-2 pointer-events-none animate-touch-me shadow-xl">
+      <i class="ph-bold ph-hand-tap text-xl text-yellow-400"></i>
+      <span>¡Toca y arrastra con el dedo para explorar!</span>
+    </div>
+
+    <!-- Tarjeta informativa pedagógica para 3º de Primaria -->
+    <div id="info-card" class="absolute top-4 left-6 max-w-sm sm:max-w-md bg-slate-900/90 backdrop-blur-lg border-2 border-indigo-500/50 rounded-3xl p-5 shadow-2xl pointer-events-auto transition-all">
+      <div class="flex items-start justify-between gap-3">
+        <span id="badge-movement" class="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-400/40 rounded-full text-xs font-black tracking-wider uppercase">
+          Movimiento 1
+        </span>
+        <button onclick="app.speakCurrentInfo()" class="text-yellow-400 hover:text-yellow-300 text-xl" title="Leer en voz alta">
+          <i class="ph-bold ph-read-cv-logo"></i>
+        </button>
+      </div>
+
+      <h2 id="card-title" class="text-2xl sm:text-3xl font-black text-white mt-1">Rotación Terrestre</h2>
+
+      <!-- Cuadro de datos clave para los alumnos -->
+      <div class="grid grid-cols-2 gap-2 my-3">
+        <div class="bg-indigo-950/60 p-2.5 rounded-2xl border border-indigo-800/40">
+          <p class="text-xs text-indigo-300 font-bold">¿QUÉ ES?</p>
+          <p id="card-what" class="text-sm font-bold text-white">Gira sobre su propio eje</p>
+        </div>
+        <div class="bg-indigo-950/60 p-2.5 rounded-2xl border border-indigo-800/40">
+          <p class="text-xs text-amber-300 font-bold">¿CUÁNTO TARDA?</p>
+          <p id="card-duration" class="text-sm font-bold text-white">24 Horas (1 Día)</p>
+        </div>
+      </div>
+
+      <div class="bg-amber-400/10 border border-amber-400/30 rounded-2xl p-3 flex items-center gap-3">
+        <div id="consequence-icon" class="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center text-2xl font-bold shrink-0">
+          ☀️
+        </div>
+        <div>
+          <p class="text-xs text-amber-300 font-bold uppercase">Consecuencia Principal</p>
+          <p id="card-consequence" class="text-sm sm:text-base font-extrabold text-white">Da lugar al DÍA y a la NOCHE</p>
+        </div>
+      </div>
+
+      <p id="card-explanation" class="text-xs sm:text-sm text-slate-300 mt-3 font-medium leading-relaxed">
+        Como la Tierra tiene forma de esfera, el Sol solo puede iluminar una mitad a la vez. Mientras en una cara es de día, en la otra es de noche.
+      </p>
+    </div>
+
+    <!-- Controles específicos de Rotación -->
+    <div id="rotation-controls" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-3xl p-4 flex flex-wrap items-center justify-center gap-4 shadow-2xl z-10 max-w-[95vw]">
+      <button onclick="app.togglePlayRotation()" id="btn-play-rotation" class="smart-btn px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg flex items-center gap-2 shadow-lg shadow-emerald-500/30">
+        <i id="icon-play-rotation" class="ph-bold ph-pause"></i>
+        <span id="text-play-rotation">Pausar Giro</span>
+      </button>
+
+      <button onclick="app.setSpainTime('day')" class="smart-btn px-5 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl text-base flex items-center gap-2 shadow-lg">
+        <span>☀️ Es de Día en España</span>
+      </button>
+
+      <button onclick="app.setSpainTime('night')" class="smart-btn px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-2xl text-base flex items-center gap-2 shadow-lg">
+        <span>🌙 Es de Noche en España</span>
+      </button>
+
+      <!-- Velocidad de rotación -->
+      <div class="flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-2xl border border-slate-800">
+        <span class="text-xs font-bold text-slate-300">Velocidad:</span>
+        <button onclick="app.setSpeed(0.5)" class="smart-btn px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-bold hover:bg-slate-700">Lenta</button>
+        <button onclick="app.setSpeed(1)" class="smart-btn px-3 py-1.5 rounded-lg bg-blue-600 text-xs font-bold text-white">Normal</button>
+        <button onclick="app.setSpeed(2.5)" class="smart-btn px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-bold hover:bg-slate-700">Rápida</button>
+      </div>
+    </div>
+
+    <!-- Controles específicos de Traslación (Las 4 Estaciones) -->
+    <div id="translation-controls" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-3xl p-4 flex flex-col items-center gap-3 shadow-2xl z-10 w-[94vw] max-w-3xl">
+      <!-- Selector interactivo de estaciones para tocar con la mano -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full">
+        <button onclick="app.goToSeason('primavera')" id="btn-season-spring" class="smart-btn p-3 rounded-2xl bg-emerald-950/70 border-2 border-emerald-500/50 hover:bg-emerald-600/30 text-emerald-200 flex flex-col items-center gap-1 font-black">
+          <span class="text-2xl">🌸</span>
+          <span class="text-sm">Primavera</span>
+          <span class="text-[10px] text-emerald-400 font-sans">21 de Marzo</span>
+        </button>
+
+        <button onclick="app.goToSeason('verano')" id="btn-season-summer" class="smart-btn p-3 rounded-2xl bg-amber-950/70 border-2 border-amber-500/50 hover:bg-amber-600/30 text-amber-200 flex flex-col items-center gap-1 font-black">
+          <span class="text-2xl">🏖️</span>
+          <span class="text-sm">Verano</span>
+          <span class="text-[10px] text-amber-400 font-sans">21 de Junio</span>
+        </button>
+
+        <button onclick="app.goToSeason('otono')" id="btn-season-autumn" class="smart-btn p-3 rounded-2xl bg-orange-950/70 border-2 border-orange-500/50 hover:bg-orange-600/30 text-orange-200 flex flex-col items-center gap-1 font-black">
+          <span class="text-2xl">🍂</span>
+          <span class="text-sm">Otoño</span>
+          <span class="text-[10px] text-orange-400 font-sans">23 de Septiembre</span>
+        </button>
+
+        <button onclick="app.goToSeason('invierno')" id="btn-season-winter" class="smart-btn p-3 rounded-2xl bg-cyan-950/70 border-2 border-cyan-500/50 hover:bg-cyan-600/30 text-cyan-200 flex flex-col items-center gap-1 font-black">
+          <span class="text-2xl">⛄</span>
+          <span class="text-sm">Invierno</span>
+          <span class="text-[10px] text-cyan-400 font-sans">21 de Diciembre</span>
+        </button>
+      </div>
+
+      <!-- Barra deslizante táctil para recorrer el año -->
+      <div class="flex items-center gap-3 w-full px-2">
+        <button onclick="app.togglePlayTranslation()" class="smart-btn w-12 h-12 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 flex items-center justify-center text-xl shrink-0 font-bold">
+          <i id="icon-play-translation" class="ph-bold ph-play"></i>
+        </button>
+        <div class="flex-1 flex flex-col gap-1">
+          <div class="flex justify-between text-xs font-bold text-slate-300">
+            <span>Arrastra la Tierra alrededor del Sol:</span>
+            <span id="current-month-display" class="text-yellow-400 font-black text-sm">Mes: Marzo</span>
+          </div>
+          <input type="range" id="orbit-slider" min="0" max="360" value="0" class="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-400" oninput="app.onOrbitSlider(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Modo Minijuego / Quiz en la Pizarra Digital -->
+    <div id="quiz-modal" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-md z-30 flex items-center justify-center p-4">
+      <div class="bg-slate-900 border-2 border-yellow-400/50 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative">
+        <button onclick="app.closeQuiz()" class="absolute top-4 right-4 w-11 h-11 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 text-xl font-bold">
+          <i class="ph-bold ph-x"></i>
+        </button>
+
+        <div class="flex items-center gap-3 text-yellow-400 mb-2">
+          <i class="ph-bold ph-trophy text-3xl"></i>
+          <h3 class="text-2xl sm:text-3xl font-black">¡El Reto Espacial de 3º!</h3>
+        </div>
+        <p class="text-slate-300 text-sm mb-6">Pasa a la pizarra digital SMART, pulsa la respuesta correcta con tu dedo y suma estrellas para tu clase.</p>
+
+        <!-- Barra de progreso -->
+        <div class="flex justify-between items-center text-sm font-bold text-slate-400 mb-2">
+          <span id="quiz-progress-text">Pregunta 1 de 5</span>
+          <span id="quiz-score-text" class="text-yellow-400 font-black text-base">Puntos: 0 ⭐</span>
+        </div>
+        <div class="w-full bg-slate-800 h-3 rounded-full mb-6 overflow-hidden">
+          <div id="quiz-progress-bar" class="bg-yellow-400 h-full w-1/5 transition-all duration-300"></div>
+        </div>
+
+        <!-- Pregunta actual -->
+        <div id="quiz-question-box" class="bg-slate-950/70 p-5 rounded-2xl border border-slate-800 mb-6">
+          <h4 id="quiz-question" class="text-xl sm:text-2xl font-bold text-white leading-snug">
+            ¿Cuánto tarda la Tierra en dar una vuelta completa sobre sí misma?
+          </h4>
+        </div>
+
+        <!-- Opciones de respuesta táctiles grandes -->
+        <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <!-- Generadas dinámicamente con JS -->
+        </div>
+
+        <!-- Feedback tras responder -->
+        <div id="quiz-feedback" class="hidden mt-4 p-4 rounded-2xl text-center font-bold text-base"></div>
+
+        <div class="mt-6 flex justify-end">
+          <button id="quiz-next-btn" onclick="app.nextQuestion()" class="hidden smart-btn px-6 py-3 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-lg flex items-center gap-2">
+            <span>Siguiente Reto</span>
+            <i class="ph-bold ph-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de Estado del Eje Terrestre -->
+    <div class="absolute bottom-6 right-6 hidden lg:flex flex-col items-center bg-slate-900/80 backdrop-blur border border-slate-800 p-3 rounded-2xl text-center pointer-events-none">
+      <div class="text-xs font-bold text-slate-400">Eje de Inclinación</div>
+      <div class="text-lg font-black text-cyan-300">23,5°</div>
+      <div class="text-[11px] text-slate-400 max-w-[120px] mt-0.5">¡Por eso existen las estaciones!</div>
+    </div>
+  </main>
+
+  <script>
+    /* Objeto principal de la aplicación educativa */
+    const app = {
+      mode: 'rotation', // 'rotation', 'translation', 'quiz'
+      isRotating: true,
+      isTranslating: false,
+      rotationSpeed: 0.007,
+      translationSpeed: 0.003,
+      soundEnabled: true,
+      currentAngleOrbit: 0,
+      speechSynth: window.speechSynthesis || null,
+      activeSeason: 'primavera',
+
+      // Variables de Three.js
+      scene: null,
+      camera: null,
+      renderer: null,
+      earthGroup: null,
+      earthMesh: null,
+      cloudsMesh: null,
+      sunMesh: null,
+      orbitLine: null,
+      spainPin: null,
+      axisHelperLine: null,
+      touchDown: false,
+      prevMouseX: 0,
+      prevMouseY: 0,
+
+      init() {
+        this.initThree();
+        this.setupEventListeners();
+        this.updateCardContent();
+        this.initSound();
+      },
+
+      initThree() {
+        const container = document.getElementById('webgl-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        // Escena y Cámara
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+        this.camera.position.set(0, 8, 22);
+
+        // Renderizador con antialiasing
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setSize(width, height);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        container.appendChild(this.renderer.domElement);
+
+        // Luces: El Sol es la fuente principal
+        const ambientLight = new THREE.AmbientLight(0x223344, 0.5);
+        this.scene.add(ambientLight);
+
+        // Luz direccional potente simulando la luz del Sol
+        this.sunLight = new THREE.DirectionalLight(0xfffaed, 2.4);
+        this.sunLight.position.set(-30, 0, 0);
+        this.scene.add(this.sunLight);
+
+        // Construir Universo
+        this.createStars();
+        this.createSun();
+        this.createEarthSystem();
+        this.createOrbitPath();
+
+        // Ajustar vista inicial para Rotación
+        this.setMode('rotation');
+
+        // Loop de animación
+        const animate = () => {
+          requestAnimationFrame(animate);
+          this.renderLoop();
+        };
+        animate();
+      },
+
+      // Textura procedural de la Tierra para garantizar funcionamiento sin URLs caídas
+      generateEarthTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        // Océanos azules
+        ctx.fillStyle = '#1e3a8a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Dibujar continentes esquemáticos amigables para niños
+        ctx.fillStyle = '#16a34a'; // Verde naturaleza
+
+        // Continentes simplificados
+        // Europa / África
+        ctx.beginPath();
+        ctx.ellipse(540, 180, 50, 40, 0, 0, Math.PI * 2); // Europa
+        ctx.ellipse(540, 290, 70, 90, 0, 0, Math.PI * 2); // África
+        ctx.fill();
+
+        // América del Norte y Sur
+        ctx.beginPath();
+        ctx.ellipse(260, 160, 90, 60, -0.2, 0, Math.PI * 2); // Norteamérica
+        ctx.ellipse(330, 320, 55, 85, 0.3, 0, Math.PI * 2); // Sudamérica
+        ctx.fill();
+
+        // Asia y Oceanía
+        ctx.beginPath();
+        ctx.ellipse(750, 170, 120, 60, 0.1, 0, Math.PI * 2); // Asia
+        ctx.ellipse(840, 340, 45, 35, 0, 0, Math.PI * 2); // Oceanía
+        ctx.fill();
+
+        // Casquetes polares (hielo blanco)
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, canvas.width, 25);
+        ctx.fillRect(0, canvas.height - 25, canvas.width, 25);
+
+        return new THREE.CanvasTexture(canvas);
+      },
+
+      // Textura suave de nubes
+      generateCloudsTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        for (let i = 0; i < 40; i++) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const r = 20 + Math.random() * 40;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        return new THREE.CanvasTexture(canvas);
+      },
+
+      createStars() {
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 1000;
+        const starPositions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i += 3) {
+          starPositions[i] = (Math.random() - 0.5) * 350;
+          starPositions[i + 1] = (Math.random() - 0.5) * 350;
+          starPositions[i + 2] = (Math.random() - 0.5) * 350;
+        }
+
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, transparent: true, opacity: 0.8 });
+        const starField = new THREE.Points(starGeometry, starMaterial);
+        this.scene.add(starField);
+      },
+
+      createSun() {
+        const sunGeo = new THREE.SphereGeometry(4.5, 32, 32);
+        const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd33 });
+        this.sunMesh = new THREE.Mesh(sunGeo, sunMat);
+        this.sunMesh.position.set(-30, 0, 0);
+
+        // Corona brillante del Sol
+        const glowGeo = new THREE.SphereGeometry(5.2, 32, 32);
+        const glowMat = new THREE.MeshBasicMaterial({
+          color: 0xffaa00,
+          transparent: true,
+          opacity: 0.35,
+          side: THREE.BackSide
+        });
+        const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+        this.sunMesh.add(glowMesh);
+
+        this.scene.add(this.sunMesh);
+      },
+
+      createEarthSystem() {
+        // Grupo contenedor para el movimiento orbital
+        this.earthOrbitGroup = new THREE.Group();
+        this.scene.add(this.earthOrbitGroup);
+
+        // Grupo con la inclinación axial de 23.5 grados
+        this.earthGroup = new THREE.Group();
+        this.earthGroup.rotation.z = THREE.MathUtils.degToRad(-23.44); // Inclinación real
+        this.earthOrbitGroup.add(this.earthGroup);
+
+        // Esfera Terrestre
+        const earthGeo = new THREE.SphereGeometry(3.2, 48, 48);
+        const earthMat = new THREE.MeshStandardMaterial({
+          map: this.generateEarthTexture(),
+          roughness: 0.7,
+          metalness: 0.1
+        });
+        this.earthMesh = new THREE.Mesh(earthGeo, earthMat);
+        this.earthGroup.add(this.earthMesh);
+
+        // Capa de Nubes
+        const cloudGeo = new THREE.SphereGeometry(3.26, 32, 32);
+        const cloudMat = new THREE.MeshStandardMaterial({
+          map: this.generateCloudsTexture(),
+          transparent: true,
+          opacity: 0.4
+        });
+        this.cloudsMesh = new THREE.Mesh(cloudGeo, cloudMat);
+        this.earthGroup.add(this.cloudsMesh);
+
+        // Eje de Rotación visualizado con una vara brillante (para entender en clase)
+        const axisGeo = new THREE.CylinderGeometry(0.06, 0.06, 10, 16);
+        const axisMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+        this.axisHelperLine = new THREE.Mesh(axisGeo, axisMat);
+        this.earthGroup.add(this.axisHelperLine);
+
+        // Marcador divertido en España / Europa
+        const pinGroup = new THREE.Group();
+        const pinGeo = new THREE.ConeGeometry(0.2, 0.6, 12);
+        const pinMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+        const pinMesh = new THREE.Mesh(pinGeo, pinMat);
+        pinMesh.rotation.x = Math.PI;
+        pinMesh.position.y = 0.3;
+        pinGroup.add(pinMesh);
+
+        // Posicionar en latitud aproximada de España (40ºN)
+        const phi = (90 - 40) * (Math.PI / 180);
+        const theta = (0 + 180) * (Math.PI / 180);
+        const r = 3.25;
+        pinGroup.position.x = -r * Math.sin(phi) * Math.cos(theta);
+        pinGroup.position.y = r * Math.cos(phi);
+        pinGroup.position.z = r * Math.sin(phi) * Math.sin(theta);
+        pinGroup.lookAt(0, 0, 0);
+
+        this.earthMesh.add(pinGroup);
+        this.spainPin = pinGroup;
+      },
+
+      createOrbitPath() {
+        const radius = 22;
+        const segments = 128;
+        const points = [];
+        for (let i = 0; i <= segments; i++) {
+          const theta = (i / segments) * Math.PI * 2;
+          points.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+        }
+        const orbitGeo = new THREE.BufferGeometry().setFromPoints(points);
+        const orbitMat = new THREE.LineDashedMaterial({
+          color: 0x94a3b8,
+          dashSize: 1,
+          gapSize: 0.5,
+          transparent: true,
+          opacity: 0.4
+        });
+        this.orbitLine = new THREE.Line(orbitGeo, orbitMat);
+        this.orbitLine.computeLineDistances();
+        this.scene.add(this.orbitLine);
+      },
+
+      renderLoop() {
+        // Rotación sobre su propio eje
+        if (this.isRotating && this.earthMesh) {
+          this.earthMesh.rotation.y += this.rotationSpeed;
+          this.cloudsMesh.rotation.y += this.rotationSpeed * 1.1;
+        }
+
+        // Traslación alrededor del Sol
+        if (this.isTranslating && this.mode === 'translation') {
+          this.currentAngleOrbit += this.translationSpeed;
+          if (this.currentAngleOrbit > Math.PI * 2) this.currentAngleOrbit = 0;
+          this.updateOrbitPosition(this.currentAngleOrbit);
+          document.getElementById('orbit-slider').value = Math.round((this.currentAngleOrbit / (Math.PI * 2)) * 360);
+        }
+
+        // Suave giro estético del Sol
+        if (this.sunMesh) {
+          this.sunMesh.rotation.y += 0.002;
+        }
+
+        this.renderer.render(this.scene, this.camera);
+      },
+
+      updateOrbitPosition(angle) {
+        const radius = 22;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+
+        this.earthOrbitGroup.position.set(x, 0, z);
+
+        // Actualizar el mes y la estación calculados
+        const degrees = (angle * 180) / Math.PI;
+        this.calculateSeasonFromAngle(degrees);
+      },
+
+      calculateSeasonFromAngle(deg) {
+        let season = 'primavera';
+        let month = 'Marzo';
+
+        if (deg >= 0 && deg < 90) {
+          season = 'primavera';
+          month = deg < 45 ? 'Marzo / Abril' : 'Mayo / Junio';
+        } else if (deg >= 90 && deg < 180) {
+          season = 'verano';
+          month = deg < 135 ? 'Junio / Julio' : 'Agosto / Septiembre';
+        } else if (deg >= 180 && deg < 270) {
+          season = 'otono';
+          month = deg < 225 ? 'Septiembre / Octubre' : 'Noviembre / Diciembre';
+        } else {
+          season = 'invierno';
+          month = deg < 315 ? 'Diciembre / Enero' : 'Febrero / Marzo';
+        }
+
+        document.getElementById('current-month-display').innerText = `Mes aproximado: ${month}`;
+        this.highlightSeasonButton(season);
+      },
+
+      highlightSeasonButton(season) {
+        this.activeSeason = season;
+        const seasons = ['spring', 'summer', 'autumn', 'winter'];
+        const seasonKeys = { primavera: 'spring', verano: 'summer', otono: 'autumn', invierno: 'winter' };
+
+        seasons.forEach(s => {
+          const btn = document.getElementById(`btn-season-${s}`);
+          if (s === seasonKeys[season]) {
+            btn.classList.add('ring-4', 'ring-yellow-400', 'scale-105');
+          } else {
+            btn.classList.remove('ring-4', 'ring-yellow-400', 'scale-105');
+          }
+        });
+      },
+
+      setMode(mode) {
+        this.mode = mode;
+        this.playSound('click');
+
+        // Botones de la barra superior
+        const rotBtn = document.getElementById('btn-mode-rotation');
+        const traBtn = document.getElementById('btn-mode-translation');
+        const qzBtn = document.getElementById('btn-mode-quiz');
+
+        rotBtn.className = "smart-btn px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 " + (mode === 'rotation' ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30" : "text-slate-300 hover:text-white hover:bg-slate-800");
+        traBtn.className = "smart-btn px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 " + (mode === 'translation' ? "bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/30 font-black" : "text-slate-300 hover:text-white hover:bg-slate-800");
+        qzBtn.className = "smart-btn px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 " + (mode === 'quiz' ? "bg-yellow-400 text-slate-950 font-black" : "text-yellow-300 hover:bg-yellow-500/20");
+
+        // Paneles de control inferiores
+        document.getElementById('rotation-controls').classList.toggle('hidden', mode !== 'rotation');
+        document.getElementById('translation-controls').classList.toggle('hidden', mode !== 'translation');
+        document.getElementById('quiz-modal').classList.toggle('hidden', mode !== 'quiz');
+
+        if (mode === 'rotation') {
+          // Centrar cámara en la Tierra para ver Día/Noche en primer plano
+          this.earthOrbitGroup.position.set(0, 0, 0);
+          this.sunMesh.position.set(-26, 0, 0);
+          this.sunLight.position.set(-26, 0, 0);
+          this.orbitLine.visible = false;
+
+          // Animación suave de cámara
+          this.camera.position.set(0, 3, 11);
+          this.camera.lookAt(0, 0, 0);
+          this.isRotating = true;
+          this.isTranslating = false;
+        } else if (mode === 'translation') {
+          // Vista amplia orbital para ver el Sol en el centro y las 4 estaciones
+          this.sunMesh.position.set(0, 0, 0);
+          this.sunLight.position.set(0, 0, 0);
+          this.orbitLine.visible = true;
+
+          this.camera.position.set(0, 36, 32);
+          this.camera.lookAt(0, 0, 0);
+          this.updateOrbitPosition(this.currentAngleOrbit);
+          this.isRotating = true;
+          this.isTranslating = false; // Pausado por defecto para que los niños arrastren
+        } else if (mode === 'quiz') {
+          this.initQuiz();
+        }
+
+        this.updateCardContent();
+      },
+
+      updateCardContent() {
+        const title = document.getElementById('card-title');
+        const badge = document.getElementById('badge-movement');
+        const what = document.getElementById('card-what');
+        const duration = document.getElementById('card-duration');
+        const consequence = document.getElementById('card-consequence');
+        const explanation = document.getElementById('card-explanation');
+        const icon = document.getElementById('consequence-icon');
+
+        if (this.mode === 'rotation') {
+          badge.innerText = "MOVIMIENTO 1: ROTACIÓN";
+          title.innerText = "El Día y la Noche";
+          what.innerText = "Gira sobre su propio eje";
+          duration.innerText = "24 Horas (1 Día)";
+          consequence.innerText = "Da lugar al DÍA y a la NOCHE";
+          explanation.innerText = "Como una peonza, la Tierra nunca para de girar. La cara iluminada por el Sol está despierta (¡es de día!), y la cara en sombra duerme (¡es de noche!).";
+          icon.innerText = "☀️";
+        } else {
+          badge.innerText = "MOVIMIENTO 2: TRASLACIÓN";
+          title.innerText = "Las 4 Estaciones";
+          what.innerText = "Viaja alrededor del Sol";
+          duration.innerText = "365 Días y 6 horas (1 Año)";
+          consequence.innerText = "Primavera, Verano, Otoño e Invierno";
+          explanation.innerText = "Al viajar con su eje inclinado, unas veces los rayos del Sol llegan con más fuerza a un hemisferio (verano) y otras veces con menos fuerza (invierno).";
+          icon.innerText = "🍂";
+        }
+      },
+
+      togglePlayRotation() {
+        this.isRotating = !this.isRotating;
+        const icon = document.getElementById('icon-play-rotation');
+        const text = document.getElementById('text-play-rotation');
+        if (this.isRotating) {
+          icon.className = "ph-bold ph-pause";
+          text.innerText = "Pausar Giro";
+        } else {
+          icon.className = "ph-bold ph-play";
+          text.innerText = "Continuar Giro";
+        }
+        this.playSound('pop');
+      },
+
+      togglePlayTranslation() {
+        this.isTranslating = !this.isTranslating;
+        const icon = document.getElementById('icon-play-translation');
+        if (this.isTranslating) {
+          icon.className = "ph-bold ph-pause";
+        } else {
+          icon.className = "ph-bold ph-play";
+        }
+        this.playSound('pop');
+      },
+
+      setSpeed(multiplier) {
+        this.rotationSpeed = 0.007 * multiplier;
+        this.playSound('pop');
+      },
+
+      // Posiciona a España cara al Sol o en sombra
+      setSpainTime(time) {
+        this.isRotating = false;
+        document.getElementById('icon-play-rotation').className = "ph-bold ph-play";
+        document.getElementById('text-play-rotation').innerText = "Continuar Giro";
+
+        // Ángulos predefinidos para España según la posición de la luz
+        if (time === 'day') {
+          this.earthMesh.rotation.y = Math.PI * 0.5;
+          this.speak("¡Ahora es de día en España! Los rayos del Sol iluminan nuestro colegio.");
+        } else {
+          this.earthMesh.rotation.y = Math.PI * 1.5;
+          this.speak("¡Ahora es de noche en España! Estamos en la sombra y nos vamos a dormir.");
+        }
+        this.playSound('bell');
+      },
+
+      goToSeason(season) {
+        let angle = 0;
+        let speechText = "";
+
+        switch (season) {
+          case 'primavera':
+            angle = 0;
+            speechText = "¡Primavera! Los días son más largos y florecen las plantas.";
+            break;
+          case 'verano':
+            angle = Math.PI * 0.5;
+            speechText = "¡Verano! Los rayos del sol llegan directos, hace calor y vamos a la playa.";
+            break;
+          case 'otono':
+            angle = Math.PI;
+            speechText = "¡Otoño! Caen las hojas y bajan las temperaturas.";
+            break;
+          case 'invierno':
+            angle = Math.PI * 1.5;
+            speechText = "¡Invierno! Los días son más cortos y hace mucho frío.";
+            break;
+        }
+
+        this.currentAngleOrbit = angle;
+        this.updateOrbitPosition(angle);
+        document.getElementById('orbit-slider').value = Math.round((angle / (Math.PI * 2)) * 360);
+        this.playSound('season');
+        this.speak(speechText);
+      },
+
+      onOrbitSlider(value) {
+        this.isTranslating = false;
+        document.getElementById('icon-play-translation').className = "ph-bold ph-play";
+        const angle = (value / 360) * (Math.PI * 2);
+        this.currentAngleOrbit = angle;
+        this.updateOrbitPosition(angle);
+      },
+
+      setupEventListeners() {
+        const dom = this.renderer.domElement;
+
+        // Gestos táctiles y ratón en el lienzo
+        const onDown = (clientX, clientY) => {
+          this.touchDown = true;
+          this.prevMouseX = clientX;
+          this.prevMouseY = clientY;
+        };
+
+        const onMove = (clientX, clientY) => {
+          if (!this.touchDown) return;
+          const deltaX = clientX - this.prevMouseX;
+          const deltaY = clientY - this.prevMouseY;
+
+          if (this.mode === 'rotation' && this.earthMesh) {
+            // Girar la Tierra con el dedo
+            this.earthMesh.rotation.y += deltaX * 0.008;
+          } else if (this.mode === 'translation') {
+            // Mover en la órbita con el dedo
+            this.currentAngleOrbit += deltaX * 0.004;
+            this.updateOrbitPosition(this.currentAngleOrbit);
+            document.getElementById('orbit-slider').value = Math.round((this.currentAngleOrbit / (Math.PI * 2)) * 360);
+          }
+
+          this.prevMouseX = clientX;
+          this.prevMouseY = clientY;
+        };
+
+        const onUp = () => {
+          this.touchDown = false;
+        };
+
+        // Eventos táctiles (Pizarra SMART)
+        dom.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            onDown(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: false });
+
+        dom.addEventListener('touchmove', (e) => {
+          if (e.touches.length === 1) {
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
+            e.preventDefault();
+          }
+        }, { passive: false });
+
+        window.addEventListener('touchend', onUp);
+
+        // Eventos de ratón
+        dom.addEventListener('mousedown', (e) => onDown(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', onUp);
+
+        // Redimensionar ventana
+        window.addEventListener('resize', () => {
+          const container = document.getElementById('webgl-container');
+          const w = container.clientWidth;
+          const h = container.clientHeight;
+          this.camera.aspect = w / h;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(w, h);
+        });
+      },
+
+      initSound() {
+        try {
+          this.synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.02, decay: 0.1, sustain: 0.1, release: 0.5 }
+          }).toDestination();
+        } catch (e) {
+          console.log("Audio no iniciado aún");
+        }
+      },
+
+      playSound(type) {
+        if (!this.soundEnabled) return;
+        try {
+          if (Tone.context.state !== 'running') {
+            Tone.start();
+          }
+          if (!this.synth) this.initSound();
+
+          const now = Tone.now();
+          if (type === 'click') {
+            this.synth.triggerAttackRelease('C5', '16n', now);
+          } else if (type === 'pop') {
+            this.synth.triggerAttackRelease('E5', '16n', now);
+          } else if (type === 'bell') {
+            this.synth.triggerAttackRelease(['G5', 'C6'], '8n', now);
+          } else if (type === 'correct') {
+            this.synth.triggerAttackRelease(['C5', 'E5', 'G5', 'C6'], '8n', now);
+          } else if (type === 'wrong') {
+            this.synth.triggerAttackRelease(['F4', 'D4'], '8n', now);
+          } else if (type === 'season') {
+            this.synth.triggerAttackRelease(['D5', 'A5'], '8n', now);
+          }
+        } catch (e) {
+          // Continuar silenciosamente
+        }
+      },
+
+      toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        const icon = document.getElementById('icon-sound');
+        icon.className = this.soundEnabled ? "ph-bold ph-bell" : "ph-bold ph-bell-slash";
+      },
+
+      speak(text) {
+        if (!this.speechSynth) return;
+        try {
+          this.speechSynth.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'es-ES';
+          utterance.rate = 0.95; // Un poco más pausado para 3º de Primaria
+          utterance.pitch = 1.1; // Tono amable y didáctico
+          this.speechSynth.speak(utterance);
+        } catch (e) {
+          console.log("Error de voz:", e);
+        }
+      },
+
+      speakCurrentInfo() {
+        if (this.mode === 'rotation') {
+          this.speak("Movimiento de Rotación. La Tierra gira sobre sí misma como una peonza. Tarda veinticuatro horas en dar una vuelta completa, es decir, un día entero. Este movimiento produce el día y la noche.");
+        } else {
+          this.speak("Movimiento de Traslación. La Tierra viaja alrededor del Sol siguiendo una órbita. Tarda trescientos sesenta y cinco días, lo que equivale a un año completo. Gracias a este viaje y al eje inclinado, tenemos las cuatro estaciones: primavera, verano, otoño e invierno.");
+        }
+      },
+
+      toggleFullScreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      },
+
+      quizData: [
+        {
+          question: "¿Cuánto tiempo tarda la Tierra en dar una vuelta completa sobre sí misma?",
+          options: ["365 días (1 año)", "24 horas (1 día)", "1 mes", "7 días (1 semana)"],
+          correct: 1,
+          explanation: "¡Genial! Tarda 24 horas, por eso cada día tiene 24 horas divididas en horas de luz y de oscuridad."
+        },
+        {
+          question: "¿Qué movimiento de la Tierra provoca el DÍA y la NOCHE?",
+          options: ["Movimiento de Traslación", "Movimiento de Rotación", "Movimiento Lunar", "Movimiento de Salto"],
+          correct: 1,
+          explanation: "¡Correcto! Al girar sobre su propio eje (rotación), el Sol alumbra solo una cara a la vez."
+        },
+        {
+          question: "¿Cuánto tarda la Tierra en dar una vuelta completa alrededor del Sol?",
+          options: ["1 semana", "24 horas", "365 días (1 año)", "100 días"],
+          correct: 2,
+          explanation: "¡Muy bien! Tarda 365 días y 6 horas en completar el viaje de traslación."
+        },
+        {
+          question: "¿Cuáles son las 4 estaciones que se producen por la traslación?",
+          options: [
+            "Lunes, Martes, Miércoles y Jueves",
+            "Norte, Sur, Este y Oeste",
+            "Primavera, Verano, Otoño e Invierno",
+            "Día, Tarde, Noche y Madrugada"
+          ],
+          correct: 2,
+          explanation: "¡Exacto! Primavera, Verano, Otoño e Invierno son las 4 estaciones."
+        },
+        {
+          question: "¿Por qué existen las estaciones del año?",
+          options: [
+            "Porque la Tierra se acerca y se aleja mucho del Sol",
+            "Por el movimiento de traslación y la inclinación del eje de la Tierra",
+            "Porque el Sol se apaga a ratos",
+            "Por el viento espacial"
+          ],
+          correct: 1,
+          explanation: "¡Fantástico! El eje inclinado hace que los rayos lleguen con más fuerza en verano y con menos en invierno."
+        }
+      ],
+      currentQuestionIdx: 0,
+      quizScore: 0,
+
+      initQuiz() {
+        this.currentQuestionIdx = 0;
+        this.quizScore = 0;
+        this.renderQuestion();
+      },
+
+      renderQuestion() {
+        const q = this.quizData[this.currentQuestionIdx];
+        document.getElementById('quiz-progress-text').innerText = `Pregunta ${this.currentQuestionIdx + 1} de ${this.quizData.length}`;
+        document.getElementById('quiz-score-text').innerText = `Puntos: ${this.quizScore} ⭐`;
+        document.getElementById('quiz-progress-bar').style.width = `${((this.currentQuestionIdx + 1) / this.quizData.length) * 100}%`;
+
+        document.getElementById('quiz-question').innerText = q.question;
+        const optionsContainer = document.getElementById('quiz-options');
+        optionsContainer.innerHTML = '';
+
+        const feedback = document.getElementById('quiz-feedback');
+        feedback.className = "hidden";
+        document.getElementById('quiz-next-btn').classList.add('hidden');
+
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = "smart-btn p-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border-2 border-slate-700 text-left font-bold text-white text-base sm:text-lg flex items-center gap-3 transition-colors";
+          btn.innerHTML = `<span class="w-8 h-8 rounded-full bg-slate-900 text-yellow-400 flex items-center justify-center font-black text-sm shrink-0 border border-slate-700">${['A', 'B', 'C', 'D'][idx]}</span> <span>${opt}</span>`;
+          btn.onclick = () => this.handleAnswer(idx, btn);
+          optionsContainer.appendChild(btn);
+        });
+
+        // Locución de la pregunta para los alumnos
+        this.speak(q.question);
+      },
+
+      handleAnswer(selectedIdx, clickedBtn) {
+        const q = this.quizData[this.currentQuestionIdx];
+        const buttons = document.querySelectorAll('#quiz-options button');
+        buttons.forEach(b => b.disabled = true); // Desactivar para evitar doble pulsación táctil
+
+        const feedback = document.getElementById('quiz-feedback');
+        feedback.classList.remove('hidden');
+
+        if (selectedIdx === q.correct) {
+          this.quizScore += 10;
+          this.playSound('correct');
+          clickedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+          clickedBtn.classList.add('bg-emerald-600', 'border-emerald-400', 'text-white');
+
+          feedback.className = "mt-4 p-4 rounded-2xl text-center font-bold text-base bg-emerald-950/80 border border-emerald-500 text-emerald-200";
+          feedback.innerHTML = `🌟 ¡CORRECTO! ${q.explanation}`;
+          this.speak("¡Muy bien hecho!");
+
+          // Efecto confetti en pantalla grande
+          try {
+            confetti({
+              particleCount: 50,
+              spread: 60,
+              origin: { y: 0.6 }
+            });
+          } catch (e) {}
+        } else {
+          this.playSound('wrong');
+          clickedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+          clickedBtn.classList.add('bg-rose-600', 'border-rose-400', 'text-white');
+
+          // Marcar también la correcta
+          buttons[q.correct].classList.remove('bg-slate-800', 'border-slate-700');
+          buttons[q.correct].classList.add('bg-emerald-600/80', 'border-emerald-400');
+
+          feedback.className = "mt-4 p-4 rounded-2xl text-center font-bold text-base bg-rose-950/80 border border-rose-500 text-rose-200";
+          feedback.innerHTML = `💡 ¡Casi! La respuesta correcta era: <strong>${q.options[q.correct]}</strong>.`;
+          this.speak("Casi. Recuerda: " + q.explanation);
+        }
+
+        document.getElementById('quiz-score-text').innerText = `Puntos: ${this.quizScore} ⭐`;
+        document.getElementById('quiz-next-btn').classList.remove('hidden');
+      },
+
+      nextQuestion() {
+        this.playSound('pop');
+        this.currentQuestionIdx++;
+        if (this.currentQuestionIdx < this.quizData.length) {
+          this.renderQuestion();
+        } else {
+          // Fin del concurso
+          const qBox = document.getElementById('quiz-question-box');
+          qBox.innerHTML = `
+            <div class="text-center py-4">
+              <span class="text-5xl">🏆</span>
+              <h4 class="text-3xl font-black text-yellow-300 mt-2">¡Enhorabuena, Clase de 3º!</h4>
+              <p class="text-xl font-bold text-white mt-2">Habéis conseguido: <span class="text-yellow-400 text-2xl font-black">${this.quizScore} puntos</span></p>
+              <p class="text-slate-300 text-sm mt-2">¡Sois auténticos astronautas expertos en la Tierra!</p>
+            </div>
+          `;
+          document.getElementById('quiz-options').innerHTML = `
+            <button onclick="app.initQuiz()" class="smart-btn sm:col-span-2 p-4 rounded-2xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-xl flex items-center justify-center gap-2">
+              <i class="ph-bold ph-arrow-counter-clockwise"></i>
+              <span>Volver a Jugar</span>
+            </button>
+          `;
+          document.getElementById('quiz-feedback').classList.add('hidden');
+          document.getElementById('quiz-next-btn').classList.add('hidden');
+
+          try {
+            confetti({
+              particleCount: 120,
+              spread: 100,
+              origin: { y: 0.5 }
+            });
+          } catch (e) {}
+
+          this.playSound('correct');
+          this.speak("¡Felicidades a toda la clase! Habéis completado el reto de la Tierra.");
+        }
+      },
+
+      closeQuiz() {
+        this.playSound('click');
+        this.setMode('rotation');
+      }
+    };
+
+    window.onload = () => {
+      app.init();
+    };
+  </script>
+</body>
+</html>
