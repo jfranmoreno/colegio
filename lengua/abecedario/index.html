@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>La Aventura del Abecedario - 3.º de Primaria</title>
+  <!-- Google Fonts: Nunito para máxima legibilidad escolar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --bg-cream: #FFFDF9;
+      --pastel-blue: #D6EEFF;
+      --pastel-green: #D7F9E4;
+      --pastel-yellow: #FFF1C5;
+      --pastel-purple: #EADAFF;
+      --pastel-pink: #FFE2EB;
+      --brand-blue: #2A75D3;
+      --brand-green: #1EA652;
+      --brand-orange: #F57C00;
+      --brand-purple: #7E3AF2;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #F0F6FF;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Botones estilo 3D táctil de aula */
+    .btn-chunky {
+      position: relative;
+      transition: all 0.12s ease-in-out;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+    }
+    .btn-chunky:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+    }
+    .btn-chunky:disabled {
+      opacity: 0.55;
+      transform: none;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Animaciones suaves */
+    @keyframes pulse-gentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+    .animate-gentle {
+      animation: pulse-gentle 2.2s infinite ease-in-out;
+    }
+
+    @keyframes bounce-in {
+      0% { transform: scale(0.6); opacity: 0; }
+      80% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+    .pop-in {
+      animation: bounce-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Ranuras para ordenar palabras en la pantalla táctil */
+    .slot-box {
+      min-height: 72px;
+      border: 3px dashed #A0C4FF;
+      border-radius: 1.25rem;
+      transition: all 0.2s;
+    }
+    .slot-box.filled {
+      border-style: solid;
+      border-color: #3B82F6;
+      background-color: #EFF6FF;
+    }
+
+    /* Ocultar barra de desplazamiento sin perder funcionalidad */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-800 flex flex-col justify-between overflow-x-hidden p-3 md:p-6">
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50 w-full h-full"></canvas>
+
+  <script>
+    /* MOTOR DE AUDIO WEB API (Sin archivos externos de audio) */
+    const SoundFX = {
+      ctx: null,
+      muted: false,
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      playPop() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(420, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.08);
+      },
+      playSuccess() {
+        if (this.muted) return;
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          const startTime = this.ctx.currentTime + (idx * 0.07);
+          gain.gain.setValueAtTime(0.25, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.28);
+        });
+      },
+      playError() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(110, this.ctx.currentTime + 0.22);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.23);
+      },
+      playFanfare() {
+        if (this.muted) return;
+        this.init();
+        const chords = [
+          { f: 523.25, t: 0 },
+          { f: 659.25, t: 0.12 },
+          { f: 783.99, t: 0.24 },
+          { f: 1046.5, t: 0.4 },
+          { f: 1318.5, t: 0.6 }
+        ];
+        chords.forEach(c => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = c.f;
+          const start = this.ctx.currentTime + c.t;
+          gain.gain.setValueAtTime(0.28, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(start);
+          osc.stop(start + 0.55);
+        });
+      }
+    };
+  </script>
+
+  <!-- Encabezado de la Aplicación -->
+  <header class="w-full max-w-7xl mx-auto flex items-center justify-between bg-white/90 backdrop-blur rounded-3xl p-4 shadow-md border-4 border-blue-200">
+    <div class="flex items-center gap-3">
+      <button id="btn-home" onclick="App.goHome()" class="btn-chunky bg-amber-400 hover:bg-amber-500 text-amber-950 font-black px-4 py-3 rounded-2xl flex items-center gap-2 text-lg md:text-xl min-w-[58px] min-h-[58px] justify-center">
+        <span>🏠</span>
+        <span class="hidden sm:inline">Menú</span>
+      </button>
+      <div>
+        <h1 class="text-xl md:text-3xl font-black text-blue-700 tracking-wide flex items-center gap-2">
+          <span>📚</span> La Aventura del Abecedario
+        </h1>
+        <p class="text-xs md:text-sm font-bold text-slate-500">Lengua Castellana • 3.º de Primaria</p>
+      </div>
+    </div>
+
+    <!-- Marcador de Aula y Controles -->
+    <div class="flex items-center gap-2 md:gap-4">
+      <!-- Puntuación acumulada -->
+      <div class="bg-amber-100 border-2 border-amber-300 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-inner">
+        <span class="text-2xl animate-gentle">⭐</span>
+        <span id="score-display" class="text-xl md:text-2xl font-black text-amber-900">0</span>
+        <span class="text-xs font-bold text-amber-700 hidden md:inline">estrellas</span>
+      </div>
+
+      <!-- Sonido -->
+      <button id="btn-sound" onclick="App.toggleSound()" class="btn-chunky bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold p-3 rounded-2xl w-14 h-14 flex items-center justify-center text-2xl border-2 border-slate-300" title="Activar/Silenciar sonido">
+        <span id="sound-icon">🔊</span>
+      </button>
+
+      <!-- Pantalla Completa para Monitor Digital -->
+      <button onclick="App.toggleFullScreen()" class="btn-chunky bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold p-3 rounded-2xl w-14 h-14 hidden sm:flex items-center justify-center text-2xl border-2 border-sky-300" title="Pantalla completa">
+        <span>⛶</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal de Actividades -->
+  <main class="w-full max-w-7xl mx-auto my-4 flex-1 flex flex-col justify-center">
+
+    <!-- VISTA 0: MENÚ PRINCIPAL -->
+    <section id="view-menu" class="w-full">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl md:text-4xl font-extrabold text-blue-900 mb-2">¡Elige un reto para tu equipo! 🚀</h2>
+        <p class="text-base md:text-xl font-bold text-blue-600 max-w-2xl mx-auto">
+          Toca en la pantalla para aprender, ordenar, buscar intrusos y ganar estrellas de sabiduría alfabética.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+        <!-- Tarjeta 1: Teoría / Explicación -->
+        <div onclick="App.showView('theory')" class="btn-chunky bg-gradient-to-b from-amber-100 to-amber-200 border-4 border-amber-300 hover:border-amber-400 p-5 rounded-3xl cursor-pointer flex flex-col justify-between items-center text-center group min-h-[220px]">
+          <div class="w-20 h-20 bg-amber-300 rounded-3xl flex items-center justify-center text-4xl shadow-inner mb-3">
+            📖
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-amber-950 mb-1">¡El Alfabeto!</h3>
+            <p class="text-xs md:text-sm font-bold text-amber-800">Aprende los trucos y reglas para ordenar</p>
+          </div>
+          <span class="mt-3 bg-amber-500 text-white font-black text-xs uppercase px-3 py-1.5 rounded-full shadow">Aprender</span>
+        </div>
+
+        <!-- Tarjeta 2: Ordenar Palabras -->
+        <div onclick="App.showView('ordering')" class="btn-chunky bg-gradient-to-b from-blue-100 to-blue-200 border-4 border-blue-300 hover:border-blue-400 p-5 rounded-3xl cursor-pointer flex flex-col justify-between items-center text-center group min-h-[220px]">
+          <div class="w-20 h-20 bg-blue-300 rounded-3xl flex items-center justify-center text-4xl shadow-inner mb-3">
+            🚂
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-blue-950 mb-1">Tren de Palabras</h3>
+            <p class="text-xs md:text-sm font-bold text-blue-800">Ordena vagones de la A a la Z</p>
+          </div>
+          <span class="mt-3 bg-blue-600 text-white font-black text-xs uppercase px-3 py-1.5 rounded-full shadow">Reto 1</span>
+        </div>
+
+        <!-- Tarjeta 3: Discriminación -->
+        <div onclick="App.showView('discrimination')" class="btn-chunky bg-gradient-to-b from-emerald-100 to-emerald-200 border-4 border-emerald-300 hover:border-emerald-400 p-5 rounded-3xl cursor-pointer flex flex-col justify-between items-center text-center group min-h-[220px]">
+          <div class="w-20 h-20 bg-emerald-300 rounded-3xl flex items-center justify-center text-4xl shadow-inner mb-3">
+            🎯
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-emerald-950 mb-1">Ojo de Halcón</h3>
+            <p class="text-xs md:text-sm font-bold text-emerald-800">Distingue letras, sonidos y familias</p>
+          </div>
+          <span class="mt-3 bg-emerald-600 text-white font-black text-xs uppercase px-3 py-1.5 rounded-full shadow">Reto 2</span>
+        </div>
+
+        <!-- Tarjeta 4: Caza de Errores -->
+        <div onclick="App.showView('errors')" class="btn-chunky bg-gradient-to-b from-rose-100 to-rose-200 border-4 border-rose-300 hover:border-rose-400 p-5 rounded-3xl cursor-pointer flex flex-col justify-between items-center text-center group min-h-[220px]">
+          <div class="w-20 h-20 bg-rose-300 rounded-3xl flex items-center justify-center text-4xl shadow-inner mb-3">
+            🕵️
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-rose-950 mb-1">Caza-Errores</h3>
+            <p class="text-xs md:text-sm font-bold text-rose-800">¡Descubre qué letra o palabra se ha colado!</p>
+          </div>
+          <span class="mt-3 bg-rose-500 text-white font-black text-xs uppercase px-3 py-1.5 rounded-full shadow">Reto 3</span>
+        </div>
+
+        <!-- Tarjeta 5: Quiz -->
+        <div onclick="App.showView('quiz')" class="btn-chunky bg-gradient-to-b from-purple-100 to-purple-200 border-4 border-purple-300 hover:border-purple-400 p-5 rounded-3xl cursor-pointer flex flex-col justify-between items-center text-center group min-h-[220px]">
+          <div class="w-20 h-20 bg-purple-300 rounded-3xl flex items-center justify-center text-4xl shadow-inner mb-3">
+            🏆
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-purple-950 mb-1">Gran Concurso</h3>
+            <p class="text-xs md:text-sm font-bold text-purple-800">Preguntas veloces para toda la clase</p>
+          </div>
+          <span class="mt-3 bg-purple-600 text-white font-black text-xs uppercase px-3 py-1.5 rounded-full shadow">Reto 4</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISTA 1: EXPLICACIÓN Y TEORÍA DINÁMICA -->
+    <section id="view-theory" class="hidden w-full bg-white rounded-3xl p-5 md:p-8 shadow-xl border-4 border-amber-300">
+      <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-amber-100 mb-6 gap-3">
+        <div>
+          <span class="bg-amber-100 text-amber-800 text-sm font-extrabold px-3 py-1 rounded-full uppercase">Guía de Aula</span>
+          <h2 class="text-2xl md:text-3xl font-black text-slate-800 mt-1">¿Cómo funciona nuestro Abecedario?</h2>
+        </div>
+        <button onclick="App.showView('ordering')" class="btn-chunky bg-blue-500 hover:bg-blue-600 text-white font-black px-6 py-3 rounded-2xl text-lg flex items-center gap-2">
+          <span>¡A practicar en el Tren!</span> ➡️
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- Bloque 1: Letras -->
+        <div class="bg-amber-50 rounded-2xl p-5 border-2 border-amber-200 flex flex-col">
+          <div class="text-3xl mb-2">🔤</div>
+          <h3 class="text-xl font-black text-amber-900 mb-2">27 Letras Mágicas</h3>
+          <p class="text-slate-700 font-bold text-sm md:text-base leading-relaxed mb-3">
+            En español tenemos <strong>27 letras</strong>:
+          </p>
+          <div class="bg-white p-3 rounded-xl border border-amber-200 mb-2 text-center">
+            <span class="text-rose-600 font-black">5 Vocales:</span>
+            <span class="text-lg font-black tracking-widest text-slate-800 block">A - E - I - O - U</span>
+          </div>
+          <div class="bg-white p-3 rounded-xl border border-amber-200 text-center">
+            <span class="text-blue-600 font-black">22 Consonantes:</span>
+            <span class="text-xs font-black tracking-wider text-slate-700 block">B, C, D, F, G, H, J, K, L, M, N, Ñ, P, Q, R, S, T, V, W, X, Y, Z</span>
+          </div>
+        </div>
+
+        <!-- Bloque 2: Regla de la 1ª Letra -->
+        <div class="bg-sky-50 rounded-2xl p-5 border-2 border-sky-200 flex flex-col">
+          <div class="text-3xl mb-2">🥇</div>
+          <h3 class="text-xl font-black text-sky-950 mb-2">Regla 1: La 1ª Letra</h3>
+          <p class="text-slate-700 font-bold text-sm md:text-base leading-relaxed mb-3">
+            Para ordenar palabras en el diccionario, miramos la <strong>primera letra</strong>:
+          </p>
+          <div class="space-y-2 mt-auto">
+            <div class="bg-white p-2.5 rounded-xl border border-sky-200 flex items-center gap-2 font-black text-slate-800">
+              <span class="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center">1º</span>
+              <span class="text-blue-600">A</span>guacate
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-sky-200 flex items-center gap-2 font-black text-slate-800">
+              <span class="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center">2º</span>
+              <span class="text-blue-600">B</span>allena
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-sky-200 flex items-center gap-2 font-black text-slate-800">
+              <span class="w-8 h-8 rounded-lg bg-sky-500 text-white flex items-center justify-center">3º</span>
+              <span class="text-blue-600">C</span>anguro
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque 3: Regla del Desempate -->
+        <div class="bg-purple-50 rounded-2xl p-5 border-2 border-purple-200 flex flex-col">
+          <div class="text-3xl mb-2">🥈</div>
+          <h3 class="text-xl font-black text-purple-950 mb-2">Regla 2: El Desempate</h3>
+          <p class="text-slate-700 font-bold text-sm md:text-base leading-relaxed mb-3">
+            ¿Empiezan por la misma letra? ¡Miramos la <strong>segunda letra</strong> (o la tercera si también coincide)!
+          </p>
+          <div class="space-y-2 mt-auto">
+            <div class="bg-white p-2.5 rounded-xl border border-purple-200 flex items-center gap-2 font-black text-slate-800">
+              <span>B<strong class="text-purple-600 underline">a</strong>rco</span>
+              <span class="text-xs text-slate-500 ml-auto">Va antes que 'o'</span>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-purple-200 flex items-center gap-2 font-black text-slate-800">
+              <span>B<strong class="text-purple-600 underline">o</strong>te</span>
+              <span class="text-xs text-slate-500 ml-auto">Va después que 'a'</span>
+            </div>
+            <div class="bg-white p-2.5 rounded-xl border border-purple-200 flex items-center gap-2 font-black text-slate-800">
+              <span>B<strong class="text-purple-600 underline">u</strong>que</span>
+              <span class="text-xs text-slate-500 ml-auto">La 'u' va al final</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abecedario mural interactivo -->
+      <div class="bg-slate-100 p-4 rounded-2xl border-2 border-slate-200">
+        <h4 class="text-center font-black text-slate-700 text-sm md:text-base uppercase tracking-wider mb-3">
+          Toca cualquier letra para escucharla en el mural
+        </h4>
+        <div id="alphabet-strip" class="flex flex-wrap justify-center gap-1.5 md:gap-2">
+          <!-- Se llena automáticamente con JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VISTA 2: RETO 1 - EL TREN DE LAS PALABRAS (ORDEN ALFABÉTICO) -->
+    <section id="view-ordering" class="hidden w-full bg-white rounded-3xl p-5 md:p-8 shadow-xl border-4 border-blue-300">
+      <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-blue-100 mb-6 gap-3">
+        <div>
+          <span class="bg-blue-100 text-blue-800 text-sm font-extrabold px-3 py-1 rounded-full uppercase">Reto 1: El Tren Alfabético</span>
+          <h2 class="text-2xl md:text-3xl font-black text-slate-800 mt-1">Coloca las palabras en orden alfabético</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="order-level-badge" class="bg-amber-100 text-amber-900 border-2 border-amber-300 font-extrabold px-4 py-2 rounded-xl text-base">
+            Misión 1 de 4
+          </span>
+        </div>
+      </div>
+
+      <!-- Instrucción guiada -->
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 text-center mb-6">
+        <p class="text-base md:text-lg font-extrabold text-blue-900">
+          👇 Toca primero una palabra del banco inferior y se colocará en el siguiente vagón vacío.
+          <br class="hidden sm:inline"> ¡Si te equivocas, toca el vagón para devolverla!
+        </p>
+      </div>
+
+      <!-- Los Vagones del Tren (Slots) -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-2 font-black text-slate-600 text-sm uppercase">
+          <span>🚂 Locomotora</span>
+          <span class="text-blue-500">➜ 1.er Vagón ➜ 2.º Vagón ➜ 3.er Vagón ➜ 4.º Vagón</span>
+        </div>
+        <div id="train-slots-container" class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <!-- Slots generados por JavaScript -->
+        </div>
+      </div>
+
+      <!-- Banco de Palabras Disponibles -->
+      <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 mb-6">
+        <h4 class="font-black text-slate-700 text-sm uppercase tracking-wider mb-3 text-center">
+          Palabras para ordenar (Toca para subir al tren):
+        </h4>
+        <div id="word-pool-container" class="flex flex-wrap justify-center gap-3 md:gap-4 min-h-[72px] items-center">
+          <!-- Palabras generadas con JS -->
+        </div>
+      </div>
+
+      <!-- Barra de acciones -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t-2 border-slate-100">
+        <button onclick="OrderingGame.resetCurrentRound()" class="btn-chunky bg-slate-200 hover:bg-slate-300 text-slate-800 font-black px-5 py-3.5 rounded-2xl text-base min-h-[60px] flex items-center gap-2">
+          🔄 Reiniciar ronda
+        </button>
+        <button id="btn-check-order" onclick="OrderingGame.checkAnswer()" class="btn-chunky bg-emerald-500 hover:bg-emerald-600 text-white font-black px-8 py-3.5 rounded-2xl text-xl min-h-[60px] flex items-center gap-3 shadow-lg shadow-emerald-200">
+          <span>Comprobar Orden</span>
+          <span class="text-2xl">✅</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VISTA 3: RETO 2 - OJO DE HALCÓN (DISCRIMINACIÓN) -->
+    <section id="view-discrimination" class="hidden w-full bg-white rounded-3xl p-5 md:p-8 shadow-xl border-4 border-emerald-300">
+      <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-emerald-100 mb-6 gap-3">
+        <div>
+          <span class="bg-emerald-100 text-emerald-800 text-sm font-extrabold px-3 py-1 rounded-full uppercase">Reto 2: Ojo de Halcón</span>
+          <h2 class="text-2xl md:text-3xl font-black text-slate-800 mt-1">Discriminación de Letras y Sonidos</h2>
+        </div>
+        <span id="discrim-progress" class="bg-emerald-100 text-emerald-900 border-2 border-emerald-300 font-extrabold px-4 py-2 rounded-xl text-base">
+          Pregunta 1 de 4
+        </span>
+      </div>
+
+      <!-- Tarjeta de Desafío -->
+      <div class="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-6 mb-6 text-center">
+        <span class="text-4xl mb-2 inline-block">🎯</span>
+        <h3 id="discrim-prompt" class="text-xl md:text-3xl font-black text-emerald-950 mb-2">
+          Cargando misión...
+        </h3>
+        <p id="discrim-subtext" class="text-emerald-700 font-bold text-base md:text-lg">
+          Selecciona todas las opciones correctas y pulsa verificar.
+        </p>
+      </div>
+
+      <!-- Tarjetas de Opciones Seleccionables -->
+      <div id="discrim-options-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <!-- Opciones generadas con JS -->
+      </div>
+
+      <!-- Acción de Verificación -->
+      <div class="flex justify-end gap-3 pt-4 border-t-2 border-slate-100">
+        <button id="btn-check-discrim" onclick="DiscrimGame.checkAnswer()" class="btn-chunky bg-emerald-600 hover:bg-emerald-700 text-white font-black px-8 py-4 rounded-2xl text-xl min-h-[64px] flex items-center gap-3 shadow-lg shadow-emerald-200">
+          <span>Verificar Selección</span>
+          <span class="text-2xl">✨</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- VISTA 4: RETO 3 - EL CAZA-ERRORES -->
+    <section id="view-errors" class="hidden w-full bg-white rounded-3xl p-5 md:p-8 shadow-xl border-4 border-rose-300">
+      <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-rose-100 mb-6 gap-3">
+        <div>
+          <span class="bg-rose-100 text-rose-800 text-sm font-extrabold px-3 py-1 rounded-full uppercase">Reto 3: Misión Detective</span>
+          <h2 class="text-2xl md:text-3xl font-black text-slate-800 mt-1">¡Encuentra el error o la letra intrusa!</h2>
+        </div>
+        <span id="errors-progress" class="bg-rose-100 text-rose-900 border-2 border-rose-300 font-extrabold px-4 py-2 rounded-xl text-base">
+          Misión 1 de 4
+        </span>
+      </div>
+
+      <div class="bg-rose-50 border-2 border-rose-200 rounded-3xl p-6 mb-6 text-center">
+        <span class="text-4xl mb-2 inline-block">🕵️‍♀️</span>
+        <h3 id="errors-clue" class="text-xl md:text-2xl font-black text-rose-950 mb-2">
+          ¿Cuál de estos elementos NO está en su sitio o rompe el abecedario?
+        </h3>
+        <p class="text-rose-700 font-bold text-sm md:text-base">
+          Toca directamente la ficha sospechosa para analizarla con tu lupa de detective.
+        </p>
+      </div>
+
+      <!-- Secuencia interactiva de fichas -->
+      <div id="errors-sequence-container" class="flex flex-wrap justify-center gap-3 md:gap-5 mb-8">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <div id="errors-feedback-panel" class="hidden p-4 rounded-2xl text-center font-black text-lg">
+        <!-- Retroalimentación con explicación pedagógica -->
+      </div>
+    </section>
+
+    <!-- VISTA 5: RETO 4 - GRAN CONCURSO DEL ABECEDARIO -->
+    <section id="view-quiz" class="hidden w-full bg-white rounded-3xl p-5 md:p-8 shadow-xl border-4 border-purple-300">
+      <div class="flex flex-col md:flex-row items-center justify-between pb-4 border-b-2 border-purple-100 mb-6 gap-3">
+        <div>
+          <span class="bg-purple-100 text-purple-800 text-sm font-extrabold px-3 py-1 rounded-full uppercase">Reto 4: Concurso Escolar</span>
+          <h2 class="text-2xl md:text-3xl font-black text-slate-800 mt-1">Gran Quiz Alfabético</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="quiz-question-number" class="bg-purple-100 text-purple-900 border-2 border-purple-300 font-extrabold px-4 py-2 rounded-xl text-base">
+            Pregunta 1 de 5
+          </span>
+        </div>
+      </div>
+
+      <!-- Pregunta Actual -->
+      <div class="bg-purple-50 border-2 border-purple-200 rounded-3xl p-6 md:p-8 mb-6 text-center">
+        <span id="quiz-icon" class="text-4xl md:text-5xl mb-3 inline-block">🤔</span>
+        <h3 id="quiz-question-text" class="text-xl md:text-3xl font-black text-purple-950 leading-snug">
+          Cargando pregunta...
+        </h3>
+      </div>
+
+      <!-- Opciones Múltiples de Gran Tamaño para Tocar -->
+      <div id="quiz-options-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- Botones creados dinámicamente -->
+      </div>
+
+      <!-- Explicación Didáctica tras responder -->
+      <div id="quiz-feedback-box" class="hidden p-5 rounded-2xl text-center font-extrabold text-lg transition-all mb-4">
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE ÉXITO Y CELEBRACIÓN -->
+  <div id="modal-celebrate" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full text-center border-4 border-amber-400 shadow-2xl pop-in">
+      <div class="text-6xl mb-3 animate-gentle">🎉</div>
+      <h3 id="modal-title" class="text-3xl font-black text-slate-800 mb-2">¡Increíble trabajo!</h3>
+      <p id="modal-desc" class="text-slate-600 font-bold text-lg mb-6">
+        Has completado el reto ganando estrellas para la clase.
+      </p>
+
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 flex items-center justify-center gap-3">
+        <span class="text-4xl">⭐</span>
+        <span id="modal-stars-gained" class="text-3xl font-black text-amber-700">+10 Estrellas</span>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="App.closeCelebrateModal()" class="btn-chunky bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-4 rounded-2xl text-lg flex-1 min-h-[60px]">
+          Continuar jugando 🚀
+        </button>
+        <button onclick="App.goHome()" class="btn-chunky bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-6 py-4 rounded-2xl text-lg min-h-[60px]">
+          Ir al Menú 🏠
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pie de página educativo -->
+  <footer class="w-full max-w-7xl mx-auto text-center py-2 text-xs md:text-sm font-bold text-slate-400">
+    Diseñado para Monitores Digitales Interactivos (MDI) y Tablets • 3.º de Primaria • Sin dependencias externas
+  </footer>
+
+  <script>
+    /* ==============================================================
+       SISTEMA CENTRAL DE LA APLICACIÓN (STATE & ROUTING)
+       ============================================================== */
+    const App = {
+      score: 0,
+      activeView: 'menu',
+
+      init() {
+        this.renderMural();
+        OrderingGame.init();
+        DiscrimGame.init();
+        ErrorsGame.init();
+        QuizGame.init();
+        this.updateScoreDisplay();
+      },
+
+      addStars(count) {
+        this.score += count;
+        this.updateScoreDisplay();
+        SoundFX.playSuccess();
+      },
+
+      updateScoreDisplay() {
+        const el = document.getElementById('score-display');
+        if (el) el.textContent = this.score;
+      },
+
+      showView(viewName) {
+        SoundFX.playPop();
+        const views = ['menu', 'theory', 'ordering', 'discrimination', 'errors', 'quiz'];
+        views.forEach(v => {
+          const el = document.getElementById(`view-${v}`);
+          if (el) el.classList.add('hidden');
+        });
+
+        const activeEl = document.getElementById(`view-${viewName}`);
+        if (activeEl) {
+          activeEl.classList.remove('hidden');
+          activeEl.classList.add('pop-in');
+        }
+        this.activeView = viewName;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+
+      goHome() {
+        this.closeCelebrateModal();
+        this.showView('menu');
+      },
+
+      toggleSound() {
+        SoundFX.muted = !SoundFX.muted;
+        document.getElementById('sound-icon').textContent = SoundFX.muted ? '🔇' : '🔊';
+        if (!SoundFX.muted) SoundFX.playPop();
+      },
+
+      toggleFullScreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+        }
+      },
+
+      renderMural() {
+        const strip = document.getElementById('alphabet-strip');
+        if (!strip) return;
+        const letters = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split('');
+        const vowels = ['A', 'E', 'I', 'O', 'U'];
+        strip.innerHTML = '';
+
+        letters.forEach(letter => {
+          const btn = document.createElement('button');
+          const isVowel = vowels.includes(letter);
+          btn.className = `btn-chunky font-black text-lg md:text-xl w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all ${
+            isVowel 
+              ? 'bg-rose-400 hover:bg-rose-500 text-white border-2 border-rose-600' 
+              : 'bg-white hover:bg-sky-100 text-slate-800 border-2 border-slate-300'
+          }`;
+          btn.textContent = letter;
+          btn.onclick = () => {
+            SoundFX.playPop();
+            // Animación al pulsar
+            btn.classList.add('scale-125', 'bg-amber-300');
+            setTimeout(() => btn.classList.remove('scale-125', 'bg-amber-300'), 300);
+          };
+          strip.appendChild(btn);
+        });
+      },
+
+      showCelebrate(title, desc, stars) {
+        SoundFX.playFanfare();
+        Confetti.launch();
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-desc').textContent = desc;
+        document.getElementById('modal-stars-gained').textContent = `+${stars} Estrellas`;
+        document.getElementById('modal-celebrate').classList.remove('hidden');
+        this.addStars(stars);
+      },
+
+      closeCelebrateModal() {
+        document.getElementById('modal-celebrate').classList.add('hidden');
+      }
+    };
+
+    /* ==============================================================
+       MOTOR LIGERO DE CONFETI EN CANVAS (100% INLINE)
+       ============================================================== */
+    const Confetti = {
+      canvas: null,
+      ctx: null,
+      particles: [],
+      animId: null,
+      launch() {
+        this.canvas = document.getElementById('confetti-canvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.particles = [];
+        const colors = ['#2A75D3', '#1EA652', '#F57C00', '#7E3AF2', '#FF4081', '#FFEB3B'];
+
+        for (let i = 0; i < 90; i++) {
+          this.particles.push({
+            x: Math.random() * this.canvas.width,
+            y: -20 - Math.random() * 50,
+            size: Math.random() * 12 + 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speedY: Math.random() * 4 + 3,
+            speedX: (Math.random() - 0.5) * 4,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 8
+          });
+        }
+        if (this.animId) cancelAnimationFrame(this.animId);
+        this.animate();
+      },
+      animate() {
+        if (!Confetti.ctx) return;
+        Confetti.ctx.clearRect(0, 0, Confetti.canvas.width, Confetti.canvas.height);
+        let active = false;
+
+        Confetti.particles.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += p.rotSpeed;
+          if (p.y < Confetti.canvas.height + 30) active = true;
+
+          Confetti.ctx.save();
+          Confetti.ctx.translate(p.x, p.y);
+          Confetti.ctx.rotate((p.rotation * Math.PI) / 180);
+          Confetti.ctx.fillStyle = p.color;
+          Confetti.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          Confetti.ctx.restore();
+        });
+
+        if (active) {
+          Confetti.animId = requestAnimationFrame(Confetti.animate);
+        } else {
+          Confetti.ctx.clearRect(0, 0, Confetti.canvas.width, Confetti.canvas.height);
+        }
+      }
+    };
+  </script>
+
+  <script>
+    /* ==============================================================
+       RETO 1: JUEGO DEL TREN DE PALABRAS (ORDEN ALFABÉTICO)
+       * Modifica aquí fácilmente las palabras de las misiones
+       ============================================================== */
+    const OrderingGame = {
+      currentLevelIndex: 0,
+      slots: [null, null, null, null],
+      levels: [
+        {
+          title: "Misión 1: Primera letra diferente",
+          words: ["León", "Águila", "Delfín", "Ballena"],
+          correctOrder: ["Águila", "Ballena", "Delfín", "León"] // A, B, D, L
+        },
+        {
+          title: "Misión 2: Desempate con la segunda letra (Letra C)",
+          words: ["Cebra", "Caracol", "Cisne", "Conejo"],
+          correctOrder: ["Caracol", "Cebra", "Cisne", "Conejo"] // Ca, Ce, Ci, Co
+        },
+        {
+          title: "Misión 3: Desempate con la segunda letra (Letra M)",
+          words: ["Muñeca", "Mano", "Medusa", "Molino"],
+          correctOrder: ["Mano", "Medusa", "Molino", "Muñeca"] // Ma, Me, Mo, Mu
+        },
+        {
+          title: "Misión 4: Objetos escolares de la A a la Z",
+          words: ["Regla", "Goma", "Tijeras", "Cuaderno"],
+          correctOrder: ["Cuaderno", "Goma", "Regla", "Tijeras"] // C, G, R, T
+        }
+      ],
+
+      init() {
+        this.loadLevel(this.currentLevelIndex);
+      },
+
+      loadLevel(index) {
+        this.currentLevelIndex = index;
+        this.slots = [null, null, null, null];
+        const lvl = this.levels[this.currentLevelIndex];
+        
+        document.getElementById('order-level-badge').textContent = `Misión ${index + 1} de ${this.levels.length}: ${lvl.title.split(':')[0]}`;
+
+        // Mezclar palabras para el banco
+        const shuffled = [...lvl.words].sort(() => Math.random() - 0.5);
+        this.renderPool(shuffled);
+        this.renderSlots();
+      },
+
+      renderSlots() {
+        const container = document.getElementById('train-slots-container');
+        container.innerHTML = '';
+
+        this.slots.forEach((word, idx) => {
+          const slot = document.createElement('div');
+          slot.className = `slot-box p-3 flex flex-col items-center justify-center cursor-pointer transition-all ${
+            word ? 'filled bg-blue-100/90 shadow' : 'bg-slate-50 hover:bg-blue-50/50'
+          }`;
+          
+          if (word) {
+            slot.innerHTML = `
+              <span class="text-xs font-black text-blue-600 mb-1">Vagón ${idx + 1}</span>
+              <span class="text-lg md:text-xl font-extrabold text-blue-900">${word}</span>
+              <span class="text-[10px] text-blue-500 font-bold mt-1">(Toca para quitar)</span>
+            `;
+            slot.onclick = () => this.returnWordToPool(idx);
+          } else {
+            slot.innerHTML = `
+              <span class="text-slate-400 font-black text-sm">Vagón ${idx + 1}</span>
+              <span class="text-xs font-bold text-slate-400">Vacío</span>
+            `;
+          }
+          container.appendChild(slot);
+        });
+      },
+
+      renderPool(words) {
+        const pool = document.getElementById('word-pool-container');
+        pool.innerHTML = '';
+
+        words.forEach(word => {
+          const btn = document.createElement('button');
+          btn.className = "btn-chunky bg-white hover:bg-amber-100 text-slate-800 font-black px-6 py-3.5 rounded-2xl text-lg md:text-xl border-3 border-amber-300 min-h-[64px] min-w-[130px] flex items-center justify-center shadow-sm";
+          btn.textContent = word;
+          btn.onclick = () => this.assignWordToNextSlot(word, btn);
+          pool.appendChild(btn);
+        });
+      },
+
+      assignWordToNextSlot(word, btnElement) {
+        const emptyIdx = this.slots.findIndex(s => s === null);
+        if (emptyIdx === -1) {
+          SoundFX.playError();
+          return;
+        }
+        SoundFX.playPop();
+        this.slots[emptyIdx] = word;
+        btnElement.remove();
+        this.renderSlots();
+      },
+
+      returnWordToPool(slotIndex) {
+        const word = this.slots[slotIndex];
+        if (!word) return;
+        SoundFX.playPop();
+        this.slots[slotIndex] = null;
+        this.renderSlots();
+
+        // Devolver al banco
+        const pool = document.getElementById('word-pool-container');
+        const btn = document.createElement('button');
+        btn.className = "btn-chunky bg-white hover:bg-amber-100 text-slate-800 font-black px-6 py-3.5 rounded-2xl text-lg md:text-xl border-3 border-amber-300 min-h-[64px] min-w-[130px] flex items-center justify-center shadow-sm";
+        btn.textContent = word;
+        btn.onclick = () => this.assignWordToNextSlot(word, btn);
+        pool.appendChild(btn);
+      },
+
+      resetCurrentRound() {
+        SoundFX.playPop();
+        this.loadLevel(this.currentLevelIndex);
+      },
+
+      checkAnswer() {
+        if (this.slots.includes(null)) {
+          SoundFX.playError();
+          this.showInstructionToast("¡Debes colocar todas las palabras en los 4 vagones!");
+          return;
+        }
+
+        const currentLvl = this.levels[this.currentLevelIndex];
+        const isCorrect = this.slots.every((w, i) => w === currentLvl.correctOrder[i]);
+
+        if (isCorrect) {
+          if (this.currentLevelIndex + 1 < this.levels.length) {
+            App.showCelebrate("¡Vagones perfectamente ordenados!", `Has completado con éxito la misión ${this.currentLevelIndex + 1}.`, 5);
+            this.loadLevel(this.currentLevelIndex + 1);
+          } else {
+            App.showCelebrate("¡Maestros del Tren Alfabético!", "¡Habéis completado todas las misiones de ordenación!", 15);
+            this.loadLevel(0);
+          }
+        } else {
+          SoundFX.playError();
+          this.showInstructionToast("¡Casi! Revisa bien la primera o segunda letra de cada palabra.");
+        }
+      },
+
+      showInstructionToast(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 bg-rose-600 text-white font-extrabold px-6 py-4 rounded-2xl shadow-2xl text-lg z-50 text-center pop-in border-2 border-white';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3200);
+      }
+    };
+  </script>
+
+  <script>
+    /* ==============================================================
+       RETO 2: OJO DE HALCÓN (DISCRIMINACIÓN)
+       * Añade o modifica preguntas de discriminación aquí
+       ============================================================== */
+    const DiscrimGame = {
+      currentIndex: 0,
+      selectedOptions: new Set(),
+      questions: [
+        {
+          prompt: "Encuentra todas las palabras que se escriben con la letra 'B'",
+          subtext: "Ojo con no pulsar las que llevan 'V'",
+          options: [
+            { text: "Barco", correct: true },
+            { text: "Viento", correct: false },
+            { text: "Botella", correct: true },
+            { text: "Vaca", correct: false },
+            { text: "Bufanda", correct: true },
+            { text: "Volcán", correct: false }
+          ]
+        },
+        {
+          prompt: "Selecciona las palabras que empiezan por VOCAL",
+          subtext: "Recuerda: A, E, I, O, U",
+          options: [
+            { text: "Estrella", correct: true },
+            { text: "Lápiz", correct: false },
+            { text: "Oso", correct: true },
+            { text: "Isla", correct: true },
+            { text: "Gato", correct: false },
+            { text: "Zapato", correct: false }
+          ]
+        },
+        {
+          prompt: "¿Cuáles de estas palabras tienen sonido C suave (como 'cielo' o 'cebra')?",
+          subtext: "Discriminación fonológica: C con E o con I",
+          options: [
+            { text: "Cerezo", correct: true },
+            { text: "Casa", correct: false },
+            { text: "Ciruela", correct: true },
+            { text: "Cuna", correct: false },
+            { text: "Cine", correct: true },
+            { text: "Coche", correct: false }
+          ]
+        },
+        {
+          prompt: "Encuentra todas las palabras que se escriben con 'G'",
+          subtext: "¡No te confundas con la J!",
+          options: [
+            { text: "Girasol", correct: true },
+            { text: "Jirafa", correct: false },
+            { text: "Galleta", correct: true },
+            { text: "Juguete", correct: false },
+            { text: "Gorila", correct: true },
+            { text: "Jardín", correct: false }
+          ]
+        }
+      ],
+
+      init() {
+        this.loadQuestion(0);
+      },
+
+      loadQuestion(idx) {
+        this.currentIndex = idx;
+        this.selectedOptions.clear();
+        const q = this.questions[idx];
+
+        document.getElementById('discrim-progress').textContent = `Pregunta ${idx + 1} de ${this.questions.length}`;
+        document.getElementById('discrim-prompt').textContent = q.prompt;
+        document.getElementById('discrim-subtext').textContent = q.subtext;
+
+        const grid = document.getElementById('discrim-options-grid');
+        grid.innerHTML = '';
+
+        q.options.forEach((opt, optIndex) => {
+          const btn = document.createElement('button');
+          btn.className = "btn-chunky bg-white hover:bg-emerald-50 text-slate-800 font-black p-5 rounded-2xl text-xl md:text-2xl border-4 border-slate-200 min-h-[80px] flex items-center justify-between shadow-sm transition-all";
+          btn.innerHTML = `
+            <span>${opt.text}</span>
+            <span class="status-marker text-2xl opacity-30">⚪</span>
+          `;
+          btn.onclick = () => this.toggleOption(optIndex, btn);
+          grid.appendChild(btn);
+        });
+      },
+
+      toggleOption(index, btnEl) {
+        SoundFX.playPop();
+        const marker = btnEl.querySelector('.status-marker');
+
+        if (this.selectedOptions.has(index)) {
+          this.selectedOptions.delete(index);
+          btnEl.classList.remove('bg-emerald-100', 'border-emerald-500', 'text-emerald-950');
+          btnEl.classList.add('bg-white', 'border-slate-200');
+          marker.textContent = '⚪';
+          marker.classList.add('opacity-30');
+        } else {
+          this.selectedOptions.add(index);
+          btnEl.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-950');
+          btnEl.classList.remove('bg-white', 'border-slate-200');
+          marker.textContent = '🟢';
+          marker.classList.remove('opacity-30');
+        }
+      },
+
+      checkAnswer() {
+        if (this.selectedOptions.size === 0) {
+          SoundFX.playError();
+          return;
+        }
+
+        const q = this.questions[this.currentIndex];
+        let correctCount = 0;
+        let errors = 0;
+
+        q.options.forEach((opt, idx) => {
+          const isSelected = this.selectedOptions.has(idx);
+          if (opt.correct && isSelected) correctCount++;
+          if (!opt.correct && isSelected) errors++;
+          if (opt.correct && !isSelected) errors++;
+        });
+
+        if (errors === 0) {
+          if (this.currentIndex + 1 < this.questions.length) {
+            App.showCelebrate("¡Vista de águila!", "Has encontrado exactamente las opciones requeridas.", 5);
+            this.loadQuestion(this.currentIndex + 1);
+          } else {
+            App.showCelebrate("¡Campeones del Ojo de Halcón!", "Habéis superado todos los ejercicios de discriminación.", 15);
+            this.loadQuestion(0);
+          }
+        } else {
+          SoundFX.playError();
+          OrderingGame.showInstructionToast("Hay alguna opción que no encaja o te ha faltado alguna. ¡Revisad juntos!");
+        }
+      }
+    };
+  </script>
+
+  <script>
+    /* ==============================================================
+       RETO 3: EL CAZA-ERRORES DEL ABECEDARIO
+       * Detecta letras intrusas o fallos de orden alfabético
+       ============================================================== */
+    const ErrorsGame = {
+      currentIndex: 0,
+      rounds: [
+        {
+          type: "letters",
+          clue: "¡Una letra intrusa se ha colado en esta serie del abecedario! ¿Cuál es?",
+          items: ["A", "B", "C", "D", "8", "E", "F"],
+          intruderIndex: 4,
+          explanation: "¡Muy bien! El '8' es un número, no una letra del abecedario."
+        },
+        {
+          type: "letters",
+          clue: "¡Alguien ha desordenado las letras! ¿Qué letra está fuera de lugar?",
+          items: ["M", "N", "Ñ", "Z", "O", "P"],
+          intruderIndex: 3,
+          explanation: "¡Genial! La 'Z' está al final de todo el abecedario, no entre la Ñ y la O."
+        },
+        {
+          type: "words",
+          clue: "Estas palabras deberían estar en orden alfabético. ¿Cuál es la intrusa que lo rompe?",
+          items: ["Avión", "Barco", "Camión", "Zanahoria", "Delfín"],
+          intruderIndex: 3,
+          explanation: "¡Excelente! 'Zanahoria' empieza por Z y debería colocarse al final, no antes de Delfín."
+        },
+        {
+          type: "words",
+          clue: "Desempate por la segunda letra (P): ¿Qué palabra NO sigue el orden?",
+          items: ["Paloma", "Pelota", "Piña", "Puma", "Polo"],
+          intruderIndex: 3,
+          explanation: "¡Gran ojo! Por las vocales (a, e, i, o, u), 'Polo' (o) debe ir ANTES que 'Puma' (u)."
+        }
+      ],
+
+      init() {
+        this.loadRound(0);
+      },
+
+      loadRound(idx) {
+        this.currentIndex = idx;
+        const r = this.rounds[idx];
+
+        document.getElementById('errors-progress').textContent = `Misión ${idx + 1} de ${this.rounds.length}`;
+        document.getElementById('errors-clue').textContent = r.clue;
+        const feedback = document.getElementById('errors-feedback-panel');
+        feedback.className = 'hidden p-4 rounded-2xl text-center font-black text-lg';
+
+        const container = document.getElementById('errors-sequence-container');
+        container.innerHTML = '';
+
+        r.items.forEach((item, itemIdx) => {
+          const btn = document.createElement('button');
+          btn.className = "btn-chunky bg-white hover:bg-rose-50 text-slate-800 font-black px-6 py-4 rounded-2xl text-2xl md:text-3xl border-4 border-slate-300 min-h-[75px] min-w-[80px] shadow-md flex items-center justify-center";
+          btn.textContent = item;
+          btn.onclick = () => this.handlePick(itemIdx, btn);
+          container.appendChild(btn);
+        });
+      },
+
+      handlePick(itemIndex, btnEl) {
+        const r = this.rounds[this.currentIndex];
+        const feedback = document.getElementById('errors-feedback-panel');
+
+        if (itemIndex === r.intruderIndex) {
+          SoundFX.playSuccess();
+          btnEl.classList.remove('bg-white', 'border-slate-300');
+          btnEl.classList.add('bg-emerald-500', 'text-white', 'border-emerald-700', 'scale-110');
+
+          feedback.className = 'p-4 rounded-2xl text-center font-black text-lg bg-emerald-100 text-emerald-900 border-2 border-emerald-300 block pop-in';
+          feedback.textContent = `🎯 ${r.explanation}`;
+
+          setTimeout(() => {
+            if (this.currentIndex + 1 < this.rounds.length) {
+              App.showCelebrate("¡Intruso localizado!", r.explanation, 6);
+              this.loadRound(this.currentIndex + 1);
+            } else {
+              App.showCelebrate("¡Detectives de Honor!", "Habéis resuelto todos los casos de letras y palabras intrusas.", 15);
+              this.loadRound(0);
+            }
+          }, 1400);
+
+        } else {
+          SoundFX.playError();
+          btnEl.classList.add('bg-rose-100', 'border-rose-400');
+          setTimeout(() => btnEl.classList.remove('bg-rose-100', 'border-rose-400'), 500);
+          feedback.className = 'p-4 rounded-2xl text-center font-black text-lg bg-rose-100 text-rose-900 border-2 border-rose-300 block pop-in';
+          feedback.textContent = "🔍 Esa ficha sí sigue la regla del abecedario. ¡Sigue buscando al impostor!";
+        }
+      }
+    };
+  </script>
+
+  <script>
+    /* ==============================================================
+       RETO 4: EL GRAN CONCURSO DEL ABECEDARIO (QUIZ)
+       * Añade más preguntas curriculares de 3.º aquí
+       ============================================================== */
+    const QuizGame = {
+      currentIndex: 0,
+      questions: [
+        {
+          question: "¿Cuántas letras tiene el abecedario de la lengua española?",
+          icon: "🔤",
+          options: ["25 letras", "27 letras", "30 letras"],
+          correct: 1,
+          explanation: "¡Correcto! Son 27 letras (5 vocales y 22 consonantes)."
+        },
+        {
+          question: "¿Qué letra va justo DESPUÉS de la 'N' en nuestro abecedario?",
+          icon: "🤔",
+          options: ["La letra Ñ", "La letra O", "La letra M"],
+          correct: 0,
+          explanation: "¡Muy bien! En español la Ñ tiene su propio lugar después de la N."
+        },
+        {
+          question: "Si dos palabras empiezan por 'C', ¿cómo sabemos cuál va antes en el diccionario?",
+          icon: "📖",
+          options: [
+            "Contamos cuál tiene más letras",
+            "Nos fijamos en su segunda letra",
+            "La que sea más bonita"
+          ],
+          correct: 1,
+          explanation: "¡Exacto! Cuando empatan en la primera letra, desempatamos mirando la segunda."
+        },
+        {
+          question: "¿Cuál de estos tríos de palabras está en CORRECTO orden alfabético?",
+          icon: "🏆",
+          options: [
+            "Sol ➜ Luna ➜ Estrella",
+            "Barco ➜ Coche ➜ Tren",
+            "Zapato ➜ Árbol ➜ Casa"
+          ],
+          correct: 1,
+          explanation: "¡Genial! 'Barco' (B), 'Coche' (C) y 'Tren' (T) siguen el orden de la A a la Z."
+        },
+        {
+          question: "¿Cuál de estas palabras iría la PRIMERA en el diccionario?",
+          icon: "🥇",
+          options: ["Tiburón", "Árbol", "Mono"],
+          correct: 1,
+          explanation: "¡Perfecto! 'Árbol' empieza por la A, que es la primera letra del alfabeto."
+        }
+      ],
+
+      init() {
+        this.loadQuestion(0);
+      },
+
+      loadQuestion(idx) {
+        this.currentIndex = idx;
+        const q = this.questions[idx];
+
+        document.getElementById('quiz-question-number').textContent = `Pregunta ${idx + 1} de ${this.questions.length}`;
+        document.getElementById('quiz-question-text').textContent = q.question;
+        document.getElementById('quiz-icon').textContent = q.icon;
+        
+        const feedback = document.getElementById('quiz-feedback-box');
+        feedback.className = 'hidden';
+
+        const container = document.getElementById('quiz-options-container');
+        container.innerHTML = '';
+
+        q.options.forEach((optText, optIdx) => {
+          const btn = document.createElement('button');
+          btn.className = "btn-chunky bg-white hover:bg-purple-50 text-slate-800 font-black p-5 rounded-2xl text-lg md:text-xl border-3 border-purple-200 min-h-[76px] flex items-center justify-center text-center shadow-md transition-all";
+          btn.textContent = optText;
+          btn.onclick = () => this.handleAnswer(optIdx, btn);
+          container.appendChild(btn);
+        });
+      },
+
+      handleAnswer(selectedIdx, btnElement) {
+        const q = this.questions[this.currentIndex];
+        const feedback = document.getElementById('quiz-feedback-box');
+        const allButtons = document.querySelectorAll('#quiz-options-container button');
+        allButtons.forEach(b => b.disabled = true);
+
+        if (selectedIdx === q.correct) {
+          SoundFX.playSuccess();
+          btnElement.classList.remove('bg-white', 'border-purple-200');
+          btnElement.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+
+          feedback.className = 'p-4 rounded-2xl text-center font-black text-lg bg-emerald-100 text-emerald-900 border-2 border-emerald-300 block pop-in';
+          feedback.textContent = `🎉 ${q.explanation}`;
+
+          setTimeout(() => {
+            if (this.currentIndex + 1 < this.questions.length) {
+              App.showCelebrate("¡Respuesta Correcta!", q.explanation, 5);
+              this.loadQuestion(this.currentIndex + 1);
+            } else {
+              App.showCelebrate("¡Campeones del Gran Concurso!", "Habéis demostrado dominar el abecedario como verdaderos expertos.", 20);
+              this.loadQuestion(0);
+            }
+          }, 1500);
+
+        } else {
+          SoundFX.playError();
+          btnElement.classList.remove('bg-white', 'border-purple-200');
+          btnElement.classList.add('bg-rose-500', 'text-white', 'border-rose-600');
+
+          feedback.className = 'p-4 rounded-2xl text-center font-black text-lg bg-rose-100 text-rose-900 border-2 border-rose-300 block pop-in';
+          feedback.textContent = "💡 ¡Casi! Leed bien la pregunta y volved a intentarlo.";
+
+          setTimeout(() => {
+            allButtons.forEach(b => b.disabled = false);
+            btnElement.classList.remove('bg-rose-500', 'text-white', 'border-rose-600');
+            btnElement.classList.add('bg-white', 'border-purple-200');
+            feedback.className = 'hidden';
+          }, 2000);
+        }
+      }
+    };
+
+    // Inicialización al cargar la ventana
+    window.onload = function() {
+      App.init();
+    };
+  </script>
+</body>
+</html>
