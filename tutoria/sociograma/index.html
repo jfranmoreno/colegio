@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sociograma de Aula - Pro & Kids (Detalle Individual)</title>
-    <!-- Tipografía escolar -->
+    <title>Sociograma de Aula - MDI & Exportación Excel</title>
+    <!-- Tipografía escolar legible (Nunito) -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -28,9 +28,9 @@
         header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 10; }
         h1 { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
         
-        /* Pestañas */
+        /* Pestañas (Touch-friendly) */
         .tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { background-color: #eee; border: none; padding: 15px 25px; font-size: 1.2rem; font-weight: 700; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        .tab-btn { background-color: #eee; border: none; padding: 15px 25px; font-size: 1.2rem; font-weight: 700; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; min-height: 60px;}
         .tab-btn.active { background-color: var(--primary); color: white; box-shadow: var(--shadow); transform: translateY(-2px); }
 
         /* Vistas */
@@ -38,19 +38,20 @@
         .view.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Tarjetas */
-        .card { background: white; border-radius: var(--border-radius); padding: 30px; box-shadow: var(--shadow); margin: 10px auto; max-width: 1100px; width: 100%; }
+        /* Tarjetas (Cards) */
+        .card { background: white; border-radius: var(--border-radius); padding: 30px; box-shadow: var(--shadow); margin: 10px auto; max-width: 1200px; width: 100%; }
         .card h2 { font-size: 1.8rem; margin-bottom: 15px; text-align: center; border-bottom: 3px solid #eee; padding-bottom: 10px;}
         .card p { font-size: 1.2rem; margin-bottom: 25px; text-align: center; color: #555; }
 
-        /* Botones de acción */
-        .action-btn { border: none; padding: 15px 30px; font-size: 1.3rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: var(--shadow); transition: all 0.2s; display: inline-flex; align-items: center; gap: 10px; color: white; justify-content: center; text-align: center; }
+        /* Botones de acción MDI */
+        .action-btn { border: none; padding: 15px 30px; font-size: 1.3rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: var(--shadow); transition: all 0.2s; display: inline-flex; align-items: center; gap: 10px; color: white; justify-content: center; text-align: center; min-height: 60px;}
         .action-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .action-btn:active { transform: translateY(1px); }
         .btn-primary { background-color: var(--primary); }
         .btn-success { background-color: var(--success); color: #0a4d0a;}
         .btn-dark { background-color: var(--text-dark); }
         .btn-secondary { background-color: var(--secondary); color: #8C4000; }
+        .btn-excel { background-color: #1D6F42; color: white; } /* Color oficial Excel */
 
         /* Gestión JSON y Chips */
         .json-controls { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center; }
@@ -66,25 +67,26 @@
         .teacher-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         .teacher-col { background: #f9f9f9; padding: 15px; border-radius: 15px; border: 3px solid #eee; }
         .teacher-col h3 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
-        select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 2px solid #ddd; font-size: 1.1rem; font-family: 'Nunito'; background-color: white; outline: none; cursor: pointer; }
+        select { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 2px solid #ddd; font-size: 1.2rem; font-family: 'Nunito'; background-color: white; outline: none; cursor: pointer; min-height: 50px;}
         select:focus { border-color: var(--primary); }
 
-        /* Grid Modo Alumno */
+        /* Grid Modo Alumno (Táctil) */
         .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .student-btn { background-color: white; border: 4px solid #E0E0E0; border-radius: 15px; padding: 20px 10px; font-size: 1.3rem; font-weight: 800; color: var(--text-dark); cursor: pointer; transition: all 0.2s; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .student-btn { background-color: white; border: 4px solid #E0E0E0; border-radius: 15px; padding: 20px 10px; font-size: 1.4rem; font-weight: 800; color: var(--text-dark); cursor: pointer; transition: all 0.2s; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .student-btn.selected-plus { border-color: var(--success); background-color: #E8F5E9; transform: scale(1.05); }
         .student-btn.selected-minus { border-color: var(--danger); background-color: #FFEBEE; transform: scale(1.05); }
         .student-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* ANÁLISIS, GRÁFICA, TABLA Y DETALLE */
-        .analysis-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
-        .toggle-btn { background: white; border: 3px solid #ccc; padding: 12px 25px; font-size: 1.1rem; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .analysis-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .analysis-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
+        .toggle-btn { background: white; border: 3px solid #ccc; padding: 12px 25px; font-size: 1.1rem; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; min-height: 55px;}
         .toggle-btn.active { background: var(--text-dark); color: white; border-color: var(--text-dark); }
         
         #graph-view, #table-view, #detail-view { display: none; }
         #graph-view.active, #table-view.active, #detail-view.active { display: block; animation: fadeIn 0.3s; }
 
-        /* Nuevo: Vista Detalle Alumno */
+        /* Vista Detalle Alumno */
         .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 20px; }
         .detail-card { padding: 20px; border-radius: 15px; border: 3px solid; background: white; }
         .detail-card.pos { border-color: var(--success); background: #f2fcf2; }
@@ -94,19 +96,16 @@
         .detail-list li { padding: 8px; border-bottom: 1px dashed #ccc; }
         .detail-list li:last-child { border-bottom: none; }
 
-        /* Contenedor del SVG con herramientas interactivas */
+        /* SVG y Controles de Zoom */
         .svg-wrapper { position: relative; width: 100%; height: 600px; background: white; border-radius: var(--border-radius); border: 2px solid #E0E0E0; overflow: hidden; }
         #network-svg { width: 100%; height: 100%; cursor: grab; display: block; }
         #network-svg:active { cursor: grabbing; }
-
-        /* Controles de Zoom Flotantes */
         .zoom-toolbar { position: absolute; bottom: 20px; right: 20px; display: flex; gap: 10px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 2px solid #eee; }
-        .zoom-btn { background: var(--text-dark); color: white; border: none; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-        .zoom-btn.text-btn { width: auto; padding: 0 15px; font-size: 1.1rem; }
+        .zoom-btn { background: var(--text-dark); color: white; border: none; width: 50px; height: 50px; border-radius: 12px; font-size: 1.5rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .zoom-btn.text-btn { width: auto; padding: 0 15px; font-size: 1.2rem; }
         .zoom-btn:hover { background: var(--primary); transform: scale(1.05); }
-        .zoom-btn:active { transform: scale(0.95); }
 
-        table { width: 100%; border-collapse: collapse; font-size: 1.1rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 1.2rem; }
         th, td { padding: 14px; text-align: center; border-bottom: 1px solid #eee; }
         th { background-color: #f4f4f4; }
         .badge { padding: 6px 15px; border-radius: 20px; font-weight: 900; }
@@ -148,12 +147,12 @@
     <!-- APP PRINCIPAL -->
     <div id="app-container">
         <header>
-            <h1>🌟 Sociograma Pro (MDI Edition)</h1>
+            <h1>🌟 Sociograma Pro (Edición MDI)</h1>
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('configTab')">⚙️ Datos / JSON</button>
                 <button class="tab-btn" onclick="switchTab('teacherTab')">👩🏻‍🏫 Modo Profe</button>
                 <button class="tab-btn" onclick="switchTab('studentTab')">👦🏽 Modo Alumno</button>
-                <button class="tab-btn" onclick="switchTab('analysisTab')">📊 Análisis de Aula</button>
+                <button class="tab-btn" onclick="switchTab('analysisTab')">📊 Análisis & Excel</button>
             </div>
         </header>
 
@@ -163,15 +162,16 @@
                 <h2>Cargar y Guardar Datos</h2>
                 <div class="json-controls">
                     <label class="file-upload-wrapper">
-                        <h3 style="color: var(--primary);">📁 Cargar JSON (Lista o Progreso)</h3>
+                        <h3 style="color: var(--primary);">📁 Cargar Archivo (.json)</h3>
+                        <p style="font-size: 1rem; color: #777;">Sube lista de alumnos o sesión previa.</p>
                         <input type="file" accept=".json" onchange="loadJSON(event)">
                     </label>
                     <button class="action-btn btn-success" onclick="exportJSON()" style="flex: 1; min-width: 300px;">
-                        💾 Guardar Progreso (JSON)
+                        💾 Guardar Backup (JSON)
                     </button>
                 </div>
                 <div style="border-top: 2px solid #eee; margin-top: 20px; padding-top: 20px;">
-                    <h3 style="text-align: center; margin-bottom: 15px;">Alumnos (<span id="count-alumnos">0</span>) - Fichas completadas (<span id="count-fichas">0</span>)</h3>
+                    <h3 style="text-align: center; margin-bottom: 15px;">Alumnos (<span id="count-alumnos">0</span>) - Fichas listas (<span id="count-fichas">0</span>)</h3>
                     <div id="student-list-container" style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
                         <em style="color:#999;">Ningún dato cargado aún.</em>
                     </div>
@@ -185,11 +185,10 @@
         <!-- PESTAÑA 2: MODO PROFE -->
         <div id="teacherTab" class="view">
             <div class="card">
-                <h2>Introducir / Modificar Ficha</h2>
-                <p>Al seleccionar un alumno se auto-completarán sus datos previos si ya hizo la ficha.</p>
+                <h2>Introducir / Modificar Ficha (Papel)</h2>
                 <div style="text-align:center; margin-bottom:20px; background:#f4f4f4; padding:20px; border-radius:15px;">
                     <h3 style="margin-bottom:10px;">¿De quién es esta ficha?</h3>
-                    <select id="teacher-voter" style="max-width:350px; border-color:var(--primary); border-width:3px; font-weight:bold;" onchange="loadStudentDataIntoForm(this.value)"></select>
+                    <select id="teacher-voter" style="max-width:400px; border-color:var(--primary); border-width:3px; font-weight:bold;" onchange="loadStudentDataIntoForm(this.value)"></select>
                 </div>
                 <div class="teacher-grid">
                     <div class="teacher-col" style="border-color: var(--success);"><h3>😊 GUSTA JUGAR</h3><div id="col-playPlus"></div></div>
@@ -214,21 +213,28 @@
                     <button class="action-btn btn-secondary" id="btn-next" onclick="nextStudentStep()" style="display:none;">Siguiente ➡️</button>
                 </div>
             </div>
-            <div class="card" id="student-warning"><h2>⚠️ Falta la lista</h2><p>Carga el JSON en la pestaña de Configuración para activar esto.</p></div>
+            <div class="card" id="student-warning"><h2>⚠️ Falta la lista</h2><p>Carga el JSON en la pestaña de Configuración.</p></div>
         </div>
 
-        <!-- PESTAÑA 4: ANÁLISIS DE AULA -->
+        <!-- PESTAÑA 4: ANÁLISIS DE AULA Y EXCEL -->
         <div id="analysisTab" class="view">
             <div class="card" style="max-width: 1200px;">
-                <h2>Resultados del Grupo</h2>
+                
+                <div class="analysis-header">
+                    <h2>Resultados del Grupo</h2>
+                    <!-- Botón para exportar a hoja de cálculo -->
+                    <button class="action-btn btn-excel" onclick="exportToCSV()">
+                        📥 Exportar a Excel (CSV)
+                    </button>
+                </div>
                 
                 <div class="analysis-controls">
                     <button class="toggle-btn active" onclick="switchAnalysisView('graph-view', this)">🕸️ Red Gráfica</button>
                     <button class="toggle-btn" onclick="switchAnalysisView('table-view', this)">📊 Tabla General</button>
-                    <button class="toggle-btn" onclick="switchAnalysisView('detail-view', this)">👤 Detalle Alumno</button>
+                    <button class="toggle-btn" onclick="switchAnalysisView('detail-view', this)">👤 Detalle Alumno (Cruce)</button>
                 </div>
                 
-                <!-- 1. VISTA TABLA GENERAL -->
+                <!-- VISTA TABLA -->
                 <div id="table-view">
                     <div style="overflow-x: auto;">
                         <table id="results-table">
@@ -238,7 +244,7 @@
                     </div>
                 </div>
 
-                <!-- 2. VISTA GRÁFICO SVG INTERACTIVO -->
+                <!-- VISTA GRÁFICO SVG -->
                 <div id="graph-view" class="active">
                     <div class="analysis-controls" style="margin-top:10px; padding:15px; background:#f9f9f9; border-radius:15px;">
                         <span style="font-weight:bold; font-size:1.2rem; margin-right:10px; align-self:center;">Ver red:</span>
@@ -247,7 +253,6 @@
                         <button class="toggle-btn act-graph" onclick="drawGraph('teamPlus', this)" style="border-color:var(--success);">🤝 Equipo (+)</button>
                         <button class="toggle-btn act-graph" onclick="drawGraph('teamMinus', this)" style="border-color:var(--danger);">🛑 No equipo (-)</button>
                     </div>
-                    
                     <div class="svg-wrapper" id="svg-wrapper">
                         <svg id="network-svg" preserveAspectRatio="xMidYMid meet">
                             <defs>
@@ -264,13 +269,12 @@
                     </div>
                 </div>
 
-                <!-- 3. NUEVO: VISTA DETALLE INDIVIDUAL (QUIÉN LE HA ELEGIDO) -->
+                <!-- VISTA DETALLE INDIVIDUAL (QUIÉN LE HA ELEGIDO) -->
                 <div id="detail-view">
                     <div style="text-align:center; margin-bottom:20px; background:#f4f4f4; padding:20px; border-radius:15px;">
                         <h3 style="margin-bottom:10px;">Selecciona un alumno/a para ver quién le ha elegido:</h3>
-                        <select id="detail-student-select" style="max-width:350px; border-color:var(--text-dark); border-width:3px; font-weight:bold; font-size:1.3rem;" onchange="renderStudentDetail()"></select>
+                        <select id="detail-student-select" style="max-width:400px; border-color:var(--text-dark); border-width:3px; font-weight:bold;" onchange="renderStudentDetail()"></select>
                     </div>
-                    
                     <div class="detail-grid" id="detail-results-container">
                         <div class="detail-card pos">
                             <h3>😊 Le eligen para jugar</h3>
@@ -294,8 +298,6 @@
             </div>
         </div>
     </div>
-
-    <a id="downloadAnchor" style="display:none"></a>
 
     <script>
         // --- 1. ESTADO Y AUDIO ---
@@ -332,12 +334,15 @@
             };
             reader.readAsText(file); event.target.value = '';
         }
+
         function exportJSON() {
             if (students.length === 0) return alert("No hay datos para guardar.");
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ version: 1, date: new Date().toISOString(), students, records }, null, 2));
-            const dlAnchor = document.getElementById('downloadAnchor');
-            dlAnchor.setAttribute("href", dataStr); dlAnchor.setAttribute("download", `sociograma_${new Date().toISOString().slice(0,10)}.json`); dlAnchor.click();
+            const a = document.createElement("a");
+            a.href = dataStr; a.download = `sociograma_backup_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
+
         function refreshUI() {
             document.getElementById('count-alumnos').innerText = students.length; document.getElementById('count-fichas').innerText = records.length;
             const completedNames = records.map(r => r.name);
@@ -348,9 +353,7 @@
             }).join('');
             document.getElementById('student-wizard').style.display = students.length > 0 ? 'block' : 'none';
             document.getElementById('student-warning').style.display = students.length > 0 ? 'none' : 'block';
-            setupTeacherForm(); 
-            updateDetailSelect(); // Actualizar desplegable de la nueva vista individual
-            initStudentWizard();
+            setupTeacherForm(); updateDetailSelect(); initStudentWizard();
         }
 
         // --- 3. NAVEGACIÓN Y AUTO-FILL ---
@@ -361,20 +364,17 @@
             const btnIndex = ['configTab', 'teacherTab', 'studentTab', 'analysisTab'].indexOf(tabId);
             if(btnIndex >= 0) document.querySelectorAll('header .tab-btn')[btnIndex].classList.add('active');
             
-            if(tabId === 'analysisTab') { 
-                generateTable(); 
-                drawGraph('playPlus', document.querySelector('.act-graph.active'));
-                renderStudentDetail(); 
-            }
+            if(tabId === 'analysisTab') { generateTable(); drawGraph('playPlus', document.querySelector('.act-graph.active')); renderStudentDetail(); }
             else if (tabId === 'configTab') refreshUI();
         }
+
         function switchAnalysisView(viewId, btn) {
             document.getElementById('table-view').classList.remove('active'); document.getElementById('graph-view').classList.remove('active'); document.getElementById('detail-view').classList.remove('active');
             document.getElementById(viewId).classList.add('active');
             btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-            
-            if(viewId === 'detail-view') renderStudentDetail(); // Refrescar vista si hay datos nuevos
+            if(viewId === 'detail-view') renderStudentDetail(); 
         }
+
         function editStudent(name) { switchTab('teacherTab'); document.getElementById('teacher-voter').value = name; loadStudentDataIntoForm(name); }
 
         function setupTeacherForm() {
@@ -401,10 +401,10 @@
             records = records.filter(r => r.name !== voter); 
             records.push({ name: voter, playPlus: getVals('.sel-playPlus'), playMinus: getVals('.sel-playMinus'), teamPlus: getVals('.sel-teamPlus'), teamMinus: getVals('.sel-teamMinus') });
             playTone('success'); document.getElementById('teacher-voter').value = ''; document.querySelectorAll('.teacher-col select').forEach(s => s.value = '');
-            const btn = event.currentTarget; btn.innerText = "¡Ficha Guardada! ✔️"; setTimeout(() => btn.innerText = "💾 Guardar Ficha", 2500);
+            const btn = event.currentTarget; btn.innerText = "¡Guardado! ✔️"; setTimeout(() => btn.innerText = "💾 Guardar Ficha", 2000);
         }
 
-        // --- 4. MODO ALUMNO (WIZARD) ---
+        // --- 4. MODO ALUMNO (WIZARD TÁCTIL) ---
         const q_config = [
             { t: "¿Quién eres?", s: "Toca tu nombre", max: 1 }, { t: "😊 JUEGO (+)", s: "Elige hasta 5 para jugar", max: 5, k: "playPlus", type: "plus" },
             { t: "😔 JUEGO (-)", s: "Elige hasta 5 que NO sueles jugar", max: 5, k: "playMinus", type: "minus" }, { t: "🤝 EQUIPO (+)", s: "Elige hasta 5 para hacer equipo", max: 5, k: "teamPlus", type: "plus" }, { t: "🛑 EQUIPO (-)", s: "Elige hasta 5 para NO hacer equipo", max: 5, k: "teamMinus", type: "minus" }
@@ -442,7 +442,7 @@
             }
         }
 
-        // --- 5. ANÁLISIS: TABLA ---
+        // --- 5. ANÁLISIS: TABLA Y DETALLE ---
         function generateTable() {
             const tbody = document.querySelector('#results-table tbody'); tbody.innerHTML = ''; if (students.length === 0) return;
             let stats = {}; students.forEach(s => stats[s] = { name: s, pP: 0, pM: 0, tP: 0, tM: 0 });
@@ -457,7 +457,6 @@
             });
         }
 
-        // --- 6. NUEVA FUNCIONALIDAD: DETALLE INDIVIDUAL (QUIÉN TE ELIGE) ---
         function updateDetailSelect() {
             const select = document.getElementById('detail-student-select');
             select.innerHTML = '<option value="">-- Elige un alumno/a --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -465,37 +464,74 @@
 
         function renderStudentDetail() {
             const target = document.getElementById('detail-student-select').value;
-            
-            // Función auxiliar para renderizar cada lista
             const renderList = (domId, arr) => {
                 const el = document.getElementById(domId);
                 if (!target) { el.innerHTML = ''; return; }
                 if (arr.length === 0) el.innerHTML = '<li style="color:#aaa; font-style:italic;">Nadie</li>';
                 else el.innerHTML = arr.map(name => `<li>${name}</li>`).join('');
             };
-
-            if (!target) {
-                renderList('det-playPlus', []); renderList('det-playMinus', []); renderList('det-teamPlus', []); renderList('det-teamMinus', []);
-                return;
-            }
-
-            // Buscar en todos los "records" quién ha incluido al 'target' en sus opciones
+            if (!target) { renderList('det-playPlus', []); renderList('det-playMinus', []); renderList('det-teamPlus', []); renderList('det-teamMinus', []); return; }
             const getChoosers = (key) => records.filter(r => r[key] && r[key].includes(target)).map(r => r.name);
-
-            renderList('det-playPlus', getChoosers('playPlus'));
-            renderList('det-playMinus', getChoosers('playMinus'));
-            renderList('det-teamPlus', getChoosers('teamPlus'));
-            renderList('det-teamMinus', getChoosers('teamMinus'));
+            renderList('det-playPlus', getChoosers('playPlus')); renderList('det-playMinus', getChoosers('playMinus'));
+            renderList('det-teamPlus', getChoosers('teamPlus')); renderList('det-teamMinus', getChoosers('teamMinus'));
         }
 
-        // --- 7. MOTOR GRÁFICO SVG DINÁMICO Y PAN/ZOOM ---
+        // --- 6. EXPORTACIÓN A EXCEL (CSV) ---
+        function exportToCSV() {
+            if (students.length === 0) return alert("No hay datos para exportar.");
+            
+            // BOM (\uFEFF) fuerza a Excel a reconocer caracteres UTF-8 (tildes, ñ)
+            let csv = "data:text/csv;charset=utf-8,\uFEFF"; 
+            
+            // SECCIÓN 1: Tabla General de Métricas
+            csv += "RESUMEN CUANTITATIVO DE METRICAS\n";
+            csv += "Alumno/a,Juegan (+),No Juegan (-),Equipo (+),No Equipo (-),Indice Global\n";
+            
+            let stats = {}; students.forEach(s => stats[s] = { name: s, pP: 0, pM: 0, tP: 0, tM: 0 });
+            records.forEach(r => {
+                r.playPlus?.forEach(n => { if(stats[n]) stats[n].pP++; }); r.playMinus?.forEach(n => { if(stats[n]) stats[n].pM++; });
+                r.teamPlus?.forEach(n => { if(stats[n]) stats[n].tP++; }); r.teamMinus?.forEach(n => { if(stats[n]) stats[n].tM++; });
+            });
+            let results = Object.values(stats); results.sort((a, b) => ((b.pP + b.tP) - (b.pM + b.tM)) - ((a.pP + a.tP) - (a.pM + a.tM)));
+            
+            results.forEach(s => {
+                const total = (s.pP + s.tP) - (s.pM + s.tM);
+                csv += `"${s.name}",${s.pP},${s.pM},${s.tP},${s.tM},${total}\n`;
+            });
+            
+            // SECCIÓN 2: Cruce - Quién elige a quién (Emisores)
+            csv += "\n\nCRUCE DE DATOS: QUIEN ELIGE A QUIEN (EMISION DE VOTO)\n";
+            csv += "Alumno/a (Elige a...),Juegan (+),No Juegan (-),Equipo (+),No Equipo (-)\n";
+            records.forEach(r => {
+                const pP = (r.playPlus || []).join(" - "); const pM = (r.playMinus || []).join(" - ");
+                const tP = (r.teamPlus || []).join(" - "); const tM = (r.teamMinus || []).join(" - ");
+                csv += `"${r.name}","${pP}","${pM}","${tP}","${tM}"\n`;
+            });
+            
+            // SECCIÓN 3: Cruce - Quién es elegido por quién (Receptores)
+            csv += "\n\nCRUCE DE DATOS: QUIEN ES ELEGIDO POR QUIEN (RECEPCION DE VOTO)\n";
+            csv += "Alumno/a (Elegido por...),Juegan (+),No Juegan (-),Equipo (+),No Equipo (-)\n";
+            students.forEach(target => {
+                const getChoosers = (key) => records.filter(r => r[key] && r[key].includes(target)).map(r => r.name).join(" - ");
+                csv += `"${target}","${getChoosers('playPlus')}","${getChoosers('playMinus')}","${getChoosers('teamPlus')}","${getChoosers('teamMinus')}"\n`;
+            });
+            
+            // Generar y descargar el archivo
+            const encodedUri = encodeURI(csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `sociograma_analisis_completo_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            playTone('success');
+        }
+
+        // --- 7. MOTOR GRÁFICO SVG (PAN/ZOOM) ---
         let currentZoom = 1; let panX = 0; let panY = 0; let isDragging = false; let startX, startY;
         function applyZoom(delta) { currentZoom = Math.max(0.3, Math.min(3, currentZoom + delta)); updateGraphTransform(); }
         function resetZoomAndPan() { currentZoom = 1; panX = 0; panY = 0; updateGraphTransform(); }
-        function updateGraphTransform() {
-            const group = document.getElementById('svg-pan-zoom-group');
-            if(group) group.setAttribute('transform', `translate(${panX}, ${panY}) scale(${currentZoom})`);
-        }
+        function updateGraphTransform() { const group = document.getElementById('svg-pan-zoom-group'); if(group) group.setAttribute('transform', `translate(${panX}, ${panY}) scale(${currentZoom})`); }
 
         const svgElement = document.getElementById('network-svg');
         function dragStart(e) { isDragging = true; const touch = e.touches ? e.touches[0] : e; startX = touch.clientX - panX; startY = touch.clientY - panY; }
