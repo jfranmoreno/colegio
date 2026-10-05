@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Descomposición Numérica - 3º de Primaria</title>
+  <!-- Google Fonts: Quicksand para tipografía escolar clara -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            school: ['Quicksand', 'sans-serif'],
+          },
+          colors: {
+            // Código de color curricular establecido:
+            um: { DEFAULT: '#D97706', light: '#FEF3C7', dark: '#B45309', ring: '#F59E0B' }, // Amarillo / Dorado intenso
+            c: { DEFAULT: '#10B981', light: '#D1FAE5', dark: '#047857', ring: '#059669' },  // Verde
+            d: { DEFAULT: '#EF4444', light: '#FEE2E2', dark: '#B91C1C', ring: '#DC2626' },  // Rojo
+            u: { DEFAULT: '#3B82F6', light: '#DBEAFE', dark: '#1D4ED8', ring: '#2563EB' },  // Azul
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Estilos personalizados táctiles y animaciones amigables */
+    body {
+      font-family: 'Quicksand', sans-serif;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    .touch-btn {
+      min-height: 56px;
+      min-width: 56px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .touch-btn:active {
+      transform: scale(0.94);
+    }
+    
+    /* Efecto 3D para bloques de valor posicional */
+    .block-um {
+      background: linear-space(#f59e0b, #d97706);
+      box-shadow: inset -3px -3px 0px rgba(0,0,0,0.2), 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .block-c {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      box-shadow: inset -2px -2px 0px rgba(0,0,0,0.15), 0 3px 5px -1px rgba(0,0,0,0.1);
+    }
+    .block-d {
+      background: linear-gradient(135deg, #f87171, #ef4444);
+      box-shadow: inset -2px -2px 0px rgba(0,0,0,0.15), 0 3px 5px -1px rgba(0,0,0,0.1);
+    }
+    .block-u {
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      box-shadow: inset -1px -1px 0px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.1);
+    }
+
+    /* Animación de canje */
+    @keyframes pulseCanje {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+    }
+    .pulse-canje {
+      animation: pulseCanje 1.4s infinite;
+    }
+
+    /* Ocultar barra de scroll en contenedores con desbordamiento */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-amber-50/40 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-amber-200">
+  
+  <!-- BARRA SUPERIOR: TÍTULO Y MODOS DE TRABAJO -->
+  <header class="bg-white border-b-4 border-amber-300 shadow-sm px-4 py-3 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Título de la app -->
+      <div class="flex items-center gap-3">
+        <span class="text-3xl lg:text-4xl p-2 bg-amber-100 rounded-2xl border-2 border-amber-300">🧮</span>
+        <div>
+          <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+            Descomposición de Números
+            <span class="text-xs lg:text-sm font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full">3º Primaria</span>
+          </h1>
+          <p class="text-xs lg:text-sm font-semibold text-slate-500">Valor posicional hasta 4 cifras: UM • C • D • U</p>
+        </div>
+      </div>
+
+      <!-- Leyenda visual del código de color fijado -->
+      <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 text-xs lg:text-sm font-extrabold">
+        <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-amber-950 shadow-sm">UM: Millar</span>
+        <span class="px-2.5 py-1 rounded-xl bg-emerald-500 text-white shadow-sm">C: Centenas</span>
+        <span class="px-2.5 py-1 rounded-xl bg-red-500 text-white shadow-sm">D: Decenas</span>
+        <span class="px-2.5 py-1 rounded-xl bg-blue-500 text-white shadow-sm">U: Unidades</span>
+      </div>
+
+      <!-- Selector de Modo / Pestañas principales -->
+      <nav class="flex gap-2 w-full lg:w-auto justify-center mt-2 lg:mt-0">
+        <button id="tab-explorador" onclick="cambiarModo('explorador')" class="touch-btn flex-1 lg:flex-none px-4 py-2.5 rounded-2xl font-black text-sm lg:text-base border-b-4 transition bg-amber-500 text-white border-amber-700 shadow-md">
+          🔍 Explorador
+        </button>
+        <button id="tab-constructor" onclick="cambiarModo('constructor')" class="touch-btn flex-1 lg:flex-none px-4 py-2.5 rounded-2xl font-black text-sm lg:text-base border-b-4 transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">
+          🧱 Constructor Dienes
+        </button>
+        <button id="tab-retos" onclick="cambiarModo('retos')" class="touch-btn flex-1 lg:flex-none px-4 py-2.5 rounded-2xl font-black text-sm lg:text-base border-b-4 transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50">
+          🎯 Retos y Preguntas
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL DINÁMICO -->
+  <main class="max-w-7xl mx-auto w-full p-3 lg:p-6 flex-1 flex flex-col justify-center">
+
+    <!-- ========================================================= -->
+    <!-- MODO 1: EXPLORADOR INTERACTIVO Y MÚLTIPLES DESCOMPOSICIONES -->
+    <!-- ========================================================= -->
+    <section id="seccion-explorador" class="space-y-5">
+      <!-- Selector del número y controles de pizarra táctil -->
+      <div class="bg-white rounded-3xl p-4 lg:p-6 shadow-md border-2 border-slate-200">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-lg font-extrabold text-slate-700">Introduce o ajusta un número:</span>
+            <button onclick="generarAleatorio()" class="touch-btn px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white font-extrabold rounded-2xl shadow-sm border-b-4 border-purple-700 flex items-center gap-2">
+              🎲 <span>Número al azar</span>
+            </button>
+          </div>
+
+          <!-- Entrada directa con teclado táctil escolar -->
+          <div class="flex items-center gap-2">
+            <input type="number" id="input-numero" min="1" max="9999" value="4325" oninput="alCambiarInputDirecto(this.value)" class="w-36 text-center text-3xl font-black py-1.5 px-3 rounded-2xl border-4 border-amber-300 focus:border-amber-500 outline-none text-slate-800 bg-amber-50/50">
+            <button onclick="reiniciarNumero()" class="touch-btn px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl" title="Poner a 0">
+              🔄 Borrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Botones táctiles gigantes para sumar/restar cada orden en MDI -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-5 mt-5">
+          <!-- UM -->
+          <div class="bg-amber-50 border-3 border-amber-300 rounded-3xl p-3 flex flex-col items-center shadow-sm">
+            <span class="font-extrabold text-amber-900 text-sm mb-1">Unidades de Millar</span>
+            <div class="flex items-center gap-2 w-full justify-center">
+              <button onclick="ajustarOrden(1000)" class="touch-btn flex-1 bg-amber-500 text-white font-black text-xl lg:text-2xl rounded-2xl border-b-4 border-amber-700 active:translate-y-1 shadow">+1000</button>
+              <button onclick="ajustarOrden(-1000)" class="touch-btn flex-1 bg-amber-100 text-amber-900 font-black text-xl lg:text-2xl rounded-2xl border-2 border-amber-300 active:translate-y-1">-1000</button>
+            </div>
+          </div>
+
+          <!-- C -->
+          <div class="bg-emerald-50 border-3 border-emerald-300 rounded-3xl p-3 flex flex-col items-center shadow-sm">
+            <span class="font-extrabold text-emerald-900 text-sm mb-1">Centenas</span>
+            <div class="flex items-center gap-2 w-full justify-center">
+              <button onclick="ajustarOrden(100)" class="touch-btn flex-1 bg-emerald-500 text-white font-black text-xl lg:text-2xl rounded-2xl border-b-4 border-emerald-700 active:translate-y-1 shadow">+100</button>
+              <button onclick="ajustarOrden(-100)" class="touch-btn flex-1 bg-emerald-100 text-emerald-900 font-black text-xl lg:text-2xl rounded-2xl border-2 border-emerald-300 active:translate-y-1">-100</button>
+            </div>
+          </div>
+
+          <!-- D -->
+          <div class="bg-red-50 border-3 border-red-300 rounded-3xl p-3 flex flex-col items-center shadow-sm">
+            <span class="font-extrabold text-red-900 text-sm mb-1">Decenas</span>
+            <div class="flex items-center gap-2 w-full justify-center">
+              <button onclick="ajustarOrden(10)" class="touch-btn flex-1 bg-red-500 text-white font-black text-xl lg:text-2xl rounded-2xl border-b-4 border-red-700 active:translate-y-1 shadow">+10</button>
+              <button onclick="ajustarOrden(-10)" class="touch-btn flex-1 bg-red-100 text-red-900 font-black text-xl lg:text-2xl rounded-2xl border-2 border-red-300 active:translate-y-1">-10</button>
+            </div>
+          </div>
+
+          <!-- U -->
+          <div class="bg-blue-50 border-3 border-blue-300 rounded-3xl p-3 flex flex-col items-center shadow-sm">
+            <span class="font-extrabold text-blue-900 text-sm mb-1">Unidades</span>
+            <div class="flex items-center gap-2 w-full justify-center">
+              <button onclick="ajustarOrden(1)" class="touch-btn flex-1 bg-blue-500 text-white font-black text-xl lg:text-2xl rounded-2xl border-b-4 border-blue-700 active:translate-y-1 shadow">+1</button>
+              <button onclick="ajustarOrden(-1)" class="touch-btn flex-1 bg-blue-100 text-blue-900 font-black text-xl lg:text-2xl rounded-2xl border-2 border-blue-300 active:translate-y-1">-1</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUALIZADOR GIGANTE DEL NÚMERO Y CADA CIFRA -->
+      <div class="bg-white rounded-3xl p-5 shadow-lg border-2 border-slate-200 flex flex-col items-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Número Formado y lectura</span>
+        <div class="flex items-center justify-center gap-3 md:gap-6 my-2">
+          <!-- Cifra UM -->
+          <div class="flex flex-col items-center">
+            <div id="cifra-um" class="w-16 h-20 md:w-24 md:h-28 bg-amber-400 text-amber-950 rounded-3xl border-4 border-amber-600 flex items-center justify-center text-4xl md:text-6xl font-black shadow-inner">0</div>
+            <span class="text-xs md:text-sm font-black text-amber-800 mt-1">UM</span>
+          </div>
+          <!-- Cifra C -->
+          <div class="flex flex-col items-center">
+            <div id="cifra-c" class="w-16 h-20 md:w-24 md:h-28 bg-emerald-500 text-white rounded-3xl border-4 border-emerald-700 flex items-center justify-center text-4xl md:text-6xl font-black shadow-inner">0</div>
+            <span class="text-xs md:text-sm font-black text-emerald-800 mt-1">C</span>
+          </div>
+          <!-- Cifra D -->
+          <div class="flex flex-col items-center">
+            <div id="cifra-d" class="w-16 h-20 md:w-24 md:h-28 bg-red-500 text-white rounded-3xl border-4 border-red-700 flex items-center justify-center text-4xl md:text-6xl font-black shadow-inner">0</div>
+            <span class="text-xs md:text-sm font-black text-red-800 mt-1">D</span>
+          </div>
+          <!-- Cifra U -->
+          <div class="flex flex-col items-center">
+            <div id="cifra-u" class="w-16 h-20 md:w-24 md:h-28 bg-blue-500 text-white rounded-3xl border-4 border-blue-700 flex items-center justify-center text-4xl md:text-6xl font-black shadow-inner">0</div>
+            <span class="text-xs md:text-sm font-black text-blue-800 mt-1">U</span>
+          </div>
+        </div>
+
+        <!-- Lectura con letra -->
+        <div class="mt-3 px-6 py-2 rounded-2xl bg-amber-100/70 border border-amber-300 text-center">
+          <p class="text-slate-600 text-sm font-bold">Se lee:</p>
+          <p id="lectura-escrita" class="text-lg md:text-2xl font-black text-amber-950 capitalize">Cero</p>
+        </div>
+      </div>
+
+      <!-- DESGLOSE PEDAGÓGICO DE TODAS LAS FORMAS DE DESCOMPOSICIÓN -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Tarjeta 1: Descomposición Posicional y Aditiva -->
+        <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-slate-200 flex flex-col justify-between">
+          <h3 class="text-lg font-black text-slate-800 flex items-center gap-2 mb-3">
+            <span class="p-1.5 bg-blue-100 rounded-xl text-blue-700">🧩</span> Descomposiciones Básicas
+          </h3>
+          
+          <div class="space-y-4">
+            <!-- 1. Según el orden de sus unidades -->
+            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+              <span class="text-xs font-bold text-slate-500 block mb-1">1. Según el orden de unidades:</span>
+              <div id="desc-orden" class="text-xl md:text-2xl font-black flex flex-wrap items-center gap-1.5">
+                <!-- Inyectado dinámicamente -->
+              </div>
+            </div>
+
+            <!-- 2. Notación aditiva (valor de posición en unidades) -->
+            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+              <span class="text-xs font-bold text-slate-500 block mb-1">2. Según el valor de posición (aditiva):</span>
+              <div id="desc-aditiva" class="text-xl md:text-2xl font-black flex flex-wrap items-center gap-1.5">
+                <!-- Inyectado dinámicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Equivalencias completas y canjes -->
+        <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-slate-200">
+          <h3 class="text-lg font-black text-slate-800 flex items-center gap-2 mb-3">
+            <span class="p-1.5 bg-amber-100 rounded-xl text-amber-800">⚖️</span> ¿Cuánto hay en total? (Equivalencias)
+          </h3>
+          
+          <div class="grid grid-cols-2 gap-2.5 text-sm md:text-base font-bold">
+            <div class="p-2.5 rounded-2xl bg-amber-50 border border-amber-200">
+              <span class="text-xs text-amber-800 font-extrabold block">UM completas:</span>
+              <span id="equiv-um" class="text-xl font-black text-amber-900">0</span>
+            </div>
+            <div class="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+              <span class="text-xs text-emerald-800 font-extrabold block">Centenas completas:</span>
+              <span id="equiv-c" class="text-xl font-black text-emerald-900">0</span>
+            </div>
+            <div class="p-2.5 rounded-2xl bg-red-50 border border-red-200">
+              <span class="text-xs text-red-800 font-extrabold block">Decenas completas:</span>
+              <span id="equiv-d" class="text-xl font-black text-red-900">0</span>
+            </div>
+            <div class="p-2.5 rounded-2xl bg-blue-50 border border-blue-200">
+              <span class="text-xs text-blue-800 font-extrabold block">Unidades totales:</span>
+              <span id="equiv-u" class="text-xl font-black text-blue-900">0</span>
+            </div>
+          </div>
+
+          <div class="mt-3 p-3 bg-purple-50 rounded-2xl border border-purple-200 text-xs md:text-sm font-semibold text-purple-900" id="dato-curioso-equivalencia">
+            <!-- Texto pedagógico dinámico de equivalencias -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ÁBACO INTERACTIVO ESCOLAR -->
+      <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-slate-200">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+            <span class="p-1.5 bg-rose-100 rounded-xl text-rose-700">🏮</span> Representación en Ábaco Vertical
+          </h3>
+          <span class="text-xs font-bold text-slate-400">Toca las bolas para contar</span>
+        </div>
+        
+        <div class="grid grid-cols-4 gap-3 md:gap-8 max-w-2xl mx-auto py-2 bg-amber-50/60 p-4 rounded-3xl border-2 border-amber-200">
+          <!-- Columna UM -->
+          <div class="flex flex-col items-center">
+            <div class="h-44 w-3 bg-amber-700/60 rounded-full flex flex-col-reverse items-center justify-start gap-1 pb-1 relative">
+              <div id="abaco-um" class="contents"></div>
+            </div>
+            <span class="mt-2 text-xs md:text-sm font-extrabold text-amber-900 bg-amber-200 px-3 py-1 rounded-xl">UM</span>
+          </div>
+
+          <!-- Columna C -->
+          <div class="flex flex-col items-center">
+            <div class="h-44 w-3 bg-emerald-800/50 rounded-full flex flex-col-reverse items-center justify-start gap-1 pb-1 relative">
+              <div id="abaco-c" class="contents"></div>
+            </div>
+            <span class="mt-2 text-xs md:text-sm font-extrabold text-emerald-900 bg-emerald-200 px-3 py-1 rounded-xl">C</span>
+          </div>
+
+          <!-- Columna D -->
+          <div class="flex flex-col items-center">
+            <div class="h-44 w-3 bg-red-800/50 rounded-full flex flex-col-reverse items-center justify-start gap-1 pb-1 relative">
+              <div id="abaco-d" class="contents"></div>
+            </div>
+            <span class="mt-2 text-xs md:text-sm font-extrabold text-red-900 bg-red-200 px-3 py-1 rounded-xl">D</span>
+          </div>
+
+          <!-- Columna U -->
+          <div class="flex flex-col items-center">
+            <div class="h-44 w-3 bg-blue-800/50 rounded-full flex flex-col-reverse items-center justify-start gap-1 pb-1 relative">
+              <div id="abaco-u" class="contents"></div>
+            </div>
+            <span class="mt-2 text-xs md:text-sm font-extrabold text-blue-900 bg-blue-200 px-3 py-1 rounded-xl">U</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- MODO 2: CONSTRUCTOR MULTISENSORIAL DIENES CON CANJES      -->
+    <!-- ========================================================= -->
+    <section id="seccion-constructor" class="hidden space-y-5">
+      <!-- Explicación manipulativa -->
+      <div class="bg-white rounded-3xl p-4 lg:p-5 border-2 border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-800">Taller de Canjes con Bloques Multibase</h2>
+          <p class="text-sm font-bold text-slate-500">Añade piezas y observa cómo al llegar a 10 se pueden canjear al orden superior.</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="limpiarConstructor()" class="touch-btn px-4 py-2 bg-slate-200 hover:bg-slate-300 font-black text-slate-700 rounded-2xl">
+            🧹 Vaciar Mesa
+          </button>
+        </div>
+      </div>
+
+      <!-- Marcador del constructor -->
+      <div class="bg-gradient-to-r from-amber-100/70 via-emerald-100/70 to-blue-100/70 p-4 rounded-3xl border-2 border-slate-300 flex items-center justify-around text-center">
+        <div>
+          <span class="text-xs font-bold text-slate-600 block">Número Formado:</span>
+          <span id="constructor-total" class="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">0</span>
+        </div>
+        <div class="h-10 w-0.5 bg-slate-300"></div>
+        <div id="constructor-formula" class="text-lg lg:text-2xl font-black text-slate-700">
+          0 UM + 0 C + 0 D + 0 U
+        </div>
+      </div>
+
+      <!-- Cuadrícula de las 4 columnas de bloques manipulativos -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Columna UM (Cubos Amarillos de 1000) -->
+        <div class="bg-white rounded-3xl p-4 border-2 border-amber-300 flex flex-col items-center shadow-sm">
+          <div class="w-full flex justify-between items-center mb-2">
+            <span class="font-extrabold text-amber-900 text-sm">Cubos Millar (1000)</span>
+            <span id="cant-c-um" class="px-2 py-0.5 rounded-lg bg-amber-400 text-amber-950 font-black text-base">0</span>
+          </div>
+
+          <div class="flex gap-2 w-full mb-3">
+            <button onclick="manipularBloques('um', 1)" class="touch-btn flex-1 bg-amber-500 text-white font-black text-xl rounded-2xl border-b-4 border-amber-700">+1</button>
+            <button onclick="manipularBloques('um', -1)" class="touch-btn flex-1 bg-amber-100 text-amber-900 font-black text-xl rounded-2xl border-2 border-amber-300">-1</button>
+          </div>
+
+          <!-- Área visual de los cubos de 1000 -->
+          <div id="contenedor-bloques-um" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto no-scrollbar bg-amber-50/50 rounded-2xl p-2 flex flex-wrap gap-2 justify-center items-center border border-dashed border-amber-300">
+            <!-- Se añaden iconos/bloques -->
+          </div>
+        </div>
+
+        <!-- Columna Centenas (Placas Verdes de 100) -->
+        <div class="bg-white rounded-3xl p-4 border-2 border-emerald-300 flex flex-col items-center shadow-sm">
+          <div class="w-full flex justify-between items-center mb-2">
+            <span class="font-extrabold text-emerald-900 text-sm">Placas Centena (100)</span>
+            <span id="cant-c-c" class="px-2 py-0.5 rounded-lg bg-emerald-500 text-white font-black text-base">0</span>
+          </div>
+
+          <div class="flex gap-2 w-full mb-3">
+            <button onclick="manipularBloques('c', 1)" class="touch-btn flex-1 bg-emerald-500 text-white font-black text-xl rounded-2xl border-b-4 border-emerald-700">+1</button>
+            <button onclick="manipularBloques('c', -1)" class="touch-btn flex-1 bg-emerald-100 text-emerald-900 font-black text-xl rounded-2xl border-2 border-emerald-300">-1</button>
+          </div>
+
+          <!-- Botón de canje si hay >= 10 centenas -->
+          <button id="btn-canje-c" onclick="ejecutarCanje('c')" class="hidden touch-btn w-full mb-2 py-1.5 px-2 bg-amber-400 text-amber-950 font-black text-xs rounded-xl pulse-canje border border-amber-600">
+            ⭐ ¡10 C ➔ 1 UM! Canjear
+          </button>
+
+          <!-- Área visual -->
+          <div id="contenedor-bloques-c" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto no-scrollbar bg-emerald-50/50 rounded-2xl p-2 flex flex-wrap gap-1.5 justify-center items-center border border-dashed border-emerald-300"></div>
+        </div>
+
+        <!-- Columna Decenas (Barras Rojas de 10) -->
+        <div class="bg-white rounded-3xl p-4 border-2 border-red-300 flex flex-col items-center shadow-sm">
+          <div class="w-full flex justify-between items-center mb-2">
+            <span class="font-extrabold text-red-900 text-sm">Barras Decena (10)</span>
+            <span id="cant-c-d" class="px-2 py-0.5 rounded-lg bg-red-500 text-white font-black text-base">0</span>
+          </div>
+
+          <div class="flex gap-2 w-full mb-3">
+            <button onclick="manipularBloques('d', 1)" class="touch-btn flex-1 bg-red-500 text-white font-black text-xl rounded-2xl border-b-4 border-red-700">+1</button>
+            <button onclick="manipularBloques('d', -1)" class="touch-btn flex-1 bg-red-100 text-red-900 font-black text-xl rounded-2xl border-2 border-red-300">-1</button>
+          </div>
+
+          <!-- Botón de canje si hay >= 10 decenas -->
+          <button id="btn-canje-d" onclick="ejecutarCanje('d')" class="hidden touch-btn w-full mb-2 py-1.5 px-2 bg-emerald-500 text-white font-black text-xs rounded-xl pulse-canje border border-emerald-700">
+            ⭐ ¡10 D ➔ 1 C! Canjear
+          </button>
+
+          <!-- Área visual -->
+          <div id="contenedor-bloques-d" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto no-scrollbar bg-red-50/50 rounded-2xl p-2 flex flex-wrap gap-1 justify-center items-center border border-dashed border-red-300"></div>
+        </div>
+
+        <!-- Columna Unidades (Cubitos Azules de 1) -->
+        <div class="bg-white rounded-3xl p-4 border-2 border-blue-300 flex flex-col items-center shadow-sm">
+          <div class="w-full flex justify-between items-center mb-2">
+            <span class="font-extrabold text-blue-900 text-sm">Cubitos Unidad (1)</span>
+            <span id="cant-c-u" class="px-2 py-0.5 rounded-lg bg-blue-500 text-white font-black text-base">0</span>
+          </div>
+
+          <div class="flex gap-2 w-full mb-3">
+            <button onclick="manipularBloques('u', 1)" class="touch-btn flex-1 bg-blue-500 text-white font-black text-xl rounded-2xl border-b-4 border-blue-700">+1</button>
+            <button onclick="manipularBloques('u', -1)" class="touch-btn flex-1 bg-blue-100 text-blue-900 font-black text-xl rounded-2xl border-2 border-blue-300">-1</button>
+          </div>
+
+          <!-- Botón de canje si hay >= 10 unidades -->
+          <button id="btn-canje-u" onclick="ejecutarCanje('u')" class="hidden touch-btn w-full mb-2 py-1.5 px-2 bg-red-500 text-white font-black text-xs rounded-xl pulse-canje border border-red-700">
+            ⭐ ¡10 U ➔ 1 D! Canjear
+          </button>
+
+          <!-- Área visual -->
+          <div id="contenedor-bloques-u" class="w-full min-h-[160px] max-h-[220px] overflow-y-auto no-scrollbar bg-blue-50/50 rounded-2xl p-2 flex flex-wrap gap-1 justify-center items-center border border-dashed border-blue-300"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- MODO 3: RETOS Y JUEGO INTERACTIVO EN MONITOR Y TABLETS    -->
+    <!-- ========================================================= -->
+    <section id="seccion-retos" class="hidden space-y-5">
+      <!-- Marcador del alumno / clase -->
+      <div class="bg-white rounded-3xl p-4 shadow-sm border-2 border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">🏆</span>
+          <div>
+            <span class="text-xs font-bold text-slate-500 uppercase">Puntuación</span>
+            <div class="flex items-center gap-2">
+              <span id="marcador-puntos" class="text-2xl font-black text-amber-600">0</span>
+              <span class="text-sm font-bold text-slate-600">aciertos</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-500">Racha:</span>
+          <div id="estrellas-racha" class="flex gap-1 text-2xl text-amber-400">
+            ⭐
+          </div>
+        </div>
+
+        <button onclick="nuevoReto()" class="touch-btn px-4 py-2 bg-amber-400 hover:bg-amber-500 font-extrabold text-amber-950 rounded-2xl border-b-4 border-amber-600">
+          Saltar / Siguiente ➔
+        </button>
+      </div>
+
+      <!-- Tarjeta del Reto Central -->
+      <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg border-2 border-slate-200 flex flex-col items-center">
+        <!-- Indicador de tipo de reto -->
+        <span id="reto-etiqueta" class="px-4 py-1 rounded-full bg-indigo-100 text-indigo-900 font-extrabold text-xs mb-3">
+          Reto de Valor Posicional
+        </span>
+
+        <!-- Pregunta grande -->
+        <h3 id="reto-pregunta" class="text-xl lg:text-3xl font-black text-slate-800 text-center max-w-2xl min-h-[64px] flex items-center justify-center">
+          Cargando reto...
+        </h3>
+
+        <!-- Pista visual interactiva si procede -->
+        <div id="reto-pista-visual" class="my-4 min-h-[40px] flex justify-center items-center"></div>
+
+        <!-- Opciones de respuesta táctiles grandes -->
+        <div id="reto-opciones" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mt-4">
+          <!-- Opciones inyectadas dinámicamente -->
+        </div>
+
+        <!-- Feedback del reto -->
+        <div id="reto-feedback" class="mt-6 text-center text-lg lg:text-xl font-black min-h-[32px]"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PIE DE PÁGINA DOCENTE -->
+  <footer class="bg-white border-t border-slate-200 py-3 px-4 text-center text-xs lg:text-sm text-slate-500 font-bold">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span>Diseñado para MDI táctil y tablets</span>
+        <span>•</span>
+        <span class="text-amber-800">UM (Amarillo)</span>
+        <span class="text-emerald-700">C (Verde)</span>
+        <span class="text-red-700">D (Rojo)</span>
+        <span class="text-blue-700">U (Azul)</span>
+      </div>
+      <div>
+        <button onclick="reproducirSonido('click')" class="text-slate-400 hover:text-slate-700 underline">Probar Sonido</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================= -->
+  <!-- LÓGICA JAVASCRIPT COMPLETA (AUTOCONTENIDA)                -->
+  <!-- ========================================================= -->
+  <script>
+    // --- 1. SÍNTESIS DE AUDIO CON WEB AUDIO API (Sin ficheros externos) ---
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function reproducirSonido(tipo) {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+
+        if (tipo === 'acierto') {
+          // Secuencia triunfal alegre (Do - Mi - Sol)
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else if (tipo === 'error') {
+          // Tono suave descendente (para no frustrar)
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (tipo === 'canje') {
+          // Sonido mágico tipo cascada
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else {
+          // 'click' sutil
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(400, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {
+        // En navegadores con restricciones de audio previo a toque
+      }
+    }
+
+    // --- 2. ESTADO GLOBAL DE LA APLICACIÓN ---
+    let numeroActual = 4325; // Número base inicial
+
+    // Estado del Constructor Dienes
+    let bloquesConstructor = {
+      um: 2,
+      c: 3,
+      d: 4,
+      u: 6
+    };
+
+    // Estado de Retos
+    let puntos = 0;
+    let racha = 0;
+    let retoActual = null;
+
+    // --- 3. GESTIÓN DE NAVEGACIÓN (TABS) ---
+    function cambiarModo(modo) {
+      reproducirSonido('click');
+      const tabs = ['explorador', 'constructor', 'retos'];
+      
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const sec = document.getElementById(`seccion-${t}`);
+        if (t === modo) {
+          sec.classList.remove('hidden');
+          btn.className = "touch-btn flex-1 lg:flex-none px-4 py-2.5 rounded-2xl font-black text-sm lg:text-base border-b-4 transition bg-amber-500 text-white border-amber-700 shadow-md";
+        } else {
+          sec.classList.add('hidden');
+          btn.className = "touch-btn flex-1 lg:flex-none px-4 py-2.5 rounded-2xl font-black text-sm lg:text-base border-b-4 transition bg-white text-slate-700 border-slate-300 hover:bg-slate-50";
+        }
+      });
+
+      if (modo === 'constructor') {
+        renderizarConstructor();
+      } else if (modo === 'retos' && !retoActual) {
+        nuevoReto();
+      }
+    }
+
+    // --- 4. CONVERSOR PEDAGÓGICO DE NÚMERO A LETRAS (1 - 9999) ---
+    function numeroALetras(num) {
+      if (num === 0) return "cero";
+      if (num > 9999) return num.toString();
+
+      const unidades = ['', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+      const especiales = {
+        10: 'diez', 11: 'once', 12: 'doce', 13: 'trece', 14: 'catorce', 15: 'quince',
+        16: 'dieciséis', 17: 'diecisiete', 18: 'dieciocho', 19: 'diecinueve',
+        20: 'veinte', 21: 'veintiuno', 22: 'veintidós', 23: 'veintitrés', 24: 'veinticuatro',
+        25: 'veinticinco', 26: 'veintiséis', 27: 'veintisiete', 28: 'veintiocho', 29: 'veintinueve'
+      };
+      const decenas = ['', '', '', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
+      const centenas = ['', 'ciento', 'doscientos', 'trescientos', 'cuatrocientos', 'quinientos', 'seiscientos', 'setecientos', 'ochocientos', 'novecientos'];
+
+      function resolverCentenas(n) {
+        if (n === 0) return '';
+        if (n === 100) return 'cien';
+        let texto = '';
+        let c = Math.floor(n / 100);
+        let resto = n % 100;
+
+        if (c > 0) texto += centenas[c] + ' ';
+        if (resto > 0) {
+          if (resto < 10) {
+            texto += (resto === 1 ? 'uno' : unidades[resto]);
+          } else if (resto < 30) {
+            texto += especiales[resto];
+          } else {
+            let d = Math.floor(resto / 10);
+            let u = resto % 10;
+            texto += decenas[d];
+            if (u > 0) {
+              texto += ' y ' + (u === 1 ? 'uno' : unidades[u]);
+            }
+          }
+        }
+        return texto.trim();
+      }
+
+      let miles = Math.floor(num / 1000);
+      let restoMil = num % 1000;
+      let resultado = '';
+
+      if (miles === 1) {
+        resultado = 'mil';
+      } else if (miles > 1) {
+        resultado = unidades[miles] + ' mil';
+      }
+
+      let parteCentenas = resolverCentenas(restoMil);
+      if (parteCentenas) {
+        resultado += (resultado ? ' ' : '') + parteCentenas;
+      }
+
+      return resultado;
+    }
+
+    // --- 5. RENDERIZADO DEL EXPLORADOR INTERACTIVO ---
+    function actualizarExplorador() {
+      // Normalizar número entre 0 y 9999
+      if (numeroActual < 0) numeroActual = 0;
+      if (numeroActual > 9999) numeroActual = 9999;
+
+      document.getElementById('input-numero').value = numeroActual;
+
+      // Extraer cifras individuales
+      const um = Math.floor(numeroActual / 1000);
+      const c = Math.floor((numeroActual % 1000) / 100);
+      const d = Math.floor((numeroActual % 100) / 10);
+      const u = numeroActual % 10;
+
+      // Actualizar visualizador grande con códigos de color
+      document.getElementById('cifra-um').textContent = um;
+      document.getElementById('cifra-c').textContent = c;
+      document.getElementById('cifra-d').textContent = d;
+      document.getElementById('cifra-u').textContent = u;
+
+      // Actualizar lectura con letra
+      document.getElementById('lectura-escrita').textContent = numeroALetras(numeroActual);
+
+      // Descomposición 1: Según orden de unidades
+      const descOrdenEl = document.getElementById('desc-orden');
+      descOrdenEl.innerHTML = `
+        <span class="px-2.5 py-1 rounded-xl bg-amber-400 text-amber-950">${um} UM</span>
+        <span class="text-slate-400 font-bold">+</span>
+        <span class="px-2.5 py-1 rounded-xl bg-emerald-500 text-white">${c} C</span>
+        <span class="text-slate-400 font-bold">+</span>
+        <span class="px-2.5 py-1 rounded-xl bg-red-500 text-white">${d} D</span>
+        <span class="text-slate-400 font-bold">+</span>
+        <span class="px-2.5 py-1 rounded-xl bg-blue-500 text-white">${u} U</span>
+      `;
+
+      // Descomposición 2: Según valor de posición (aditiva)
+      const descAditivaEl = document.getElementById('desc-aditiva');
+      descAditivaEl.innerHTML = `
+        <span class="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 border-2 border-amber-400">${um * 1000}</span>
+        <span class="text-slate-400 font-bold">+</span>
+        <span class="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-900 border-2 border-emerald-400">${c * 100}</span>
+        <span class="text-slate-400 font-bold">+</span>
+        <span class="px-2.5 py-1 rounded-xl bg-red-100 text-red-900 border-2 border-red-400">${d * 10}</span>
+        <span class="text-slate-400 font-bold">+</span>
+        <span class="px-2.5 py-1 rounded-xl bg-blue-100 text-blue-900 border-2 border-blue-400">${u}</span>
+      `;
+
+      // Equivalencias totales
+      document.getElementById('equiv-um').textContent = `${um} (y sobran ${(numeroActual % 1000)} U)`;
+      document.getElementById('equiv-c').textContent = `${Math.floor(numeroActual / 100)} C`;
+      document.getElementById('equiv-d').textContent = `${Math.floor(numeroActual / 10)} D`;
+      document.getElementById('equiv-u').textContent = `${numeroActual} U`;
+
+      // Mensaje pedagógico dinámico
+      const datoCurioso = document.getElementById('dato-curioso-equivalencia');
+      if (um > 0) {
+        datoCurioso.innerHTML = `💡 <b>Recuerda:</b> En este número hay <b>${Math.floor(numeroActual / 10)} decenas completas</b> (porque cada millar tiene 100 decenas y cada centena 10 decenas).`;
+      } else {
+        datoCurioso.innerHTML = `💡 <b>Recuerda:</b> 1 Centena equivale a 10 Decenas o a 100 Unidades.`;
+      }
+
+      // Renderizar Ábaco vertical
+      renderizarAbaco(um, c, d, u);
+    }
+
+    function renderizarAbaco(um, c, d, u) {
+      function crearBolas(cantidad, colorClass) {
+        let bolasHtml = '';
+        for (let i = 0; i < cantidad; i++) {
+          bolasHtml += `<div class="w-8 h-4.5 md:w-11 md:h-5 rounded-full ${colorClass} shadow-sm border border-black/20 transform transition-all active:scale-110"></div>`;
+        }
+        return bolasHtml;
+      }
+
+      document.getElementById('abaco-um').innerHTML = crearBolas(um, 'bg-amber-400');
+      document.getElementById('abaco-c').innerHTML = crearBolas(c, 'bg-emerald-500');
+      document.getElementById('abaco-d').innerHTML = crearBolas(d, 'bg-red-500');
+      document.getElementById('abaco-u').innerHTML = crearBolas(u, 'bg-blue-500');
+    }
+
+    // Controles de ajuste del Explorador
+    function ajustarOrden(valor) {
+      reproducirSonido('click');
+      let nuevo = numeroActual + valor;
+      if (nuevo >= 0 && nuevo <= 9999) {
+        numeroActual = nuevo;
+        actualizarExplorador();
+      }
+    }
+
+    function alCambiarInputDirecto(val) {
+      let num = parseInt(val, 10);
+      if (!isNaN(num)) {
+        if (num > 9999) num = 9999;
+        if (num < 0) num = 0;
+        numeroActual = num;
+        actualizarExplorador();
+      }
+    }
+
+    function generarAleatorio() {
+      reproducirSonido('click');
+      numeroActual = Math.floor(Math.random() * 9000) + 1000;
+      actualizarExplorador();
+    }
+
+    function reiniciarNumero() {
+      reproducirSonido('click');
+      numeroActual = 0;
+      actualizarExplorador();
+    }
+
+    // --- 6. MODO CONSTRUCTOR CON BLOQUES MULTIBASE Y CANJES ---
+    function manipularBloques(tipo, delta) {
+      reproducirSonido('click');
+      let nuevo = bloquesConstructor[tipo] + delta;
+      if (nuevo >= 0 && nuevo <= 25) {
+        bloquesConstructor[tipo] = nuevo;
+        renderizarConstructor();
+      }
+    }
+
+    function limpiarConstructor() {
+      reproducirSonido('click');
+      bloquesConstructor = { um: 0, c: 0, d: 0, u: 0 };
+      renderizarConstructor();
+    }
+
+    function ejecutarCanje(origen) {
+      if (origen === 'u' && bloquesConstructor.u >= 10) {
+        bloquesConstructor.u -= 10;
+        bloquesConstructor.d += 1;
+        reproducirSonido('canje');
+      } else if (origen === 'd' && bloquesConstructor.d >= 10) {
+        bloquesConstructor.d -= 10;
+        bloquesConstructor.c += 1;
+        reproducirSonido('canje');
+      } else if (origen === 'c' && bloquesConstructor.c >= 10) {
+        bloquesConstructor.c -= 10;
+        bloquesConstructor.um += 1;
+        reproducirSonido('canje');
+      }
+      renderizarConstructor();
+    }
+
+    function renderizarConstructor() {
+      // Contadores numéricos
+      document.getElementById('cant-c-um').textContent = bloquesConstructor.um;
+      document.getElementById('cant-c-c').textContent = bloquesConstructor.c;
+      document.getElementById('cant-c-d').textContent = bloquesConstructor.d;
+      document.getElementById('cant-c-u').textContent = bloquesConstructor.u;
+
+      // Cálculo del número total resultante
+      const total = (bloquesConstructor.um * 1000) +
+                    (bloquesConstructor.c * 100) +
+                    (bloquesConstructor.d * 10) +
+                    (bloquesConstructor.u);
+
+      document.getElementById('constructor-total').textContent = total;
+      document.getElementById('constructor-formula').innerHTML = `
+        <span class="text-amber-800 font-black">${bloquesConstructor.um} UM</span> + 
+        <span class="text-emerald-700 font-black">${bloquesConstructor.c} C</span> + 
+        <span class="text-red-700 font-black">${bloquesConstructor.d} D</span> + 
+        <span class="text-blue-700 font-black">${bloquesConstructor.u} U</span>
+      `;
+
+      // Detección de canjes posibles (cuando hay 10 o más)
+      const btnCanjeU = document.getElementById('btn-canje-u');
+      const btnCanjeD = document.getElementById('btn-canje-d');
+      const btnCanjeC = document.getElementById('btn-canje-c');
+
+      if (bloquesConstructor.u >= 10) btnCanjeU.classList.remove('hidden');
+      else btnCanjeU.classList.add('hidden');
+
+      if (bloquesConstructor.d >= 10) btnCanjeD.classList.remove('hidden');
+      else btnCanjeD.classList.add('hidden');
+
+      if (bloquesConstructor.c >= 10) btnCanjeC.classList.remove('hidden');
+      else btnCanjeC.classList.add('hidden');
+
+      // Gráficos de Bloques Multibase
+      // UM: Cubos grandes dorados (SVG/CSS)
+      let htmlUm = '';
+      for (let i = 0; i < bloquesConstructor.um; i++) {
+        htmlUm += `
+          <div class="w-12 h-12 bg-amber-400 border-2 border-amber-600 rounded-lg flex items-center justify-center font-black text-amber-950 text-xs shadow-md">
+            1000
+          </div>
+        `;
+      }
+      document.getElementById('contenedor-bloques-um').innerHTML = htmlUm || '<span class="text-xs text-slate-400 font-bold">Sin millares</span>';
+
+      // C: Placas cuadradas verdes de 100
+      let htmlC = '';
+      for (let i = 0; i < bloquesConstructor.c; i++) {
+        htmlC += `
+          <div class="w-10 h-10 bg-emerald-500 border-2 border-emerald-700 rounded-md flex items-center justify-center font-black text-white text-[10px] shadow-sm">
+            100
+          </div>
+        `;
+      }
+      document.getElementById('contenedor-bloques-c').innerHTML = htmlC || '<span class="text-xs text-slate-400 font-bold">Sin centenas</span>';
+
+      // D: Barras rojas delgadas de 10
+      let htmlD = '';
+      for (let i = 0; i < bloquesConstructor.d; i++) {
+        htmlD += `
+          <div class="w-3.5 h-12 bg-red-500 border border-red-700 rounded-sm flex items-center justify-center font-bold text-white text-[9px] shadow-sm">
+            10
+          </div>
+        `;
+      }
+      document.getElementById('contenedor-bloques-d').innerHTML = htmlD || '<span class="text-xs text-slate-400 font-bold">Sin decenas</span>';
+
+      // U: Pequeños cuadraditos azules de 1
+      let htmlU = '';
+      for (let i = 0; i < bloquesConstructor.u; i++) {
+        htmlU += `
+          <div class="w-4 h-4 bg-blue-500 border border-blue-700 rounded-sm shadow-sm"></div>
+        `;
+      }
+      document.getElementById('contenedor-bloques-u').innerHTML = htmlU || '<span class="text-xs text-slate-400 font-bold">Sin unidades</span>';
+    }
+
+    // --- 7. MOTOR DE RETOS INTERACTIVOS (3º DE PRIMARIA) ---
+    // Tipologías curriculares:
+    // 1: Valor aditivo
+    // 2: Descomposición no estándar / canjes (Ej: 3 UM + 12 C + 5 U)
+    // 3: Total de decenas o centenas contenidas en un número
+
+    function generarRetoAleatorio() {
+      const tipo = Math.floor(Math.random() * 3);
+      const feedbackEl = document.getElementById('reto-feedback');
+      feedbackEl.textContent = '';
+
+      if (tipo === 0) {
+        // TIPO 0: Descomposición aditiva
+        const num = Math.floor(Math.random() * 8999) + 1000;
+        const um = Math.floor(num / 1000) * 1000;
+        const c = Math.floor((num % 1000) / 100) * 100;
+        const d = Math.floor((num % 100) / 10) * 10;
+        const u = num % 10;
+
+        const correcta = `${um} + ${c} + ${d} + ${u}`;
+        
+        // Generar distractores verosímiles
+        const dist1 = `${um} + ${c/10} + ${d} + ${u}`;
+        const dist2 = `${um} + ${c} + ${d*10} + ${u}`;
+        const dist3 = `${Math.floor(num/1000)*100} + ${c} + ${d} + ${u}`;
+
+        return {
+          etiqueta: 'Notación Aditiva',
+          pregunta: `¿Cuál es la descomposición aditiva del número <span class="text-indigo-600 ml-2 font-black">${num}</span>?`,
+          correcta: correcta,
+          opciones: mezclarArray([correcta, dist1, dist2, dist3])
+        };
+      } else if (tipo === 1) {
+        // TIPO 1: Descomposición no convencional con canje
+        // Ej: 2 UM + 14 C + 5 U = 2000 + 1400 + 5 = 3405
+        const um = Math.floor(Math.random() * 4) + 1; // 1 a 4
+        const c_extra = Math.floor(Math.random() * 6) + 11; // 11 a 16
+        const d = Math.floor(Math.random() * 8) + 1;
+        const u = Math.floor(Math.random() * 9) + 1;
+
+        const valorTotal = (um * 1000) + (c_extra * 100) + (d * 10) + u;
+        const preguntaTexto = `¿Qué número se forma con: <br><span class="text-amber-800">${um} UM</span> + <span class="text-emerald-700">${c_extra} C</span> + <span class="text-red-700">${d} D</span> + <span class="text-blue-700">${u} U</span>?`;
+
+        const correcta = valorTotal.toString();
+        const dist1 = ((um * 1000) + (c_extra * 10) + (d * 10) + u).toString();
+        const dist2 = (valorTotal + 100).toString();
+        const dist3 = (valorTotal - 1000 > 0 ? valorTotal - 1000 : valorTotal + 200).toString();
+
+        return {
+          etiqueta: 'Reagrupamiento y Canje',
+          pregunta: preguntaTexto,
+          correcta: correcta,
+          opciones: mezclarArray([correcta, dist1, dist2, dist3])
+        };
+      } else {
+        // TIPO 2: Decenas o Centenas totales contenidas
+        const num = Math.floor(Math.random() * 8000) + 1200;
+        const pedirDecenas = Math.random() > 0.5;
+
+        if (pedirDecenas) {
+          const totalDecenas = Math.floor(num / 10);
+          return {
+            etiqueta: 'Equivalencias de Órdenes',
+            pregunta: `¿Cuántas <b>decenas completas</b> contiene el número <span class="text-indigo-600 font-black">${num}</span>?`,
+            correcta: `${totalDecenas} decenas`,
+            opciones: mezclarArray([
+              `${totalDecenas} decenas`,
+              `${Math.floor((num % 100) / 10)} decenas`,
+              `${Math.floor(num / 100)} decenas`,
+              `${totalDecenas + 10} decenas`
+            ])
+          };
+        } else {
+          const totalCentenas = Math.floor(num / 100);
+          return {
+            etiqueta: 'Equivalencias de Órdenes',
+            pregunta: `¿Cuántas <b>centenas completas</b> contiene el número <span class="text-indigo-600 font-black">${num}</span>?`,
+            correcta: `${totalCentenas} centenas`,
+            opciones: mezclarArray([
+              `${totalCentenas} centenas`,
+              `${Math.floor((num % 1000) / 100)} centenas`,
+              `${totalCentenas * 10} centenas`,
+              `${totalCentenas + 5} centenas`
+            ])
+          };
+        }
+      }
+    }
+
+    function mezclarArray(arr) {
+      return [...new Set(arr)].sort(() => Math.random() - 0.5);
+    }
+
+    function nuevoReto() {
+      retoActual = generarRetoAleatorio();
+      document.getElementById('reto-etiqueta').textContent = retoActual.etiqueta;
+      document.getElementById('reto-pregunta').innerHTML = retoActual.pregunta;
+      document.getElementById('reto-feedback').textContent = '';
+
+      const contenedorOpciones = document.getElementById('reto-opciones');
+      contenedorOpciones.innerHTML = '';
+
+      retoActual.opciones.forEach((opcion) => {
+        const btn = document.createElement('button');
+        btn.className = "touch-btn p-4 rounded-2xl bg-slate-50 hover:bg-amber-100 border-3 border-slate-300 hover:border-amber-400 font-black text-slate-800 text-lg md:text-xl shadow-sm transition active:scale-95 text-center";
+        btn.innerHTML = opcion;
+        btn.onclick = () => verificarRespuesta(opcion, btn);
+        contenedorOpciones.appendChild(btn);
+      });
+    }
+
+    function verificarRespuesta(seleccionada, botonEl) {
+      const feedback = document.getElementById('reto-feedback');
+      const todosBotones = document.querySelectorAll('#reto-opciones button');
+
+      if (seleccionada === retoActual.correcta) {
+        // Acierto
+        reproducirSonido('acierto');
+        puntos++;
+        racha++;
+        document.getElementById('marcador-puntos').textContent = puntos;
+        actualizarEstrellasRacha();
+
+        botonEl.className = "touch-btn p-4 rounded-2xl bg-emerald-500 border-3 border-emerald-700 text-white font-black text-lg md:text-xl shadow-md";
+        feedback.innerHTML = '🎉 ¡Excelente trabajo! ¡Respuesta correcta!';
+        feedback.className = 'mt-6 text-center text-xl font-black text-emerald-600';
+
+        // Deshabilitar botones para evitar multi-pulsación
+        todosBotones.forEach(b => b.disabled = true);
+
+        setTimeout(() => {
+          nuevoReto();
+        }, 1600);
+      } else {
+        // Fallo suave para no frustrar
+        reproducirSonido('error');
+        racha = 0;
+        actualizarEstrellasRacha();
+
+        botonEl.className = "touch-btn p-4 rounded-2xl bg-red-100 border-3 border-red-400 text-red-800 font-black text-lg md:text-xl opacity-70";
+        feedback.innerHTML = '💪 ¡Casi! Vuelve a pensarlo o pide una pista a la clase.';
+        feedback.className = 'mt-6 text-center text-xl font-black text-red-600';
+      }
+    }
+
+    function actualizarEstrellasRacha() {
+      const contenedor = document.getElementById('estrellas-racha');
+      const numEstrellas = Math.min(Math.max(racha, 1), 5);
+      contenedor.innerHTML = '⭐'.repeat(numEstrellas);
+    }
+
+    // --- 8. INICIALIZACIÓN AL CARGAR LA PÁGINA ---
+    window.addEventListener('DOMContentLoaded', () => {
+      actualizarExplorador();
+      renderizarConstructor();
+    });
+  </script>
+</body>
+</html>
