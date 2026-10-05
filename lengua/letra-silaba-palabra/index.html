@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Taller de las Palabras: Letra, Sílaba y Palabra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #f0f4f8;
+      --card-bg: #ffffff;
+      --text-main: #2d3748;
+      --text-muted: #718096;
+      --letra-color: #3b82f6;
+      --letra-bg: #dbeafe;
+      --silaba-color: #f59e0b;
+      --silaba-bg: #fef3c7;
+      --palabra-color: #10b981;
+      --palabra-bg: #d1fae5;
+      --accent: #8b5cf6;
+      --accent-bg: #ede9fe;
+      --danger: #ef4444;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.09), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+      --shadow-btn: 0 6px 0 rgba(0, 0, 0, 0.15);
+      --shadow-btn-pressed: 0 2px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* HEADER Y BARRA SUPERIOR */
+    header {
+      background: white;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      font-size: 2.2rem;
+      background: var(--accent-bg);
+      padding: 6px 12px;
+      border-radius: 16px;
+    }
+
+    .brand-text h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .brand-text p {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .stat-badge {
+      background: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-icon:active {
+      transform: scale(0.92);
+    }
+
+    /* NAVEGACIÓN ENTRE MODOS */
+    nav.game-nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 20px 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: white;
+      border: 3px solid #e2e8f0;
+      padding: 12px 22px;
+      border-radius: 18px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 0 #cbd5e1;
+    }
+
+    .nav-btn:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    .nav-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #cbd5e1;
+    }
+
+    .nav-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: #7c3aed;
+      box-shadow: 0 5px 0 #6d28d9;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    main {
+      flex: 1;
+      max-width: 1050px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 20px 30px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .view-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+      width: 100%;
+    }
+
+    .view-panel.active {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PANELES Y TARJETAS */
+    .card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+      border: 3px solid #f1f5f9;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* SECCIÓN 1: TEORÍA Y LABORATORIO INTERACTIVO */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .concept-box {
+      border-radius: 20px;
+      padding: 20px;
+      border: 3px solid transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .concept-box.letra {
+      background: var(--letra-bg);
+      border-color: #93c5fd;
+    }
+
+    .concept-box.silaba {
+      background: var(--silaba-bg);
+      border-color: #fcd34d;
+    }
+
+    .concept-box.palabra {
+      background: var(--palabra-bg);
+      border-color: #6ee7b7;
+    }
+
+    .concept-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .concept-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .concept-box.letra .concept-title { color: #1d4ed8; }
+    .concept-box.silaba .concept-title { color: #b45309; }
+    .concept-box.palabra .concept-title { color: #047857; }
+
+    .concept-badge {
+      font-size: 1.8rem;
+    }
+
+    .concept-desc {
+      font-size: 1.05rem;
+      line-height: 1.45;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .concept-example {
+      margin-top: auto;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    /* EL CONVERTIDOR / PASO A PASO EN LA TEORÍA */
+    .lab-box {
+      background: linear-gradient(135deg, #f8fafc, #edf2f7);
+      border: 3px dashed #cbd5e1;
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .lab-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #475569;
+    }
+
+    .word-picker {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .word-chip {
+      background: white;
+      border: 2px solid #cbd5e1;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .word-chip.selected {
+      background: var(--accent);
+      color: white;
+      border-color: #7c3aed;
+      box-shadow: 0 3px 0 #6d28d9;
+    }
+
+    .assembly-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .stage-card {
+      background: white;
+      border-radius: 18px;
+      padding: 16px 20px;
+      min-width: 140px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      border: 3px solid #e2e8f0;
+      transition: transform 0.2s;
+    }
+
+    .stage-card:hover {
+      transform: scale(1.03);
+    }
+
+    .stage-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stage-content {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .arrow-icon {
+      font-size: 1.8rem;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* JUEGO 1: CLASIFICADOR */
+    .game-hero {
+      text-align: center;
+      padding: 24px 10px;
+    }
+
+    .target-bubble {
+      display: inline-block;
+      min-width: 280px;
+      background: #ffffff;
+      border: 4px solid var(--accent);
+      border-radius: 28px;
+      padding: 24px 40px;
+      box-shadow: 0 10px 0 #ede9fe;
+      margin: 10px auto 26px;
+      animation: pulseTarget 1.8s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseTarget {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.02); }
+    }
+
+    .target-word {
+      font-size: 3.8rem;
+      font-weight: 800;
+      color: #1e293b;
+      letter-spacing: 3px;
+    }
+
+    .target-hint {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 15px;
+    }
+
+    .big-btn {
+      min-height: 85px;
+      border: none;
+      border-radius: 22px;
+      padding: 16px 20px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: var(--shadow-btn);
+      transition: all 0.1s ease;
+    }
+
+    .big-btn:active {
+      transform: translateY(4px);
+      box-shadow: var(--shadow-btn-pressed);
+    }
+
+    .btn-letra {
+      background: #2563eb;
+      box-shadow: 0 6px 0 #1d4ed8;
+    }
+    .btn-letra:active { box-shadow: 0 2px 0 #1d4ed8; }
+
+    .btn-silaba {
+      background: #d97706;
+      box-shadow: 0 6px 0 #b45309;
+    }
+    .btn-silaba:active { box-shadow: 0 2px 0 #b45309; }
+
+    .btn-palabra {
+      background: #059669;
+      box-shadow: 0 6px 0 #047857;
+    }
+    .btn-palabra:active { box-shadow: 0 2px 0 #047857; }
+
+    .big-btn span.sub {
+      font-size: 0.9rem;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    /* JUEGO 2: LA MÁQUINA DE SÍLABAS (PALMADAS) */
+    .clap-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .clap-word-card {
+      background: white;
+      border: 4px solid #fef08a;
+      border-radius: 28px;
+      padding: 20px 50px;
+      text-align: center;
+      box-shadow: 0 8px 0 #fde047;
+    }
+
+    .clap-emoji {
+      font-size: 3.5rem;
+      margin-bottom: 6px;
+    }
+
+    .clap-word {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .clap-counter-box {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .clap-btn {
+      background: #ec4899;
+      color: white;
+      border: none;
+      padding: 18px 36px;
+      border-radius: 24px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 7px 0 #be185d;
+      transition: all 0.1s;
+    }
+
+    .clap-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 3px 0 #be185d;
+    }
+
+    .clap-indicator {
+      display: flex;
+      gap: 10px;
+    }
+
+    .clap-dot {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #64748b;
+      border: 3px solid #cbd5e1;
+      transition: all 0.2s;
+    }
+
+    .clap-dot.active {
+      background: #facc15;
+      color: #713f12;
+      border-color: #eab308;
+      transform: scale(1.15);
+    }
+
+    .syllable-type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .type-btn {
+      background: white;
+      border: 3px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #cbd5e1;
+      transition: all 0.15s;
+    }
+
+    .type-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .type-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #cbd5e1;
+    }
+
+    .type-btn .count {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .type-btn .name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-top: 4px;
+    }
+
+    /* JUEGO 3: EL CONSTRUCTOR (ORDENAR SÍLABAS) */
+    .builder-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 20px 10px;
+    }
+
+    .builder-clue {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1e40af;
+    }
+
+    .builder-slots {
+      display: flex;
+      gap: 12px;
+      min-height: 80px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 3px dashed #cbd5e1;
+      border-radius: 22px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .slot-tile {
+      background: white;
+      border: 3px solid var(--palabra-color);
+      color: #065f46;
+      border-radius: 16px;
+      padding: 14px 22px;
+      font-size: 1.9rem;
+      font-weight: 800;
+      box-shadow: 0 4px 0 #a7f3d0;
+      animation: popIn 0.2s ease;
+      cursor: pointer;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .scrambled-pool {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .syllable-tile {
+      background: #ffffff;
+      border: 3px solid #f59e0b;
+      color: #92400e;
+      border-radius: 18px;
+      padding: 16px 26px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #d97706;
+      transition: all 0.1s;
+    }
+
+    .syllable-tile:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #d97706;
+    }
+
+    .syllable-tile.used {
+      opacity: 0.25;
+      pointer-events: none;
+      transform: scale(0.9);
+    }
+
+    .builder-actions {
+      display: flex;
+      gap: 14px;
+    }
+
+    /* FEEDBACK Y BASTIDORES */
+    .feedback-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 999px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+    }
+
+    .feedback-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .feedback-toast.success { background: #059669; }
+    .feedback-toast.error { background: #dc2626; }
+
+    /* CONFETI CANVAS */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* MODAL DE RESULTADOS / FELICITACIÓN */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: 28px;
+      padding: 36px 32px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      border: 4px solid #f1f5f9;
+      animation: popIn 0.3s ease;
+    }
+
+    .modal-card h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 12px 0;
+    }
+
+    .modal-card p {
+      font-size: 1.15rem;
+      color: #64748b;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 20px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #6d28d9;
+      width: 100%;
+    }
+
+    .btn-primary:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #6d28d9;
+    }
+
+    /* RESPONSIVE PANTALLA TÁCTIL Y MDI */
+    @media (max-width: 768px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      .syllable-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .target-word {
+        font-size: 2.8rem;
+      }
+      .brand-text h1 {
+        font-size: 1.15rem;
+      }
+      .nav-btn {
+        padding: 10px 14px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- BARRA SUPERIOR -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">📚</div>
+      <div class="brand-text">
+        <h1>El Taller de las Palabras</h1>
+        <p>Letra • Sílaba • Palabra | 3º de Primaria</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="stat-badge" title="Puntuación de la clase">
+        <span>⭐</span> <span id="scoreDisplay">0</span>
+      </div>
+      <div class="stat-badge" title="Racha de aciertos">
+        <span>🔥</span> <span id="streakDisplay">0</span>
+      </div>
+      <button class="btn-icon" id="soundToggleBtn" title="Activar/Silenciar sonido">🔊</button>
+      <button class="btn-icon" id="fullscreenBtn" title="Pantalla completa">⛶</button>
+    </div>
+  </header>
+
+  <!-- SELECTOR DE SECCIONES -->
+  <nav class="game-nav">
+    <button class="nav-btn active" data-target="teoria">
+      <span>💡</span> Laboratorio Visual
+    </button>
+    <button class="nav-btn" data-target="clasificador">
+      <span>🎯</span> ¿Qué es qué?
+    </button>
+    <button class="nav-btn" data-target="palmas">
+      <span>🥁</span> La Máquina de Sílabas
+    </button>
+    <button class="nav-btn" data-target="constructor">
+      <span>🧩</span> Taller Constructor
+    </button>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+
+    <!-- PANEL 1: LABORATORIO Y TEORÍA VISUAL -->
+    <section id="panel-teoria" class="view-panel active">
+      <div class="card">
+        <h2 class="card-title"><span>🔍</span> ¿Cómo se construyen las palabras?</h2>
+        
+        <div class="theory-grid">
+          <!-- LETRA -->
+          <div class="concept-box letra">
+            <div class="concept-header">
+              <span class="concept-title">1. LA LETRA</span>
+              <span class="concept-badge">🔤</span>
+            </div>
+            <p class="concept-desc">
+              Es el ladrillo más pequeño con el que escribimos. Representa un sonido.<br>
+              Hay <strong>vocales</strong> (a, e, i, o, u) y <strong>consonantes</strong>.
+            </p>
+            <div class="concept-example">Ejemplos: <strong>M</strong>, <strong>A</strong>, <strong>S</strong>, <strong>L</strong></div>
+          </div>
+
+          <!-- SÍLABA -->
+          <div class="concept-box silaba">
+            <div class="concept-header">
+              <span class="concept-title">2. LA SÍLABA</span>
+              <span class="concept-badge">🥁</span>
+            </div>
+            <p class="concept-desc">
+              Es cada <strong>golpe de voz</strong> con el que pronunciamos una palabra.<br>
+              ¡Siempre contiene al menos una vocal!
+            </p>
+            <div class="concept-example">Ejemplos: <strong>MA</strong>, <strong>LE</strong>, <strong>TA</strong></div>
+          </div>
+
+          <!-- PALABRA -->
+          <div class="concept-box palabra">
+            <div class="concept-header">
+              <span class="concept-title">3. LA PALABRA</span>
+              <span class="concept-badge">📖</span>
+            </div>
+            <p class="concept-desc">
+              Es la unión ordenada de sílabas y letras que <strong>tiene significado</strong>: nombra una cosa, una persona, una acción...
+            </p>
+            <div class="concept-example">Ejemplo: <strong>MALETA</strong> 🧳</div>
+          </div>
+        </div>
+
+        <!-- MÁQUINA DE TRANSFORMACIÓN PASO A PASO -->
+        <div class="lab-box">
+          <div class="lab-title">⚙️ Demostrador en vivo: Toca una palabra para ver el proceso</div>
+          <div class="word-picker" id="labWordPicker">
+            <!-- Rellenado por JS -->
+          </div>
+
+          <div class="assembly-stage" id="assemblyStage">
+            <!-- Dinámico por JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: JUEGO ¿QUÉ ES QUÉ? (CLASIFICADOR) -->
+    <section id="panel-clasificador" class="view-panel">
+      <div class="card">
+        <h2 class="card-title"><span>🎯</span> Reto: ¿Es una Letra, una Sílaba o una Palabra?</h2>
+        <p style="color: var(--text-muted); font-weight: 700;">Observa el cartel grande en la pantalla y pulsa el botón correspondiente antes de que termine el reto.</p>
+        
+        <div class="game-hero">
+          <div class="target-bubble">
+            <div class="target-word" id="classifierTarget">---</div>
+            <div class="target-hint" id="classifierHint">¿Qué elemento es este?</div>
+          </div>
+
+          <div class="options-grid">
+            <button class="big-btn btn-letra" onclick="checkClassification('LETRA')">
+              <span>🔤 LETRA</span>
+              <span class="sub">Un solo sonido</span>
+            </button>
+            <button class="big-btn btn-silaba" onclick="checkClassification('SÍLABA')">
+              <span>🥁 SÍLABA</span>
+              <span class="sub">Un golpe de voz</span>
+            </button>
+            <button class="big-btn btn-palabra" onclick="checkClassification('PALABRA')">
+              <span>📖 PALABRA</span>
+              <span class="sub">Tiene significado</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: LA MÁQUINA DE SÍLABAS (GOLPES DE VOZ) -->
+    <section id="panel-palmas" class="view-panel">
+      <div class="card">
+        <h2 class="card-title"><span>🥁</span> La Máquina de Sílabas y Palmadas</h2>
+        <p style="color: var(--text-muted); font-weight: 700;">Da palmadas para contar los golpes de voz de la palabra y pulsa cómo se clasifica.</p>
+
+        <div class="clap-container">
+          <div class="clap-word-card">
+            <div class="clap-emoji" id="clapEmoji">🎒</div>
+            <div class="clap-word" id="clapWord">MOCHILA</div>
+          </div>
+
+          <!-- BOTÓN DE PALMADAS -->
+          <div class="clap-counter-box">
+            <button class="clap-btn" id="btnClapAction">
+              <span>👏</span> ¡Dar Palmada!
+            </button>
+            <div class="clap-indicator" id="clapDots">
+              <!-- Círculos dinámicos -->
+            </div>
+            <button class="btn-icon" id="btnResetClaps" title="Reiniciar palmadas" style="width:54px; height:54px;">🔄</button>
+          </div>
+
+          <!-- CLASIFICACIÓN SEGÚN NÚMERO DE SÍLABAS -->
+          <div class="syllable-type-grid">
+            <div class="type-btn" onclick="checkSyllableType(1)">
+              <div class="count">1 Sílaba</div>
+              <div class="name">Monosílaba</div>
+            </div>
+            <div class="type-btn" onclick="checkSyllableType(2)">
+              <div class="count">2 Sílabas</div>
+              <div class="name">Bisílaba</div>
+            </div>
+            <div class="type-btn" onclick="checkSyllableType(3)">
+              <div class="count">3 Sílabas</div>
+              <div class="name">Trisílaba</div>
+            </div>
+            <div class="type-btn" onclick="checkSyllableType(4)">
+              <div class="count">4 o más</div>
+              <div class="name">Polisílaba</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: TALLER DEL CONSTRUCTOR (ORDENAR SÍLABAS) -->
+    <section id="panel-constructor" class="view-panel">
+      <div class="card">
+        <h2 class="card-title"><span>🧩</span> El Taller del Constructor de Palabras</h2>
+        <p style="color: var(--text-muted); font-weight: 700;">Las sílabas se han desordenado. Tócalas en el orden adecuado para reconstruir la palabra correcta.</p>
+
+        <div class="builder-area">
+          <div class="builder-clue">
+            <span id="builderEmoji" style="font-size: 2.2rem;">🚀</span>
+            <span id="builderClueText">Vehículo que viaja al espacio</span>
+          </div>
+
+          <!-- HUECOS DONDE SE COLOCAN LAS SÍLABAS -->
+          <div class="builder-slots" id="builderSlots">
+            <!-- Huecos activos -->
+          </div>
+
+          <!-- SÍLABAS DESORDENADAS DISPONIBLES -->
+          <div class="scrambled-pool" id="builderPool">
+            <!-- Fichas para pulsar -->
+          </div>
+
+          <div class="builder-actions">
+            <button class="btn-icon" id="builderResetBtn" title="Deshacer" style="width: 56px; height: 56px; font-size: 1.6rem;">↩️</button>
+            <button class="btn-primary" id="builderCheckBtn" style="width: auto; padding: 14px 30px;">Comprobar Palabra ✨</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FEEDBACK TOAST -->
+  <div class="feedback-toast" id="feedbackToast">¡Fantástico! +10 puntos</div>
+
+  <!-- MODAL DE FINALIZACIÓN / VICTORIA -->
+  <div class="modal-overlay" id="victoryModal">
+    <div class="modal-card">
+      <div style="font-size: 4rem;">🏆🎉</div>
+      <h2>¡Misión Cumplida!</h2>
+      <p id="modalMessage">Has demostrado dominar las letras, las sílabas y las palabras como un auténtico maestro de la lengua.</p>
+      <button class="btn-primary" onclick="closeModal()">¡Jugar Otra Ronda!</button>
+    </div>
+  </div>
+
+  <script>
+    /* =====================================================================
+       1. SISTEMA DE AUDIO CON WEB AUDIO API (Sintetizador Puro Autocontenido)
+       ===================================================================== */
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    // Efectos de sonido sintetizados
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        if (type === 'success') {
+          // Arpegio mayor alegre y brillante (Do5 -> Sol5)
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc1.type = 'triangle';
+          osc2.type = 'sine';
+
+          osc1.frequency.setValueAtTime(523.25, now); // C5
+          osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.15); // G5
+
+          osc2.frequency.setValueAtTime(659.25, now + 0.08); // E5
+          osc2.frequency.exponentialRampToValueAtTime(1046.50, now + 0.25); // C6
+
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc1.start(now);
+          osc2.start(now + 0.05);
+          osc1.stop(now + 0.35);
+          osc2.stop(now + 0.35);
+
+        } else if (type === 'clap') {
+          // Sonido percusivo cálido imitando palmada escolar
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(70, now + 0.08);
+
+          gain.gain.setValueAtTime(0.28, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.09);
+
+        } else if (type === 'error') {
+          // Tono suave y discreto para evitar frustración
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(170, now + 0.2);
+
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.22);
+
+        } else if (type === 'win') {
+          // Fanfarria triunfal de final de ronda
+          const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do agudo
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const start = now + (idx * 0.1);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, start);
+
+            gain.gain.setValueAtTime(0.2, start);
+            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.35);
+          });
+        }
+      } catch (e) {
+        console.warn('Audio no disponible hasta interacción con el usuario.');
+      }
+    }
+
+    /* =====================================================================
+       2. BASE DE DATOS Y RETOS EDUCATIVOS (Fácilmente modificables)
+       ===================================================================== */
+
+    // Ejemplos para la Fábrica Visual del Laboratorio
+    const LAB_EXAMPLES = [
+      {
+        word: 'MALETA',
+        letters: ['M', 'A', 'L', 'E', 'T', 'A'],
+        syllables: ['MA', 'LE', 'TA'],
+        emoji: '🧳',
+        meaning: 'Objeto para llevar la ropa de viaje'
+      },
+      {
+        word: 'PELOTA',
+        letters: ['P', 'E', 'L', 'O', 'T', 'A'],
+        syllables: ['PE', 'LO', 'TA'],
+        emoji: '⚽',
+        meaning: 'Objeto redondo para jugar'
+      },
+      {
+        word: 'SOL',
+        letters: ['S', 'O', 'L'],
+        syllables: ['SOL'],
+        emoji: '☀️',
+        meaning: 'Estrella que nos da luz y calor'
+      },
+      {
+        word: 'CAMINO',
+        letters: ['C', 'A', 'M', 'I', 'N', 'O'],
+        syllables: ['CA', 'MI', 'NO'],
+        emoji: '🛤️',
+        meaning: 'Vía por donde se transita'
+      }
+    ];
+
+    // Banco de ítems para el juego: "¿Qué es qué?"
+    const CLASSIFIER_ITEMS = [
+      { text: 'A', type: 'LETRA', hint: 'Es una vocal solita' },
+      { text: 'CHOCOLATE', type: 'PALABRA', hint: 'Delicioso alimento dulce' },
+      { text: 'TRA', type: 'SÍLABA', hint: 'Un golpe de voz sin significado por sí solo' },
+      { text: 'M', type: 'LETRA', hint: 'Es una consonante del abecedario' },
+      { text: 'ESCUELA', type: 'PALABRA', hint: 'Lugar donde aprendemos juntos' },
+      { text: 'PLO', type: 'SÍLABA', hint: 'Unión de consonante y vocal en un golpe' },
+      { text: 'R', type: 'LETRA', hint: 'Una letra con sonido suave o fuerte' },
+      { text: 'SOL', type: 'PALABRA', hint: 'Tiene una sola sílaba y tiene significado' },
+      { text: 'BLE', type: 'SÍLABA', hint: 'Un golpe de voz' },
+      { text: 'MARIPOSA', type: 'PALABRA', hint: 'Insecto de hermosas alas' },
+      { text: 'P', type: 'LETRA', hint: 'Consonante que suena explosiva' },
+      { text: 'GUI', type: 'SÍLABA', hint: 'Sílaba con g, u y vocal i' },
+      { text: 'LIBRO', type: 'PALABRA', hint: 'Conjunto de páginas con historias' },
+      { text: 'Z', type: 'LETRA', hint: 'La última letra del abecedario' },
+      { text: 'MON', type: 'SÍLABA', hint: 'Parte de una palabra como montaña' }
+    ];
+
+    // Banco para la Máquina de Sílabas y Palmadas
+    const SYLLABLE_WORDS = [
+      { word: 'PAN', count: 1, type: 'Monosílaba', emoji: '🥖', breakdown: 'PAN' },
+      { word: 'GATO', count: 2, type: 'Bisílaba', emoji: '🐱', breakdown: 'GA - TO' },
+      { word: 'VENTANA', count: 3, type: 'Trisílaba', emoji: '🪟', breakdown: 'VEN - TA - NA' },
+      { word: 'ELEFANTE', count: 4, type: 'Polisílaba', emoji: '🐘', breakdown: 'E - LE - FAN - TE' },
+      { word: 'TREN', count: 1, type: 'Monosílaba', emoji: '🚆', breakdown: 'TREN' },
+      { word: 'LÁPIZ', count: 2, type: 'Bisílaba', emoji: '✏️', breakdown: 'LÁ - PIZ' },
+      { word: 'ESTRELLA', count: 3, type: 'Trisílaba', emoji: '⭐', breakdown: 'ES - TRE - LLA' },
+      { word: 'ORDENADOR', count: 4, type: 'Polisílaba', emoji: '💻', breakdown: 'OR - DE - NA - DOR' },
+      { word: 'FLOR', count: 1, type: 'Monosílaba', emoji: '🌸', breakdown: 'FLOR' },
+      { word: 'BARCO', count: 2, type: 'Bisílaba', emoji: '⛵', breakdown: 'BAR - CO' }
+    ];
+
+    // Banco para el Taller Constructor
+    const BUILDER_CHALLENGES = [
+      { word: 'COHETE', syllables: ['CO', 'HE', 'TE'], emoji: '🚀', clue: 'Vehículo que viaja al espacio' },
+      { word: 'PLÁTANO', syllables: ['PLÁ', 'TA', 'NO'], emoji: '🍌', clue: 'Fruta amarilla rica en potasio' },
+      { word: 'TORTUGA', syllables: ['TOR', 'TU', 'GA'], emoji: '🐢', clue: 'Animal con caparazón que camina despacio' },
+      { word: 'CASTILLO', syllables: ['CAS', 'TI', 'LLO'], emoji: '🏰', clue: 'Fortaleza medieval con murallas y torres' },
+      { word: 'GUITARRA', syllables: ['GUI', 'TA', 'RRA'], emoji: '🎸', clue: 'Instrumento musical de cuerdas' },
+      { word: 'BICICLETA', syllables: ['BI', 'CI', 'CLE', 'TA'], emoji: '🚲', clue: 'Vehículo de dos ruedas con pedales' }
+    ];
+
+    /* =====================================================================
+       3. ESTADO GLOBAL DEL JUEGO
+       ===================================================================== */
+    let currentScore = 0;
+    let currentStreak = 0;
+
+    function addScore(points) {
+      currentScore += points;
+      currentStreak += 1;
+      document.getElementById('scoreDisplay').innerText = currentScore;
+      document.getElementById('streakDisplay').innerText = currentStreak;
+
+      if (currentScore > 0 && currentScore % 100 === 0) {
+        showVictory("¡Impresionante! Has alcanzado los " + currentScore + " puntos. ¡Toda la clase sois unos campeones!");
+      }
+    }
+
+    function resetStreak() {
+      currentStreak = 0;
+      document.getElementById('streakDisplay').innerText = currentStreak;
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('feedbackToast');
+      toast.className = `feedback-toast ${type} show`;
+      toast.innerHTML = (type === 'success' ? '✨ ' : '⚠️ ') + message;
+      setTimeout(() => {
+        toast.className = 'feedback-toast';
+      }, 1900);
+    }
+
+    /* =====================================================================
+       4. CONTROL DE PESTAÑAS Y MODOS
+       ===================================================================== */
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const viewPanels = document.querySelectorAll('.view-panel');
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        getAudioContext(); // Despierta audio si procede
+        navButtons.forEach(b => b.classList.remove('active'));
+        viewPanels.forEach(p => p.classList.remove('active'));
+
+        btn.classList.add('active');
+        const targetId = `panel-${btn.dataset.target}`;
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+
+    /* =====================================================================
+       5. LÓGICA DEL LABORATORIO VISUAL (PANEL 1)
+       ===================================================================== */
+    function initLab() {
+      const picker = document.getElementById('labWordPicker');
+      picker.innerHTML = '';
+
+      LAB_EXAMPLES.forEach((item, index) => {
+        const chip = document.createElement('div');
+        chip.className = `word-chip ${index === 0 ? 'selected' : ''}`;
+        chip.innerText = `${item.emoji} ${item.word}`;
+        chip.onclick = () => {
+          document.querySelectorAll('.word-chip').forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          renderLabStage(item);
+          playSound('success');
+        };
+        picker.appendChild(chip);
+      });
+
+      renderLabStage(LAB_EXAMPLES[0]);
+    }
+
+    function renderLabStage(item) {
+      const stage = document.getElementById('assemblyStage');
+      stage.innerHTML = `
+        <!-- LETRAS -->
+        <div class="stage-card" style="border-color: #93c5fd;">
+          <div class="stage-label" style="color: #1d4ed8;">1. Letras sueltas</div>
+          <div class="stage-content" style="color: #2563eb;">
+            ${item.letters.map(l => `<span style="display:inline-block; padding:0 4px; background:#eff6ff; border-radius:8px;">${l}</span>`).join(' ')}
+          </div>
+          <small style="color:#64748b;">${item.letters.length} sonidos</small>
+        </div>
+
+        <div class="arrow-icon">➔</div>
+
+        <!-- SÍLABAS -->
+        <div class="stage-card" style="border-color: #fcd34d;">
+          <div class="stage-label" style="color: #b45309;">2. Golpes de voz (Sílabas)</div>
+          <div class="stage-content" style="color: #d97706;">
+            ${item.syllables.join(' • ')}
+          </div>
+          <small style="color:#64748b;">${item.syllables.length} ${item.syllables.length === 1 ? 'golpe' : 'golpes de voz'}</small>
+        </div>
+
+        <div class="arrow-icon">➔</div>
+
+        <!-- PALABRA -->
+        <div class="stage-card" style="border-color: #6ee7b7; background: #ecfdf5;">
+          <div class="stage-label" style="color: #047857;">3. Palabra completa</div>
+          <div class="stage-content" style="color: #059669;">
+            ${item.word} ${item.emoji}
+          </div>
+          <small style="color:#047857; font-weight:700;">¡Significado propio!</small>
+        </div>
+      `;
+    }
+
+    /* =====================================================================
+       6. LÓGICA DEL JUEGO "¿QUÉ ES QUÉ?" (PANEL 2)
+       ===================================================================== */
+    let classifierIndex = 0;
+    let shuffledClassifier = [];
+
+    function initClassifierGame() {
+      shuffledClassifier = [...CLASSIFIER_ITEMS].sort(() => Math.random() - 0.5);
+      classifierIndex = 0;
+      loadClassifierRound();
+    }
+
+    function loadClassifierRound() {
+      if (classifierIndex >= shuffledClassifier.length) {
+        shuffledClassifier = [...CLASSIFIER_ITEMS].sort(() => Math.random() - 0.5);
+        classifierIndex = 0;
+      }
+      const item = shuffledClassifier[classifierIndex];
+      const targetElem = document.getElementById('classifierTarget');
+      targetElem.innerText = item.text;
+      
+      // Color temático sutil para dar emoción
+      targetElem.style.color = '#1e293b';
+      document.getElementById('classifierHint').innerText = "Toca qué tipo de elemento es:";
+    }
+
+    function checkClassification(chosenType) {
+      const current = shuffledClassifier[classifierIndex];
+      if (chosenType === current.type) {
+        playSound('success');
+        showToast(`¡Correcto! "${current.text}" es una ${current.type}`, 'success');
+        addScore(15);
+        classifierIndex++;
+        setTimeout(loadClassifierRound, 500);
+      } else {
+        playSound('error');
+        resetStreak();
+        showToast(`Casi... "${current.text}" no es ${chosenType}. ¡Inténtalo de nuevo!`, 'error');
+      }
+    }
+
+    /* =====================================================================
+       7. LÓGICA DE LA MÁQUINA DE SÍLABAS (PANEL 3)
+       ===================================================================== */
+    let syllableWordIndex = 0;
+    let currentClaps = 0;
+
+    function initSyllableGame() {
+      syllableWordIndex = Math.floor(Math.random() * SYLLABLE_WORDS.length);
+      loadSyllableRound();
+
+      document.getElementById('btnClapAction').onclick = () => {
+        playSound('clap');
+        currentClaps++;
+        updateClapDots();
+      };
+
+      document.getElementById('btnResetClaps').onclick = () => {
+        currentClaps = 0;
+        updateClapDots();
+      };
+    }
+
+    function loadSyllableRound() {
+      const item = SYLLABLE_WORDS[syllableWordIndex];
+      document.getElementById('clapWord').innerText = item.word;
+      document.getElementById('clapEmoji').innerText = item.emoji;
+      currentClaps = 0;
+      updateClapDots();
+    }
+
+    function updateClapDots() {
+      const container = document.getElementById('clapDots');
+      container.innerHTML = '';
+      const displayCount = Math.min(Math.max(currentClaps, 4), 6);
+
+      for (let i = 1; i <= displayCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = `clap-dot ${i <= currentClaps ? 'active' : ''}`;
+        dot.innerText = i <= currentClaps ? '👏' : i;
+        container.appendChild(dot);
+      }
+    }
+
+    function checkSyllableType(countSelected) {
+      const item = SYLLABLE_WORDS[syllableWordIndex];
+      const isCorrect = (countSelected >= 4 && item.count >= 4) || (countSelected === item.count);
+
+      if (isCorrect) {
+        playSound('success');
+        launchConfetti();
+        showToast(`¡Excelente! "${item.word}" tiene ${item.count} ${item.count === 1 ? 'sílaba' : 'sílabas'} (${item.type}): ${item.breakdown}`, 'success');
+        addScore(20);
+        syllableWordIndex = (syllableWordIndex + 1) % SYLLABLE_WORDS.length;
+        setTimeout(loadSyllableRound, 900);
+      } else {
+        playSound('error');
+        resetStreak();
+        showToast(`¡Vuelve a dar las palmadas! "${item.word}" no tiene ${countSelected} ${countSelected === 1 ? 'sílaba' : 'sílabas'}.`, 'error');
+      }
+    }
+
+    /* =====================================================================
+       8. LÓGICA DEL TALLER DEL CONSTRUCTOR (PANEL 4)
+       ===================================================================== */
+    let builderIndex = 0;
+    let selectedSyllables = [];
+
+    function initBuilderGame() {
+      builderIndex = 0;
+      loadBuilderRound();
+
+      document.getElementById('builderResetBtn').onclick = resetBuilderSlots;
+      document.getElementById('builderCheckBtn').onclick = verifyBuiltWord;
+    }
+
+    function loadBuilderRound() {
+      const challenge = BUILDER_CHALLENGES[builderIndex];
+      document.getElementById('builderEmoji').innerText = challenge.emoji;
+      document.getElementById('builderClueText').innerText = challenge.clue;
+      
+      resetBuilderSlots();
+    }
+
+    function resetBuilderSlots() {
+      selectedSyllables = [];
+      const challenge = BUILDER_CHALLENGES[builderIndex];
+      const slotsContainer = document.getElementById('builderSlots');
+      const poolContainer = document.getElementById('builderPool');
+
+      slotsContainer.innerHTML = `<span style="color:#94a3b8; font-weight:700;">Toca las sílabas abajo en orden</span>`;
+      poolContainer.innerHTML = '';
+
+      // Barajar sílabas
+      const scrambled = [...challenge.syllables].sort(() => Math.random() - 0.5);
+
+      scrambled.forEach((syl, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'syllable-tile';
+        btn.innerText = syl;
+        btn.onclick = () => selectSyllable(syl, btn);
+        poolContainer.appendChild(btn);
+      });
+    }
+
+    function selectSyllable(syl, buttonElement) {
+      playSound('clap');
+      selectedSyllables.push(syl);
+      buttonElement.classList.add('used');
+
+      const slotsContainer = document.getElementById('builderSlots');
+      if (selectedSyllables.length === 1) {
+        slotsContainer.innerHTML = '';
+      }
+
+      const tile = document.createElement('div');
+      tile.className = 'slot-tile';
+      tile.innerText = syl;
+      slotsContainer.appendChild(tile);
+    }
+
+    function verifyBuiltWord() {
+      const challenge = BUILDER_CHALLENGES[builderIndex];
+      const targetWord = challenge.syllables.join('');
+      const attemptWord = selectedSyllables.join('');
+
+      if (attemptWord === targetWord) {
+        playSound('win');
+        launchConfetti();
+        showToast(`¡MAGNÍFICO! Formaste la palabra: ${challenge.word} ${challenge.emoji}`, 'success');
+        addScore(25);
+        builderIndex = (builderIndex + 1) % BUILDER_CHALLENGES.length;
+        setTimeout(loadBuilderRound, 1200);
+      } else {
+        playSound('error');
+        resetStreak();
+        showToast('Esa palabra no está bien ordenada. ¡Pulsa deshacer y prueba de nuevo!', 'error');
+      }
+    }
+
+    /* =====================================================================
+       9. PANTALLA COMPLETA Y SONIDO
+       ===================================================================== */
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    soundToggleBtn.onclick = () => {
+      soundEnabled = !soundEnabled;
+      soundToggleBtn.innerText = soundEnabled ? '🔊' : '🔇';
+    };
+
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    fullscreenBtn.onclick = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        fullscreenBtn.innerText = '✕';
+      } else {
+        document.exitFullscreen().catch(() => {});
+        fullscreenBtn.innerText = '⛶';
+      }
+    };
+
+    function showVictory(msg) {
+      playSound('win');
+      launchConfetti();
+      document.getElementById('modalMessage').innerText = msg;
+      document.getElementById('victoryModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('victoryModal').classList.remove('active');
+    }
+
+    /* =====================================================================
+       10. MOTOR DE CONFETI VECTORIAL EN CANVAS
+       ===================================================================== */
+    const canvas = document.getElementById('confettiCanvas');
+    const ctxCanvas = canvas.getContext('2d');
+    let confettiPieces = [];
+    let animationFrameId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      confettiPieces = [];
+      const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#facc15'];
+      for (let i = 0; i < 90; i++) {
+        confettiPieces.push({
+          x: canvas.width / 2,
+          y: canvas.height * 0.4,
+          r: Math.random() * 8 + 4,
+          dx: (Math.random() - 0.5) * 16,
+          dy: (Math.random() - 0.8) * 16,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          tilt: Math.random() * 10,
+          tiltAngle: Math.random() * Math.PI,
+          tiltAngleInc: Math.random() * 0.08 + 0.04
+        });
+      }
+      if (!animationFrameId) {
+        animateConfetti();
+      }
+    }
+
+    function animateConfetti() {
+      ctxCanvas.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+
+      confettiPieces.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        p.dy += 0.35; // Gravedad
+        p.dx *= 0.98;
+        p.tiltAngle += p.tiltAngleInc;
+        p.tilt = Math.sin(p.tiltAngle) * 12;
+
+        if (p.y < canvas.height) {
+          alive = true;
+          ctxCanvas.beginPath();
+          ctxCanvas.lineWidth = p.r;
+          ctxCanvas.strokeStyle = p.color;
+          ctxCanvas.moveTo(p.x + p.tilt + p.r / 2, p.y);
+          ctxCanvas.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+          ctxCanvas.stroke();
+        }
+      });
+
+      if (alive) {
+        animationFrameId = requestAnimationFrame(animateConfetti);
+      } else {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+        ctxCanvas.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* INICIALIZACIÓN GLOBAL */
+    window.addEventListener('DOMContentLoaded', () => {
+      initLab();
+      initClassifierGame();
+      initSyllableGame();
+      initBuilderGame();
+    });
+  </script>
+</body>
+</html>
