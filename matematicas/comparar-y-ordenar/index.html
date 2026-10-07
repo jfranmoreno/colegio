@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aventura Matemática: Comparar y Ordenar hasta el 9999</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            quicksand: ['Quicksand', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              yellow: '#FFDE59',
+              green: '#7ED957',
+              blue: '#5CE1E6',
+              purple: '#CB6CE6',
+              coral: '#FF6666',
+              cream: '#FFFDF6'
+            }
+          },
+          boxShadow: {
+            'bubbly': '0 8px 0px rgba(0, 0, 0, 0.15)',
+            'bubbly-pressed': '0 2px 0px rgba(0, 0, 0, 0.15)',
+            'card': '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    
+    .btn-3d {
+      transition: all 0.1s ease-in-out;
+      transform: translateY(0);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0px rgba(0,0,0,0.2) !important;
+    }
+
+    @keyframes bounce-gentle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-gentle {
+      animation: bounce-gentle 2.4s infinite ease-in-out;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle {
+      animation: wiggle 0.4s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      70% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pop-in {
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Estilo para los bloques multibase/valor posicional */
+    .um-badge { background-color: #8B5CF6; color: white; }
+    .c-badge { background-color: #3B82F6; color: white; }
+    .d-badge { background-color: #EF4444; color: white; }
+    .u-badge { background-color: #10B981; color: white; }
+
+    /* Canvas para confeti */
+    #confettiCanvas {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body class="bg-[#F2F7FA] text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden">
+  <canvas id="confettiCanvas"></canvas>
+
+  <header class="bg-white border-b-4 border-slate-200 px-4 py-3 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Logotipo e Info de Nivel -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl shadow-md transform -rotate-3">
+          🐊
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-black tracking-tight text-slate-800 flex items-center gap-2">
+            Mundo Cifras <span class="bg-indigo-100 text-indigo-700 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">3º Primaria</span>
+          </h1>
+          <p class="text-xs text-slate-500 font-semibold hidden sm:block">Comparación y ordenación de números hasta 9.999</p>
+        </div>
+      </div>
+
+      <!-- Marcador Infantil de Clase -->
+      <div class="flex items-center gap-2 md:gap-4 ml-auto">
+        <!-- Puntos -->
+        <div class="bg-amber-50 border-2 border-amber-300 px-3.5 py-1.5 rounded-2xl flex items-center gap-2 shadow-sm">
+          <span class="text-xl">⭐</span>
+          <div>
+            <div class="text-[10px] font-bold text-amber-600 uppercase leading-none">Puntos</div>
+            <div id="statPoints" class="text-lg font-black text-amber-700 leading-tight">0</div>
+          </div>
+        </div>
+
+        <!-- Racha de Aciertos -->
+        <div class="bg-rose-50 border-2 border-rose-300 px-3.5 py-1.5 rounded-2xl flex items-center gap-2 shadow-sm">
+          <span class="text-xl">🔥</span>
+          <div>
+            <div class="text-[10px] font-bold text-rose-600 uppercase leading-none">Racha</div>
+            <div id="statStreak" class="text-lg font-black text-rose-700 leading-tight">0</div>
+          </div>
+        </div>
+
+        <!-- Botón de Silencio de Sonidos -->
+        <button id="toggleAudioBtn" class="w-11 h-11 bg-slate-100 hover:bg-slate-200 border-2 border-slate-300 rounded-2xl flex items-center justify-center text-xl transition-colors" title="Sonido Sí/No">
+          🔊
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto w-full p-4 flex-1 flex flex-col">
+    <!-- Pestañas de Navegación de Modos -->
+    <nav class="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3 mb-6">
+      <button onclick="setGameMode('gloton')" id="tab-gloton" class="mode-tab py-3 px-3 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-amber-400 border-amber-600 text-amber-950 shadow-md transform scale-[1.02]">
+        <span class="text-xl">🐊</span> El Monstruo Glotón
+      </button>
+
+      <button onclick="setGameMode('ordenar')" id="tab-ordenar" class="mode-tab py-3 px-3 rounded-2xl font-bold text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-white border-slate-300 text-slate-600 hover:bg-sky-50">
+        <span class="text-xl">🚀</span> Cohetes en Pista
+      </button>
+
+      <button onclick="setGameMode('sabio')" id="tab-sabio" class="mode-tab py-3 px-3 rounded-2xl font-bold text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-white border-slate-300 text-slate-600 hover:bg-purple-50">
+        <span class="text-xl">🦉</span> El Sabio (V o F)
+      </button>
+
+      <button onclick="setGameMode('timer')" id="tab-timer" class="mode-tab py-3 px-3 rounded-2xl font-bold text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-white border-slate-300 text-slate-600 hover:bg-rose-50">
+        <span class="text-xl">⚡</span> Reto 60 Segundos
+      </button>
+    </nav>
+
+    <!-- MODO 1: EL MONSTRUO GLOTÓN -->
+    <section id="section-gloton" class="game-section flex-1 flex flex-col justify-between">
+      <div class="bg-white rounded-3xl p-5 md:p-8 border-4 border-amber-200 shadow-card flex-1 flex flex-col justify-between">
+        
+        <!-- Encabezado de la actividad e Instrucciones -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 border-b-2 border-slate-100 pb-4">
+          <div class="text-center sm:text-left">
+            <span class="inline-block bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold mb-1">Signos: Mayor (>), Menor (<) o Igual (=)</span>
+            <h2 class="text-xl md:text-2xl font-black text-slate-800">¿Qué número se come el monstruo goloso?</h2>
+          </div>
+          <button id="toggleDecompGloton" class="px-4 py-2 bg-indigo-50 border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 transition">
+            <span>🔍</span> <span id="decompLabel">Ver Desglose (UM-C-D-U)</span>
+          </button>
+        </div>
+
+        <!-- Tarjetas de Comparación de 4 Cifras -->
+        <div class="my-6 md:my-10 grid grid-cols-1 md:grid-cols-3 items-center gap-4 md:gap-6">
+          
+          <!-- Tarjeta Izquierda -->
+          <div class="bg-sky-50 border-4 border-sky-300 rounded-3xl p-5 text-center shadow-md">
+            <span class="text-xs uppercase font-extrabold tracking-wider text-sky-600">Número Izquierdo</span>
+            <div id="glotonNumA" class="text-4xl md:text-6xl font-black text-sky-950 my-2 tracking-tight">4.520</div>
+            
+            <!-- Desglose visual (opcional) -->
+            <div id="decompBoxA" class="grid grid-cols-4 gap-1 pt-2 border-t-2 border-sky-200 hidden">
+              <div class="rounded-lg p-1 um-badge font-bold text-xs"><div class="text-[9px]">UM</div><span id="umA">4</span></div>
+              <div class="rounded-lg p-1 c-badge font-bold text-xs"><div class="text-[9px]">C</div><span id="cA">5</span></div>
+              <div class="rounded-lg p-1 d-badge font-bold text-xs"><div class="text-[9px]">D</div><span id="dA">2</span></div>
+              <div class="rounded-lg p-1 u-badge font-bold text-xs"><div class="text-[9px]">U</div><span id="uA">0</span></div>
+            </div>
+          </div>
+
+          <!-- Casilla Central del Signo -->
+          <div class="flex flex-col items-center justify-center">
+            <div id="glotonDropZone" class="w-24 h-24 md:w-32 md:h-32 bg-amber-50 border-4 border-dashed border-amber-400 rounded-3xl flex items-center justify-center text-5xl md:text-6xl font-black text-amber-600 shadow-inner">
+              ?
+            </div>
+            <div class="text-xs font-bold text-slate-400 mt-2">Elige el signo abajo 👇</div>
+          </div>
+
+          <!-- Tarjeta Derecha -->
+          <div class="bg-emerald-50 border-4 border-emerald-300 rounded-3xl p-5 text-center shadow-md">
+            <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-600">Número Derecho</span>
+            <div id="glotonNumB" class="text-4xl md:text-6xl font-black text-emerald-950 my-2 tracking-tight">4.502</div>
+            
+            <!-- Desglose visual (opcional) -->
+            <div id="decompBoxB" class="grid grid-cols-4 gap-1 pt-2 border-t-2 border-emerald-200 hidden">
+              <div class="rounded-lg p-1 um-badge font-bold text-xs"><div class="text-[9px]">UM</div><span id="umB">4</span></div>
+              <div class="rounded-lg p-1 c-badge font-bold text-xs"><div class="text-[9px]">C</div><span id="cB">5</span></div>
+              <div class="rounded-lg p-1 d-badge font-bold text-xs"><div class="text-[9px]">D</div><span id="dB">0</span></div>
+              <div class="rounded-lg p-1 u-badge font-bold text-xs"><div class="text-[9px]">U</div><span id="uB">2</span></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Botones Táctiles Gigantes de Selección -->
+        <div class="grid grid-cols-3 gap-3 md:gap-6 max-w-xl mx-auto w-full mb-2">
+          
+          <button onclick="handleGlotonAnswer('<')" class="btn-3d py-4 px-2 md:py-6 rounded-2xl bg-amber-400 hover:bg-amber-300 border-b-8 border-amber-600 shadow-bubbly text-amber-950 font-black flex flex-col items-center justify-center gap-1 active:border-b-2">
+            <span class="text-3xl md:text-5xl">&lt;</span>
+            <span class="text-xs md:text-sm font-bold tracking-wide">MENOR QUE</span>
+          </button>
+
+          <button onclick="handleGlotonAnswer('=')" class="btn-3d py-4 px-2 md:py-6 rounded-2xl bg-blue-400 hover:bg-blue-300 border-b-8 border-blue-600 shadow-bubbly text-blue-950 font-black flex flex-col items-center justify-center gap-1 active:border-b-2">
+            <span class="text-3xl md:text-5xl">=</span>
+            <span class="text-xs md:text-sm font-bold tracking-wide">IGUAL QUE</span>
+          </button>
+
+          <button onclick="handleGlotonAnswer('>')" class="btn-3d py-4 px-2 md:py-6 rounded-2xl bg-emerald-400 hover:bg-emerald-300 border-b-8 border-emerald-600 shadow-bubbly text-emerald-950 font-black flex flex-col items-center justify-center gap-1 active:border-b-2">
+            <span class="text-3xl md:text-5xl">&gt;</span>
+            <span class="text-xs md:text-sm font-bold tracking-wide">MAYOR QUE</span>
+          </button>
+
+        </div>
+
+        <!-- Mensaje de Feedback Formativo -->
+        <div id="glotonFeedback" class="min-h-[48px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold hidden">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODO 2: ORDENAR COHETES -->
+    <section id="section-ordenar" class="game-section flex-1 flex flex-col justify-between hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-8 border-4 border-sky-200 shadow-card flex-1 flex flex-col justify-between">
+        
+        <div>
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-2 border-b-2 border-slate-100 pb-3 mb-4">
+            <div>
+              <span class="inline-block bg-sky-100 text-sky-800 text-xs px-3 py-1 rounded-full font-bold mb-1">Secuencias Numéricas</span>
+              <h2 class="text-xl md:text-2xl font-black text-slate-800">Coloca los cohetes en orden correcto</h2>
+            </div>
+            <div id="orderTargetBadge" class="bg-indigo-600 text-white font-extrabold text-sm md:text-base px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2">
+              <span id="orderCriteriaText">De MENOR a MAYOR</span> <span class="text-lg">📈</span>
+            </div>
+          </div>
+          <p class="text-xs md:text-sm text-slate-500 font-semibold mb-3">Toca un número del banco para llevarlo a la pista, o tócalo en la pista si deseas devolverlo.</p>
+        </div>
+
+        <!-- Zona 1: Pista de Despegue (Destino de Ordenación) -->
+        <div class="bg-slate-900 rounded-3xl p-4 md:p-6 border-4 border-indigo-900 shadow-inner">
+          <div class="text-indigo-300 font-bold text-xs uppercase tracking-wider mb-3 flex items-center justify-between">
+            <span>🚀 Pista de Lanzamiento (Tu orden)</span>
+            <span id="orderSlotCounter" class="text-indigo-400">0/5 Colocados</span>
+          </div>
+
+          <div id="rocketDropRow" class="grid grid-cols-4 md:grid-cols-5 gap-2 md:gap-3 min-h-[105px] items-center">
+            <!-- Espacios dinámicos -->
+          </div>
+        </div>
+
+        <!-- Zona 2: Banco de Cohetes Disponibles -->
+        <div class="my-4">
+          <div class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-2">
+            Cohetes listos para ubicar (Toca para seleccionar):
+          </div>
+          <div id="rocketPoolRow" class="flex flex-wrap justify-center gap-2 md:gap-3 min-h-[75px] p-2 bg-slate-100 rounded-2xl border-2 border-dashed border-slate-300">
+            <!-- Botones dinámicos de cohetes -->
+          </div>
+        </div>
+
+        <!-- Botones de Acción de Ordenación -->
+        <div class="flex items-center justify-center gap-4 pt-2">
+          <button onclick="resetCurrentOrderSlots()" class="px-5 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 font-extrabold text-slate-700 text-sm md:text-base transition">
+            🔄 Reiniciar Pista
+          </button>
+          <button id="btnCheckOrder" onclick="verifyRocketOrder()" class="btn-3d px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-black text-base md:text-lg border-b-6 border-emerald-700 shadow-bubbly active:border-b-2">
+            ✨ ¡Comprobar Pista!
+          </button>
+        </div>
+
+        <div id="orderFeedback" class="min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold hidden">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODO 3: EL SABIO DE LOS NÚMEROS (VERDADERO O FALSO) -->
+    <section id="section-sabio" class="game-section flex-1 flex flex-col justify-between hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-8 border-4 border-purple-200 shadow-card flex-1 flex flex-col justify-between">
+        
+        <div class="border-b-2 border-slate-100 pb-3 flex justify-between items-center">
+          <div>
+            <span class="inline-block bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full font-bold mb-1">Razonamiento y Lectura Matemática</span>
+            <h2 class="text-xl md:text-2xl font-black text-slate-800">El Reto del Búho Sabio</h2>
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-2xl">
+            🦉
+          </div>
+        </div>
+
+        <!-- Tarjeta de Afirmación Matemática -->
+        <div class="my-6 md:my-8 bg-gradient-to-br from-purple-50 to-indigo-50 border-4 border-purple-300 rounded-3xl p-6 md:p-10 text-center shadow-md relative overflow-hidden">
+          <div class="text-xs uppercase tracking-widest font-extrabold text-purple-500 mb-2">¿Es esta afirmación verdadera o falsa?</div>
+          <div id="sabioStatement" class="text-2xl md:text-4xl font-black text-slate-800 leading-snug py-4 px-2">
+            "El número 6.409 es menor que 6.049"
+          </div>
+          <div id="sabioClue" class="text-xs md:text-sm text-purple-700 font-semibold bg-white/70 inline-block px-4 py-1.5 rounded-full mt-2 border border-purple-200">
+            Pista: Fíjate en las Centenas y las Decenas.
+          </div>
+        </div>
+
+        <!-- Botones Grandes de Elección -->
+        <div class="grid grid-cols-2 gap-4 md:gap-8 max-w-lg mx-auto w-full mb-3">
+          <button onclick="handleSabioAnswer(true)" class="btn-3d py-6 md:py-8 rounded-3xl bg-emerald-500 hover:bg-emerald-400 border-b-8 border-emerald-700 text-white font-black text-xl md:text-3xl flex flex-col items-center justify-center gap-2 shadow-bubbly active:border-b-2">
+            <span class="text-3xl md:text-5xl">👍</span>
+            <span>VERDADERO</span>
+          </button>
+
+          <button onclick="handleSabioAnswer(false)" class="btn-3d py-6 md:py-8 rounded-3xl bg-rose-500 hover:bg-rose-400 border-b-8 border-rose-700 text-white font-black text-xl md:text-3xl flex flex-col items-center justify-center gap-2 shadow-bubbly active:border-b-2">
+            <span class="text-3xl md:text-5xl">👎</span>
+            <span>FALSO</span>
+          </button>
+        </div>
+
+        <div id="sabioFeedback" class="min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold hidden">
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MODO 4: RETO RÁPIDO 60s -->
+    <section id="section-timer" class="game-section flex-1 flex flex-col justify-between hidden">
+      <div class="bg-white rounded-3xl p-5 md:p-8 border-4 border-rose-200 shadow-card flex-1 flex flex-col justify-between">
+        
+        <!-- Vista Previa al Inicio -->
+        <div id="timerStartScreen" class="py-10 text-center flex flex-col items-center justify-center gap-5">
+          <div class="w-24 h-24 bg-rose-100 text-rose-600 rounded-3xl flex items-center justify-center text-5xl shadow-md animate-gentle">
+            ⏱️
+          </div>
+          <div>
+            <h2 class="text-3xl font-black text-slate-800">¡Reto 60 Segundos en Clase!</h2>
+            <p class="text-slate-600 max-w-md mx-auto text-sm md:text-base mt-2 font-medium">
+              Demuestra tu agilidad mental resolviendo todas las preguntas de comparación y orden posibles antes de que se acabe el tiempo.
+            </p>
+          </div>
+
+          <div class="bg-amber-50 border-2 border-amber-300 px-6 py-3 rounded-2xl text-amber-800 font-bold text-sm">
+            🏆 Récord de la sesión: <span id="highRecordText" class="text-amber-950 font-black text-lg">0</span> aciertos
+          </div>
+
+          <button onclick="startTimerChallenge()" class="btn-3d px-10 py-5 rounded-3xl bg-rose-500 hover:bg-rose-400 border-b-8 border-rose-700 text-white font-black text-xl md:text-2xl shadow-bubbly active:border-b-2">
+            🚀 ¡Comenzar Desafío!
+          </button>
+        </div>
+
+        <!-- Pantalla de Juego en Vivo 60s -->
+        <div id="timerActiveScreen" class="hidden flex-1 flex flex-col justify-between">
+          <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">⏳</span>
+              <span class="font-black text-2xl text-rose-600" id="timerCountDown">60s</span>
+            </div>
+            <div class="w-1/2 bg-slate-100 h-4 rounded-full overflow-hidden p-0.5 border border-slate-300">
+              <div id="timerProgressBar" class="h-full bg-rose-500 rounded-full transition-all duration-1000" style="width: 100%;"></div>
+            </div>
+            <div class="font-black text-slate-700 text-base">
+              Aciertos: <span id="timerRoundScore" class="text-emerald-600 text-xl font-black">0</span>
+            </div>
+          </div>
+
+          <!-- Pregunta Dinámica Contrarreloj -->
+          <div id="timerPromptContainer" class="my-6 p-6 rounded-3xl bg-slate-50 border-3 border-slate-200 text-center flex-1 flex flex-col justify-center items-center">
+            <!-- Se inyecta la pregunta activa -->
+          </div>
+
+          <!-- Botonera Dinámica según la pregunta -->
+          <div id="timerActionContainer" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-lg mx-auto w-full mb-3">
+            <!-- Botones inyectados dinámicamente -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Modal de Resumen y Trofeos -->
+    <div id="resultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 text-center shadow-2xl border-4 border-amber-300 pop-in">
+        <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 border-2 border-amber-300">
+          🏆
+        </div>
+        <h3 id="modalTitle" class="text-2xl md:text-3xl font-black text-slate-800">¡Genial Trabajo!</h3>
+        <p id="modalBody" class="text-slate-600 text-sm md:text-base my-3 font-semibold">Has superado la ronda demostrando tus habilidades con los números de 4 cifras.</p>
+        <div id="modalStats" class="bg-slate-50 rounded-2xl p-4 my-4 border border-slate-200 text-sm font-bold text-slate-700">
+          <!-- Estadísticas -->
+        </div>
+        <button onclick="closeModal()" class="w-full py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 border-b-6 border-amber-600 text-amber-950 font-black text-lg transition">
+          Continuar Jugando 🎈
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t-2 border-slate-200 py-3 px-4 text-center text-xs font-bold text-slate-400">
+    Matemáticas 3º de Educación Primaria • Números hasta el 9.999 (Unidades de Millar, Centenas, Decenas y Unidades)
+  </footer>
+
+  <script>
+    /* =========================================================================
+       SISTEMA DE AUDIO INTEGRADO CON WEB AUDIO API (Sin ficheros externos)
+       ========================================================================= */
+    class MathAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, duration = 0.15, type = 'sine', startTimeOffset = 0) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTimeOffset);
+
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime + startTimeOffset);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + startTimeOffset + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(this.ctx.currentTime + startTimeOffset);
+        osc.stop(this.ctx.currentTime + startTimeOffset + duration);
+      }
+
+      playClick() {
+        this.playTone(600, 0.05, 'triangle');
+      }
+
+      playSuccess() {
+        if (!this.enabled) return;
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // Do, Mi, Sol, Do alto
+        notes.forEach((freq, idx) => {
+          this.playTone(freq, 0.18, 'sine', idx * 0.08);
+        });
+      }
+
+      playError() {
+        if (!this.enabled) return;
+        this.init();
+        this.playTone(280, 0.18, 'sawtooth', 0);
+        this.playTone(220, 0.28, 'sawtooth', 0.15);
+      }
+
+      playFanfare() {
+        if (!this.enabled) return;
+        this.init();
+        const fanf = [523.25, 523.25, 523.25, 659.25, 783.99, 1046.50];
+        const times = [0, 0.12, 0.24, 0.36, 0.52, 0.72];
+        const durs = [0.1, 0.1, 0.1, 0.15, 0.2, 0.4];
+        fanf.forEach((f, i) => {
+          this.playTone(f, durs[i], 'triangle', times[i]);
+        });
+      }
+    }
+
+    const sound = new MathAudioEngine();
+
+    const state = {
+      points: 0,
+      streak: 0,
+      stars: 0,
+      mode: 'gloton', // 'gloton', 'ordenar', 'sabio', 'timer'
+      showDecomp: false,
+      // Modo Glotón
+      gloton: { numA: 0, numB: 0, sign: '' },
+      // Modo Ordenar
+      ordenar: {
+        ascending: true,
+        originalList: [],
+        currentSlots: [],
+        availableItems: []
+      },
+      // Modo Sabio
+      sabio: {
+        statement: '',
+        isTrue: true,
+        explanation: '',
+        clue: ''
+      },
+      // Modo Reto 60s
+      timer: {
+        intervalId: null,
+        remainingSeconds: 60,
+        currentScore: 0,
+        highScore: 0,
+        currentQuestion: null
+      }
+    };
+
+    // Formateador con punto de miles para España (ej: 4.520)
+    function formatSpanishNumber(num) {
+      return num.toLocaleString('es-ES');
+    }
+
+    // Generar un número aleatorio entre min y max (inclusive)
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Actualizar marcadores en UI
+    function updateScoreUI() {
+      document.getElementById('statPoints').textContent = state.points;
+      document.getElementById('statStreak').textContent = state.streak;
+    }
+
+    function addScore(pts = 10) {
+      state.points += pts;
+      state.streak += 1;
+      updateScoreUI();
+    }
+
+    function resetStreak() {
+      state.streak = 0;
+      updateScoreUI();
+    }
+
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerConfetti(count = 70) {
+      const colors = ['#FFDE59', '#7ED957', '#5CE1E6', '#CB6CE6', '#FF6666'];
+      for (let i = 0; i < count; i++) {
+        confettiParticles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.7) * 16,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+      if (!confettiAnimationId) {
+        animateConfetti();
+      }
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // Gravedad
+        p.rotation += p.rotSpeed;
+        p.opacity -= 0.012;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(p.opacity, 0);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+
+        if (p.opacity <= 0 || p.y > canvas.height) {
+          confettiParticles.splice(i, 1);
+        }
+      }
+
+      if (confettiParticles.length > 0) {
+        confettiAnimationId = requestAnimationFrame(animateConfetti);
+      } else {
+        confettiAnimationId = null;
+      }
+    }
+
+    // Generar pareja de números con trampa pedagógica para 3º de Primaria
+    function generateGlotonPair() {
+      const type = randomInt(1, 4);
+      let a = 0, b = 0;
+
+      if (type === 1) {
+        // Misma UM y C, varían D y U (Números cercanos / trampa)
+        const base = randomInt(1, 9) * 1000 + randomInt(0, 9) * 100;
+        const d1 = randomInt(1, 8);
+        const u1 = randomInt(1, 8);
+        a = base + d1 * 10 + u1;
+        b = base + u1 * 10 + d1; // Dígitos invertidos como 4.520 y 4.502
+      } else if (type === 2) {
+        // Varían en los Millares
+        const umA = randomInt(1, 8);
+        const umB = umA + randomInt(1, 2);
+        const rest = randomInt(100, 999);
+        a = umA * 1000 + rest;
+        b = umB * 1000 + rest;
+      } else if (type === 3) {
+        // Completamente idénticos para el signo igual "="
+        a = randomInt(1000, 9999);
+        b = a;
+      } else {
+        // Muy cercanos con ceros intermedios
+        const base = randomInt(1, 9) * 1000;
+        a = base + randomInt(10, 90);
+        b = base + randomInt(10, 90);
+      }
+
+      // 50% de probabilidad de alternar orden
+      if (Math.random() > 0.5 && type !== 3) {
+        const temp = a;
+        a = b;
+        b = temp;
+      }
+
+      state.gloton.numA = a;
+      state.gloton.numB = b;
+      state.gloton.sign = a > b ? '>' : (a < b ? '<' : '=');
+
+      // Actualizar DOM
+      document.getElementById('glotonNumA').textContent = formatSpanishNumber(a);
+      document.getElementById('glotonNumB').textContent = formatSpanishNumber(b);
+      document.getElementById('glotonDropZone').textContent = '?';
+      document.getElementById('glotonDropZone').className = 'w-24 h-24 md:w-32 md:h-32 bg-amber-50 border-4 border-dashed border-amber-400 rounded-3xl flex items-center justify-center text-5xl md:text-6xl font-black text-amber-600 shadow-inner';
+
+      // Descomposición
+      const splitDigits = (n) => {
+        const str = String(n).padStart(4, '0');
+        return { um: str[0], c: str[1], d: str[2], u: str[3] };
+      };
+
+      const dA = splitDigits(a);
+      const dB = splitDigits(b);
+
+      document.getElementById('umA').textContent = dA.um;
+      document.getElementById('cA').textContent = dA.c;
+      document.getElementById('dA').textContent = dA.d;
+      document.getElementById('uA').textContent = dA.u;
+
+      document.getElementById('umB').textContent = dB.um;
+      document.getElementById('cB').textContent = dB.c;
+      document.getElementById('dB').textContent = dB.d;
+      document.getElementById('uB').textContent = dB.u;
+
+      const fb = document.getElementById('glotonFeedback');
+      fb.classList.add('hidden');
+    }
+
+    function handleGlotonAnswer(selectedSign) {
+      sound.playClick();
+      const isCorrect = selectedSign === state.gloton.sign;
+      const dropZone = document.getElementById('glotonDropZone');
+      const fb = document.getElementById('glotonFeedback');
+      fb.classList.remove('hidden');
+
+      dropZone.textContent = selectedSign;
+
+      if (isCorrect) {
+        sound.playSuccess();
+        triggerConfetti(35);
+        addScore(15);
+
+        dropZone.className = 'w-24 h-24 md:w-32 md:h-32 bg-emerald-100 border-4 border-emerald-500 rounded-3xl flex items-center justify-center text-5xl md:text-6xl font-black text-emerald-700 shadow-md pop-in';
+        fb.className = 'min-h-[48px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-emerald-100 text-emerald-800 border-2 border-emerald-300 pop-in';
+        
+        const mouthText = state.gloton.sign === '>' ? '¡Exacto! La boca grande mira al mayor' : (state.gloton.sign === '<' ? '¡Muy bien! El pico pequeño apunta al menor' : '¡Son exactamente iguales!');
+        fb.innerHTML = `🌟 ${mouthText}: <strong>${formatSpanishNumber(state.gloton.numA)} ${state.gloton.sign} ${formatSpanishNumber(state.gloton.numB)}</strong>`;
+
+        setTimeout(() => {
+          generateGlotonPair();
+        }, 1600);
+      } else {
+        sound.playError();
+        resetStreak();
+
+        dropZone.className = 'w-24 h-24 md:w-32 md:h-32 bg-rose-100 border-4 border-rose-500 rounded-3xl flex items-center justify-center text-5xl md:text-6xl font-black text-rose-700 shadow-md pop-in';
+        fb.className = 'min-h-[48px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-rose-100 text-rose-800 border-2 border-rose-300 pop-in';
+        
+        let explanation = "";
+        const a = state.gloton.numA;
+        const b = state.gloton.numB;
+        if (Math.floor(a / 1000) !== Math.floor(b / 1000)) {
+          explanation = `Fíjate primero en las Unidades de Millar: ${Math.floor(a/1000)} UM frente a ${Math.floor(b/1000)} UM.`;
+        } else if (Math.floor((a%1000)/100) !== Math.floor((b%1000)/100)) {
+          explanation = `Tienen las mismas Unidades de Millar. Compara las Centenas.`;
+        } else {
+          explanation = `Compara las decenas y unidades cuidadosamente. ¡Tú puedes!`;
+        }
+
+        fb.innerHTML = `⚠️ ¡Casi! La respuesta correcta era <strong>${state.gloton.sign}</strong>. ${explanation}`;
+        setTimeout(() => {
+          generateGlotonPair();
+        }, 3200);
+      }
+    }
+
+    // Toggle de desglose UM C D U
+    document.getElementById('toggleDecompGloton').addEventListener('click', () => {
+      sound.playClick();
+      state.showDecomp = !state.showDecomp;
+      const boxA = document.getElementById('decompBoxA');
+      const boxB = document.getElementById('decompBoxB');
+      const label = document.getElementById('decompLabel');
+
+      if (state.showDecomp) {
+        boxA.classList.remove('hidden');
+        boxB.classList.remove('hidden');
+        label.textContent = 'Ocultar Desglose';
+      } else {
+        boxA.classList.add('hidden');
+        boxB.classList.add('hidden');
+        label.textContent = 'Ver Desglose (UM-C-D-U)';
+      }
+    });
+
+    function generateRocketRound() {
+      // 50% de probabilidad de menor a mayor o mayor a menor
+      state.ordenar.ascending = Math.random() > 0.4;
+      const count = 5;
+      const baseThousands = randomInt(1, 8) * 1000;
+      
+      const numbers = new Set();
+      while (numbers.size < count) {
+        // Mezcla de números con variaciones en centenas y decenas
+        const delta = randomInt(10, 950);
+        numbers.add(baseThousands + delta);
+      }
+
+      state.ordenar.originalList = Array.from(numbers);
+      // Mezclamos aleatoriamente para los botones
+      state.ordenar.availableItems = [...state.ordenar.originalList].sort(() => Math.random() - 0.5);
+      state.ordenar.currentSlots = [];
+
+      // Actualizar UI de Criterio
+      const critText = document.getElementById('orderCriteriaText');
+      const critBadge = document.getElementById('orderTargetBadge');
+      if (state.ordenar.ascending) {
+        critText.textContent = "De MENOR a MAYOR";
+        critBadge.className = "bg-indigo-600 text-white font-extrabold text-sm md:text-base px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2";
+      } else {
+        critText.textContent = "De MAYOR a MENOR";
+        critBadge.className = "bg-amber-600 text-white font-extrabold text-sm md:text-base px-4 py-2 rounded-2xl shadow-sm flex items-center gap-2";
+      }
+
+      document.getElementById('orderFeedback').classList.add('hidden');
+      renderRocketBoard();
+    }
+
+    function renderRocketBoard() {
+      const dropRow = document.getElementById('rocketDropRow');
+      const poolRow = document.getElementById('rocketPoolRow');
+      const counter = document.getElementById('orderSlotCounter');
+
+      counter.textContent = `${state.ordenar.currentSlots.length}/5 Colocados`;
+
+      // Renderizar casillas de la pista
+      dropRow.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const item = state.ordenar.currentSlots[i];
+        const slotEl = document.createElement('div');
+        
+        if (item !== undefined) {
+          slotEl.className = 'btn-3d bg-indigo-500 hover:bg-rose-500 text-white rounded-2xl p-2.5 md:p-3 text-center cursor-pointer border-b-4 border-indigo-700 shadow-md flex flex-col items-center justify-center transition-all pop-in';
+          slotEl.innerHTML = `
+            <span class="text-xl md:text-2xl">🚀</span>
+            <span class="text-sm md:text-lg font-black tracking-tight">${formatSpanishNumber(item)}</span>
+            <span class="text-[9px] uppercase tracking-wider text-indigo-200">Quitar</span>
+          `;
+          slotEl.onclick = () => removeRocketFromSlot(i);
+        } else {
+          slotEl.className = 'border-2 border-dashed border-indigo-700/60 rounded-2xl p-3 flex flex-col items-center justify-center text-indigo-400 min-h-[90px]';
+          slotEl.innerHTML = `
+            <span class="text-lg opacity-40">⭐</span>
+            <span class="text-xs font-bold opacity-60">Puesto ${i + 1}</span>
+          `;
+        }
+        dropRow.appendChild(slotEl);
+      }
+
+      // Renderizar cohetes disponibles en el banco
+      poolRow.innerHTML = '';
+      if (state.ordenar.availableItems.length === 0) {
+        poolRow.innerHTML = `<span class="text-xs font-bold text-slate-400 py-3">¡Todos los cohetes están en la pista! Pulsa comprobar.</span>`;
+      } else {
+        state.ordenar.availableItems.forEach((num) => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-3d bg-white hover:bg-sky-100 text-slate-800 border-2 border-slate-300 hover:border-sky-400 rounded-2xl px-4 py-3 font-black text-sm md:text-lg shadow-sm flex items-center gap-2 transition active:scale-95';
+          btn.innerHTML = `<span>🚀</span> <span>${formatSpanishNumber(num)}</span>`;
+          btn.onclick = () => addRocketToSlots(num);
+          poolRow.appendChild(btn);
+        });
+      }
+    }
+
+    function addRocketToSlots(num) {
+      if (state.ordenar.currentSlots.length >= 5) return;
+      sound.playClick();
+      state.ordenar.currentSlots.push(num);
+      state.ordenar.availableItems = state.ordenar.availableItems.filter(n => n !== num);
+      renderRocketBoard();
+    }
+
+    function removeRocketFromSlot(index) {
+      sound.playClick();
+      const removed = state.ordenar.currentSlots.splice(index, 1)[0];
+      if (removed !== undefined) {
+        state.ordenar.availableItems.push(removed);
+      }
+      renderRocketBoard();
+    }
+
+    function resetCurrentOrderSlots() {
+      sound.playClick();
+      state.ordenar.availableItems = [...state.ordenar.originalList].sort(() => Math.random() - 0.5);
+      state.ordenar.currentSlots = [];
+      document.getElementById('orderFeedback').classList.add('hidden');
+      renderRocketBoard();
+    }
+
+    function verifyRocketOrder() {
+      if (state.ordenar.currentSlots.length < 5) {
+        sound.playError();
+        const fb = document.getElementById('orderFeedback');
+        fb.className = 'min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-amber-100 text-amber-900 border-2 border-amber-300 pop-in';
+        fb.textContent = 'Coloca los 5 cohetes en la pista antes de comprobar 🚀';
+        fb.classList.remove('hidden');
+        return;
+      }
+
+      // Comprobar orden matemático
+      let correct = true;
+      for (let i = 0; i < state.ordenar.currentSlots.length - 1; i++) {
+        if (state.ordenar.ascending) {
+          if (state.ordenar.currentSlots[i] >= state.ordenar.currentSlots[i + 1]) {
+            correct = false;
+            break;
+          }
+        } else {
+          if (state.ordenar.currentSlots[i] <= state.ordenar.currentSlots[i + 1]) {
+            correct = false;
+            break;
+          }
+        }
+      }
+
+      const fb = document.getElementById('orderFeedback');
+      fb.classList.remove('hidden');
+
+      if (correct) {
+        sound.playSuccess();
+        triggerConfetti(50);
+        addScore(25);
+        fb.className = 'min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-emerald-100 text-emerald-800 border-2 border-emerald-300 pop-in';
+        fb.innerHTML = `🎉 ¡Misión cumplida! Ordenación perfecta ${state.ordenar.ascending ? 'creciente 📈' : 'decreciente 📉'}.`;
+        
+        setTimeout(() => {
+          generateRocketRound();
+        }, 2200);
+      } else {
+        sound.playError();
+        resetStreak();
+        fb.className = 'min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-rose-100 text-rose-800 border-2 border-rose-300 pop-in';
+        fb.innerHTML = `❌ Hay algún cohete descolocado. Revisa las cifras empezando por las Unidades de Millar y Centenas.`;
+      }
+    }
+
+    const sabioQuestionBank = [
+      () => {
+        const n = randomInt(2000, 8999);
+        const ant = n - 1;
+        const isTrue = Math.random() > 0.5;
+        const testVal = isTrue ? ant : n - 2;
+        return {
+          statement: `El número anterior a ${formatSpanishNumber(n)} es el ${formatSpanishNumber(testVal)}.`,
+          isTrue: isTrue,
+          clue: "Recuerda que para el anterior restamos exactamente 1 unidad.",
+          explanation: `El anterior a ${formatSpanishNumber(n)} es ${formatSpanishNumber(ant)}.`
+        };
+      },
+      () => {
+        const n = randomInt(1000, 9990);
+        const post = n + 1;
+        const isTrue = Math.random() > 0.5;
+        const testVal = isTrue ? post : n + 10;
+        return {
+          statement: `El número posterior a ${formatSpanishNumber(n)} es el ${formatSpanishNumber(testVal)}.`,
+          isTrue: isTrue,
+          clue: "Para encontrar el posterior sumamos 1.",
+          explanation: `El número que va justo después de ${formatSpanishNumber(n)} es ${formatSpanishNumber(post)}.`
+        };
+      },
+      () => {
+        const um = randomInt(2, 9);
+        const c = randomInt(1, 9);
+        const expected = um * 1000 + c * 100;
+        const isTrue = Math.random() > 0.5;
+        const fake = um * 1000 + c * 10;
+        const shown = isTrue ? expected : fake;
+        return {
+          statement: `${um} UM + ${c} C equivale al número ${formatSpanishNumber(shown)}.`,
+          isTrue: isTrue,
+          clue: `1 UM = 1.000 unidades y 1 C = 100 unidades.`,
+          explanation: `${um} UM (${um*1000}) + ${c} C (${c*100}) = ${formatSpanishNumber(expected)}.`
+        };
+      },
+      () => {
+        const a = randomInt(4000, 8000);
+        const b = a + randomInt(1, 50);
+        const isTrue = Math.random() > 0.5;
+        return {
+          statement: isTrue ? `${formatSpanishNumber(a)} < ${formatSpanishNumber(b)}` : `${formatSpanishNumber(b)} < ${formatSpanishNumber(a)}`,
+          isTrue: isTrue,
+          clue: `El signo < significa menor que.`,
+          explanation: `${formatSpanishNumber(a)} es menor que ${formatSpanishNumber(b)}.`
+        };
+      },
+      () => {
+        const thousands = randomInt(2, 9) * 1000;
+        const roundedDown = thousands - 1;
+        const isTrue = Math.random() > 0.5;
+        const shown = isTrue ? roundedDown : thousands - 100;
+        return {
+          statement: `El número justo antes de ${formatSpanishNumber(thousands)} es el ${formatSpanishNumber(shown)}.`,
+          isTrue: isTrue,
+          clue: `Piensa: ¿qué pasa al restar 1 a un número terminado en ceros?`,
+          explanation: `${formatSpanishNumber(thousands)} - 1 = ${formatSpanishNumber(roundedDown)}.`
+        };
+      }
+    ];
+
+    function generateSabioRound() {
+      const generator = sabioQuestionBank[Math.floor(Math.random() * sabioQuestionBank.length)];
+      state.sabio = generator();
+
+      document.getElementById('sabioStatement').textContent = `"${state.sabio.statement}"`;
+      document.getElementById('sabioClue').textContent = `💡 Pista: ${state.sabio.clue}`;
+      
+      const fb = document.getElementById('sabioFeedback');
+      fb.classList.add('hidden');
+    }
+
+    function handleSabioAnswer(userChoice) {
+      sound.playClick();
+      const fb = document.getElementById('sabioFeedback');
+      fb.classList.remove('hidden');
+
+      if (userChoice === state.sabio.isTrue) {
+        sound.playSuccess();
+        triggerConfetti(35);
+        addScore(15);
+
+        fb.className = 'min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-emerald-100 text-emerald-800 border-2 border-emerald-300 pop-in';
+        fb.innerHTML = `🦉 ¡Acertaste! ${state.sabio.explanation}`;
+
+        setTimeout(() => {
+          generateSabioRound();
+        }, 1800);
+      } else {
+        sound.playError();
+        resetStreak();
+
+        fb.className = 'min-h-[44px] flex items-center justify-center mt-3 text-center px-4 py-2 rounded-2xl text-sm md:text-base font-bold bg-rose-100 text-rose-800 border-2 border-rose-300 pop-in';
+        fb.innerHTML = `🧐 ¡Oh no! Era <strong>${state.sabio.isTrue ? 'VERDADERO' : 'FALSO'}</strong>. ${state.sabio.explanation}`;
+
+        setTimeout(() => {
+          generateSabioRound();
+        }, 3200);
+      }
+    }
+
+    function startTimerChallenge() {
+      sound.playClick();
+      document.getElementById('timerStartScreen').classList.add('hidden');
+      document.getElementById('timerActiveScreen').classList.remove('hidden');
+
+      state.timer.remainingSeconds = 60;
+      state.timer.currentScore = 0;
+      document.getElementById('timerRoundScore').textContent = '0';
+      document.getElementById('timerCountDown').textContent = '60s';
+      document.getElementById('timerProgressBar').style.width = '100%';
+
+      if (state.timer.intervalId) clearInterval(state.timer.intervalId);
+
+      state.timer.intervalId = setInterval(() => {
+        state.timer.remainingSeconds -= 1;
+        const s = state.timer.remainingSeconds;
+        document.getElementById('timerCountDown').textContent = `${s}s`;
+        document.getElementById('timerProgressBar').style.width = `${(s / 60) * 100}%`;
+
+        if (s <= 10) {
+          document.getElementById('timerCountDown').className = 'font-black text-2xl text-rose-600 animate-wiggle';
+          sound.playTone(400, 0.04, 'triangle');
+        } else {
+          document.getElementById('timerCountDown').className = 'font-black text-2xl text-rose-600';
+        }
+
+        if (s <= 0) {
+          endTimerChallenge();
+        }
+      }, 1000);
+
+      nextTimerQuestion();
+    }
+
+    function endTimerChallenge() {
+      clearInterval(state.timer.intervalId);
+      state.timer.intervalId = null;
+      sound.playFanfare();
+      triggerConfetti(90);
+
+      if (state.timer.currentScore > state.timer.highScore) {
+        state.timer.highScore = state.timer.currentScore;
+        document.getElementById('highRecordText').textContent = state.timer.highScore;
+      }
+
+      // Mostrar modal
+      showModal(
+        '¡Tiempo Agotado en el Reto!',
+        '¡Extraordinario esfuerzo en clase! Cada segundo cuenta para dominar los números.',
+        `Has conseguido resolver <strong>${state.timer.currentScore} retos</strong> correctamente.`
+      );
+
+      document.getElementById('timerStartScreen').classList.remove('hidden');
+      document.getElementById('timerActiveScreen').classList.add('hidden');
+    }
+
+    function nextTimerQuestion() {
+      const promptBox = document.getElementById('timerPromptContainer');
+      const actionBox = document.getElementById('timerActionContainer');
+      promptBox.innerHTML = '';
+      actionBox.innerHTML = '';
+
+      // Elegir entre comparación rápida o anterior/posterior
+      const type = randomInt(1, 2);
+
+      if (type === 1) {
+        // Comparación simple de dos números
+        const a = randomInt(1000, 9999);
+        let b = a;
+        if (Math.random() > 0.25) {
+          b = randomInt(1000, 9999);
+        }
+        const correctSign = a > b ? '>' : (a < b ? '<' : '=');
+
+        promptBox.innerHTML = `
+          <div class="text-xs uppercase font-extrabold text-slate-500 mb-2">Compara rápidamente</div>
+          <div class="text-3xl md:text-5xl font-black text-slate-800 flex items-center justify-center gap-3">
+            <span>${formatSpanishNumber(a)}</span>
+            <span class="text-amber-500 font-bold px-2">❓</span>
+            <span>${formatSpanishNumber(b)}</span>
+          </div>
+        `;
+
+        ['<', '=', '>'].forEach(sign => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-3d py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-400 text-white font-black text-2xl shadow-bubbly active:border-b-2';
+          btn.textContent = sign;
+          btn.onclick = () => {
+            if (sign === correctSign) {
+              sound.playSuccess();
+              state.timer.currentScore++;
+              document.getElementById('timerRoundScore').textContent = state.timer.currentScore;
+              addScore(10);
+            } else {
+              sound.playError();
+            }
+            nextTimerQuestion();
+          };
+          actionBox.appendChild(btn);
+        });
+
+      } else {
+        // ¿Cuál es mayor?
+        const a = randomInt(1000, 9999);
+        let b = randomInt(1000, 9999);
+        while (b === a) b = randomInt(1000, 9999);
+
+        const correctNum = Math.max(a, b);
+
+        promptBox.innerHTML = `
+          <div class="text-xs uppercase font-extrabold text-slate-500 mb-2">Toca el número MAYOR</div>
+          <div class="text-xl md:text-2xl font-bold text-slate-700">¿Cuál de estos dos es más grande?</div>
+        `;
+
+        [a, b].forEach(num => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-3d py-4 px-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xl md:text-2xl shadow-bubbly active:border-b-2 col-span-1 md:col-span-1';
+          btn.textContent = formatSpanishNumber(num);
+          btn.onclick = () => {
+            if (num === correctNum) {
+              sound.playSuccess();
+              state.timer.currentScore++;
+              document.getElementById('timerRoundScore').textContent = state.timer.currentScore;
+              addScore(10);
+            } else {
+              sound.playError();
+            }
+            nextTimerQuestion();
+          };
+          actionBox.appendChild(btn);
+        });
+      }
+    }
+
+    function setGameMode(modeName) {
+      sound.playClick();
+      state.mode = modeName;
+
+      // Pestañas
+      document.querySelectorAll('.mode-tab').forEach(tab => {
+        tab.className = 'mode-tab py-3 px-3 rounded-2xl font-bold text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-white border-slate-300 text-slate-600 hover:bg-slate-100';
+      });
+
+      const activeTab = document.getElementById(`tab-${modeName}`);
+      if (modeName === 'gloton') {
+        activeTab.className = 'mode-tab py-3 px-3 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-amber-400 border-amber-600 text-amber-950 shadow-md transform scale-[1.02]';
+      } else if (modeName === 'ordenar') {
+        activeTab.className = 'mode-tab py-3 px-3 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-sky-400 border-sky-600 text-sky-950 shadow-md transform scale-[1.02]';
+      } else if (modeName === 'sabio') {
+        activeTab.className = 'mode-tab py-3 px-3 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-purple-400 border-purple-600 text-purple-950 shadow-md transform scale-[1.02]';
+      } else if (modeName === 'timer') {
+        activeTab.className = 'mode-tab py-3 px-3 rounded-2xl font-black text-sm md:text-base flex items-center justify-center gap-2 border-b-4 transition-all duration-150 bg-rose-400 border-rose-600 text-rose-950 shadow-md transform scale-[1.02]';
+      }
+
+      // Secciones
+      document.querySelectorAll('.game-section').forEach(sec => sec.classList.add('hidden'));
+      document.getElementById(`section-${modeName}`).classList.remove('hidden');
+
+      // Limpieza de temporizador si salimos de Modo 4
+      if (modeName !== 'timer' && state.timer.intervalId) {
+        clearInterval(state.timer.intervalId);
+        state.timer.intervalId = null;
+        document.getElementById('timerStartScreen').classList.remove('hidden');
+        document.getElementById('timerActiveScreen').classList.add('hidden');
+      }
+
+      // Iniciar retos frescos en cada modo
+      if (modeName === 'gloton') generateGlotonPair();
+      if (modeName === 'ordenar') generateRocketRound();
+      if (modeName === 'sabio') generateSabioRound();
+    }
+
+    function showModal(title, message, statsHtml) {
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalBody').textContent = message;
+      document.getElementById('modalStats').innerHTML = statsHtml;
+      document.getElementById('resultModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      sound.playClick();
+      document.getElementById('resultModal').classList.add('hidden');
+    }
+
+    // Control de silencio
+    document.getElementById('toggleAudioBtn').addEventListener('click', () => {
+      sound.enabled = !sound.enabled;
+      document.getElementById('toggleAudioBtn').textContent = sound.enabled ? '🔊' : '🔇';
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      generateGlotonPair();
+      generateRocketRound();
+      generateSabioRound();
+    });
+  </script>
+</body>
+</html>
