@@ -2,19 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mates Divertidas - 3º Primaria</title>
-    <!-- Tailwind CSS para diseño rápido y adaptativo -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mates Divertidas - 3º Primaria (Cálculo Mental ABN)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Quicksand (ideal para lectura escolar, limpia y redondeada) -->
+    <!-- Google Fonts: Quicksand -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
+            background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
             background-size: 30px 30px;
         }
@@ -24,226 +24,526 @@
             transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom-width: 6px;
         }
-        .btn-3d:active {
+        .btn-3d:active:not(:disabled) {
             transform: translateY(6px);
             border-bottom-width: 0px;
             margin-bottom: 6px;
         }
 
-        /* Animaciones para pestañas y revelación de respuestas */
+        /* Pestañas */
         .tab-active {
             background-color: #ffffff;
-            color: #8b5cf6; /* violet-500 */
-            border-bottom: 4px solid #8b5cf6;
-            transform: scale(1.02) translateY(2px);
+            color: #7c3aed; /* violet-600 */
+            border-bottom: 4px solid #7c3aed;
+            transform: translateY(2px);
             z-index: 10;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.04);
         }
         .tab-inactive {
             background-color: #e2e8f0;
-            color: #64748b; /* slate-500 */
+            color: #64748b;
             border-bottom: 4px solid #cbd5e1;
         }
 
+        /* Animaciones */
         .answer-reveal {
-            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         
         @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.1); }
-            70% { transform: scale(0.9); }
+            0% { opacity: 0; transform: scale(0.4); }
+            50% { opacity: 1; transform: scale(1.08); }
+            75% { transform: scale(0.95); }
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Ocultar elementos UI al imprimir fichas */
+        .shake-anim {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        /* Estilos de hoja A4 en vista previa */
+        .a4-sheet {
+            background: white;
+            width: 210mm;
+            min-height: 295mm;
+            margin: 0 auto 2rem auto;
+            padding: 15mm 18mm;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 850px) {
+            .a4-sheet {
+                width: 100%;
+                min-height: auto;
+                padding: 1.5rem;
+            }
+        }
+
+        /* Reglas estrictas para impresión / Exportar a PDF */
         @media print {
-            body { background: white !important; }
-            #app-container, #print-modal, .no-print { display: none !important; }
-            .page-break { page-break-before: always !important; }
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                background-image: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #app-container, #print-modal, #print-toolbar, .no-print {
+                display: none !important;
+            }
+            #print-view-wrapper {
+                display: block !important;
+                position: static !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            #print-sheets-container {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .a4-sheet {
+                width: 100% !important;
+                min-height: 272mm !important;
+                max-height: 276mm !important;
+                margin: 0 !important;
+                padding: 2mm 4mm !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+            }
+            .a4-sheet:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
+<body class="flex flex-col items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
     
-    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- CONTENEDOR PRINCIPAL DE LA APP INTERACTIVA -->
     <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl border-4 border-white overflow-hidden relative">
         
         <!-- Cabecera -->
-        <header class="text-center p-6 md:p-8 bg-[#8b5cf6] text-white relative border-b-8 border-violet-700 shadow-sm z-20">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2 drop-shadow-md">
+        <header class="text-center p-5 md:p-8 bg-gradient-to-b from-[#8b5cf6] to-[#7c3aed] text-white relative border-b-8 border-violet-800 shadow-sm z-20">
+            <!-- Botón de Sonido Flotante -->
+            <button id="sound-toggle-btn" title="Activar/Desactivar sonido" class="absolute top-4 right-4 bg-violet-700 hover:bg-violet-600 text-white p-3 rounded-2xl border-2 border-violet-400 shadow transition-transform active:scale-95">
+                🔊
+            </button>
+
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-2 drop-shadow-md">
                 ⚡ Desafíos de Cálculo: 3º Primaria
             </h1>
-            <p class="text-xl font-semibold text-violet-200 mb-6 drop-shadow">Estrategias ABN y agilidad mental</p>
+            <p class="text-lg md:text-xl font-semibold text-violet-200 mb-6 drop-shadow">Estrategias ABN y agilidad mental paso a paso</p>
             
-            <div class="max-w-xl mx-auto relative">
-                <select id="level-selector" class="w-full p-4 text-xl font-bold text-violet-900 bg-white rounded-2xl shadow-inner border-4 border-violet-300 focus:ring-4 focus:ring-amber-400 focus:outline-none appearance-none cursor-pointer">
-                    <!-- Opciones inyectadas por JS -->
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-violet-600">
-                    <svg class="fill-current h-8 w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            <!-- Selector de Niveles con Botones Anterior/Siguiente -->
+            <div class="max-w-2xl mx-auto flex items-center gap-2">
+                <button id="prev-level-btn" title="Nivel anterior" class="bg-violet-700 hover:bg-violet-600 text-white font-bold p-4 rounded-2xl border-b-4 border-violet-900 active:translate-y-1 active:border-b-0 transition-all">
+                    ◀
+                </button>
+                <div class="relative flex-1">
+                    <select id="level-selector" aria-label="Seleccionar nivel de cálculo" class="w-full p-4 pr-12 text-lg md:text-xl font-bold text-violet-950 bg-white rounded-2xl shadow-inner border-4 border-violet-300 focus:ring-4 focus:ring-amber-400 focus:outline-none appearance-none cursor-pointer">
+                        <!-- Opciones inyectadas por JS -->
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-violet-600">
+                        <svg class="fill-current h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
                 </div>
+                <button id="next-level-btn" title="Siguiente nivel" class="bg-violet-700 hover:bg-violet-600 text-white font-bold p-4 rounded-2xl border-b-4 border-violet-900 active:translate-y-1 active:border-b-0 transition-all">
+                    ▶
+                </button>
             </div>
 
-            <button id="open-print-modal-btn" class="mt-6 mx-auto bg-[#fbbf24] text-amber-900 font-bold py-3 px-8 rounded-2xl shadow-lg border-b-4 border-[#d97706] hover:bg-[#f59e0b] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
-                🖨️ Crear Fichas PDF
-            </button>
+            <!-- Botón Principal de Impresión -->
+            <div class="mt-6 flex flex-wrap justify-center gap-4">
+                <button id="open-print-modal-btn" class="bg-[#fbbf24] text-amber-950 font-bold py-3 px-8 rounded-2xl shadow-lg border-b-4 border-[#d97706] hover:bg-[#f59e0b] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
+                    🖨️ Crear Fichas Imprimibles / PDF
+                </button>
+            </div>
         </header>
 
         <!-- Pestañas de Navegación -->
-        <div class="flex text-xl md:text-2xl font-bold z-10 relative bg-slate-100">
-            <button id="tab-practico" class="flex-1 py-5 rounded-tr-3xl transition-all duration-300">
-                🧠 Estrategia
+        <div class="flex text-lg md:text-2xl font-bold z-10 relative bg-slate-100">
+            <button id="tab-practico" class="flex-1 py-4 md:py-5 rounded-tr-3xl transition-all duration-200 flex items-center justify-center gap-2">
+                <span>🧠</span> <span>Estrategia Paso a Paso</span>
             </button>
-            <button id="tab-reto" class="flex-1 py-5 rounded-tl-3xl transition-all duration-300">
-                🎯 Reto Interactivo
+            <button id="tab-reto" class="flex-1 py-4 md:py-5 rounded-tl-3xl transition-all duration-200 flex items-center justify-center gap-2">
+                <span>🎯</span> <span>Reto Interactivo</span>
             </button>
         </div>
 
-        <!-- PESTAÑA: Teoría/Estrategia -->
-        <div id="content-practico" class="p-6 md:p-10 min-h-[400px] bg-slate-50"></div>
+        <!-- PESTAÑA 1: Teoría / Estrategia -->
+        <div id="content-practico" class="p-5 md:p-10 min-h-[420px] bg-slate-50"></div>
 
-        <!-- PESTAÑA: Reto / Juego -->
-        <div id="content-reto" class="p-6 md:p-10 min-h-[450px] bg-slate-50 hidden flex-col justify-between">
+        <!-- PESTAÑA 2: Reto / Juego -->
+        <div id="content-reto" class="p-5 md:p-8 min-h-[480px] bg-slate-50 hidden flex-col justify-between">
+            
+            <!-- Barra Superior del Reto: Progreso, Modo PRO y Selector Pizarra/Teclado -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="bg-violet-100 text-violet-800 font-bold px-4 py-1.5 rounded-full border-2 border-violet-200 shadow-sm text-base md:text-lg">
+                        Operación <span id="progress-text">1 de 20</span>
+                    </div>
+                    <span id="pro-badge" class="hidden bg-rose-600 text-white font-bold px-3 py-1.5 rounded-full text-sm uppercase tracking-wider shadow-sm animate-pulse">
+                        🔥 Modo PRO
+                    </span>
+                </div>
+
+                <!-- Selector de Modo: Pizarra vs Teclado -->
+                <div class="flex items-center bg-slate-200 p-1 rounded-2xl border-2 border-slate-300">
+                    <button id="mode-flashcard-btn" class="px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white text-violet-700 shadow-sm">
+                        👁️ Modo Pizarra
+                    </button>
+                    <button id="mode-keypad-btn" class="px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900">
+                        ⌨️ Modo Práctica
+                    </button>
+                </div>
+
+                <!-- Puntuación en Modo Práctica -->
+                <div id="score-badge" class="hidden bg-emerald-100 text-emerald-800 font-bold px-4 py-1.5 rounded-full border-2 border-emerald-300 text-base">
+                    ⭐ Aciertos: <span id="score-count">0</span>
+                </div>
+            </div>
+
+            <!-- Barra de progreso visual -->
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-6 border border-slate-300">
+                <div id="progress-bar" class="bg-gradient-to-r from-violet-500 to-emerald-500 h-full transition-all duration-300" style="width: 5%"></div>
+            </div>
+
+            <!-- Zona Central del Problema -->
             <div class="text-center flex-1 flex flex-col justify-center">
                 
-                <div class="inline-block bg-violet-100 text-violet-800 font-bold px-6 py-2 rounded-full mb-6 border-2 border-violet-200 shadow-sm text-lg mx-auto">
-                    Operación <span id="progress-text">1 de 20</span>
-                </div>
-                
                 <!-- Pizarra Principal -->
-                <div id="problem-container" class="bg-white p-8 md:p-12 rounded-[2.5rem] mb-6 shadow-md border-4 border-slate-200 relative min-h-[200px] flex items-center justify-center">
-                    <p class="text-6xl md:text-8xl font-bold text-slate-700 tracking-tight" id="problem-text">300 + 700</p>
+                <div id="problem-container" class="bg-white p-6 md:p-10 rounded-[2rem] mb-4 shadow-md border-4 border-slate-200 relative min-h-[160px] md:min-h-[200px] flex flex-col items-center justify-center transition-colors">
+                    <p class="text-4xl sm:text-6xl md:text-7xl font-bold text-slate-700 tracking-tight select-none" id="problem-text">300 + 700</p>
+                    
+                    <!-- Pista rápida desplegable -->
+                    <button id="toggle-hint-btn" class="mt-4 text-sm font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1 rounded-full transition-colors">
+                        💡 Ver truco del nivel
+                    </button>
+                    <p id="Quick-hint-box" class="hidden mt-2 text-base font-semibold text-amber-900 bg-amber-100/80 px-4 py-2 rounded-xl max-w-lg"></p>
                 </div>
                 
-                <!-- Zona de Respuesta -->
-                <div id="answer-container" class="h-24 md:h-32 flex items-center justify-center mb-4">
-                    <p id="answer-text" class="text-6xl md:text-8xl font-bold text-[#10b981] opacity-0 drop-shadow-sm">= 1000</p>
+                <!-- MODO 1: Pizarra (Ver respuesta directa) -->
+                <div id="flashcard-controls" class="flex flex-col items-center">
+                    <div id="answer-container" class="h-20 md:h-24 flex items-center justify-center mb-4">
+                        <p id="answer-text" class="text-5xl md:text-7xl font-bold text-[#10b981] opacity-0 drop-shadow-sm">= 1000</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-xl">
+                        <button id="show-answer-btn" class="flex-1 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-bold py-5 px-8 rounded-2xl text-2xl md:text-3xl btn-3d border-[#1d4ed8]">
+                            👁️ Ver Respuesta <span class="block text-xs font-normal opacity-80 mt-0.5">(Espacio / Enter)</span>
+                        </button>
+                        <button id="next-problem-btn" class="flex-1 bg-[#10b981] hover:bg-[#059669] text-white font-bold py-5 px-8 rounded-2xl text-2xl md:text-3xl btn-3d border-[#047857] hidden">
+                            Siguiente ➡️ <span class="block text-xs font-normal opacity-80 mt-0.5">(Espacio / Enter)</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Botones MDI (Grandes para tocar fácil) -->
-                <div class="flex flex-col md:flex-row gap-4 justify-center mt-2">
-                    <button id="show-answer-btn" class="w-full md:w-auto bg-[#3b82f6] text-white font-bold py-6 px-12 rounded-2xl text-2xl md:text-3xl btn-3d border-[#2563eb]">
-                        👁️ Ver Respuesta
-                    </button>
-                    <button id="next-problem-btn" class="w-full md:w-auto bg-[#10b981] text-white font-bold py-6 px-12 rounded-2xl text-2xl md:text-3xl btn-3d border-[#059669] hidden">
-                        Siguiente ➡️
-                    </button>
+                <!-- MODO 2: Práctica con Teclado Numérico -->
+                <div id="keypad-controls" class="hidden flex-col items-center w-full max-w-lg mx-auto">
+                    <div class="flex items-center gap-3 w-full mb-3">
+                        <div id="user-input-display" class="flex-1 bg-white border-4 border-violet-400 rounded-2xl py-3 px-6 text-4xl font-bold text-violet-900 min-h-[68px] flex items-center justify-center shadow-inner">
+                            <span id="user-input-value" class="text-slate-300">?</span>
+                        </div>
+                        <button id="check-answer-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-2xl text-2xl btn-3d border-emerald-700">
+                            ✔️ Comprobar
+                        </button>
+                        <button id="keypad-next-btn" class="hidden bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl text-2xl btn-3d border-blue-700">
+                            Siguiente ➡️
+                        </button>
+                    </div>
+
+                    <p id="keypad-feedback" class="h-7 font-bold text-lg mb-2"></p>
+
+                    <!-- Botonera numérica táctil -->
+                    <div class="grid grid-cols-6 sm:grid-cols-6 gap-2 w-full">
+                        <button data-key="1" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">1</button>
+                        <button data-key="2" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">2</button>
+                        <button data-key="3" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">3</button>
+                        <button data-key="4" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">4</button>
+                        <button data-key="5" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">5</button>
+                        <button data-key="DEL" class="num-key bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-3 rounded-xl text-xl border-2 border-amber-300 btn-3d" title="Borrar">⌫</button>
+                        
+                        <button data-key="6" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">6</button>
+                        <button data-key="7" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">7</button>
+                        <button data-key="8" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">8</button>
+                        <button data-key="9" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">9</button>
+                        <button data-key="0" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">0</button>
+                        <button data-key="CLR" class="num-key bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold py-3 rounded-xl text-lg border-2 border-rose-300 btn-3d" title="Limpiar todo">C</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Controles Secundarios -->
-            <div class="mt-8 pt-6 border-t-4 border-slate-200 flex flex-col md:flex-row gap-4 justify-center">
-                <button id="new-challenge-btn" class="w-full md:w-auto bg-slate-200 text-slate-700 font-bold py-4 px-8 rounded-xl btn-3d border-slate-300 text-xl flex items-center justify-center gap-2 hover:bg-slate-300">
-                    🔄 Reiniciar Nivel
+            <div class="mt-8 pt-5 border-t-4 border-slate-200 flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="new-challenge-btn" class="w-full sm:w-auto bg-slate-200 text-slate-700 font-bold py-3.5 px-7 rounded-xl btn-3d border-slate-300 text-lg flex items-center justify-center gap-2 hover:bg-slate-300">
+                    🔄 Nivel Normal
                 </button>
-                <button id="pro-challenge-btn" class="w-full md:w-auto bg-[#f43f5e] text-white font-bold py-4 px-8 rounded-xl btn-3d border-[#be123c] text-xl flex items-center justify-center gap-2">
-                    🔥 Modo PRO (Difícil)
+                <button id="pro-challenge-btn" class="w-full sm:w-auto bg-[#f43f5e] hover:bg-[#e11d48] text-white font-bold py-3.5 px-7 rounded-xl btn-3d border-[#be123c] text-lg flex items-center justify-center gap-2">
+                    🔥 Activar Modo PRO (Difícil)
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL IMPRESIÓN DE FICHAS -->
-    <div id="print-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border-4 border-violet-400 overflow-hidden">
-            <div class="p-6 md:p-8 border-b-4 border-slate-100 bg-violet-50">
-                <h2 class="text-3xl font-bold text-violet-900 flex items-center gap-3">
-                    🖨️ Generador de Fichas (3º EP)
-                </h2>
-                <p class="text-slate-600 mt-2 font-semibold text-lg">Crea documentos listos para imprimir con soluciones incluidas para el docente.</p>
+    <!-- MODAL CONFIGURADOR DE FICHAS PDF -->
+    <div id="print-modal" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-3 md:p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col border-4 border-violet-400 overflow-hidden">
+            
+            <div class="p-5 md:p-7 border-b-4 border-slate-100 bg-violet-50 flex justify-between items-start">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-violet-900 flex items-center gap-3">
+                        🖨️ Generador de Fichas en PDF (3º EP)
+                    </h2>
+                    <p class="text-slate-600 mt-1 font-semibold text-base md:text-lg">Configura e imprime fichas A4 listas para el aula.</p>
+                </div>
+                <button id="close-modal-x" class="text-slate-400 hover:text-slate-700 text-3xl font-bold leading-none px-2">&times;</button>
             </div>
             
-            <div class="p-6 md:p-8 overflow-y-auto flex-1 bg-slate-50">
-                <div id="print-error-msg" class="hidden mb-6 p-4 bg-red-100 text-red-700 border-2 border-red-300 rounded-xl font-bold text-lg">
-                    ⚠️ Selecciona al menos una categoría de la lista.
+            <div class="p-5 md:p-7 overflow-y-auto flex-1 bg-slate-50 space-y-6">
+                <div id="print-error-msg" class="hidden p-4 bg-red-100 text-red-800 border-2 border-red-300 rounded-xl font-bold text-base flex items-center gap-2">
+                    <span>⚠️</span> <span>Por favor, selecciona al menos una estrategia de la lista.</span>
                 </div>
 
-                <div class="mb-8 bg-amber-50 p-6 rounded-2xl border-4 border-amber-200">
-                    <label for="print-versions" class="block font-bold text-amber-900 mb-3 text-xl">¿Cuántos modelos distintos necesitas?</label>
-                    <select id="print-versions" class="w-full p-4 border-4 border-amber-300 rounded-xl focus:ring-4 focus:ring-amber-400 outline-none text-slate-800 font-bold text-lg bg-white">
-                        <option value="1">1 modelo único</option>
-                        <option value="2">2 modelos distintos (Anti-copia)</option>
-                        <option value="3">3 modelos distintos</option>
-                        <option value="4">4 modelos distintos</option>
-                    </select>
+                <!-- Opciones de Formato -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200">
+                        <label for="print-versions" class="block font-bold text-amber-950 mb-2 text-base">¿Cuántos modelos distintos?</label>
+                        <select id="print-versions" class="w-full p-3 border-2 border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-400 outline-none text-slate-800 font-bold text-base bg-white">
+                            <option value="1">1 modelo único (1 hoja)</option>
+                            <option value="2">2 modelos distintos (A y B)</option>
+                            <option value="3">3 modelos distintos (A, B y C)</option>
+                            <option value="4">4 modelos distintos (A, B, C y D)</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
+                        <label for="print-custom-title" class="block font-bold text-blue-950 mb-2 text-base">Título del encabezado:</label>
+                        <input type="text" id="print-custom-title" value="CÁLCULO MENTAL - 3º PRIMARIA" maxlength="40" class="w-full p-3 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-slate-800 font-bold text-base bg-white" placeholder="Ej: Control Cálculo 3ºA">
+                    </div>
                 </div>
 
-                <h3 class="font-bold text-slate-700 mb-4 text-xl flex items-center gap-2"><span>📝</span> Estrategias a incluir:</h3>
-                <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 bg-white p-4 rounded-2xl border-2 border-slate-200">
-                    <!-- Checkboxes generados dinámicamente -->
+                <!-- Selección de Niveles con botones rápidos -->
+                <div>
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                        <h3 class="font-bold text-slate-700 text-lg flex items-center gap-2">
+                            <span>📝</span> <span>Estrategias a incluir (20 operaciones por ficha):</span>
+                        </h3>
+                        <div class="flex gap-2">
+                            <button type="button" id="select-current-level-btn" class="text-xs md:text-sm bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold px-3 py-1.5 rounded-lg border border-violet-300 transition">
+                                Solo nivel actual
+                            </button>
+                            <button type="button" id="select-all-levels-btn" class="text-xs md:text-sm bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold px-3 py-1.5 rounded-lg border border-emerald-300 transition">
+                                Marcar todos
+                            </button>
+                            <button type="button" id="deselect-all-levels-btn" class="text-xs md:text-sm bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">
+                                Desmarcar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 bg-white p-4 rounded-2xl border-2 border-slate-200">
+                        <!-- Checkboxes generados dinámicamente -->
+                    </div>
                 </div>
 
-                <div class="bg-rose-50 p-6 rounded-2xl border-4 border-rose-200">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="print-pro-cb" class="form-checkbox h-8 w-8 text-rose-600 rounded-lg focus:ring-rose-500 border-4 border-rose-300">
-                        <span class="ml-4 font-bold text-rose-900 text-xl">Usar números del Modo PRO 🔥</span>
-                    </label>
+                <!-- Opciones Adicionales: Modo PRO y Solucionario -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200 flex items-center">
+                        <label class="flex items-center cursor-pointer w-full">
+                            <input type="checkbox" id="print-pro-cb" class="h-6 w-6 text-rose-600 rounded-lg focus:ring-rose-500 border-2 border-rose-300 cursor-pointer">
+                            <span class="ml-3 font-bold text-rose-950 text-base">Usar números del Modo PRO 🔥</span>
+                        </label>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200 flex items-center">
+                        <label class="flex items-center cursor-pointer w-full">
+                            <input type="checkbox" id="print-solutions-cb" checked class="h-6 w-6 text-emerald-600 rounded-lg focus:ring-emerald-500 border-2 border-emerald-300 cursor-pointer">
+                            <span class="ml-3 font-bold text-emerald-950 text-base">Incluir hoja de Solucionario ✅</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 md:p-8 bg-slate-100 border-t-4 border-slate-200 flex flex-col md:flex-row justify-end gap-4">
-                <button id="cancel-print-btn" class="px-8 py-4 rounded-xl text-slate-600 font-bold hover:bg-slate-200 transition-colors border-4 border-slate-300 text-xl">
+            <div class="p-5 md:p-6 bg-slate-100 border-t-4 border-slate-200 flex flex-col sm:flex-row justify-end gap-3">
+                <button id="cancel-print-btn" class="px-6 py-3.5 rounded-xl text-slate-600 font-bold hover:bg-slate-200 transition-colors border-2 border-slate-300 text-lg">
                     Cancelar
                 </button>
-                <button id="generate-print-btn" class="px-8 py-4 rounded-xl bg-violet-600 text-white font-bold btn-3d border-violet-800 hover:bg-violet-500 text-xl flex justify-center items-center gap-2">
-                    ✨ Generar PDF
+                <button id="generate-print-btn" class="px-8 py-3.5 rounded-xl bg-violet-600 text-white font-bold btn-3d border-violet-800 hover:bg-violet-500 text-lg flex justify-center items-center gap-2">
+                    ✨ Vista Previa e Imprimir PDF
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- VISOR DE FICHAS E IMPRESIÓN INTEGRADO (Evita bloqueos de Pop-ups y garantiza carga de estilos) -->
+    <div id="print-view-wrapper" class="hidden fixed inset-0 bg-slate-800/95 z-50 overflow-y-auto">
+        <!-- Barra superior flotante (No se imprime) -->
+        <div id="print-toolbar" class="no-print sticky top-0 z-50 bg-slate-900 text-white border-b-4 border-violet-500 px-4 py-3 shadow-xl">
+            <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">📄</span>
+                    <div>
+                        <h3 class="font-bold text-lg leading-tight">Vista Previa de Impresión / PDF</h3>
+                        <p class="text-xs text-slate-300">En el cuadro de impresión elige <strong>"Guardar como PDF"</strong> o tu impresora.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="regenerate-sheets-btn" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl border border-slate-500 text-sm flex items-center gap-1.5 transition">
+                        🎲 Otros números
+                    </button>
+                    <button id="back-to-config-btn" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold py-2.5 px-4 rounded-xl text-sm flex items-center gap-1.5 transition">
+                        ⚙️ Configurar
+                    </button>
+                    <button id="trigger-print-btn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl shadow-lg text-base flex items-center gap-2 transition transform hover:scale-105">
+                        🖨️ Imprimir / Guardar PDF
+                    </button>
+                    <button id="close-print-view-btn" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition">
+                        ✖ Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor donde se inyectan las páginas A4 -->
+        <div id="print-sheets-container" class="p-4 md:p-8"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- API AUDIO FEEDBACK ---
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            function playSuccessSound() {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                osc.type = 'triangle'; // Sonido un poco más suave y redondo
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
-                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2); // A5
-                
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
+            // --- SISTEMA DE AUDIO ---
+            let soundEnabled = true;
+            let audioCtx = null;
+
+            function getAudioContext() {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) audioCtx = new AudioContextClass();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                return audioCtx;
             }
 
-            // --- UTILIDADES ---
+            function playSuccessSound() {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    if (!ctx) return;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.22); // C6
+                    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.35);
+                } catch (e) {
+                    // Ignorar si el navegador bloquea audio sin interacción
+                }
+            }
+
+            function playErrorSound() {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    if (!ctx) return;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } catch (e) {}
+            }
+
+            // --- UTILIDADES MATEMÁTICAS ---
             const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+            // Genera 20 problemas evitando repeticiones consecutivas o excesivas
+            function buildProblemSet(generatorFn, count = 20) {
+                const results = [];
+                const seen = new Set();
+                let safety = 0;
+
+                while (results.length < count && safety < 300) {
+                    safety++;
+                    const item = generatorFn();
+                    // Si aún no se ha visto o ya agotamos combinaciones únicas, evitar al menos que sea igual al inmediatamente anterior
+                    if (!seen.has(item.text) || safety > 120) {
+                        if (results.length === 0 || results[results.length - 1].text !== item.text || safety > 250) {
+                            results.push(item);
+                            seen.add(item.text);
+                        }
+                    }
+                }
+                return results;
+            }
             
             // Generador de Interfaz de Teoría
             function buildTheoryUI(title, subtitle, operation, steps, tip) {
                 return `
                     <div class="bg-white rounded-3xl p-6 md:p-10 shadow-sm border-4 border-violet-100">
-                        <h2 class="text-3xl md:text-4xl font-bold text-violet-800 mb-2">${title}</h2>
-                        <p class="text-xl md:text-2xl text-slate-600 mb-8 font-semibold">${subtitle}</p>
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b-2 border-slate-100 pb-4">
+                            <div>
+                                <h2 class="text-2xl md:text-4xl font-bold text-violet-800 mb-1">${title}</h2>
+                                <p class="text-lg md:text-xl text-slate-600 font-semibold">${subtitle}</p>
+                            </div>
+                            <button onclick="document.getElementById('tab-reto').click()" class="self-start md:self-center bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-6 rounded-2xl btn-3d border-violet-800 text-base shrink-0">
+                                🎯 ¡Ir al Reto!
+                            </button>
+                        </div>
 
                         <div class="bg-emerald-50 rounded-3xl p-6 md:p-8 border-4 border-emerald-200 mb-8 relative">
-                            <div class="absolute -top-5 left-6 bg-emerald-500 text-white font-bold px-6 py-2 rounded-xl shadow-sm border-2 border-emerald-600">PASO A PASO</div>
-                            <h3 class="text-4xl md:text-5xl font-bold text-emerald-900 mb-6 mt-4 text-center tracking-wide">${operation}</h3>
-                            <ul class="space-y-4">
-                                ${steps.map(s => `
-                                    <li class="flex items-start bg-white p-4 rounded-xl shadow-sm border-2 border-emerald-100">
-                                        <span class="mr-4 text-3xl">👉</span>
+                            <div class="absolute -top-4 left-6 bg-emerald-600 text-white font-bold px-5 py-1.5 rounded-xl shadow-sm text-sm tracking-wider uppercase">PASO A PASO</div>
+                            <h3 class="text-3xl md:text-5xl font-bold text-emerald-950 mb-6 mt-2 text-center tracking-wide bg-white py-4 px-6 rounded-2xl border-2 border-emerald-200 shadow-inner">${operation}</h3>
+                            <ul class="space-y-3.5">
+                                ${steps.map((s, i) => `
+                                    <li class="flex items-center bg-white p-4 rounded-2xl shadow-sm border-2 border-emerald-100">
+                                        <span class="mr-4 bg-emerald-100 text-emerald-800 font-bold w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-lg">${i + 1}</span>
                                         <span class="text-slate-700 font-semibold text-lg md:text-xl">${s}</span>
                                     </li>`).join('')}
                             </ul>
                         </div>
 
-                        <div class="bg-amber-50 rounded-3xl p-6 border-4 border-amber-300 flex flex-col md:flex-row gap-6 items-center">
-                            <div class="text-6xl animate-bounce">💡</div>
+                        <div class="bg-amber-50 rounded-3xl p-6 border-4 border-amber-300 flex flex-col sm:flex-row gap-5 items-center">
+                            <div class="text-5xl sm:text-6xl select-none">💡</div>
                             <div>
-                                <h3 class="font-bold text-amber-900 text-2xl mb-1">El truco</h3>
-                                <p class="text-xl text-amber-800 font-medium">${tip}</p>
+                                <h3 class="font-bold text-amber-950 text-xl md:text-2xl mb-1">El truco mental</h3>
+                                <p class="text-lg md:text-xl text-amber-900 font-medium">${tip}</p>
                             </div>
                         </div>
                     </div>
@@ -255,10 +555,11 @@
                 {
                     title: "3.1 Amigos del 1000",
                     subtitle: "Traslación del patrón del 10 y 100 al millar.",
+                    tip: "Si conoces las parejas que suman 10 (1+9, 2+8, 3+7, 4+6, 5+5), ¡ya conoces las que suman 1000!",
                     practicoHTML: buildTheoryUI(
                         "Los Amigos del 1000", 
                         "Centenas completas que se juntan para formar una unidad de millar.",
-                        "300 + 700 = ?",
+                        "300 + 700 = 1000",
                         [
                             "Piensa en los amigos del 10: <strong class='text-emerald-700'>3 + 7 = 10</strong>.",
                             "Como hablamos de centenas, le añadimos dos ceros.",
@@ -266,33 +567,30 @@
                         ],
                         "Si conoces las parejas que suman 10 (1+9, 2+8, 4+6...), ¡ya conoces las que suman 1000!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(1, 9) * 100;
-                            // Alternar entre preguntar la suma o el sumando que falta
-                            if (Math.random() > 0.5) res.push({text: `${c1} + ${1000-c1}`, answer: 1000});
-                            else res.push({text: `${c1} + _ = 1000`, answer: 1000-c1});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = []; // PRO: Amigos del 10000 (decenas de millar)
-                        for(let i=0; i<20; i++) {
+                    gen: () => buildProblemSet(() => {
+                        let c1 = rand(1, 9) * 100;
+                        if (Math.random() > 0.5) return {text: `${c1} + ${1000-c1}`, answer: 1000};
+                        return {text: `${c1} + _ = 1000`, answer: 1000-c1};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        // PRO: Amigos del 1000 con decenas (ej. 350 + 650) o amigos del 10.000
+                        if (Math.random() > 0.4) {
+                            let n1 = rand(1, 8) * 100 + 50;
+                            return {text: `${n1} + _ = 1000`, answer: 1000 - n1};
+                        } else {
                             let c1 = rand(1, 9) * 1000;
-                            if (Math.random() > 0.5) res.push({text: `${c1} + ${10000-c1}`, answer: 10000});
-                            else res.push({text: `${c1} + _ = 10000`, answer: 10000-c1});
+                            return {text: `${c1} + _ = 10000`, answer: 10000 - c1};
                         }
-                        return res;
-                    }
+                    })
                 },
                 {
                     title: "3.2 Decenas que cruzan la centena",
                     subtitle: "Traspaso del límite del 100 sumando decenas completas.",
+                    tip: "Tapa los ceros, suma las cifras principales y devuelve el cero al final.",
                     practicoHTML: buildTheoryUI(
                         "Cruzar el 100", 
                         "Sumar decenas redondas grandes que superan la centena.",
-                        "80 + 50 = ?",
+                        "80 + 50 = 130",
                         [
                             "Tapa los ceros mentalmente.",
                             "Suma los números: <strong class='text-emerald-700'>8 + 5 = 13</strong>.",
@@ -300,30 +598,25 @@
                         ],
                         "Sumar decenas es igual que sumar unidades, solo tienes que acordarte de poner el cero al final."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(5, 9); let d2 = rand(11-d1, 9); // Asegura rebasar 10
-                            res.push({text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(12, 19); let d2 = rand(5, 12); 
-                            res.push({text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(4, 9);
+                        let d2 = rand(11 - d1, 9);
+                        return {text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let d1 = rand(12, 19);
+                        let d2 = rand(5, 14); 
+                        return {text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10};
+                    })
                 },
                 {
                     title: "3.3 Sumar centenas a nº 3 cifras",
                     subtitle: "Acumulación directa en la posición de las centenas.",
+                    tip: "Fíjate solo en la cifra de las centenas. ¡Las decenas y unidades se copian igual!",
                     practicoHTML: buildTheoryUI(
                         "Sumar solo al jefe", 
                         "Al sumar centenas exactas, las decenas y unidades no cambian.",
-                        "342 + 200 = ?",
+                        "342 + 200 = 542",
                         [
                             "El 200 tiene ceros en las decenas y unidades.",
                             "Así que el <strong class='text-emerald-700'>42</strong> del primer número baja directo al resultado.",
@@ -332,33 +625,26 @@
                         ],
                         "Enfócate solo en el primer número (las centenas). ¡La cola del número se copia igual!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(111, 799);
-                            let maxC = 9 - Math.floor(n/100);
-                            let c = rand(1, maxC) * 100;
-                            res.push({text: `${n} + ${c}`, answer: n+c});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(111, 899);
-                            let c = rand(3, 9) * 100; // Puede rebasar al millar
-                            res.push({text: `${n} + ${c}`, answer: n+c});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let n = rand(111, 799);
+                        let maxC = 9 - Math.floor(n/100);
+                        let c = rand(1, Math.max(1, maxC)) * 100;
+                        return {text: `${n} + ${c}`, answer: n+c};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n = rand(215, 899);
+                        let c = rand(3, 9) * 100;
+                        return {text: `${n} + ${c}`, answer: n+c};
+                    })
                 },
                 {
                     title: "3.4 Restar centenas a nº 3 cifras",
                     subtitle: "Detracción directa en las centenas.",
+                    tip: "¡Las decenas y unidades están a salvo! Resta las centenas y mantén el final.",
                     practicoHTML: buildTheoryUI(
                         "Restar solo al jefe", 
                         "Igual que la suma, al restar centenas exactas (acabadas en 00), la parte de atrás se salva.",
-                        "857 - 400 = ?",
+                        "857 - 400 = 457",
                         [
                             "El 400 tiene ceros, así que al <strong class='text-emerald-700'>57</strong> no le quitamos nada.",
                             "Restamos solo las centenas: <strong class='text-emerald-700'>800 - 400 = 400</strong>.",
@@ -366,33 +652,26 @@
                         ],
                         "¡Las decenas y unidades están a salvo! Pásalas directamente al resultado."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(311, 999);
-                            let maxC = Math.floor(n/100) - 1;
-                            let c = rand(1, maxC > 0 ? maxC : 1) * 100;
-                            res.push({text: `${n} - ${c}`, answer: n-c});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(1211, 1999); // Desde millares
-                            let c = rand(4, 9) * 100;
-                            res.push({text: `${n} - ${c}`, answer: n-c});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let n = rand(311, 999);
+                        let maxC = Math.floor(n/100) - 1;
+                        let c = rand(1, maxC > 0 ? maxC : 1) * 100;
+                        return {text: `${n} - ${c}`, answer: n-c};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n = rand(1115, 1899);
+                        let c = rand(4, 9) * 100;
+                        return {text: `${n} - ${c}`, answer: n-c};
+                    })
                 },
                 {
                     title: "3.5 Sumar con cambio (2 cifras)",
                     subtitle: "Suma ABN acumulativa en dos pasos.",
+                    tip: "Rompe el segundo número: suma primero las decenas completas y luego las unidades.",
                     practicoHTML: buildTheoryUI(
                         "Suma en dos saltos", 
                         "Partimos el segundo número para sumarlo poco a poco.",
-                        "47 + 28 = ?",
+                        "47 + 28 = 75",
                         [
                             "Descomponemos el 28 en <strong class='text-emerald-700'>20 y 8</strong>.",
                             "Primer salto (sumamos decenas): <strong class='text-emerald-700'>47 + 20 = 67</strong>.",
@@ -400,34 +679,27 @@
                         ],
                         "El cerebro suma mejor si le damos la comida en trozos pequeños. ¡Suma primero las decenas!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(3, 9); let d1 = rand(1, 7);
-                            let u2 = rand(11-u1, 9); // Obliga a rebasar decena
-                            let d2 = rand(1, 8-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n1 = rand(45, 145); let n2 = rand(35, 89);
-                            if((n1%10)+(n2%10) < 10) n2 += 5; // Forzar cambio
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u1 = rand(3, 9); let d1 = rand(1, 6);
+                        let u2 = rand(11-u1, 9);
+                        let d2 = rand(1, 8-d1);
+                        let n1 = d1*10 + u1; let n2 = d2*10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1+n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n1 = rand(54, 148); let n2 = rand(26, 89);
+                        if((n1%10)+(n2%10) < 10) n2 += 6;
+                        return {text: `${n1} + ${n2}`, answer: n1+n2};
+                    })
                 },
                 {
                     title: "3.6 Restar con cambio (2 cifras)",
                     subtitle: "Resta progresiva por descomposición del sustraendo.",
+                    tip: "Baja primero las decenas completas (de 10 en 10) y al final quita las unidades.",
                     practicoHTML: buildTheoryUI(
                         "Resta en dos saltos", 
                         "Descomponemos el número que restamos para bajar como por una escalera.",
-                        "62 - 27 = ?",
+                        "62 - 27 = 35",
                         [
                             "Rompemos el 27 en <strong class='text-emerald-700'>20 y 7</strong>.",
                             "Bajón grande (decenas): <strong class='text-emerald-700'>62 - 20 = 42</strong>.",
@@ -435,133 +707,111 @@
                         ],
                         "Bajar de 10 en 10 primero es mucho más fácil. Deja las unidades sueltas para el final."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 7); let d1 = rand(4, 9);
-                            let u2 = rand(u1+1, 9); // Obliga al cambio
-                            let d2 = rand(1, d1-2);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} - ${n2}`, answer: n1-n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n1 = rand(112, 195);
-                            let u2 = rand((n1%10)+1, 9);
-                            let d2 = rand(2, 7);
-                            let n2 = d2*10 + u2;
-                            res.push({text: `${n1} - ${n2}`, answer: n1-n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u1 = rand(1, 7); let d1 = rand(4, 9);
+                        let u2 = rand(u1+1, 9);
+                        let d2 = rand(1, d1-2);
+                        let n1 = d1*10 + u1; let n2 = d2*10 + u2;
+                        return {text: `${n1} - ${n2}`, answer: n1-n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n1 = rand(112, 186);
+                        let u1 = n1 % 10;
+                        let u2 = u1 < 8 ? rand(u1+1, 9) : 9;
+                        let d2 = rand(2, 7);
+                        let n2 = d2*10 + u2;
+                        return {text: `${n1} - ${n2}`, answer: n1-n2};
+                    })
                 },
                 {
                     title: "3.7 Tablas extendidas ABN",
                     subtitle: "Se multiplica el dígito y se aplica el patrón posicional.",
+                    tip: "Multiplica los números sin ceros y añade los ceros al final del resultado.",
                     practicoHTML: buildTheoryUI(
                         "Multiplicar con ceros", 
                         "Usamos las tablas normales y luego añadimos los ceros del patrón.",
-                        "4 x 30 = ?",
+                        "4 × 30 = 120",
                         [
                             "Olvídate del cero por un momento.",
-                            "Aplica la tabla básica: <strong class='text-emerald-700'>4 x 3 = 12</strong>.",
+                            "Aplica la tabla básica: <strong class='text-emerald-700'>4 × 3 = 12</strong>.",
                             "Recupera el cero del 30 y ponlo al final: <strong class='text-emerald-700'>120</strong>."
                         ],
                         "El cero es como un vagón de tren; apártalo para multiplicar y engánchalo al final."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u = rand(2, 9); let d = rand(2, 9)*10;
-                            if (Math.random() > 0.5) res.push({text: `${u} x ${d}`, answer: u*d});
-                            else res.push({text: `${d} x ${u}`, answer: u*d});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u = rand(4, 9); let c = rand(2, 9)*100;
-                            res.push({text: `${u} x ${c}`, answer: u*c});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u = rand(2, 9); let d = rand(2, 9)*10;
+                        if (Math.random() > 0.5) return {text: `${u} × ${d}`, answer: u*d};
+                        return {text: `${d} × ${u}`, answer: u*d};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let u = rand(3, 9); let c = rand(2, 9)*100;
+                        if (Math.random() > 0.5) return {text: `${u} × ${c}`, answer: u*c};
+                        return {text: `${c} × ${u}`, answer: u*c};
+                    })
                 },
                 {
                     title: "3.8 Producto por 1 cifra (Descomp.)",
                     subtitle: "Aplicación mental de la propiedad distributiva.",
+                    tip: "Multiplica primero las decenas, luego las unidades y suma ambos resultados.",
                     practicoHTML: buildTheoryUI(
                         "Multiplicar por partes", 
                         "Rompemos el número de dos cifras para multiplicar más fácil.",
-                        "14 x 3 = ?",
+                        "14 × 3 = 42",
                         [
                             "Rompemos el 14 en <strong class='text-emerald-700'>10 y 4</strong>.",
-                            "Multiplicamos la decena: <strong class='text-emerald-700'>10 x 3 = 30</strong>.",
-                            "Multiplicamos la unidad: <strong class='text-emerald-700'>4 x 3 = 12</strong>.",
+                            "Multiplicamos la decena: <strong class='text-emerald-700'>10 × 3 = 30</strong>.",
+                            "Multiplicamos la unidad: <strong class='text-emerald-700'>4 × 3 = 12</strong>.",
                             "Sumamos los dos resultados: <strong class='text-emerald-700'>30 + 12 = 42</strong>."
                         ],
                         "Es la propiedad distributiva: repartimos el trabajo en dos multiplicaciones sencillas."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(12, 29); let u = rand(2, 6);
-                            res.push({text: `${n} x ${u}`, answer: n*u});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(32, 89); let u = rand(3, 8);
-                            res.push({text: `${n} x ${u}`, answer: n*u});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let n = rand(12, 29);
+                        if (n % 10 === 0) n += rand(1, 5);
+                        let u = rand(2, 5);
+                        return {text: `${n} × ${u}`, answer: n*u};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n = rand(32, 79);
+                        if (n % 10 === 0) n += rand(2, 7);
+                        let u = rand(3, 8);
+                        return {text: `${n} × ${u}`, answer: n*u};
+                    })
                 },
                 {
-                    title: "3.9 Mitades de centenas pares",
+                    title: "3.9 Mitades de centenas y decenas pares",
                     subtitle: "Asociación directa con la mitad básica.",
+                    tip: "Saca la mitad de cada cifra par por separado y mantén los ceros.",
                     practicoHTML: buildTheoryUI(
                         "Partir centenas por la mitad", 
-                        "Si el primer número es par, su mitad es directa y rapidísima.",
-                        "Mitad de 600 = ?",
+                        "Si las cifras son pares, su mitad es directa y rapidísima.",
+                        "Mitad de 640 = 320",
                         [
-                            "Fíjate en el número principal (el 6).",
-                            "Piensa en su mitad básica: <strong class='text-emerald-700'>la mitad de 6 es 3</strong>.",
-                            "Como son centenas, devuelve los ceros: <strong class='text-emerald-700'>300</strong>."
+                            "Fíjate en las centenas: <strong class='text-emerald-700'>la mitad de 600 es 300</strong>.",
+                            "Fíjate en las decenas: <strong class='text-emerald-700'>la mitad de 40 es 20</strong>.",
+                            "Júntalo todo: <strong class='text-emerald-700'>320</strong>."
                         ],
                         "¡Solo tienes que saberte las mitades del 2, 4, 6 y 8!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        const evens = [200, 400, 600, 800, 1000];
-                        for(let i=0; i<20; i++) {
-                            let n = evens[rand(0, 4)];
-                            res.push({text: `Mitad de ${n}`, answer: n/2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        const evens = [1200, 1400, 1600, 1800, 2400, 2600];
-                        for(let i=0; i<20; i++) {
-                            let n = evens[rand(0, 5)];
-                            res.push({text: `Mitad de ${n}`, answer: n/2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        const pool = [200, 400, 600, 800, 1000, 220, 240, 260, 280, 420, 440, 460, 480, 620, 640, 660, 680, 820, 840, 860, 880];
+                        let n = pool[rand(0, pool.length - 1)];
+                        return {text: `Mitad de ${n}`, answer: n/2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        const pool = [1200, 1400, 1600, 1800, 2200, 2400, 2600, 2800, 1240, 1460, 1680, 2480, 4620];
+                        let n = pool[rand(0, pool.length - 1)];
+                        return {text: `Mitad de ${n}`, answer: n/2};
+                    })
                 },
                 {
-                    title: "3.10 Mitades de 3 cifras (sencillos)",
-                    subtitle: "Descomposición en sumandos simétricos fáciles.",
+                    title: "3.10 Mitades de 3 cifras (con centenas impares)",
+                    subtitle: "Descomposición cuando la centena o decena es impar.",
+                    tip: "Recuerda siempre: la mitad de 100 es 50, la de 300 es 150, la de 500 es 250...",
                     practicoHTML: buildTheoryUI(
                         "Mitad por descomposición", 
                         "Partimos el número en centena y decenas para calcular la mitad de cada parte.",
-                        "Mitad de 150 = ?",
+                        "Mitad de 150 = 75",
                         [
                             "Descomponemos el 150 en <strong class='text-emerald-700'>100 y 50</strong>.",
                             "Mitad de 100 = <strong class='text-emerald-700'>50</strong>.",
@@ -570,44 +820,62 @@
                         ],
                         "Aprende de memoria que la mitad de 100 es 50, y la mitad de 50 es 25. ¡Aparecen muchísimo!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        const targets = [150, 350, 550, 240, 260, 420, 460, 480]; // Fáciles de 3 cifras
-                        for(let i=0; i<20; i++) {
-                            let n = targets[rand(0, targets.length-1)];
-                            res.push({text: `Mitad de ${n}`, answer: n/2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        const targets = [370, 530, 750, 950, 390, 570]; // Más complejos
-                        for(let i=0; i<20; i++) {
-                            let n = targets[rand(0, targets.length-1)];
-                            res.push({text: `Mitad de ${n}`, answer: n/2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        const targets = [120, 140, 150, 160, 180, 250, 300, 320, 340, 350, 360, 450, 500, 520, 540, 550, 650, 700, 750, 900];
+                        let n = targets[rand(0, targets.length - 1)];
+                        return {text: `Mitad de ${n}`, answer: n/2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        const targets = [130, 170, 190, 310, 330, 370, 390, 510, 530, 570, 590, 730, 750, 770, 930, 950, 970, 1100, 1300, 1500];
+                        let n = targets[rand(0, targets.length - 1)];
+                        return {text: `Mitad de ${n}`, answer: n/2};
+                    })
                 }
             ];
 
-            // --- VARIABLES DE INTERFAZ ---
+            // --- ELEMENTOS DEL DOM ---
             const levelSelector = document.getElementById('level-selector');
+            const prevLevelBtn = document.getElementById('prev-level-btn');
+            const nextLevelBtn = document.getElementById('next-level-btn');
             const tabPractico = document.getElementById('tab-practico');
             const tabReto = document.getElementById('tab-reto');
             const contentPractico = document.getElementById('content-practico');
             const contentReto = document.getElementById('content-reto');
             const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+            const proBadge = document.getElementById('pro-badge');
+            const problemContainer = document.getElementById('problem-container');
             const problemText = document.getElementById('problem-text');
             const answerText = document.getElementById('answer-text');
             const showAnswerBtn = document.getElementById('show-answer-btn');
             const nextProblemBtn = document.getElementById('next-problem-btn');
             const printLevelsContainer = document.getElementById('print-levels-container');
+            const toggleHintBtn = document.getElementById('toggle-hint-btn');
+            const quickHintBox = document.getElementById('Quick-hint-box');
 
+            // Modo Pizarra vs Teclado
+            const modeFlashcardBtn = document.getElementById('mode-flashcard-btn');
+            const modeKeypadBtn = document.getElementById('mode-keypad-btn');
+            const flashcardControls = document.getElementById('flashcard-controls');
+            const keypadControls = document.getElementById('keypad-controls');
+            const userInputValue = document.getElementById('user-input-value');
+            const userInputDisplay = document.getElementById('user-input-display');
+            const checkAnswerBtn = document.getElementById('check-answer-btn');
+            const keypadNextBtn = document.getElementById('keypad-next-btn');
+            const keypadFeedback = document.getElementById('keypad-feedback');
+            const scoreBadge = document.getElementById('score-badge');
+            const scoreCountEl = document.getElementById('score-count');
+
+            // Estado de la sesión
             let currentProblems = [];
             let currentProblemIndex = 0;
+            let isProMode = false;
+            let isKeypadMode = false;
+            let currentUserInput = '';
+            let score = 0;
+            let problemSolved = false;
 
-            // --- INICIALIZAR ---
+            // --- INICIALIZACIÓN ---
             function init() {
                 levels.forEach((level, index) => {
                     const opt = document.createElement('option');
@@ -616,84 +884,277 @@
                     levelSelector.appendChild(opt);
 
                     const cbWrap = document.createElement('label');
-                    cbWrap.className = 'flex items-center cursor-pointer p-3 hover:bg-violet-50 rounded-xl transition-colors border-2 border-transparent hover:border-violet-200';
+                    cbWrap.className = 'flex items-center cursor-pointer p-2.5 hover:bg-violet-50 rounded-xl transition-colors border-2 border-slate-100 hover:border-violet-200';
                     cbWrap.innerHTML = `
-                        <input type="checkbox" value="${index}" class="print-level-cb form-checkbox h-6 w-6 text-violet-600 rounded-md focus:ring-violet-500">
-                        <span class="ml-3 text-slate-700 font-bold text-lg truncate" title="${level.title}">${level.title}</span>
+                        <input type="checkbox" value="${index}" class="print-level-cb h-5 w-5 text-violet-600 rounded focus:ring-violet-500 cursor-pointer">
+                        <span class="ml-3 text-slate-700 font-bold text-base truncate" title="${level.title}">${level.title}</span>
                     `;
                     printLevelsContainer.appendChild(cbWrap);
                 });
 
+                // Listeners de nivel
                 levelSelector.addEventListener('change', () => loadLevel(parseInt(levelSelector.value)));
-                
+                prevLevelBtn.addEventListener('click', () => {
+                    let idx = parseInt(levelSelector.value);
+                    if (idx > 0) {
+                        levelSelector.value = idx - 1;
+                        loadLevel(idx - 1);
+                    }
+                });
+                nextLevelBtn.addEventListener('click', () => {
+                    let idx = parseInt(levelSelector.value);
+                    if (idx < levels.length - 1) {
+                        levelSelector.value = idx + 1;
+                        loadLevel(idx + 1);
+                    }
+                });
+
+                // Botón de Sonido
+                const soundBtn = document.getElementById('sound-toggle-btn');
+                soundBtn.addEventListener('click', () => {
+                    soundEnabled = !soundEnabled;
+                    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+                });
+
+                // Pestañas
                 tabPractico.addEventListener('click', showPractico);
                 tabReto.addEventListener('click', showReto);
+
+                // Pista rápida
+                toggleHintBtn.addEventListener('click', () => {
+                    quickHintBox.classList.toggle('hidden');
+                });
+
+                // Controles Modo Pizarra
                 showAnswerBtn.addEventListener('click', showAnswer);
                 nextProblemBtn.addEventListener('click', nextProblem);
                 
+                // Controles Modo Práctica (Teclado)
+                modeFlashcardBtn.addEventListener('click', () => switchGameMode(false));
+                modeKeypadBtn.addEventListener('click', () => switchGameMode(true));
+
+                document.querySelectorAll('.num-key').forEach(btn => {
+                    btn.addEventListener('click', () => handleNumKey(btn.dataset.key));
+                });
+                checkAnswerBtn.addEventListener('click', checkUserAnswer);
+                keypadNextBtn.addEventListener('click', nextProblem);
+
+                // Reiniciar / Modo PRO
                 document.getElementById('new-challenge-btn').addEventListener('click', () => startNewChallenge(false));
                 document.getElementById('pro-challenge-btn').addEventListener('click', () => startNewChallenge(true));
 
-                // Modal
-                document.getElementById('open-print-modal-btn').addEventListener('click', () => {
-                    document.getElementById('print-error-msg').classList.add('hidden');
+                // Soporte de teclado físico para mayor agilidad en pizarra digital u ordenador
+                document.addEventListener('keydown', (e) => {
+                    const isModalOpen = !document.getElementById('print-modal').classList.contains('hidden');
+                    const isPrintViewOpen = !document.getElementById('print-view-wrapper').classList.contains('hidden');
+                    const isRetoVisible = !contentReto.classList.contains('hidden');
+                    if (isModalOpen || isPrintViewOpen || !isRetoVisible) return;
+
+                    if (!isKeypadMode) {
+                        if (e.code === 'Space' || e.code === 'Enter' || e.code === 'ArrowRight') {
+                            e.preventDefault();
+                            if (!showAnswerBtn.classList.contains('hidden')) showAnswer();
+                            else if (!nextProblemBtn.classList.contains('hidden')) nextProblem();
+                        }
+                    } else {
+                        if (e.key >= '0' && e.key <= '9') {
+                            handleNumKey(e.key);
+                        } else if (e.key === 'Backspace') {
+                            handleNumKey('DEL');
+                        } else if (e.key === 'Escape') {
+                            handleNumKey('CLR');
+                        } else if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!problemSolved) checkUserAnswer();
+                            else nextProblem();
+                        }
+                    }
+                });
+
+                // Eventos Modal de Impresión
+                document.getElementById('open-print-modal-btn').addEventListener('click', openPrintModal);
+                document.getElementById('cancel-print-btn').addEventListener('click', closePrintModal);
+                document.getElementById('close-modal-x').addEventListener('click', closePrintModal);
+                
+                document.getElementById('select-current-level-btn').addEventListener('click', () => {
+                    const cur = levelSelector.value;
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = (cb.value === cur));
+                });
+                document.getElementById('select-all-levels-btn').addEventListener('click', () => {
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = true);
+                });
+                document.getElementById('deselect-all-levels-btn').addEventListener('click', () => {
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = false);
+                });
+
+                document.getElementById('generate-print-btn').addEventListener('click', generatePrintPreview);
+
+                // Eventos Visor de Impresión
+                document.getElementById('trigger-print-btn').addEventListener('click', () => window.print());
+                document.getElementById('regenerate-sheets-btn').addEventListener('click', generatePrintPreview);
+                document.getElementById('back-to-config-btn').addEventListener('click', () => {
+                    document.getElementById('print-view-wrapper').classList.add('hidden');
                     document.getElementById('print-modal').classList.remove('hidden');
                 });
-                document.getElementById('cancel-print-btn').addEventListener('click', () => {
-                    document.getElementById('print-modal').classList.add('hidden');
+                document.getElementById('close-print-view-btn').addEventListener('click', () => {
+                    document.getElementById('print-view-wrapper').classList.add('hidden');
                 });
-                document.getElementById('generate-print-btn').addEventListener('click', generatePrintDocument);
 
                 loadLevel(0);
                 showPractico();
             }
 
+            // --- LÓGICA DEL JUEGO ---
+            function switchGameMode(useKeypad) {
+                isKeypadMode = useKeypad;
+                if (isKeypadMode) {
+                    modeKeypadBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white text-violet-700 shadow-sm';
+                    modeFlashcardBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900';
+                    flashcardControls.classList.add('hidden');
+                    keypadControls.classList.remove('hidden');
+                    keypadControls.classList.add('flex');
+                    scoreBadge.classList.remove('hidden');
+                } else {
+                    modeFlashcardBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white text-violet-700 shadow-sm';
+                    modeKeypadBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900';
+                    keypadControls.classList.add('hidden');
+                    keypadControls.classList.remove('flex');
+                    flashcardControls.classList.remove('hidden');
+                    scoreBadge.classList.add('hidden');
+                }
+                displayProblem();
+            }
+
             function loadLevel(idx) {
                 contentPractico.innerHTML = levels[idx].practicoHTML;
+                quickHintBox.textContent = levels[idx].tip;
+                quickHintBox.classList.add('hidden');
                 startNewChallenge(false);
                 showPractico();
             }
 
             function startNewChallenge(isPro) {
+                isProMode = isPro;
                 const idx = parseInt(levelSelector.value);
                 currentProblems = isPro ? levels[idx].genPro() : levels[idx].gen();
                 currentProblemIndex = 0;
+                score = 0;
+                scoreCountEl.textContent = '0';
+
+                if (isPro) {
+                    proBadge.classList.remove('hidden');
+                    problemContainer.classList.replace('border-slate-200', 'border-rose-300');
+                } else {
+                    proBadge.classList.add('hidden');
+                    problemContainer.classList.replace('border-rose-300', 'border-slate-200');
+                }
+
                 displayProblem();
                 showReto();
             }
 
             function displayProblem() {
+                problemSolved = false;
+                currentUserInput = '';
+                updateUserInputDisplay();
+                keypadFeedback.textContent = '';
+                userInputDisplay.className = 'flex-1 bg-white border-4 border-violet-400 rounded-2xl py-3 px-6 text-4xl font-bold text-violet-900 min-h-[68px] flex items-center justify-center shadow-inner';
+                checkAnswerBtn.classList.remove('hidden');
+                keypadNextBtn.classList.add('hidden');
+
                 if (currentProblemIndex < currentProblems.length) {
                     const p = currentProblems[currentProblemIndex];
-                    // Si el texto incluye "_" es una operación para rellenar hueco
                     if (p.text.includes('_')) {
-                        problemText.innerHTML = p.text.replace('_', '<span class="text-slate-300">___</span>');
+                        problemText.innerHTML = p.text.replace('_', '<span class="text-violet-400 border-b-4 border-dashed border-violet-400 px-3">?</span>');
                     } else {
                         problemText.textContent = p.text;
                     }
                     
-                    progressText.textContent = `${currentProblemIndex + 1} de 20`;
+                    progressText.textContent = `${currentProblemIndex + 1} de ${currentProblems.length}`;
+                    progressBar.style.width = `${((currentProblemIndex + 1) / currentProblems.length) * 100}%`;
+                    
                     answerText.classList.remove('answer-reveal');
                     answerText.classList.add('opacity-0');
-                    answerText.textContent = `= ${p.answer}`;
+                    answerText.textContent = p.text.includes('_') ? `${p.answer}` : `= ${p.answer}`;
                     
                     showAnswerBtn.classList.remove('hidden');
                     nextProblemBtn.classList.add('hidden');
                 } else {
-                    problemText.textContent = '¡Misión Cumplida! 🏆';
-                    progressText.textContent = 'Fin del reto';
-                    answerText.classList.add('opacity-0');
+                    problemText.innerHTML = '¡Misión Cumplida! 🏆';
+                    progressText.textContent = '¡Completado!';
+                    answerText.classList.remove('opacity-0');
+                    answerText.textContent = isKeypadMode ? `Aciertos: ${score} de ${currentProblems.length}` : '¡Gran trabajo!';
                     showAnswerBtn.classList.add('hidden');
                     nextProblemBtn.classList.add('hidden');
+                    checkAnswerBtn.classList.add('hidden');
+                    keypadNextBtn.classList.add('hidden');
+                    playSuccessSound();
                 }
             }
             
             function showAnswer() {
+                if (currentProblemIndex >= currentProblems.length) return;
+                const p = currentProblems[currentProblemIndex];
+                if (p.text.includes('_')) {
+                    problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${p.answer}</span>`);
+                }
                 answerText.classList.remove('opacity-0');
                 answerText.classList.add('answer-reveal');
                 playSuccessSound();
                 showAnswerBtn.classList.add('hidden');
                 nextProblemBtn.classList.remove('hidden');
+            }
+
+            function handleNumKey(key) {
+                if (problemSolved || currentProblemIndex >= currentProblems.length) return;
+                if (key === 'DEL') {
+                    currentUserInput = currentUserInput.slice(0, -1);
+                } else if (key === 'CLR') {
+                    currentUserInput = '';
+                } else if (currentUserInput.length < 6) {
+                    currentUserInput += key;
+                }
+                updateUserInputDisplay();
+            }
+
+            function updateUserInputDisplay() {
+                if (currentUserInput === '') {
+                    userInputValue.textContent = '?';
+                    userInputValue.className = 'text-slate-300';
+                } else {
+                    userInputValue.textContent = currentUserInput;
+                    userInputValue.className = 'text-violet-950';
+                }
+            }
+
+            function checkUserAnswer() {
+                if (currentProblemIndex >= currentProblems.length || currentUserInput === '') return;
+                const p = currentProblems[currentProblemIndex];
+                const userVal = parseInt(currentUserInput, 10);
+
+                if (userVal === p.answer) {
+                    problemSolved = true;
+                    score++;
+                    scoreCountEl.textContent = score;
+                    playSuccessSound();
+                    keypadFeedback.textContent = '¡Correcto! ¡Excelente cálculo! 🎉';
+                    keypadFeedback.className = 'h-7 font-bold text-lg mb-2 text-emerald-600';
+                    userInputDisplay.className = 'flex-1 bg-emerald-50 border-4 border-emerald-500 rounded-2xl py-3 px-6 text-4xl font-bold text-emerald-800 min-h-[68px] flex items-center justify-center';
+                    if (p.text.includes('_')) {
+                        problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${p.answer}</span>`);
+                    }
+                    checkAnswerBtn.classList.add('hidden');
+                    keypadNextBtn.classList.remove('hidden');
+                } else {
+                    playErrorSound();
+                    keypadFeedback.textContent = '¡Casi! Revisa la estrategia e inténtalo de nuevo 💪';
+                    keypadFeedback.className = 'h-7 font-bold text-lg mb-2 text-rose-600';
+                    userInputDisplay.classList.remove('shake-anim');
+                    void userInputDisplay.offsetWidth; // Reflow para reiniciar animación
+                    userInputDisplay.classList.add('shake-anim', 'border-rose-400');
+                    currentUserInput = '';
+                    setTimeout(updateUserInputDisplay, 350);
+                }
             }
 
             function nextProblem() {
@@ -705,24 +1166,68 @@
                 contentPractico.classList.remove('hidden');
                 contentReto.classList.add('hidden');
                 contentReto.classList.remove('flex');
-                tabPractico.classList.add('tab-active', 'z-10');
-                tabPractico.classList.remove('tab-inactive', 'z-0');
-                tabReto.classList.add('tab-inactive', 'z-0');
-                tabReto.classList.remove('tab-active', 'z-10');
+                tabPractico.classList.add('tab-active');
+                tabPractico.classList.remove('tab-inactive');
+                tabReto.classList.add('tab-inactive');
+                tabReto.classList.remove('tab-active');
             }
 
             function showReto() {
                 contentReto.classList.remove('hidden');
                 contentReto.classList.add('flex');
                 contentPractico.classList.add('hidden');
-                tabReto.classList.add('tab-active', 'z-10');
-                tabReto.classList.remove('tab-inactive', 'z-0');
-                tabPractico.classList.add('tab-inactive', 'z-0');
-                tabPractico.classList.remove('tab-active', 'z-10');
+                tabReto.classList.add('tab-active');
+                tabReto.classList.remove('tab-inactive');
+                tabPractico.classList.add('tab-inactive');
+                tabPractico.classList.remove('tab-active');
             }
 
-            // --- GENERADOR PDF (FICHAS) ---
-            function generatePrintDocument() {
+            // --- GENERADOR DE FICHAS IMPRIMIBLES / PDF ---
+            function openPrintModal() {
+                document.getElementById('print-error-msg').classList.add('hidden');
+                // Si no hay ninguno seleccionado, pre-seleccionar el nivel actual para facilitar el uso
+                const checkedCount = document.querySelectorAll('.print-level-cb:checked').length;
+                if (checkedCount === 0) {
+                    const cur = levelSelector.value;
+                    document.querySelectorAll('.print-level-cb').forEach(cb => {
+                        if (cb.value === cur) cb.checked = true;
+                    });
+                }
+                document.getElementById('print-modal').classList.remove('hidden');
+            }
+
+            function closePrintModal() {
+                document.getElementById('print-modal').classList.add('hidden');
+            }
+
+            // Formateador inteligente de expresiones para la ficha impresa
+            function formatProblemForWorksheet(p) {
+                if (p.text.includes('_')) {
+                    // Ej: "300 + _ = 1000" -> línea de respuesta en el hueco, sin añadir otro "=" al final
+                    const parts = p.text.split('_');
+                    return `
+                        <span class="font-bold text-slate-800">${parts[0]}</span>
+                        <span class="inline-block w-20 border-b-2 border-slate-500 mx-1"></span>
+                        <span class="font-bold text-slate-800">${parts[1]}</span>
+                    `;
+                } else {
+                    return `
+                        <span class="font-bold text-slate-800">${p.text} =</span>
+                        <span class="inline-block w-24 border-b-2 border-slate-500 ml-2"></span>
+                    `;
+                }
+            }
+
+            function formatSolutionItem(p) {
+                if (p.text.includes('_')) {
+                    const solved = p.text.replace('_', `<strong class="text-emerald-700 underline">${p.answer}</strong>`);
+                    return `<span class="text-slate-700">${solved}</span>`;
+                } else {
+                    return `<span class="text-slate-700">${p.text} = <strong class="text-emerald-700">${p.answer}</strong></span>`;
+                }
+            }
+
+            function generatePrintPreview() {
                 const checks = document.querySelectorAll('.print-level-cb:checked');
                 const err = document.getElementById('print-error-msg');
                 
@@ -733,126 +1238,173 @@
                 err.classList.add('hidden');
 
                 const isPro = document.getElementById('print-pro-cb').checked;
+                const includeSolutions = document.getElementById('print-solutions-cb').checked;
                 const numVersions = parseInt(document.getElementById('print-versions').value);
-                const titles = Array.from(checks).map(cb => levels[parseInt(cb.value)].title.replace(/^\d+\.\d+\s*/, ''));
+                const customTitle = document.getElementById('print-custom-title').value.trim() || 'CÁLCULO MENTAL - 3º PRIMARIA';
+                
+                const selectedIndices = Array.from(checks).map(cb => parseInt(cb.value));
+                const titles = selectedIndices.map(idx => levels[idx].title);
+                const modelLetters = ['A', 'B', 'C', 'D'];
 
-                let html = '';
-                let solutions = `
-                    <div class="page-break w-full mx-auto font-sans text-slate-900 pt-6">
-                        <div class="border-b-4 border-emerald-500 pb-3 mb-6 flex justify-between items-end">
-                            <h1 class="text-3xl font-bold text-emerald-800 uppercase">SOLUCIONARIO DOCENTE</h1>
-                            <p class="text-lg text-slate-700 font-bold">${isPro ? '🔥 Nivel Avanzado' : ''}</p>
-                        </div>
-                        <div class="grid grid-cols-${numVersions > 1 ? '2' : '1'} gap-6">
-                `;
+                let sheetsHTML = '';
+                let allVersionsSolutionsHTML = '';
 
-                for (let v = 1; v <= numVersions; v++) {
-                    let pools = [];
-                    checks.forEach(cb => {
-                        const lvl = levels[parseInt(cb.value)];
-                        pools.push((isPro ? lvl.genPro() : lvl.gen()).sort(() => Math.random() - 0.5));
+                for (let v = 0; v < numVersions; v++) {
+                    const modelLabel = numVersions > 1 ? `Modelo ${modelLetters[v]}` : 'Ficha de Cálculo';
+                    
+                    // Generar pool equilibrado de los niveles marcados
+                    let pools = selectedIndices.map(idx => {
+                        const lvl = levels[idx];
+                        const problems = isPro ? lvl.genPro() : lvl.gen();
+                        return problems.sort(() => Math.random() - 0.5);
                     });
 
-                    let final = [];
+                    let worksheetProblems = [];
+                    let seenInSheet = new Set();
                     let pIdx = 0;
-                    while(final.length < 20 && pools.some(a => a.length > 0)) {
-                        let cur = pools[pIdx % pools.length];
-                        if (cur.length > 0) final.push(cur.pop());
+                    let safety = 0;
+
+                    while (worksheetProblems.length < 20 && safety < 200) {
+                        safety++;
+                        let curPool = pools[pIdx % pools.length];
+                        if (curPool.length > 0) {
+                            let candidate = curPool.pop();
+                            if (!seenInSheet.has(candidate.text) || safety > 80) {
+                                worksheetProblems.push(candidate);
+                                seenInSheet.add(candidate.text);
+                            }
+                        }
                         pIdx++;
                     }
-                    final.sort(() => Math.random() - 0.5); // Barajeado final
 
-                    const breakCls = v > 1 ? 'page-break pt-6' : '';
-                    
-                    html += `
-                        <div class="${breakCls} w-full mx-auto font-sans text-slate-900">
-                            <div class="border-b-4 border-violet-500 pb-3 mb-5 flex justify-between items-end">
-                                <div>
-                                    <h1 class="text-3xl font-bold text-violet-900 uppercase">CÁLCULO MENTAL - 3º EP</h1>
-                                    <p class="text-lg text-slate-700 font-semibold mt-1">
-                                        Estrategias: ${titles.join(', ')}
-                                    </p>
-                                </div>
-                                <div class="text-right text-slate-500 font-bold bg-slate-100 px-4 py-2 rounded-xl border-2 border-slate-200">
-                                    Modelo ${v}
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-between mb-10 text-xl font-semibold">
-                                <div class="flex-1 mr-8 flex items-end">
-                                    <span class="mr-3 text-slate-800">Nombre:</span> 
-                                    <div class="flex-1 border-b-2 border-slate-400"></div>
-                                </div>
-                                <div class="w-64 flex items-end">
-                                    <span class="mr-3 text-slate-800">Fecha:</span> 
-                                    <div class="flex-1 border-b-2 border-slate-400"></div>
-                                </div>
-                            </div>
+                    // Mezclar el orden final de las 20 preguntas si hay varios niveles seleccionados
+                    if (selectedIndices.length > 1) {
+                        worksheetProblems.sort(() => Math.random() - 0.5);
+                    }
 
-                            <div class="grid grid-cols-2 gap-x-16 gap-y-12 text-2xl font-bold px-4">
-                    `;
+                    // Construir las 20 filas en 2 columnas (1-10 a la izquierda, 11-20 a la derecha)
+                    let leftColHTML = '';
+                    let rightColHTML = '';
 
-                    let solCol = `
-                        <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
-                            <h3 class="font-bold text-xl mb-4 border-b-2 border-slate-300 pb-2 text-slate-800">Modelo ${v}</h3>
-                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
-                    `;
-
-                    final.forEach((p, i) => {
-                        let cleanText = p.text.replace('_', '___');
-                        html += `
-                            <div class="flex items-center">
-                                <span class="w-10 inline-block font-bold text-slate-300 text-right pr-3">${i + 1}.</span>
-                                <span class="flex-1 text-right pr-4 text-3xl tracking-wide">${cleanText} = </span>
-                                <span class="w-28 border-b-4 border-dashed border-slate-300 inline-block"></span>
+                    worksheetProblems.forEach((p, i) => {
+                        const rowHTML = `
+                            <div class="flex items-baseline py-2.5 border-b border-slate-100">
+                                <span class="w-8 font-bold text-slate-400 text-base shrink-0">${i + 1}.</span>
+                                <div class="flex-1 text-xl flex items-baseline justify-between pr-2">
+                                    ${formatProblemForWorksheet(p)}
+                                </div>
                             </div>
                         `;
-                        solCol += `
-                            <div class="flex">
-                                <span class="w-8 text-slate-400 font-bold">${i + 1}.</span> 
-                                <span class="flex-1 font-medium">${p.text} =</span> 
-                                <span class="font-bold text-emerald-600 ml-2">${p.answer}</span>
+                        if (i < 10) leftColHTML += rowHTML;
+                        else rightColHTML += rowHTML;
+                    });
+
+                    // Hoja A4 del Alumno
+                    sheetsHTML += `
+                        <div class="a4-sheet">
+                            <div>
+                                <!-- Encabezado de la ficha -->
+                                <div class="border-b-4 border-violet-600 pb-3 mb-5 flex justify-between items-start gap-4">
+                                    <div>
+                                        <h1 class="text-2xl font-bold text-violet-950 uppercase tracking-tight">${customTitle}</h1>
+                                        <p class="text-xs text-slate-600 font-semibold mt-1 max-w-xl leading-snug">
+                                            <strong>Estrategias:</strong> ${titles.join(' · ')} ${isPro ? ' (🔥 Nivel PRO)' : ''}
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0 bg-violet-100 text-violet-900 font-bold px-3.5 py-1.5 rounded-xl border-2 border-violet-300 text-sm">
+                                        ${modelLabel}
+                                    </div>
+                                </div>
+
+                                <!-- Datos del alumno -->
+                                <div class="grid grid-cols-12 gap-4 mb-6 text-base font-bold text-slate-800 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                    <div class="col-span-7 flex items-end">
+                                        <span class="mr-2">Nombre:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5"></div>
+                                    </div>
+                                    <div class="col-span-3 flex items-end">
+                                        <span class="mr-2">Fecha:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5"></div>
+                                    </div>
+                                    <div class="col-span-2 flex items-end">
+                                        <span class="mr-2">Aciertos:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5 text-right text-slate-400 text-xs">/ 20</div>
+                                    </div>
+                                </div>
+
+                                <!-- Cuerpo de 20 operaciones en 2 columnas ordenadas -->
+                                <div class="grid grid-cols-2 gap-x-10 mt-2">
+                                    <div class="space-y-1">${leftColHTML}</div>
+                                    <div class="space-y-1">${rightColHTML}</div>
+                                </div>
+                            </div>
+
+                            <!-- Pie de ficha -->
+                            <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-500 font-semibold">
+                                <span>💡 Recuerda descomponer y usar los trucos ABN antes de escribir.</span>
+                                <span>3º Educación Primaria · ${modelLabel}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Bloque de soluciones para este modelo
+                    let solItemsHTML = '';
+                    worksheetProblems.forEach((p, i) => {
+                        solItemsHTML += `
+                            <div class="flex items-baseline py-1 text-sm border-b border-slate-200/60">
+                                <span class="w-6 text-slate-400 font-bold shrink-0">${i + 1}.</span>
+                                <div class="flex-1">${formatSolutionItem(p)}</div>
                             </div>
                         `;
                     });
 
-                    html += `</div></div>`;
-                    solCol += `</div></div>`;
-                    solutions += solCol;
+                    allVersionsSolutionsHTML += `
+                        <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                            <h3 class="font-bold text-base mb-2.5 pb-1.5 border-b-2 border-emerald-500 text-emerald-950 flex justify-between">
+                                <span>Soluciones - ${modelLabel}</span>
+                                <span class="text-xs text-emerald-700 font-semibold">${isPro ? '🔥 PRO' : 'Estándar'}</span>
+                            </h3>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-0.5">
+                                ${solItemsHTML}
+                            </div>
+                        </div>
+                    `;
                 }
 
-                solutions += `</div></div>`;
-                html += solutions;
+                // Añadir Hoja A4 de Solucionario al final si está marcado
+                if (includeSolutions) {
+                    sheetsHTML += `
+                        <div class="a4-sheet">
+                            <div>
+                                <div class="border-b-4 border-emerald-600 pb-3 mb-5 flex justify-between items-end">
+                                    <div>
+                                        <h1 class="text-2xl font-bold text-emerald-900 uppercase">✅ SOLUCIONARIO DOCENTE</h1>
+                                        <p class="text-xs text-slate-600 font-semibold mt-1">
+                                            ${customTitle} · Estrategias: ${titles.join(' · ')}
+                                        </p>
+                                    </div>
+                                    <span class="bg-emerald-100 text-emerald-900 font-bold px-3 py-1 rounded-lg text-xs border border-emerald-300">
+                                        Hoja de control
+                                    </span>
+                                </div>
 
-                const docStr = `<!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8"><title>Fichas 3º Primaria</title>
-                    <script src="https://cdn.tailwindcss.com"></s`+`cript>
-                    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-                    <style>
-                        body { font-family: 'Quicksand', sans-serif; }
-                        @media print {
-                            @page { size: A4; margin: 1.5cm; }
-                            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                            .page-break { page-break-before: always !important; }
-                            .no-print { display: none !important; }
-                        }
-                    </style>
-                </head>
-                <body class="bg-white p-4">
-                    <div class="no-print text-center py-6 bg-violet-50 border-b-4 border-violet-200 mb-8 rounded-2xl">
-                        <p class="text-violet-800 font-bold text-2xl mb-2">🖨️ Fichas Generadas</p>
-                        <button onclick="window.print()" class="bg-emerald-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-600 mt-2">Imprimir Documento</button>
-                    </div>
-                    ${html}
-                    <script>setTimeout(() => window.print(), 1000);</s`+`cript>
-                </body>
-                </html>`;
+                                <div class="grid grid-cols-1 ${numVersions > 1 ? 'md:grid-cols-2 print:grid-cols-2' : ''} gap-5">
+                                    ${allVersionsSolutionsHTML}
+                                </div>
+                            </div>
 
-                const blob = new Blob([docStr], { type: 'text/html' });
-                window.open(URL.createObjectURL(blob), '_blank');
-                document.getElementById('print-modal').classList.add('hidden');
+                            <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-400 font-semibold">
+                                <span>Documento de corrección para el docente</span>
+                                <span>3º Educación Primaria</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('print-sheets-container').innerHTML = sheetsHTML;
+                closePrintModal();
+                document.getElementById('print-view-wrapper').classList.remove('hidden');
+                document.getElementById('print-view-wrapper').scrollTop = 0;
             }
 
             init();
