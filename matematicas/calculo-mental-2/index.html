@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mates Divertidas - 2º Primaria</title>
-    <!-- Tailwind CSS para estilos rápidos -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mates Divertidas - 2º Primaria (Cálculo Mental)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Nunito (ideal para educación infantil/primaria) -->
+    <!-- Google Fonts: Nunito (ideal para lectura en primer ciclo de primaria) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -19,254 +19,544 @@
             background-size: 30px 30px;
         }
 
-        /* Efectos 3D para botones táctiles (MDI Friendly) */
+        /* Efectos 3D táctiles (MDI Friendly - botones gruesos) */
         .btn-3d {
-            transition: all 0.1s ease-in-out;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
             border-bottom-width: 6px;
         }
-        .btn-3d:active {
-            transform: translateY(4px);
-            border-bottom-width: 2px;
-            margin-bottom: 4px;
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(6px);
+            border-bottom-width: 0px;
+            margin-bottom: 6px;
         }
 
         /* Pestañas */
         .tab-active {
             background-color: #ffffff;
-            color: #ec4899; /* pink-500 */
+            color: #db2777; /* pink-600 */
             border-bottom: 4px solid #ec4899;
-            transform: scale(1.05);
+            transform: translateY(2px);
             z-index: 10;
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.04);
         }
         .tab-inactive {
-            background-color: #f8fafc;
-            color: #94a3b8; /* slate-400 */
-            border-bottom: 4px solid #e2e8f0;
+            background-color: #e2e8f0;
+            color: #64748b;
+            border-bottom: 4px solid #cbd5e1;
         }
 
-        /* Animación suave para la respuesta */
+        /* Animaciones */
         .answer-reveal {
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.5); }
+        
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.4); }
+            50% { opacity: 1; transform: scale(1.08); }
+            75% { transform: scale(0.95); }
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Estilos específicos para impresión (Oculta UI de la app) */
+        .shake-anim {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        /* Estilos de hoja A4 en vista previa */
+        .a4-sheet {
+            background: white;
+            width: 210mm;
+            min-height: 295mm;
+            margin: 0 auto 2rem auto;
+            padding: 15mm 18mm;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 850px) {
+            .a4-sheet {
+                width: 100%;
+                min-height: auto;
+                padding: 1.5rem;
+            }
+        }
+
+        /* Reglas estrictas para impresión / Exportar a PDF */
         @media print {
-            body { background: white !important; }
-            #app-container, #print-modal, .no-print { display: none !important; }
-            .page-break { page-break-before: always !important; }
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                background-image: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #app-container, #print-modal, #print-toolbar, .no-print {
+                display: none !important;
+            }
+            #print-view-wrapper {
+                display: block !important;
+                position: static !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            #print-sheets-container {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .a4-sheet {
+                width: 100% !important;
+                min-height: 272mm !important;
+                max-height: 276mm !important;
+                margin: 0 !important;
+                padding: 2mm 4mm !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+            }
+            .a4-sheet:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
+<body class="flex flex-col items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
     
-    <!-- CONTENEDOR PRINCIPAL DE LA APP -->
+    <!-- CONTENEDOR PRINCIPAL DE LA APP INTERACTIVA -->
     <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-[2rem] shadow-2xl border-4 border-white overflow-hidden relative">
         
         <!-- Cabecera -->
-        <header class="text-center p-6 md:p-10 bg-[#38bdf8] text-white relative border-b-8 border-sky-500 shadow-sm z-20">
+        <header class="text-center p-5 md:p-8 bg-gradient-to-b from-[#38bdf8] to-[#0284c7] text-white relative border-b-8 border-sky-700 shadow-sm z-20">
+            <!-- Botón de Sonido Flotante -->
+            <button id="sound-toggle-btn" title="Activar/Desactivar sonido" class="absolute top-4 right-4 bg-sky-700 hover:bg-sky-600 text-white p-3 rounded-2xl border-2 border-sky-300 shadow transition-transform active:scale-95">
+                🔊
+            </button>
+
             <h1 class="text-3xl md:text-5xl font-black tracking-tight mb-2 drop-shadow-md">
                 🚀 Mates Divertidas: 2º Primaria
             </h1>
             <p class="text-lg md:text-xl font-bold text-sky-100 mb-6 drop-shadow">¡Conviértete en un superhéroe del cálculo mental!</p>
             
-            <div class="max-w-xl mx-auto relative">
-                <select id="level-selector" class="w-full p-4 text-xl font-bold text-sky-900 bg-white rounded-2xl shadow-inner border-4 border-sky-300 focus:ring-4 focus:ring-pink-400 focus:outline-none appearance-none cursor-pointer">
-                    <!-- Las opciones se generan desde JS -->
-                </select>
-                <!-- Flecha personalizada para el select -->
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-sky-600">
-                    <svg class="fill-current h-8 w-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            <!-- Selector de Niveles con Botones Anterior/Siguiente -->
+            <div class="max-w-2xl mx-auto flex items-center gap-2">
+                <button id="prev-level-btn" title="Nivel anterior" class="bg-sky-700 hover:bg-sky-600 text-white font-black p-4 rounded-2xl border-b-4 border-sky-900 active:translate-y-1 active:border-b-0 transition-all">
+                    ◀
+                </button>
+                <div class="relative flex-1">
+                    <select id="level-selector" aria-label="Seleccionar nivel de cálculo" class="w-full p-4 pr-12 text-lg md:text-xl font-extrabold text-sky-950 bg-white rounded-2xl shadow-inner border-4 border-sky-300 focus:ring-4 focus:ring-pink-400 focus:outline-none appearance-none cursor-pointer">
+                        <!-- Opciones inyectadas por JS -->
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-sky-600">
+                        <svg class="fill-current h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+                <button id="next-level-btn" title="Siguiente nivel" class="bg-sky-700 hover:bg-sky-600 text-white font-black p-4 rounded-2xl border-b-4 border-sky-900 active:translate-y-1 active:border-b-0 transition-all">
+                    ▶
+                </button>
+            </div>
+
+            <!-- Botón Principal de Impresión -->
+            <div class="mt-6 flex flex-wrap justify-center gap-4">
+                <button id="open-print-modal-btn" class="bg-[#ec4899] text-white font-black py-3 px-8 rounded-full shadow-lg border-b-4 border-[#be185d] hover:bg-[#db2777] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
+                    🖨️ Crear Fichas de Repaso / PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Pestañas de Navegación -->
+        <div class="flex text-lg md:text-2xl font-black z-10 relative bg-slate-100">
+            <button id="tab-practico" class="flex-1 py-4 md:py-5 rounded-tr-3xl transition-all duration-200 flex items-center justify-center gap-2">
+                <span>🧠</span> <span>¿Cómo se hace?</span>
+            </button>
+            <button id="tab-reto" class="flex-1 py-4 md:py-5 rounded-tl-3xl transition-all duration-200 flex items-center justify-center gap-2">
+                <span>🎮</span> <span>¡A jugar!</span>
+            </button>
+        </div>
+
+        <!-- PESTAÑA 1: Teoría / Estrategia -->
+        <div id="content-practico" class="p-5 md:p-10 min-h-[420px] bg-slate-50"></div>
+
+        <!-- PESTAÑA 2: Reto / Juego -->
+        <div id="content-reto" class="p-5 md:p-8 min-h-[480px] bg-slate-50 hidden flex-col justify-between">
+            
+            <!-- Barra Superior del Reto: Progreso, Modo PRO y Selector Pizarra/Teclado -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="bg-sky-100 text-sky-900 font-extrabold px-4 py-1.5 rounded-full border-2 border-sky-200 shadow-sm text-base md:text-lg">
+                        ⭐ Reto <span id="progress-text">1 de 20</span>
+                    </div>
+                    <span id="pro-badge" class="hidden bg-violet-600 text-white font-black px-3 py-1.5 rounded-full text-sm uppercase tracking-wider shadow-sm animate-pulse">
+                        🏆 Modo PRO
+                    </span>
+                </div>
+
+                <!-- Selector de Modo: Pizarra vs Teclado -->
+                <div class="flex items-center bg-slate-200 p-1 rounded-2xl border-2 border-slate-300">
+                    <button id="mode-flashcard-btn" class="px-3 py-1.5 rounded-xl font-extrabold text-sm md:text-base transition-all bg-white text-sky-700 shadow-sm">
+                        👀 Modo Pizarra
+                    </button>
+                    <button id="mode-keypad-btn" class="px-3 py-1.5 rounded-xl font-extrabold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900">
+                        ⌨️ Modo Práctica
+                    </button>
+                </div>
+
+                <!-- Puntuación en Modo Práctica -->
+                <div id="score-badge" class="hidden bg-emerald-100 text-emerald-800 font-extrabold px-4 py-1.5 rounded-full border-2 border-emerald-300 text-base">
+                    🌟 Aciertos: <span id="score-count">0</span>
                 </div>
             </div>
 
-            <!-- Botón Imprimir Fichas -->
-            <button id="open-print-modal-btn" class="mt-6 mx-auto bg-[#f472b6] text-white font-black py-3 px-8 rounded-full shadow-lg border-b-4 border-[#db2777] hover:bg-[#ec4899] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
-                🖨️ Crear Fichas de Repaso
-            </button>
-        </header>
+            <!-- Barra de progreso visual -->
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-6 border border-slate-300">
+                <div id="progress-bar" class="bg-gradient-to-r from-sky-400 to-pink-500 h-full transition-all duration-300" style="width: 5%"></div>
+            </div>
 
-        <!-- Navegación por Pestañas -->
-        <div class="flex text-xl md:text-2xl font-black z-10 relative bg-slate-50">
-            <button id="tab-practico" class="flex-1 py-5 rounded-tr-2xl transition-all duration-300">
-                🧠 ¿Cómo se hace?
-            </button>
-            <button id="tab-reto" class="flex-1 py-5 rounded-tl-2xl transition-all duration-300">
-                🎮 ¡A jugar!
-            </button>
-        </div>
-
-        <!-- CONTENIDO: Pestaña Teoría -->
-        <div id="content-practico" class="p-6 md:p-10 min-h-[400px] bg-slate-50">
-            <!-- El HTML dinámico de la teoría se inyecta aquí -->
-        </div>
-
-        <!-- CONTENIDO: Pestaña Juego -->
-        <div id="content-reto" class="p-6 md:p-10 min-h-[450px] bg-slate-50 hidden flex-col justify-between">
+            <!-- Zona Central del Problema -->
             <div class="text-center flex-1 flex flex-col justify-center">
                 
-                <!-- Indicador de progreso -->
-                <div class="inline-block bg-sky-100 text-sky-800 font-bold px-6 py-2 rounded-full mb-6 border-2 border-sky-200 shadow-sm text-lg mx-auto">
-                    ⭐ Reto <span id="progress-text">1 de 20</span>
+                <!-- Pizarra Principal -->
+                <div id="problem-container" class="bg-white p-6 md:p-10 rounded-[2rem] mb-4 shadow-md border-4 border-slate-200 relative min-h-[160px] md:min-h-[200px] flex flex-col items-center justify-center transition-colors">
+                    <p class="text-4xl sm:text-6xl md:text-7xl font-black text-slate-700 tracking-tight select-none" id="problem-text">21 + 4</p>
+                    
+                    <!-- Pista rápida desplegable -->
+                    <button id="toggle-hint-btn" class="mt-4 text-sm font-extrabold text-pink-700 bg-pink-50 hover:bg-pink-100 border border-pink-300 px-3.5 py-1 rounded-full transition-colors">
+                        💡 Ver truco del profe
+                    </button>
+                    <p id="Quick-hint-box" class="hidden mt-2 text-base font-bold text-pink-900 bg-pink-100/80 px-4 py-2 rounded-xl max-w-lg"></p>
                 </div>
                 
-                <!-- Pizarra / Operación -->
-                <div id="problem-container" class="bg-white p-8 md:p-12 rounded-[2rem] mb-6 shadow-md border-4 border-slate-200 relative">
-                    <p class="text-7xl md:text-9xl font-black text-slate-700 tracking-tight" id="problem-text">21 + 4</p>
-                </div>
-                
-                <!-- Zona de Respuesta -->
-                <div id="answer-container" class="h-24 md:h-32 flex items-center justify-center mb-4">
-                    <p id="answer-text" class="text-7xl md:text-9xl font-black text-[#10b981] opacity-0 drop-shadow-sm">= 25</p>
+                <!-- MODO 1: Pizarra (Ver respuesta directa) -->
+                <div id="flashcard-controls" class="flex flex-col items-center">
+                    <div id="answer-container" class="h-20 md:h-24 flex items-center justify-center mb-4">
+                        <p id="answer-text" class="text-5xl md:text-7xl font-black text-[#10b981] opacity-0 drop-shadow-sm">= 25</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-xl">
+                        <button id="show-answer-btn" class="flex-1 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-black py-5 px-8 rounded-2xl text-2xl md:text-3xl btn-3d border-[#1d4ed8]">
+                            👀 Ver Respuesta <span class="block text-xs font-normal opacity-80 mt-0.5">(Espacio / Enter)</span>
+                        </button>
+                        <button id="next-problem-btn" class="flex-1 bg-[#10b981] hover:bg-[#059669] text-white font-black py-5 px-8 rounded-2xl text-2xl md:text-3xl btn-3d border-[#047857] hidden">
+                            Siguiente ➡️ <span class="block text-xs font-normal opacity-80 mt-0.5">(Espacio / Enter)</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Botones de Acción MDI -->
-                <div class="flex flex-col md:flex-row gap-4 justify-center mt-4">
-                    <button id="show-answer-btn" class="w-full md:w-auto bg-[#3b82f6] text-white font-black py-5 px-10 rounded-2xl text-2xl md:text-3xl btn-3d border-[#2563eb]">
-                        👀 Ver Respuesta
-                    </button>
-                    <button id="next-problem-btn" class="w-full md:w-auto bg-[#10b981] text-white font-black py-5 px-10 rounded-2xl text-2xl md:text-3xl btn-3d border-[#059669] hidden">
-                        Siguiente ➡️
-                    </button>
+                <!-- MODO 2: Práctica con Teclado Numérico -->
+                <div id="keypad-controls" class="hidden flex-col items-center w-full max-w-lg mx-auto">
+                    <div class="flex items-center gap-3 w-full mb-3">
+                        <div id="user-input-display" class="flex-1 bg-white border-4 border-sky-400 rounded-2xl py-3 px-6 text-4xl font-black text-sky-900 min-h-[68px] flex items-center justify-center shadow-inner">
+                            <span id="user-input-value" class="text-slate-300">?</span>
+                        </div>
+                        <button id="check-answer-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 px-6 rounded-2xl text-2xl btn-3d border-emerald-700">
+                            ✔️ Comprobar
+                        </button>
+                        <button id="keypad-next-btn" class="hidden bg-blue-500 hover:bg-blue-600 text-white font-black py-4 px-6 rounded-2xl text-2xl btn-3d border-blue-700">
+                            Siguiente ➡️
+                        </button>
+                    </div>
+
+                    <p id="keypad-feedback" class="h-7 font-extrabold text-lg mb-2"></p>
+
+                    <!-- Botonera numérica táctil -->
+                    <div class="grid grid-cols-6 sm:grid-cols-6 gap-2 w-full">
+                        <button data-key="1" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">1</button>
+                        <button data-key="2" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">2</button>
+                        <button data-key="3" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">3</button>
+                        <button data-key="4" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">4</button>
+                        <button data-key="5" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">5</button>
+                        <button data-key="DEL" class="num-key bg-amber-100 hover:bg-amber-200 text-amber-900 font-black py-3 rounded-xl text-xl border-2 border-amber-300 btn-3d" title="Borrar">⌫</button>
+                        
+                        <button data-key="6" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">6</button>
+                        <button data-key="7" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">7</button>
+                        <button data-key="8" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">8</button>
+                        <button data-key="9" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">9</button>
+                        <button data-key="0" class="num-key bg-white hover:bg-sky-50 text-slate-800 font-black py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">0</button>
+                        <button data-key="CLR" class="num-key bg-rose-100 hover:bg-rose-200 text-rose-900 font-black py-3 rounded-xl text-lg border-2 border-rose-300 btn-3d" title="Limpiar todo">C</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Controles Secundarios -->
-            <div class="mt-8 pt-6 border-t-4 border-slate-200 flex flex-col md:flex-row gap-4 justify-center">
-                <button id="new-challenge-btn" class="w-full md:w-auto bg-[#f59e0b] text-white font-bold py-3 px-8 rounded-xl btn-3d border-[#d97706] text-xl flex items-center justify-center gap-2">
-                    🔄 Cambiar Reto
+            <div class="mt-8 pt-5 border-t-4 border-slate-200 flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="new-challenge-btn" class="w-full sm:w-auto bg-[#f59e0b] hover:bg-[#d97706] text-white font-black py-3.5 px-7 rounded-xl btn-3d border-[#b45309] text-lg flex items-center justify-center gap-2">
+                    🔄 Nivel Normal
                 </button>
-                <button id="pro-challenge-btn" class="w-full md:w-auto bg-[#8b5cf6] text-white font-bold py-3 px-8 rounded-xl btn-3d border-[#6d28d9] text-xl flex items-center justify-center gap-2">
-                    🏆 Reto PRO
+                <button id="pro-challenge-btn" class="w-full sm:w-auto bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-black py-3.5 px-7 rounded-xl btn-3d border-[#5b21b6] text-lg flex items-center justify-center gap-2">
+                    🏆 Activar Reto PRO
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PARA IMPRIMIR FICHAS -->
-    <div id="print-modal" class="hidden fixed inset-0 bg-slate-900 bg-opacity-70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border-4 border-sky-400 overflow-hidden">
-            <div class="p-6 md:p-8 border-b-4 border-slate-100 bg-sky-50">
-                <h2 class="text-3xl font-black text-sky-900 flex items-center gap-3">
-                    🖨️ Generador Mágico de Fichas
-                </h2>
-                <p class="text-slate-600 mt-2 font-semibold text-lg">Elige los niveles y prepararemos un documento listo para la impresora (¡con soluciones para ti!).</p>
+    <!-- MODAL CONFIGURADOR DE FICHAS PDF -->
+    <div id="print-modal" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-3 md:p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col border-4 border-sky-400 overflow-hidden">
+            
+            <div class="p-5 md:p-7 border-b-4 border-slate-100 bg-sky-50 flex justify-between items-start">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-sky-900 flex items-center gap-3">
+                        🖨️ Generador Mágico de Fichas (2º EP)
+                    </h2>
+                    <p class="text-slate-600 mt-1 font-bold text-base md:text-lg">Elige los niveles y prepararemos fichas A4 listas para imprimir o guardar en PDF.</p>
+                </div>
+                <button id="close-modal-x" class="text-slate-400 hover:text-slate-700 text-3xl font-black leading-none px-2">&times;</button>
             </div>
             
-            <div class="p-6 md:p-8 overflow-y-auto flex-1 bg-slate-50">
-                <div id="print-error-msg" class="hidden mb-6 p-4 bg-red-100 text-red-700 border-2 border-red-300 rounded-xl font-bold text-lg">
-                    ⚠️ ¡Uy! Selecciona al menos un nivel de la lista.
+            <div class="p-5 md:p-7 overflow-y-auto flex-1 bg-slate-50 space-y-6">
+                <div id="print-error-msg" class="hidden p-4 bg-red-100 text-red-800 border-2 border-red-300 rounded-xl font-extrabold text-base flex items-center gap-2">
+                    <span>⚠️</span> <span>¡Uy! Selecciona al menos un nivel de la lista.</span>
                 </div>
 
-                <div class="mb-8 bg-pink-50 p-6 rounded-2xl border-4 border-pink-200">
-                    <label for="print-versions" class="block font-black text-pink-900 mb-3 text-xl">¿Cuántos modelos distintos necesitas?</label>
-                    <select id="print-versions" class="w-full p-3 border-4 border-pink-300 rounded-xl focus:ring-4 focus:ring-pink-400 outline-none text-slate-800 font-bold text-lg bg-white">
-                        <option value="1">1 modelo único</option>
-                        <option value="2">2 modelos distintos (Anti-copia)</option>
-                        <option value="3">3 modelos distintos</option>
-                        <option value="4">4 modelos distintos</option>
-                    </select>
+                <!-- Opciones de Formato -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-pink-50 p-4 rounded-2xl border-2 border-pink-200">
+                        <label for="print-versions" class="block font-extrabold text-pink-950 mb-2 text-base">¿Cuántos modelos distintos?</label>
+                        <select id="print-versions" class="w-full p-3 border-2 border-pink-300 rounded-xl focus:ring-2 focus:ring-pink-400 outline-none text-slate-800 font-bold text-base bg-white">
+                            <option value="1">1 modelo único (1 hoja)</option>
+                            <option value="2">2 modelos distintos (A y B)</option>
+                            <option value="3">3 modelos distintos (A, B y C)</option>
+                            <option value="4">4 modelos distintos (A, B, C y D)</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-200">
+                        <label for="print-custom-title" class="block font-extrabold text-sky-950 mb-2 text-base">Título del encabezado:</label>
+                        <input type="text" id="print-custom-title" value="CÁLCULO MENTAL - 2º PRIMARIA" maxlength="40" class="w-full p-3 border-2 border-sky-300 rounded-xl focus:ring-2 focus:ring-sky-400 outline-none text-slate-800 font-bold text-base bg-white" placeholder="Ej: Ficha Cálculo 2ºA">
+                    </div>
                 </div>
 
-                <h3 class="font-black text-slate-700 mb-4 text-xl flex items-center gap-2"><span>🎯</span> Niveles a incluir:</h3>
-                <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 bg-white p-4 rounded-2xl border-2 border-slate-200">
-                    <!-- Checkboxes generados dinámicamente -->
+                <!-- Selección de Niveles con botones rápidos -->
+                <div>
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                        <h3 class="font-extrabold text-slate-700 text-lg flex items-center gap-2">
+                            <span>🎯</span> <span>Niveles a incluir (20 operaciones por ficha):</span>
+                        </h3>
+                        <div class="flex gap-2">
+                            <button type="button" id="select-current-level-btn" class="text-xs md:text-sm bg-sky-100 hover:bg-sky-200 text-sky-800 font-extrabold px-3 py-1.5 rounded-lg border border-sky-300 transition">
+                                Solo nivel actual
+                            </button>
+                            <button type="button" id="select-all-levels-btn" class="text-xs md:text-sm bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-extrabold px-3 py-1.5 rounded-lg border border-emerald-300 transition">
+                                Marcar todos
+                            </button>
+                            <button type="button" id="deselect-all-levels-btn" class="text-xs md:text-sm bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold px-3 py-1.5 rounded-lg border border-slate-300 transition">
+                                Desmarcar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-2 bg-white p-4 rounded-2xl border-2 border-slate-200 max-h-60 overflow-y-auto">
+                        <!-- Checkboxes generados dinámicamente -->
+                    </div>
                 </div>
 
-                <div class="bg-violet-50 p-6 rounded-2xl border-4 border-violet-200">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="print-pro-cb" class="form-checkbox h-8 w-8 text-violet-600 rounded-lg focus:ring-violet-500 border-4 border-violet-300">
-                        <span class="ml-4 font-black text-violet-900 text-xl">Usar números del "Reto PRO" 🏆</span>
-                    </label>
+                <!-- Opciones Adicionales: Modo PRO y Solucionario -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-violet-50 p-4 rounded-2xl border-2 border-violet-200 flex items-center">
+                        <label class="flex items-center cursor-pointer w-full">
+                            <input type="checkbox" id="print-pro-cb" class="h-6 w-6 text-violet-600 rounded-lg focus:ring-violet-500 border-2 border-violet-300 cursor-pointer">
+                            <span class="ml-3 font-extrabold text-violet-950 text-base">Usar números del "Reto PRO" 🏆</span>
+                        </label>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200 flex items-center">
+                        <label class="flex items-center cursor-pointer w-full">
+                            <input type="checkbox" id="print-solutions-cb" checked class="h-6 w-6 text-emerald-600 rounded-lg focus:ring-emerald-500 border-2 border-emerald-300 cursor-pointer">
+                            <span class="ml-3 font-extrabold text-emerald-950 text-base">Incluir hoja de Solucionario ✅</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 md:p-8 bg-slate-100 border-t-4 border-slate-200 flex flex-col md:flex-row justify-end gap-4">
-                <button id="cancel-print-btn" class="px-8 py-4 rounded-xl text-slate-600 font-black hover:bg-slate-200 transition-colors border-4 border-slate-300 text-xl">
+            <div class="p-5 md:p-6 bg-slate-100 border-t-4 border-slate-200 flex flex-col sm:flex-row justify-end gap-3">
+                <button id="cancel-print-btn" class="px-6 py-3.5 rounded-xl text-slate-600 font-extrabold hover:bg-slate-200 transition-colors border-2 border-slate-300 text-lg">
                     Cancelar
                 </button>
-                <button id="generate-print-btn" class="px-8 py-4 rounded-xl bg-sky-500 text-white font-black btn-3d border-sky-700 hover:bg-sky-400 text-xl flex justify-center items-center gap-2">
-                    ✨ Crear Fichas
+                <button id="generate-print-btn" class="px-8 py-3.5 rounded-xl bg-sky-500 text-white font-black btn-3d border-sky-700 hover:bg-sky-400 text-lg flex justify-center items-center gap-2">
+                    ✨ Vista Previa e Imprimir PDF
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- SECCIÓN DE RESPALDO IMPRESIÓN (Si bloquean popups) -->
-    <div id="print-section" class="hidden w-full bg-white min-h-screen"></div>
+    <!-- VISOR DE FICHAS E IMPRESIÓN INTEGRADO (Evita bloqueos de Pop-ups y garantiza carga de estilos) -->
+    <div id="print-view-wrapper" class="hidden fixed inset-0 bg-slate-800/95 z-50 overflow-y-auto">
+        <!-- Barra superior flotante (No se imprime) -->
+        <div id="print-toolbar" class="no-print sticky top-0 z-50 bg-slate-900 text-white border-b-4 border-sky-400 px-4 py-3 shadow-xl">
+            <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">📄</span>
+                    <div>
+                        <h3 class="font-extrabold text-lg leading-tight">Vista Previa de Impresión / PDF (2º Primaria)</h3>
+                        <p class="text-xs text-slate-300">En el cuadro de impresión elige <strong>"Guardar como PDF"</strong> o tu impresora.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="regenerate-sheets-btn" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl border border-slate-500 text-sm flex items-center gap-1.5 transition">
+                        🎲 Otros números
+                    </button>
+                    <button id="back-to-config-btn" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold py-2.5 px-4 rounded-xl text-sm flex items-center gap-1.5 transition">
+                        ⚙️ Configurar
+                    </button>
+                    <button id="trigger-print-btn" class="bg-pink-500 hover:bg-pink-400 text-white font-black py-2.5 px-6 rounded-xl shadow-lg text-base flex items-center gap-2 transition transform hover:scale-105">
+                        🖨️ Imprimir / Guardar PDF
+                    </button>
+                    <button id="close-print-view-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition">
+                        ✖ Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor donde se inyectan las páginas A4 -->
+        <div id="print-sheets-container" class="p-4 md:p-8"></div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- AUDIO FEEDBACK (MDI Friendly) ---
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            function playSuccessSound() {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                
-                // Sonido alegre de campanilla/marimba
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.15); // C6
-                
-                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.5);
+            // --- SISTEMA DE AUDIO ---
+            let soundEnabled = true;
+            let audioCtx = null;
+
+            function getAudioContext() {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) audioCtx = new AudioContextClass();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                return audioCtx;
             }
 
-            // --- UTILIDADES GENERADORAS DE PROBLEMAS ---
-            // Función auxiliar para aleatorios (min inclusivo, max inclusivo)
+            function playSuccessSound() {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    if (!ctx) return;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.18); // C6
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
+                } catch (e) {}
+            }
+
+            function playErrorSound() {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    if (!ctx) return;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } catch (e) {}
+            }
+
+            // --- UTILIDADES MATEMÁTICAS ---
             const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+            // Genera 20 problemas evitando repeticiones consecutivas o excesivas
+            function buildProblemSet(generatorFn, count = 20) {
+                const results = [];
+                const seen = new Set();
+                let safety = 0;
+
+                while (results.length < count && safety < 350) {
+                    safety++;
+                    const item = generatorFn();
+                    if (!seen.has(item.text) || safety > 120) {
+                        if (results.length === 0 || results[results.length - 1].text !== item.text || safety > 260) {
+                            results.push(item);
+                            seen.add(item.text);
+                        }
+                    }
+                }
+                return results;
+            }
             
-            // Creador de plantillas de Teoría Visual (Reutilizable para todos los niveles)
+            // Creador de plantillas de Teoría Visual para 2º de Primaria
             function UITheory(title, emoji, desc, ejOperacion, ejPasos, truco) {
                 return `
                     <div class="bg-white rounded-[2rem] p-6 md:p-10 shadow-sm border-4 border-sky-100">
-                        <h2 class="text-3xl md:text-4xl font-black text-sky-800 mb-4">${title} ${emoji}</h2>
-                        <p class="text-xl md:text-2xl text-slate-600 mb-8 font-bold leading-snug">${desc}</p>
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b-2 border-slate-100 pb-4">
+                            <div>
+                                <h2 class="text-2xl md:text-4xl font-black text-sky-800 mb-1">${title} ${emoji}</h2>
+                                <p class="text-lg md:text-xl text-slate-600 font-bold leading-snug">${desc}</p>
+                            </div>
+                            <button onclick="document.getElementById('tab-reto').click()" class="self-start md:self-center bg-pink-500 hover:bg-pink-600 text-white font-black py-3 px-6 rounded-2xl btn-3d border-pink-700 text-base shrink-0">
+                                🎮 ¡Ir a Jugar!
+                            </button>
+                        </div>
 
                         <div class="bg-amber-50 rounded-3xl p-6 md:p-8 border-4 border-amber-300 mb-8 relative">
-                            <div class="absolute -top-6 left-6 bg-amber-400 text-amber-900 font-black px-6 py-2 rounded-full shadow border-4 border-amber-200">EJEMPLO</div>
-                            <h3 class="text-4xl font-black text-amber-800 mb-6 mt-4 text-center tracking-widest">${ejOperacion}</h3>
-                            <ul class="space-y-4">
-                                ${ejPasos.map(s => `
-                                    <li class="flex items-start bg-white p-4 rounded-2xl shadow-sm border-2 border-amber-100">
-                                        <span class="mr-4 text-3xl">👉</span>
+                            <div class="absolute -top-5 left-6 bg-amber-400 text-amber-950 font-black px-5 py-1.5 rounded-full shadow border-2 border-amber-200 text-sm uppercase tracking-wider">EJEMPLO PASO A PASO</div>
+                            <h3 class="text-3xl md:text-5xl font-black text-amber-900 mb-6 mt-2 text-center tracking-wider bg-white py-4 px-6 rounded-2xl border-2 border-amber-200 shadow-inner">${ejOperacion}</h3>
+                            <ul class="space-y-3.5">
+                                ${ejPasos.map((s, i) => `
+                                    <li class="flex items-center bg-white p-4 rounded-2xl shadow-sm border-2 border-amber-100">
+                                        <span class="mr-4 bg-amber-100 text-amber-800 font-black w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-lg">${i + 1}</span>
                                         <span class="text-slate-700 font-bold text-lg md:text-xl">${s}</span>
                                     </li>`).join('')}
                             </ul>
                         </div>
 
-                        <div class="bg-pink-50 rounded-3xl p-6 border-4 border-pink-300 flex flex-col md:flex-row gap-6 items-center">
-                            <div class="text-6xl animate-bounce">💡</div>
+                        <div class="bg-pink-50 rounded-3xl p-6 border-4 border-pink-300 flex flex-col sm:flex-row gap-5 items-center">
+                            <div class="text-5xl sm:text-6xl select-none">💡</div>
                             <div>
-                                <h3 class="font-black text-pink-800 text-2xl mb-2">Truco del Profe</h3>
-                                <p class="text-xl text-pink-700 font-bold">${truco}</p>
+                                <h3 class="font-black text-pink-900 text-xl md:text-2xl mb-1">Truco del Profe</h3>
+                                <p class="text-lg md:text-xl text-pink-800 font-bold">${truco}</p>
                             </div>
                         </div>
                     </div>
                 `;
             }
 
-            // --- DATOS DEL CURRÍCULO DE 2º DE PRIMARIA ---
+            // --- DATOS DEL CURRÍCULO DE 2º DE PRIMARIA (22 NIVELES) ---
             const levels = [
                 {
                     title: "1. Suma sin rebasar",
                     descCorta: "21 + 4; 53 + 5",
+                    tip: "Fíjate solo en el número de la derecha (unidades). ¡Las decenas se quedan esperando!",
                     practicoHTML: UITheory(
                         "Suma sin llevar", "🎈",
                         "Sumamos unidades con unidades. ¡Como los números no pasan de 9, la decena se queda igual!",
-                        "53 + 5 = ?",
+                        "53 + 5 = 58",
                         [
                             "Fíjate en las unidades: el 3 y el 5.",
                             "Súmalas en tu cabeza: <strong class='text-amber-600'>3 + 5 = 8</strong>.",
@@ -274,64 +564,52 @@
                         ],
                         "Solo tienes que preocuparte por el número de la derecha (unidades). ¡El de la izquierda se queda esperando!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(1, 8) * 10;
-                            let u1 = rand(1, 8);
-                            let u2 = rand(1, 9 - u1);
-                            res.push({text: `${d1+u1} + ${u2}`, answer: d1+u1+u2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(1,8)*100; let d1 = rand(1, 8) * 10; let u1 = rand(1, 8);
-                            let u2 = rand(1, 9 - u1);
-                            res.push({text: `${c1+d1+u1} + ${u2}`, answer: c1+d1+u1+u2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(1, 8) * 10;
+                        let u1 = rand(1, 8);
+                        let u2 = rand(1, 9 - u1);
+                        return {text: `${d1+u1} + ${u2}`, answer: d1+u1+u2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c1 = rand(1, 8) * 100;
+                        let d1 = rand(1, 8) * 10;
+                        let u1 = rand(1, 8);
+                        let u2 = rand(1, 9 - u1);
+                        return {text: `${c1+d1+u1} + ${u2}`, answer: c1+d1+u1+u2};
+                    })
                 },
                 {
                     title: "2. Complementos a 10",
                     descCorta: "Amigos del 10",
+                    tip: "Recuerda las parejas mágicas: (1 y 9), (2 y 8), (3 y 7), (4 y 6) y (5 y 5).",
                     practicoHTML: UITheory(
                         "Los Amigos del 10", "🤝",
                         "Son parejas de números que cuando se juntan ¡siempre suman 10! Conocerlos de memoria te ayudará muchísimo.",
-                        "7 + __ = 10",
+                        "7 + 3 = 10",
                         [
                             "¿Quién es el amigo del 7 para llegar al 10?",
-                            "Puedes contar con los dedos desde el 7 hasta el 10.",
+                            "Puedes contar desde el 7 hasta el 10.",
                             "¡Es el 3! Porque <strong class='text-amber-600'>7 + 3 = 10</strong>."
                         ],
                         "Recuerda las parejas clave: (1,9), (2,8), (3,7), (4,6) y el (5,5)."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n1 = rand(1, 9);
-                            res.push({text: `${n1} + _ = 10`, answer: 10-n1});
-                        }
-                        return res;
-                    },
-                    genPro: () => { // Complementos a 100
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n1 = rand(1, 9) * 10;
-                            res.push({text: `${n1} + _ = 100`, answer: 100-n1});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let n1 = rand(1, 9);
+                        return {text: `${n1} + _ = 10`, answer: 10 - n1};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n1 = rand(1, 9) * 10;
+                        return {text: `${n1} + _ = 100`, answer: 100 - n1};
+                    })
                 },
                 {
                     title: "3. Suma de decenas completas",
                     descCorta: "20 + 30; 40 + 50",
+                    tip: "Tapa los ceros, suma las cifras de delante y pon el cero al final.",
                     practicoHTML: UITheory(
                         "Sumar decenas redondas", "🔵",
                         "Sumar números que acaban en cero es como sumar de 1 en 1, pero añadiendo el cero al final.",
-                        "20 + 30 = ?",
+                        "20 + 30 = 50",
                         [
                             "Tapa los ceros un momento con tus dedos imaginarios.",
                             "Suma los números que quedan: <strong class='text-amber-600'>2 + 3 = 5</strong>.",
@@ -339,30 +617,25 @@
                         ],
                         "¡Piensa que estás sumando paquetes de 10 cromos! 2 paquetes + 3 paquetes = 5 paquetes (50 cromos)."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(1, 8); let d2 = rand(1, 9-d1);
-                            res.push({text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(3, 15); let d2 = rand(2, 20-d1);
-                            res.push({text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(1, 8);
+                        let d2 = rand(1, 9 - d1);
+                        return {text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let d1 = rand(3, 15);
+                        let d2 = rand(2, 20 - d1);
+                        return {text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10};
+                    })
                 },
                 {
-                    title: "4. Sumas columnas de ceros",
+                    title: "4. Sumas de tres decenas completas",
                     descCorta: "20 + 10 + 30...",
+                    tip: "Suma solo los primeros números en orden y añade un cero al final.",
                     practicoHTML: UITheory(
                         "Trenes de ceros", "🚂",
                         "¡Podemos sumar muchos números acabados en cero muy rápido si sumamos solo los números de delante!",
-                        "20 + 10 + 30 = ?",
+                        "20 + 10 + 30 = 60",
                         [
                             "Fíjate solo en las decenas: 2, 1 y 3.",
                             "Suma en orden: <strong class='text-amber-600'>2 + 1 = 3</strong>... y <strong class='text-amber-600'>3 + 3 = 6</strong>.",
@@ -370,30 +643,28 @@
                         ],
                         "Ve sumando poco a poco. Si te equivocas, vuelve a empezar despacio sin mirar los ceros."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(1, 4); let d2 = rand(1, 3); let d3 = rand(1, 9-(d1+d2));
-                            res.push({text: `${d1*10} + ${d2*10} + ${d3*10}`, answer: (d1+d2+d3)*10});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(2, 6); let d2 = rand(2, 5); let d3 = rand(2, 5); let d4 = rand(1,4);
-                            res.push({text: `${d1*10} + ${d2*10} + ${d3*10} + ${d4*10}`, answer: (d1+d2+d3+d4)*10});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(1, 4);
+                        let d2 = rand(1, 3);
+                        let d3 = rand(1, 9 - (d1 + d2));
+                        return {text: `${d1*10} + ${d2*10} + ${d3*10}`, answer: (d1+d2+d3)*10};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let d1 = rand(2, 6);
+                        let d2 = rand(2, 5);
+                        let d3 = rand(2, 5);
+                        let d4 = rand(1, 4);
+                        return {text: `${d1*10} + ${d2*10} + ${d3*10} + ${d4*10}`, answer: (d1+d2+d3+d4)*10};
+                    })
                 },
                 {
-                    title: "5. Sumas en columnas sin cero",
+                    title: "5. Número de 2 cifras + decena",
                     descCorta: "21 + 50; 54 + 30",
+                    tip: "Como sumas un número acabado en cero, ¡la cifra de las unidades se copia igual!",
                     practicoHTML: UITheory(
                         "Número normal + Número redondo", "🍔",
                         "Cuando un número tiene unidades y el otro acaba en cero, ¡las unidades no cambian!",
-                        "21 + 50 = ?",
+                        "21 + 50 = 71",
                         [
                             "Las unidades del 21 son 1. Como el 50 tiene cero unidades, el 1 se queda igual.",
                             "Solo sumamos las decenas: <strong class='text-amber-600'>20 + 50 = 70</strong>.",
@@ -401,41 +672,33 @@
                         ],
                         "El número redondo (con cero) no afecta a la parte derecha del otro número. ¡Cópiala tal cual al final!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u = rand(1, 9);
-                            let d1 = rand(1, 8);
-                            let d2 = rand(1, 9-d1);
-                            let num1 = d1*10 + u;
-                            let num2 = d2*10;
-                            // Alternar orden
-                            if (Math.random() > 0.5) res.push({text: `${num1} + ${num2}`, answer: num1+num2});
-                            else res.push({text: `${num2} + ${num1}`, answer: num1+num2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u = rand(1, 9);
-                            let c = rand(1, 8) * 100;
-                            let d1 = rand(1, 8);
-                            let d2 = rand(1, 9-d1);
-                            let num1 = c + d1*10 + u;
-                            let num2 = d2*10;
-                            res.push({text: `${num1} + ${num2}`, answer: num1+num2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u = rand(1, 9);
+                        let d1 = rand(1, 8);
+                        let d2 = rand(1, 9 - d1);
+                        let num1 = d1 * 10 + u;
+                        let num2 = d2 * 10;
+                        if (Math.random() > 0.5) return {text: `${num1} + ${num2}`, answer: num1 + num2};
+                        return {text: `${num2} + ${num1}`, answer: num1 + num2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let u = rand(1, 9);
+                        let c = rand(1, 8) * 100;
+                        let d1 = rand(1, 8);
+                        let d2 = rand(1, 9 - d1);
+                        let num1 = c + d1 * 10 + u;
+                        let num2 = d2 * 10;
+                        return {text: `${num1} + ${num2}`, answer: num1 + num2};
+                    })
                 },
                 {
-                    title: "6. Sumar decenas incompletas (sin llevar)",
+                    title: "6. Sumar 2 cifras sin llevar",
                     descCorta: "23 + 14",
+                    tip: "Suma decenas con decenas por un lado, y unidades con unidades por otro.",
                     practicoHTML: UITheory(
                         "Sumar todo por partes", "🧩",
                         "Como no nos pasamos de 10, podemos sumar decenas con decenas y unidades con unidades.",
-                        "23 + 14 = ?",
+                        "23 + 14 = 37",
                         [
                             "Rompemos los números. El 23 es 20 y 3. El 14 es 10 y 4.",
                             "Sumamos decenas: <strong class='text-amber-600'>20 + 10 = 30</strong>.",
@@ -444,73 +707,59 @@
                         ],
                         "¡Decenas con decenas y unidades con unidades! Si no te 'llevas' ninguna, es muy fácil."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 8); let u2 = rand(1, 9-u1);
-                            let d1 = rand(1, 8); let d2 = rand(1, 9-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 8); let u2 = rand(1, 9-u1);
-                            let d1 = rand(1, 15); let d2 = rand(1, 19-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u1 = rand(1, 8); let u2 = rand(1, 9 - u1);
+                        let d1 = rand(1, 8); let d2 = rand(1, 9 - d1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1 + n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let u1 = rand(1, 8); let u2 = rand(1, 9 - u1);
+                        let d1 = rand(1, 15); let d2 = rand(1, 19 - d1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1 + n2};
+                    })
                 },
                 {
                     title: "7. Decena incompleta + dígito (llevando)",
                     descCorta: "38 + 7",
+                    tip: "Completa primero hasta la siguiente decena redonda y luego suma lo que sobre.",
                     practicoHTML: UITheory(
                         "Saltar a la decena siguiente", "🦘",
                         "Cuando las unidades suman más de 10, ¡pasamos a la siguiente familia de decenas!",
-                        "38 + 7 = ?",
+                        "38 + 7 = 45",
                         [
                             "¿Cuánto le falta al 38 para llegar a su decena siguiente (40)? Le faltan 2.",
                             "Le pedimos ese 2 prestado al 7. Ahora el 7 se queda en 5.",
                             "Llegamos al 40, y le sumamos los 5 que sobraron.",
                             "¡Resultado final: <strong class='text-amber-600'>45</strong>!"
                         ],
-                        "Usa a los 'amigos del 10' para saltar a la decena redonda más cercana. ¡El resto es sumar de sobra!"
+                        "Usa a los 'amigos del 10' para saltar a la decena redonda más cercana. ¡El resto es sumar lo que sobra!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(4, 9); 
-                            let d1 = rand(1, 8)*10;
-                            let n1 = d1 + u1;
-                            let u2 = rand(11-u1, 9); // Asegura rebasamiento
-                            res.push({text: `${n1} + ${u2}`, answer: n1+u2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(1,8)*100;
-                            let u1 = rand(4, 9); 
-                            let d1 = rand(1, 8)*10;
-                            let n1 = c1 + d1 + u1;
-                            let u2 = rand(11-u1, 9); 
-                            res.push({text: `${n1} + ${u2}`, answer: n1+u2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u1 = rand(4, 9); 
+                        let d1 = rand(1, 8) * 10;
+                        let n1 = d1 + u1;
+                        let u2 = rand(11 - u1, 9);
+                        return {text: `${n1} + ${u2}`, answer: n1 + u2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c1 = rand(1, 8) * 100;
+                        let u1 = rand(4, 9); 
+                        let d1 = rand(1, 8) * 10;
+                        let n1 = c1 + d1 + u1;
+                        let u2 = rand(11 - u1, 9); 
+                        return {text: `${n1} + ${u2}`, answer: n1 + u2};
+                    })
                 },
                 {
                     title: "8. Unidades que no completan decena",
                     descCorta: "56 + 31; 22 + 46",
+                    tip: "Mira primero las unidades: como suman menos de 10, no te llevas ninguna.",
                     practicoHTML: UITheory(
                         "Sumar grandes (sin llevar)", "🐘",
                         "Aunque los números parezcan grandes, si sus unidades suman menos de 10, usamos la estrategia del Nivel 6.",
-                        "56 + 31 = ?",
+                        "56 + 31 = 87",
                         [
                             "Mira las unidades: 6 y 1. Suman 7. ¡Perfecto, no me llevo ninguna!",
                             "Sumo decenas: <strong class='text-amber-600'>50 + 30 = 80</strong>.",
@@ -519,34 +768,27 @@
                         ],
                         "Acostúmbrate a mirar siempre primero las unidades. Si son pequeñitas, ¡ya sabes que es de las fáciles!"
                     ),
-                    gen: () => { // Similar al 6 pero forzando a que ambos tengan 2 cifras
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 7); let u2 = rand(1, 8-u1);
-                            let d1 = rand(2, 7); let d2 = rand(1, 8-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                         let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 7); let u2 = rand(1, 8-u1);
-                            let d1 = rand(5, 12); let d2 = rand(2, 14-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u1 = rand(1, 7); let u2 = rand(1, 8 - u1);
+                        let d1 = rand(2, 7); let d2 = rand(1, 8 - d1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1 + n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let u1 = rand(1, 7); let u2 = rand(1, 8 - u1);
+                        let d1 = rand(5, 12); let d2 = rand(2, 14 - d1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1 + n2};
+                    })
                 },
                 {
                     title: "9. Unidades que SÍ completan decena",
                     descCorta: "23 + 37; 58 + 32",
+                    tip: "Las unidades son amigas del 10, así que el resultado acabará en 0 y tendrás 10 más.",
                     practicoHTML: UITheory(
                         "Fabricando decenas mágicas", "✨",
                         "¡Magia! Cuando las unidades son amigas del 10, fabrican una decena nueva.",
-                        "23 + 37 = ?",
+                        "23 + 37 = 60",
                         [
                             "Fíjate en el 3 y el 7. ¡Son amigos del 10! Juntos forman <strong class='text-amber-600'>10</strong>.",
                             "Ahora sumamos las decenas que ya teníamos: <strong class='text-amber-600'>20 + 30 = 50</strong>.",
@@ -555,34 +797,27 @@
                         ],
                         "Si detectas amigos del 10 en las unidades, sabes que el resultado va a terminar en CERO."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 9); let u2 = 10 - u1;
-                            let d1 = rand(1, 7); let d2 = rand(1, 8-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let u1 = rand(1, 9); let u2 = 10 - u1;
-                            let d1 = rand(5, 15); let d2 = rand(2, 18-d1);
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} + ${n2}`, answer: n1+n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let u1 = rand(1, 9); let u2 = 10 - u1;
+                        let d1 = rand(1, 7); let d2 = rand(1, 8 - d1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1 + n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let u1 = rand(1, 9); let u2 = 10 - u1;
+                        let d1 = rand(5, 15); let d2 = rand(2, 18 - d1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} + ${n2}`, answer: n1 + n2};
+                    })
                 },
                 {
-                    title: "10. Centena completa + decena",
+                    title: "10. Centena completa + 2 cifras",
                     descCorta: "300 + 49",
+                    tip: "Reemplaza los dos ceros de la centena por el número de dos cifras.",
                     practicoHTML: UITheory(
                         "Construir números de tres pisos", "🏢",
-                        "Centenas con ceros y decenas normales encajan a la perfección como bloques de Lego.",
-                        "300 + 49 = ?",
+                        "Centenas con ceros y decenas normales encajan a la perfección como bloques de construcción.",
+                        "300 + 49 = 349",
                         [
                             "El 300 tiene ceros en las decenas y las unidades.",
                             "El 49 rellena exactamente esos dos ceros vacíos.",
@@ -591,32 +826,25 @@
                         ],
                         "No hace falta calcular, solo 'pegar' los números en su sitio correspondiente."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c = rand(1, 9)*100;
-                            let n2 = rand(11, 99);
-                            res.push({text: `${c} + ${n2}`, answer: c+n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => { // Al revés para probar
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c = rand(11, 99)*100;
-                            let n2 = rand(11, 99);
-                            res.push({text: `${n2} + ${c}`, answer: c+n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let c = rand(1, 9) * 100;
+                        let n2 = rand(11, 99);
+                        return {text: `${c} + ${n2}`, answer: c + n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c = rand(11, 99) * 100;
+                        let n2 = rand(11, 99);
+                        return {text: `${n2} + ${c}`, answer: c + n2};
+                    })
                 },
                 {
                     title: "11. Centena incompleta + unidades",
                     descCorta: "357 + 4",
+                    tip: "Esconde la centena un momento, suma las unidades y vuelve a poner la centena.",
                     practicoHTML: UITheory(
                         "Subiendo por la escalera", "🪜",
                         "Fíjate solo en el último número, la centena se queda tranquila esperando.",
-                        "357 + 4 = ?",
+                        "357 + 4 = 361",
                         [
                             "Tapa mentalmente el 300. Nos queda <strong class='text-amber-600'>57 + 4</strong>.",
                             "Usa la estrategia de saltar de decena (del nivel 7): al 57 le faltan 3 para 60.",
@@ -625,109 +853,88 @@
                         ],
                         "Oculta la parte grande del número (las centenas) para que el cerebro no se asuste."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c = rand(1, 9)*100;
-                            let d = rand(1, 9)*10;
-                            let u1 = rand(4, 9);
-                            let n1 = c + d + u1;
-                            let u2 = rand(2, 9); // A veces con rebasamiento, a veces sin
-                            res.push({text: `${n1} + ${u2}`, answer: n1+u2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                         let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c = rand(11, 40)*100;
-                            let d = rand(1, 9)*10;
-                            let u1 = rand(6, 9);
-                            let n1 = c + d + u1;
-                            let u2 = rand(5, 9); 
-                            res.push({text: `${n1} + ${u2}`, answer: n1+u2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let c = rand(1, 9) * 100;
+                        let d = rand(1, 8) * 10;
+                        let u1 = rand(4, 9);
+                        let n1 = c + d + u1;
+                        let u2 = rand(2, 9);
+                        return {text: `${n1} + ${u2}`, answer: n1 + u2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c = rand(11, 40) * 100;
+                        let d = rand(1, 8) * 10;
+                        let u1 = rand(6, 9);
+                        let n1 = c + d + u1;
+                        let u2 = rand(5, 9); 
+                        return {text: `${n1} + ${u2}`, answer: n1 + u2};
+                    })
                 },
                 {
                     title: "12. Centena incompleta + decenas",
                     descCorta: "357 + 60",
+                    tip: "Suma las decenas del medio; si pasas de 100, añade 1 a las centenas.",
                     practicoHTML: UITheory(
                         "Sumar a los 'medios'", "🍔",
-                        "Ahora lo que cambia es el número del medio (las decenas). La centena y la unidad no se tocan (a menos que nos pasemos).",
-                        "350 + 60 = ?",
+                        "Ahora lo que cambia es el número del medio (las decenas). La unidad no se toca.",
+                        "350 + 60 = 410",
                         [
                             "Fíjate en las decenas: <strong class='text-amber-600'>50 + 60</strong>.",
-                            "Como 5+6=11, 50+60 = 110.",
+                            "Como 5 + 6 = 11, entonces 50 + 60 = 110.",
                             "Ese 100 extra se lo damos a la centena que ya teníamos (el 300).",
                             "Ahora tenemos 400. Resultado final: <strong class='text-amber-600'>410</strong>."
                         ],
                         "Sumar decenas grandes puede crear centenas nuevas. ¡Cuidado de no olvidarte de sumarlas!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c = rand(1, 8)*100;
-                            let d1 = rand(1, 9)*10;
-                            let u = rand(1, 9);
-                            let n1 = c + d1 + u;
-                            let d2 = rand(1, 9)*10; 
-                            res.push({text: `${n1} + ${d2}`, answer: n1+d2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c = rand(11, 50)*100;
-                            let d1 = rand(5, 9)*10;
-                            let u = rand(1, 9);
-                            let n1 = c + d1 + u;
-                            let d2 = rand(5, 9)*10; 
-                            res.push({text: `${n1} + ${d2}`, answer: n1+d2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let c = rand(1, 8) * 100;
+                        let d1 = rand(1, 9) * 10;
+                        let u = rand(1, 9);
+                        let n1 = c + d1 + u;
+                        let d2 = rand(1, 9) * 10; 
+                        return {text: `${n1} + ${d2}`, answer: n1 + d2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c = rand(11, 50) * 100;
+                        let d1 = rand(5, 9) * 10;
+                        let u = rand(1, 9);
+                        let n1 = c + d1 + u;
+                        let d2 = rand(5, 9) * 10; 
+                        return {text: `${n1} + ${d2}`, answer: n1 + d2};
+                    })
                 },
                 {
                     title: "13. Resta de decenas completas",
                     descCorta: "60 - 30",
+                    tip: "Tapa los ceros, haz la resta pequeña y devuelve el cero al final.",
                     practicoHTML: UITheory(
                         "Restar ignorando ceros", "✂️",
                         "Igual que con la suma, si los dos acaban en cero, los escondemos un momento.",
-                        "60 - 30 = ?",
+                        "60 - 30 = 30",
                         [
                             "Tapa los ceros.",
                             "Calcula la resta fácil: <strong class='text-amber-600'>6 - 3 = 3</strong>.",
                             "Pon el cero al final del 3. ¡El resultado es <strong class='text-amber-600'>30</strong>!"
                         ],
-                        "Solo funciona si TODOS los números que restas acaban en cero, ¡eh!"
+                        "Solo funciona si TODOS los números que restas acaban en cero."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(4, 9); let d2 = rand(1, d1-1);
-                            res.push({text: `${d1*10} - ${d2*10}`, answer: (d1-d2)*10});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(12, 30); let d2 = rand(3, d1-3);
-                            res.push({text: `${d1*10} - ${d2*10}`, answer: (d1-d2)*10});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(4, 9); let d2 = rand(1, d1 - 1);
+                        return {text: `${d1*10} - ${d2*10}`, answer: (d1-d2)*10};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let d1 = rand(12, 30); let d2 = rand(3, d1 - 3);
+                        return {text: `${d1*10} - ${d2*10}`, answer: (d1-d2)*10};
+                    })
                 },
                 {
                     title: "14. Decenas inc. - decenas comp.",
                     descCorta: "78 - 50",
+                    tip: "La unidad de la derecha se queda intacta. Solo resta las decenas.",
                     practicoHTML: UITheory(
-                        "Restar a los 'medios' (restando)", "➖",
+                        "Restar solo a las decenas", "➖",
                         "Si restamos decenas puras a un número, sus unidades se quedan intactas.",
-                        "78 - 50 = ?",
+                        "78 - 50 = 28",
                         [
                             "El 50 no tiene unidades, así que al 8 del 78 no le quitamos nada. Sigue siendo 8.",
                             "Solo restamos las decenas: <strong class='text-amber-600'>70 - 50 = 20</strong>.",
@@ -735,34 +942,27 @@
                         ],
                         "El número de la derecha baja tal cual. ¡Solo calcula con los números de la izquierda!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(4, 9); let u = rand(1, 9);
-                            let d2 = rand(1, d1-1);
-                            let n1 = d1*10 + u;
-                            res.push({text: `${n1} - ${d2*10}`, answer: n1-(d2*10)});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(12, 35); let u = rand(1, 9);
-                            let d2 = rand(4, d1-2);
-                            let n1 = d1*10 + u;
-                            res.push({text: `${n1} - ${d2*10}`, answer: n1-(d2*10)});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(4, 9); let u = rand(1, 9);
+                        let d2 = rand(1, d1 - 1);
+                        let n1 = d1 * 10 + u;
+                        return {text: `${n1} - ${d2*10}`, answer: n1 - (d2*10)};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let d1 = rand(12, 35); let u = rand(1, 9);
+                        let d2 = rand(4, d1 - 2);
+                        let n1 = d1 * 10 + u;
+                        return {text: `${n1} - ${d2*10}`, answer: n1 - (d2*10)};
+                    })
                 },
                 {
                     title: "15. Decenas completas - unidades",
                     descCorta: "30 - 8",
+                    tip: "Baja a la decena anterior y pon el amigo del 10 en las unidades.",
                     practicoHTML: UITheory(
                         "Bajar a la decena anterior", "👇",
                         "Cuando restamos a un número redondo, tenemos que romperlo y bajar al piso de abajo.",
-                        "30 - 8 = ?",
+                        "30 - 8 = 22",
                         [
                             "¿Cuál es la decena justo anterior al 30? Es el <strong class='text-amber-600'>20</strong>. Guarda ese 20 en la cabeza.",
                             "Como bajamos una decena, nos quedan 10 sueltos. A esos 10 le quitamos el 8: <strong class='text-amber-600'>10 - 8 = 2</strong>.",
@@ -770,32 +970,25 @@
                         ],
                         "¡Usa los amigos del 10! El amigo del 8 es el 2, así que termina en 2. Y el 30 baja al 20."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d = rand(2, 9)*10;
-                            let u = rand(1, 9);
-                            res.push({text: `${d} - ${u}`, answer: d-u});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d = rand(11, 40)*10;
-                            let u = rand(1, 9);
-                            res.push({text: `${d} - ${u}`, answer: d-u});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d = rand(2, 9) * 10;
+                        let u = rand(1, 9);
+                        return {text: `${d} - ${u}`, answer: d - u};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let d = rand(11, 40) * 10;
+                        let u = rand(1, 9);
+                        return {text: `${d} - ${u}`, answer: d - u};
+                    })
                 },
                 {
                     title: "16. Restas sin rebasar",
                     descCorta: "68 - 35",
+                    tip: "Resta decenas con decenas y unidades con unidades por separado.",
                     practicoHTML: UITheory(
                         "Quitar por partes", "🧱",
-                        "Como el número de arriba es mayor en todo, podemos restar decenas y unidades por separado.",
-                        "68 - 35 = ?",
+                        "Como el primer número es mayor en todo, podemos restar decenas y unidades por separado.",
+                        "68 - 35 = 33",
                         [
                             "Miramos las unidades: a 8 le puedo quitar 5, no hay problema.",
                             "Restamos decenas: <strong class='text-amber-600'>60 - 30 = 30</strong>.",
@@ -804,66 +997,52 @@
                         ],
                         "Comprueba siempre primero las unidades. Si al primero le puedes quitar el segundo sin pedir prestado, hazlo por partes."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let d1 = rand(4, 9); let d2 = rand(1, d1-1);
-                            let u1 = rand(4, 9); let u2 = rand(1, u1-1); // u1 > u2 sin rebasar
-                            let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} - ${n2}`, answer: n1-n2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                         let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(1, 5)*100;
-                            let d1 = rand(4, 9); let d2 = rand(1, d1-1);
-                            let u1 = rand(4, 9); let u2 = rand(1, u1-1); 
-                            let n1 = c1 + d1*10 + u1; let n2 = d2*10 + u2;
-                            res.push({text: `${n1} - ${n2}`, answer: n1-n2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let d1 = rand(4, 9); let d2 = rand(1, d1 - 1);
+                        let u1 = rand(4, 9); let u2 = rand(1, u1 - 1);
+                        let n1 = d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} - ${n2}`, answer: n1 - n2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c1 = rand(1, 5) * 100;
+                        let d1 = rand(4, 9); let d2 = rand(1, d1 - 1);
+                        let u1 = rand(4, 9); let u2 = rand(1, u1 - 1); 
+                        let n1 = c1 + d1 * 10 + u1; let n2 = d2 * 10 + u2;
+                        return {text: `${n1} - ${n2}`, answer: n1 - n2};
+                    })
                 },
                 {
                     title: "17. Restar centenas completas",
                     descCorta: "800 - 500",
+                    tip: "Tapa los dos ceros, resta las centenas y devuelve los dos ceros al resultado.",
                     practicoHTML: UITheory(
                         "Ceros gemelos", "👯",
                         "Al igual que con las decenas redondas, podemos ignorar los ceros si los dos números tienen los mismos.",
-                        "800 - 500 = ?",
+                        "800 - 500 = 300",
                         [
                             "Tapa los DOS ceros de cada número.",
-                            "Te queda una resta de infantil: <strong class='text-amber-600'>8 - 5 = 3</strong>.",
+                            "Te queda una resta muy sencilla: <strong class='text-amber-600'>8 - 5 = 3</strong>.",
                             "Devuélvele los DOS ceros al resultado: <strong class='text-amber-600'>300</strong>."
                         ],
-                        "¡Ojo! Asegúrate de que devuelves exactamente la cantidad de ceros que escondiste."
+                        "¡Ojo! Asegúrate de que devuelves exactamente los dos ceros que escondiste."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(5, 9); let c2 = rand(1, c1-1);
-                            res.push({text: `${c1*100} - ${c2*100}`, answer: (c1-c2)*100});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(20, 99); let c2 = rand(5, c1-5);
-                            res.push({text: `${c1*100} - ${c2*100}`, answer: (c1-c2)*100});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let c1 = rand(4, 9); let c2 = rand(1, c1 - 1);
+                        return {text: `${c1*100} - ${c2*100}`, answer: (c1-c2)*100};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c1 = rand(20, 99); let c2 = rand(5, c1 - 5);
+                        return {text: `${c1*100} - ${c2*100}`, answer: (c1-c2)*100};
+                    })
                 },
                 {
                     title: "18. Centenas inc. - centenas comp.",
                     descCorta: "738 - 200",
+                    tip: "Las decenas y unidades se salvan igual; solo resta la cifra de las centenas.",
                     practicoHTML: UITheory(
                         "Restar solo al jefe", "👑",
                         "El 200 tiene ceros en las decenas y unidades. Eso significa que esa parte del otro número se salva intacta.",
-                        "738 - 200 = ?",
+                        "738 - 200 = 538",
                         [
                             "Al 38 no le vamos a quitar nada, porque el 200 termina en 00. Lo guardamos.",
                             "Solo restamos las centenas (los jefes): <strong class='text-amber-600'>700 - 200 = 500</strong>.",
@@ -871,66 +1050,51 @@
                         ],
                         "Si restas un número que acaba en '00', la cola del primer número siempre bajará exactamente igual."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(4, 9); let c2 = rand(1, c1-1);
-                            let rest = rand(11, 99);
-                            let n1 = c1*100 + rest;
-                            res.push({text: `${n1} - ${c2*100}`, answer: n1-(c2*100)});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let c1 = rand(15, 45); let c2 = rand(2, c1-2);
-                            let rest = rand(11, 99);
-                            let n1 = c1*100 + rest;
-                            res.push({text: `${n1} - ${c2*100}`, answer: n1-(c2*100)});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let c1 = rand(4, 9); let c2 = rand(1, c1 - 1);
+                        let rest = rand(11, 99);
+                        let n1 = c1 * 100 + rest;
+                        return {text: `${n1} - ${c2*100}`, answer: n1 - (c2*100)};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let c1 = rand(15, 45); let c2 = rand(2, c1 - 2);
+                        let rest = rand(11, 99);
+                        let n1 = c1 * 100 + rest;
+                        return {text: `${n1} - ${c2*100}`, answer: n1 - (c2*100)};
+                    })
                 },
                 {
                     title: "19. Batiburrillo (Sumas y Restas)",
                     descCorta: "Mezcla de todo lo anterior",
+                    tip: "¡Atención ninja! Mira primero si el signo es + o - antes de calcular.",
                     practicoHTML: UITheory(
                         "¡Entrenamiento Ninja!", "🥷",
                         "En este nivel vamos a mezclar todo lo que hemos aprendido hasta ahora. Tendrás que estar muy atento al signo.",
-                        "¿+ o -?",
+                        "¿Suma (+) o Resta (-)?",
                         [
-                            "Antes de ponerte a calcular a lo loco, fíjate bien si es una suma <strong class='text-amber-600'>(+)</strong> o una resta <strong class='text-amber-600'>(-)</strong>.",
+                            "Antes de ponerte a calcular, fíjate bien si es una suma <strong class='text-amber-600'>(+)</strong> o una resta <strong class='text-amber-600'>(-)</strong>.",
                             "Usa la estrategia que mejor encaje para cada tipo de operación.",
                             "¡Tómate tu tiempo, un ninja piensa antes de actuar!"
                         ],
                         "Concéntrate mucho en el signo de la operación antes de mirar los números."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            // Coge un generador aleatorio del 0 al 17
-                            let lvl = rand(0, 17);
-                            res.push(levels[lvl].gen()[0]);
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let lvl = rand(0, 17);
-                            res.push(levels[lvl].genPro()[0]);
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let lvl = rand(0, 17);
+                        return levels[lvl].gen()[0];
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let lvl = rand(0, 17);
+                        return levels[lvl].genPro()[0];
+                    })
                 },
                 {
                     title: "20. Doble de un número",
                     descCorta: "Doble de 15, Doble de 24",
+                    tip: "Calcula el doble de las decenas, el doble de las unidades y súmalos.",
                     practicoHTML: UITheory(
                         "¡Espejito, espejito!", "🪞",
                         "Calcular el doble es sumar el mismo número dos veces (¡o multiplicarlo por 2!).",
-                        "Doble de 24 = ?",
+                        "Doble de 24 = 48",
                         [
                             "Rompemos el 24 en 20 y 4.",
                             "Doble de 20: <strong class='text-amber-600'>20 + 20 = 40</strong>.",
@@ -939,30 +1103,23 @@
                         ],
                         "Calcular el doble de las decenas por un lado y de las unidades por el otro nunca falla."
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(5, 45);
-                            res.push({text: `Doble de ${n}`, answer: n*2});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(51, 250);
-                            res.push({text: `Doble de ${n}`, answer: n*2});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let n = rand(5, 45);
+                        return {text: `Doble de ${n}`, answer: n * 2};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n = rand(51, 250);
+                        return {text: `Doble de ${n}`, answer: n * 2};
+                    })
                 },
                 {
-                    title: "21. Multiplicar por decenas/centenas",
-                    descCorta: "4 x 10; 6 x 100",
+                    title: "21. Multiplicar por 10 o 100",
+                    descCorta: "4 × 10; 6 × 100",
+                    tip: "Deja el mismo número y añade detrás tantos ceros como tenga el 10 o el 100.",
                     practicoHTML: UITheory(
                         "La máquina de añadir ceros", "🏭",
-                        "Multiplicar por la unidad seguida de ceros (10, 100) es lo más fácil del mundo.",
-                        "7 x 100 = ?",
+                        "Multiplicar por la unidad seguida de ceros (10, 100) es súper rápido.",
+                        "7 × 100 = 700",
                         [
                             "Escribe el número original: <strong class='text-amber-600'>7</strong>.",
                             "Cuenta cuántos ceros tiene el otro número. El 100 tiene DOS ceros.",
@@ -971,168 +1128,315 @@
                         ],
                         "Todo número multiplicado por 1 se queda igual, ¡los ceros solo se pegan detrás como vagones de un tren!"
                     ),
-                    gen: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(2, 20);
-                            let zeros = Math.random() > 0.5 ? 10 : 100;
-                            res.push({text: `${n} x ${zeros}`, answer: n*zeros});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                        let res = [];
-                        for(let i=0; i<20; i++) {
-                            let n = rand(21, 150);
-                            let zeros = Math.random() > 0.5 ? 100 : 1000;
-                            res.push({text: `${n} x ${zeros}`, answer: n*zeros});
-                        }
-                        return res;
-                    }
+                    gen: () => buildProblemSet(() => {
+                        let n = rand(2, 20);
+                        let zeros = Math.random() > 0.5 ? 10 : 100;
+                        return {text: `${n} × ${zeros}`, answer: n * zeros};
+                    }),
+                    genPro: () => buildProblemSet(() => {
+                        let n = rand(21, 150);
+                        let zeros = Math.random() > 0.5 ? 100 : 1000;
+                        return {text: `${n} × ${zeros}`, answer: n * zeros};
+                    })
                 },
                 {
                     title: "22. Tablas del 2, 3, 4 y 5",
-                    descCorta: "3 x 5; 4 x 8",
+                    descCorta: "3 × 5; 4 × 8",
+                    tip: "Recuerda que el orden da igual: 4 × 5 es lo mismo que 5 × 4.",
                     practicoHTML: UITheory(
                         "Repaso de Tablas", "✖️",
-                        "Las tablas hay que saberlas de memoria, ¡pero a veces podemos usar trucos si se nos olvidan!",
-                        "4 x 6 = ?",
+                        "Las tablas nos ayudan a sumar súper rápido. ¡También podemos usar trucos!",
+                        "4 × 6 = 24",
                         [
                             "Tabla del 2: Es calcular el DOBLE.",
-                            "Tabla del 3: Es el triple. (Doble + el número otra vez).",
-                            "Tabla del 4: Es el doble del doble. (Doble de 6 es 12, doble de 12 es <strong class='text-amber-600'>24</strong>).",
-                            "Tabla del 5: Cuentas de 5 en 5 con los dedos o piensas en la del 10 y lo partes por la mitad."
+                            "Tabla del 3: Es el triple (el doble más el mismo número otra vez).",
+                            "Tabla del 4: Es el doble del doble (doble de 6 es 12, doble de 12 es <strong class='text-amber-600'>24</strong>).",
+                            "Tabla del 5: Siempre acaba en 0 o en 5."
                         ],
-                        "Recuerda que 4 x 6 es lo mismo que 6 x 4. Si te sabes mejor una tabla, ¡dales la vuelta!"
+                        "Recuerda que 4 × 6 es lo mismo que 6 × 4. Si te sabes mejor una tabla, ¡dales la vuelta!"
                     ),
-                    gen: () => {
-                        let res = [];
+                    gen: () => buildProblemSet(() => {
                         const tablas = [2, 3, 4, 5];
-                        for(let i=0; i<20; i++) {
-                            let t = tablas[rand(0, 3)];
-                            let n = rand(2, 10);
-                            // Mezclamos orden
-                            if (Math.random() > 0.5) res.push({text: `${t} x ${n}`, answer: t*n});
-                            else res.push({text: `${n} x ${t}`, answer: t*n});
-                        }
-                        return res;
-                    },
-                    genPro: () => {
-                         let res = [];
+                        let t = tablas[rand(0, 3)];
+                        let n = rand(2, 10);
+                        if (Math.random() > 0.5) return {text: `${t} × ${n}`, answer: t * n};
+                        return {text: `${n} × ${t}`, answer: t * n};
+                    }),
+                    genPro: () => buildProblemSet(() => {
                         const tablas = [2, 3, 4, 5];
-                        for(let i=0; i<20; i++) {
-                            let t = tablas[rand(0, 3)];
-                            let n = rand(11, 20); // Multiplicaciones más grandes
-                            if (Math.random() > 0.5) res.push({text: `${t} x ${n}`, answer: t*n});
-                            else res.push({text: `${n} x ${t}`, answer: t*n});
-                        }
-                        return res;
-                    }
+                        let t = tablas[rand(0, 3)];
+                        let n = rand(11, 20);
+                        if (Math.random() > 0.5) return {text: `${t} × ${n}`, answer: t * n};
+                        return {text: `${n} × ${t}`, answer: t * n};
+                    })
                 }
             ];
 
-            // --- VARIABLES DE ESTADO ---
+            // --- ELEMENTOS DEL DOM ---
             const levelSelector = document.getElementById('level-selector');
+            const prevLevelBtn = document.getElementById('prev-level-btn');
+            const nextLevelBtn = document.getElementById('next-level-btn');
             const tabPractico = document.getElementById('tab-practico');
             const tabReto = document.getElementById('tab-reto');
             const contentPractico = document.getElementById('content-practico');
             const contentReto = document.getElementById('content-reto');
             const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+            const proBadge = document.getElementById('pro-badge');
+            const problemContainer = document.getElementById('problem-container');
             const problemText = document.getElementById('problem-text');
             const answerText = document.getElementById('answer-text');
             const showAnswerBtn = document.getElementById('show-answer-btn');
             const nextProblemBtn = document.getElementById('next-problem-btn');
-            
-            // Impresión
             const printLevelsContainer = document.getElementById('print-levels-container');
+            const toggleHintBtn = document.getElementById('toggle-hint-btn');
+            const quickHintBox = document.getElementById('Quick-hint-box');
 
+            // Modo Pizarra vs Teclado
+            const modeFlashcardBtn = document.getElementById('mode-flashcard-btn');
+            const modeKeypadBtn = document.getElementById('mode-keypad-btn');
+            const flashcardControls = document.getElementById('flashcard-controls');
+            const keypadControls = document.getElementById('keypad-controls');
+            const userInputValue = document.getElementById('user-input-value');
+            const userInputDisplay = document.getElementById('user-input-display');
+            const checkAnswerBtn = document.getElementById('check-answer-btn');
+            const keypadNextBtn = document.getElementById('keypad-next-btn');
+            const keypadFeedback = document.getElementById('keypad-feedback');
+            const scoreBadge = document.getElementById('score-badge');
+            const scoreCountEl = document.getElementById('score-count');
+
+            // Estado de la sesión
             let currentProblems = [];
             let currentProblemIndex = 0;
-            const totalProblems = 20;
+            let isProMode = false;
+            let isKeypadMode = false;
+            let currentUserInput = '';
+            let score = 0;
+            let problemSolved = false;
 
             // --- INICIALIZACIÓN ---
             function init() {
                 levels.forEach((level, index) => {
-                    // Cargar opciones en el select
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = level.title;
-                    levelSelector.appendChild(option);
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.textContent = `${level.title} (${level.descCorta})`;
+                    levelSelector.appendChild(opt);
 
-                    // Cargar opciones en el modal de impresión
-                    const cbWrapper = document.createElement('label');
-                    cbWrapper.className = 'flex items-center cursor-pointer p-3 hover:bg-sky-50 rounded-xl transition-colors border-2 border-transparent hover:border-sky-200';
-                    cbWrapper.innerHTML = `
-                        <input type="checkbox" value="${index}" class="print-level-cb form-checkbox h-6 w-6 text-[#ec4899] rounded-md focus:ring-[#ec4899]">
-                        <span class="ml-3 text-slate-700 font-bold text-lg truncate" title="${level.title}">${level.title}</span>
+                    const cbWrap = document.createElement('label');
+                    cbWrap.className = 'flex items-center cursor-pointer p-2.5 hover:bg-sky-50 rounded-xl transition-colors border-2 border-slate-100 hover:border-sky-200';
+                    cbWrap.innerHTML = `
+                        <input type="checkbox" value="${index}" class="print-level-cb h-5 w-5 text-pink-600 rounded focus:ring-pink-500 cursor-pointer shrink-0">
+                        <span class="ml-3 text-slate-700 font-bold text-sm md:text-base truncate" title="${level.title}">${level.title}</span>
                     `;
-                    printLevelsContainer.appendChild(cbWrapper);
+                    printLevelsContainer.appendChild(cbWrap);
                 });
 
+                // Listeners de nivel
                 levelSelector.addEventListener('change', () => loadLevel(parseInt(levelSelector.value)));
-                
+                prevLevelBtn.addEventListener('click', () => {
+                    let idx = parseInt(levelSelector.value);
+                    if (idx > 0) {
+                        levelSelector.value = idx - 1;
+                        loadLevel(idx - 1);
+                    }
+                });
+                nextLevelBtn.addEventListener('click', () => {
+                    let idx = parseInt(levelSelector.value);
+                    if (idx < levels.length - 1) {
+                        levelSelector.value = idx + 1;
+                        loadLevel(idx + 1);
+                    }
+                });
+
+                // Botón de Sonido
+                const soundBtn = document.getElementById('sound-toggle-btn');
+                soundBtn.addEventListener('click', () => {
+                    soundEnabled = !soundEnabled;
+                    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+                });
+
+                // Pestañas
                 tabPractico.addEventListener('click', showPractico);
                 tabReto.addEventListener('click', showReto);
+
+                // Pista rápida
+                toggleHintBtn.addEventListener('click', () => {
+                    quickHintBox.classList.toggle('hidden');
+                });
+
+                // Controles Modo Pizarra
                 showAnswerBtn.addEventListener('click', showAnswer);
                 nextProblemBtn.addEventListener('click', nextProblem);
                 
+                // Controles Modo Práctica (Teclado)
+                modeFlashcardBtn.addEventListener('click', () => switchGameMode(false));
+                modeKeypadBtn.addEventListener('click', () => switchGameMode(true));
+
+                document.querySelectorAll('.num-key').forEach(btn => {
+                    btn.addEventListener('click', () => handleNumKey(btn.dataset.key));
+                });
+                checkAnswerBtn.addEventListener('click', checkUserAnswer);
+                keypadNextBtn.addEventListener('click', nextProblem);
+
+                // Reiniciar / Modo PRO
                 document.getElementById('new-challenge-btn').addEventListener('click', () => startNewChallenge(false));
                 document.getElementById('pro-challenge-btn').addEventListener('click', () => startNewChallenge(true));
 
-                // Modal impresión
-                document.getElementById('open-print-modal-btn').addEventListener('click', () => {
-                    document.getElementById('print-error-msg').classList.add('hidden');
+                // Soporte de teclado físico para mayor agilidad en pizarra digital u ordenador
+                document.addEventListener('keydown', (e) => {
+                    const isModalOpen = !document.getElementById('print-modal').classList.contains('hidden');
+                    const isPrintViewOpen = !document.getElementById('print-view-wrapper').classList.contains('hidden');
+                    const isRetoVisible = !contentReto.classList.contains('hidden');
+                    if (isModalOpen || isPrintViewOpen || !isRetoVisible) return;
+
+                    if (!isKeypadMode) {
+                        if (e.code === 'Space' || e.code === 'Enter' || e.code === 'ArrowRight') {
+                            e.preventDefault();
+                            if (!showAnswerBtn.classList.contains('hidden')) showAnswer();
+                            else if (!nextProblemBtn.classList.contains('hidden')) nextProblem();
+                        }
+                    } else {
+                        if (e.key >= '0' && e.key <= '9') {
+                            handleNumKey(e.key);
+                        } else if (e.key === 'Backspace') {
+                            handleNumKey('DEL');
+                        } else if (e.key === 'Escape') {
+                            handleNumKey('CLR');
+                        } else if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!problemSolved) checkUserAnswer();
+                            else nextProblem();
+                        }
+                    }
+                });
+
+                // Eventos Modal de Impresión
+                document.getElementById('open-print-modal-btn').addEventListener('click', openPrintModal);
+                document.getElementById('cancel-print-btn').addEventListener('click', closePrintModal);
+                document.getElementById('close-modal-x').addEventListener('click', closePrintModal);
+                
+                document.getElementById('select-current-level-btn').addEventListener('click', () => {
+                    const cur = levelSelector.value;
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = (cb.value === cur));
+                });
+                document.getElementById('select-all-levels-btn').addEventListener('click', () => {
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = true);
+                });
+                document.getElementById('deselect-all-levels-btn').addEventListener('click', () => {
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = false);
+                });
+
+                document.getElementById('generate-print-btn').addEventListener('click', generatePrintPreview);
+
+                // Eventos Visor de Impresión
+                document.getElementById('trigger-print-btn').addEventListener('click', () => window.print());
+                document.getElementById('regenerate-sheets-btn').addEventListener('click', generatePrintPreview);
+                document.getElementById('back-to-config-btn').addEventListener('click', () => {
+                    document.getElementById('print-view-wrapper').classList.add('hidden');
                     document.getElementById('print-modal').classList.remove('hidden');
                 });
-                document.getElementById('cancel-print-btn').addEventListener('click', () => {
-                    document.getElementById('print-modal').classList.add('hidden');
+                document.getElementById('close-print-view-btn').addEventListener('click', () => {
+                    document.getElementById('print-view-wrapper').classList.add('hidden');
                 });
-                document.getElementById('generate-print-btn').addEventListener('click', generatePrintDocument);
 
-                // Iniciar primer nivel
                 loadLevel(0);
                 showPractico();
             }
 
-            // --- LÓGICA DE LA APP ---
-            function loadLevel(levelIndex) {
-                const level = levels[levelIndex];
-                contentPractico.innerHTML = level.practicoHTML;
+            // --- LÓGICA DEL JUEGO ---
+            function switchGameMode(useKeypad) {
+                isKeypadMode = useKeypad;
+                if (isKeypadMode) {
+                    modeKeypadBtn.className = 'px-3 py-1.5 rounded-xl font-extrabold text-sm md:text-base transition-all bg-white text-sky-700 shadow-sm';
+                    modeFlashcardBtn.className = 'px-3 py-1.5 rounded-xl font-extrabold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900';
+                    flashcardControls.classList.add('hidden');
+                    keypadControls.classList.remove('hidden');
+                    keypadControls.classList.add('flex');
+                    scoreBadge.classList.remove('hidden');
+                } else {
+                    modeFlashcardBtn.className = 'px-3 py-1.5 rounded-xl font-extrabold text-sm md:text-base transition-all bg-white text-sky-700 shadow-sm';
+                    modeKeypadBtn.className = 'px-3 py-1.5 rounded-xl font-extrabold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900';
+                    keypadControls.classList.add('hidden');
+                    keypadControls.classList.remove('flex');
+                    flashcardControls.classList.remove('hidden');
+                    scoreBadge.classList.add('hidden');
+                }
+                displayProblem();
+            }
+
+            function loadLevel(idx) {
+                contentPractico.innerHTML = levels[idx].practicoHTML;
+                quickHintBox.textContent = levels[idx].tip;
+                quickHintBox.classList.add('hidden');
                 startNewChallenge(false);
                 showPractico();
             }
 
-            function startNewChallenge(isPro = false) {
-                const levelIndex = parseInt(levelSelector.value);
-                const level = levels[levelIndex];
-                currentProblems = isPro ? level.genPro() : level.gen();
+            function startNewChallenge(isPro) {
+                isProMode = isPro;
+                const idx = parseInt(levelSelector.value);
+                currentProblems = isPro ? levels[idx].genPro() : levels[idx].gen();
                 currentProblemIndex = 0;
+                score = 0;
+                scoreCountEl.textContent = '0';
+
+                if (isPro) {
+                    proBadge.classList.remove('hidden');
+                    problemContainer.classList.replace('border-slate-200', 'border-violet-300');
+                } else {
+                    proBadge.classList.add('hidden');
+                    problemContainer.classList.replace('border-violet-300', 'border-slate-200');
+                }
+
                 displayProblem();
-                showReto(); // Pasar automáticamente a jugar al recargar reto
+                showReto();
             }
 
             function displayProblem() {
+                problemSolved = false;
+                currentUserInput = '';
+                updateUserInputDisplay();
+                keypadFeedback.textContent = '';
+                userInputDisplay.className = 'flex-1 bg-white border-4 border-sky-400 rounded-2xl py-3 px-6 text-4xl font-black text-sky-900 min-h-[68px] flex items-center justify-center shadow-inner';
+                checkAnswerBtn.classList.remove('hidden');
+                keypadNextBtn.classList.add('hidden');
+
                 if (currentProblemIndex < currentProblems.length) {
-                    const problem = currentProblems[currentProblemIndex];
-                    problemText.textContent = problem.text;
-                    progressText.textContent = `${currentProblemIndex + 1} de ${totalProblems}`;
+                    const p = currentProblems[currentProblemIndex];
+                    if (p.text.includes('_')) {
+                        problemText.innerHTML = p.text.replace('_', '<span class="text-pink-500 border-b-4 border-dashed border-pink-400 px-3">?</span>');
+                    } else {
+                        problemText.textContent = p.text;
+                    }
+                    
+                    progressText.textContent = `${currentProblemIndex + 1} de ${currentProblems.length}`;
+                    progressBar.style.width = `${((currentProblemIndex + 1) / currentProblems.length) * 100}%`;
                     
                     answerText.classList.remove('answer-reveal');
                     answerText.classList.add('opacity-0');
-                    answerText.textContent = `= ${problem.answer}`;
+                    answerText.textContent = p.text.includes('_') ? `${p.answer}` : `= ${p.answer}`;
                     
                     showAnswerBtn.classList.remove('hidden');
                     nextProblemBtn.classList.add('hidden');
                 } else {
-                    problemText.textContent = '¡Prueba Superada! 🎉';
+                    problemText.innerHTML = '¡Prueba Superada! 🎉';
                     progressText.textContent = '¡Completado!';
-                    answerText.classList.add('opacity-0');
+                    answerText.classList.remove('opacity-0');
+                    answerText.textContent = isKeypadMode ? `Aciertos: ${score} de ${currentProblems.length}` : '¡Súper trabajo!';
                     showAnswerBtn.classList.add('hidden');
                     nextProblemBtn.classList.add('hidden');
+                    checkAnswerBtn.classList.add('hidden');
+                    keypadNextBtn.classList.add('hidden');
+                    playSuccessSound();
                 }
             }
             
             function showAnswer() {
+                if (currentProblemIndex >= currentProblems.length) return;
+                const p = currentProblems[currentProblemIndex];
+                if (p.text.includes('_')) {
+                    problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${p.answer}</span>`);
+                }
                 answerText.classList.remove('opacity-0');
                 answerText.classList.add('answer-reveal');
                 playSuccessSound();
@@ -1140,12 +1444,63 @@
                 nextProblemBtn.classList.remove('hidden');
             }
 
+            function handleNumKey(key) {
+                if (problemSolved || currentProblemIndex >= currentProblems.length) return;
+                if (key === 'DEL') {
+                    currentUserInput = currentUserInput.slice(0, -1);
+                } else if (key === 'CLR') {
+                    currentUserInput = '';
+                } else if (currentUserInput.length < 6) {
+                    currentUserInput += key;
+                }
+                updateUserInputDisplay();
+            }
+
+            function updateUserInputDisplay() {
+                if (currentUserInput === '') {
+                    userInputValue.textContent = '?';
+                    userInputValue.className = 'text-slate-300';
+                } else {
+                    userInputValue.textContent = currentUserInput;
+                    userInputValue.className = 'text-sky-950';
+                }
+            }
+
+            function checkUserAnswer() {
+                if (currentProblemIndex >= currentProblems.length || currentUserInput === '') return;
+                const p = currentProblems[currentProblemIndex];
+                const userVal = parseInt(currentUserInput, 10);
+
+                if (userVal === p.answer) {
+                    problemSolved = true;
+                    score++;
+                    scoreCountEl.textContent = score;
+                    playSuccessSound();
+                    keypadFeedback.textContent = '¡Genial! ¡Respuesta correcta! 🎉';
+                    keypadFeedback.className = 'h-7 font-extrabold text-lg mb-2 text-emerald-600';
+                    userInputDisplay.className = 'flex-1 bg-emerald-50 border-4 border-emerald-500 rounded-2xl py-3 px-6 text-4xl font-black text-emerald-800 min-h-[68px] flex items-center justify-center';
+                    if (p.text.includes('_')) {
+                        problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${p.answer}</span>`);
+                    }
+                    checkAnswerBtn.classList.add('hidden');
+                    keypadNextBtn.classList.remove('hidden');
+                } else {
+                    playErrorSound();
+                    keypadFeedback.textContent = '¡Uy, casi! Piénsalo otra vez 💪';
+                    keypadFeedback.className = 'h-7 font-extrabold text-lg mb-2 text-rose-600';
+                    userInputDisplay.classList.remove('shake-anim');
+                    void userInputDisplay.offsetWidth;
+                    userInputDisplay.classList.add('shake-anim', 'border-rose-400');
+                    currentUserInput = '';
+                    setTimeout(updateUserInputDisplay, 350);
+                }
+            }
+
             function nextProblem() {
                 currentProblemIndex++;
                 displayProblem();
             }
 
-            // --- NAVEGACIÓN PESTAÑAS ---
             function showPractico() {
                 contentPractico.classList.remove('hidden');
                 contentReto.classList.add('hidden');
@@ -1166,146 +1521,225 @@
                 tabPractico.classList.remove('tab-active');
             }
 
-            // --- LÓGICA DE IMPRESIÓN ---
-            function generatePrintDocument() {
-                const checkedBoxes = document.querySelectorAll('.print-level-cb:checked');
-                const errorMsg = document.getElementById('print-error-msg');
+            // --- GENERADOR DE FICHAS IMPRIMIBLES / PDF ---
+            function openPrintModal() {
+                document.getElementById('print-error-msg').classList.add('hidden');
+                const checkedCount = document.querySelectorAll('.print-level-cb:checked').length;
+                if (checkedCount === 0) {
+                    const cur = levelSelector.value;
+                    document.querySelectorAll('.print-level-cb').forEach(cb => {
+                        if (cb.value === cur) cb.checked = true;
+                    });
+                }
+                document.getElementById('print-modal').classList.remove('hidden');
+            }
+
+            function closePrintModal() {
+                document.getElementById('print-modal').classList.add('hidden');
+            }
+
+            function formatProblemForWorksheet(p) {
+                if (p.text.includes('_')) {
+                    const parts = p.text.split('_');
+                    return `
+                        <span class="font-extrabold text-slate-800">${parts[0]}</span>
+                        <span class="inline-block w-20 border-b-2 border-slate-500 mx-1"></span>
+                        <span class="font-extrabold text-slate-800">${parts[1]}</span>
+                    `;
+                } else {
+                    return `
+                        <span class="font-extrabold text-slate-800">${p.text} =</span>
+                        <span class="inline-block w-24 border-b-2 border-slate-500 ml-2"></span>
+                    `;
+                }
+            }
+
+            function formatSolutionItem(p) {
+                if (p.text.includes('_')) {
+                    const solved = p.text.replace('_', `<strong class="text-emerald-700 underline">${p.answer}</strong>`);
+                    return `<span class="text-slate-700 font-semibold">${solved}</span>`;
+                } else {
+                    return `<span class="text-slate-700 font-semibold">${p.text} = <strong class="text-emerald-700">${p.answer}</strong></span>`;
+                }
+            }
+
+            function generatePrintPreview() {
+                const checks = document.querySelectorAll('.print-level-cb:checked');
+                const err = document.getElementById('print-error-msg');
                 
-                if (checkedBoxes.length === 0) {
-                    errorMsg.classList.remove('hidden');
+                if (checks.length === 0) {
+                    err.classList.remove('hidden');
                     return;
                 }
-                errorMsg.classList.add('hidden');
+                err.classList.add('hidden');
 
                 const isPro = document.getElementById('print-pro-cb').checked;
+                const includeSolutions = document.getElementById('print-solutions-cb').checked;
                 const numVersions = parseInt(document.getElementById('print-versions').value);
+                const customTitle = document.getElementById('print-custom-title').value.trim() || 'CÁLCULO MENTAL - 2º PRIMARIA';
                 
-                let selectedTitles = Array.from(checkedBoxes).map(cb => levels[parseInt(cb.value)].title.replace(/^\d+\.\s*/, ''));
+                const selectedIndices = Array.from(checks).map(cb => parseInt(cb.value));
+                const titles = selectedIndices.map(idx => levels[idx].title);
+                const modelLetters = ['A', 'B', 'C', 'D'];
 
-                let html = '';
-                let solutionsHtml = `
-                    <div class="page-break w-full mx-auto font-sans text-slate-900 pt-6">
-                        <div class="border-b-4 border-green-500 pb-3 mb-6 flex justify-between items-end">
-                            <h1 class="text-3xl font-black text-green-700 uppercase">SOLUCIONARIO</h1>
-                            <p class="text-lg text-slate-700 font-bold">${isPro ? '⚠️ Modo PRO activado' : ''}</p>
-                        </div>
-                        <div class="grid grid-cols-${numVersions > 1 ? '2' : '1'} gap-6">
-                `;
+                let sheetsHTML = '';
+                let allVersionsSolutionsHTML = '';
 
-                for (let v = 1; v <= numVersions; v++) {
-                    let allProbs = [];
-                    checkedBoxes.forEach(cb => {
-                        const level = levels[parseInt(cb.value)];
-                        let p = isPro ? level.genPro() : level.gen();
-                        // Barajar sub-nivel
-                        allProbs.push(p.sort(() => Math.random() - 0.5));
+                for (let v = 0; v < numVersions; v++) {
+                    const modelLabel = numVersions > 1 ? `Modelo ${modelLetters[v]}` : 'Ficha de Cálculo';
+                    
+                    let pools = selectedIndices.map(idx => {
+                        const lvl = levels[idx];
+                        const problems = isPro ? lvl.genPro() : lvl.gen();
+                        return problems.sort(() => Math.random() - 0.5);
                     });
 
-                    let finalProbs = [];
-                    let idx = 0;
-                    while(finalProbs.length < 20 && allProbs.some(arr => arr.length > 0)) {
-                        let curArr = allProbs[idx % allProbs.length];
-                        if (curArr.length > 0) finalProbs.push(curArr.pop());
-                        idx++;
+                    let worksheetProblems = [];
+                    let seenInSheet = new Set();
+                    let pIdx = 0;
+                    let safety = 0;
+
+                    while (worksheetProblems.length < 20 && safety < 250) {
+                        safety++;
+                        let curPool = pools[pIdx % pools.length];
+                        if (curPool.length > 0) {
+                            let candidate = curPool.pop();
+                            if (!seenInSheet.has(candidate.text) || safety > 90) {
+                                worksheetProblems.push(candidate);
+                                seenInSheet.add(candidate.text);
+                            }
+                        }
+                        pIdx++;
                     }
-                    
-                    // Barajar final
-                    finalProbs.sort(() => Math.random() - 0.5);
 
-                    const breakClass = v > 1 ? 'page-break pt-6' : '';
-                    
-                    html += `
-                        <div class="${breakClass} w-full mx-auto font-sans text-slate-900">
-                            <div class="border-b-4 border-sky-500 pb-3 mb-5 flex justify-between items-end">
-                                <div>
-                                    <h1 class="text-3xl font-black text-sky-800 uppercase">FICHA CÁLCULO MENTAL</h1>
-                                    <p class="text-lg text-slate-700 font-bold mt-1">
-                                        Contenidos: ${selectedTitles.join(', ')}
-                                    </p>
-                                </div>
-                                <div class="text-right text-slate-500 font-bold bg-slate-100 px-4 py-2 rounded-xl">
-                                    V. ${v}
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-between mb-10 text-xl font-bold">
-                                <div class="flex-1 mr-8 flex items-end">
-                                    <span class="mr-3 text-slate-800">Nombre:</span> 
-                                    <div class="flex-1 border-b-2 border-slate-400"></div>
-                                </div>
-                                <div class="w-64 flex items-end">
-                                    <span class="mr-3 text-slate-800">Fecha:</span> 
-                                    <div class="flex-1 border-b-2 border-slate-400"></div>
-                                </div>
-                            </div>
+                    if (selectedIndices.length > 1) {
+                        worksheetProblems.sort(() => Math.random() - 0.5);
+                    }
 
-                            <div class="grid grid-cols-2 gap-x-16 gap-y-12 text-2xl font-bold px-4">
-                    `;
+                    let leftColHTML = '';
+                    let rightColHTML = '';
 
-                    let solCol = `
-                        <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
-                            <h3 class="font-black text-xl mb-4 border-b-2 border-slate-300 pb-2 text-slate-800">Versión ${v}</h3>
-                            <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-lg">
-                    `;
-
-                    finalProbs.forEach((p, i) => {
-                        html += `
-                            <div class="flex items-center">
-                                <span class="w-10 inline-block font-black text-slate-400 text-right pr-3">${i + 1}.</span>
-                                <span class="flex-1 text-right pr-4 text-3xl tracking-wider">${p.text} = </span>
-                                <span class="w-32 border-b-4 border-dashed border-slate-300 inline-block"></span>
+                    worksheetProblems.forEach((p, i) => {
+                        const rowHTML = `
+                            <div class="flex items-baseline py-2.5 border-b border-slate-100">
+                                <span class="w-8 font-extrabold text-slate-400 text-base shrink-0">${i + 1}.</span>
+                                <div class="flex-1 text-xl flex items-baseline justify-between pr-2">
+                                    ${formatProblemForWorksheet(p)}
+                                </div>
                             </div>
                         `;
-                        solCol += `
-                            <div class="flex">
-                                <span class="w-8 text-slate-400 font-black">${i + 1}.</span> 
-                                <span class="flex-1 font-semibold">${p.text} =</span> 
-                                <span class="font-black text-green-600 ml-2">${p.answer}</span>
+                        if (i < 10) leftColHTML += rowHTML;
+                        else rightColHTML += rowHTML;
+                    });
+
+                    // Resumen de títulos para que no desborde si se marcan los 22 niveles
+                    const summaryTitles = titles.length > 6 
+                        ? `${titles.slice(0, 6).join(' · ')} y ${titles.length - 6} más`
+                        : titles.join(' · ');
+
+                    sheetsHTML += `
+                        <div class="a4-sheet">
+                            <div>
+                                <!-- Encabezado de la ficha -->
+                                <div class="border-b-4 border-sky-500 pb-3 mb-5 flex justify-between items-start gap-4">
+                                    <div>
+                                        <h1 class="text-2xl font-black text-sky-900 uppercase tracking-tight">${customTitle}</h1>
+                                        <p class="text-xs text-slate-600 font-bold mt-1 max-w-xl leading-snug">
+                                            <strong>Niveles:</strong> ${summaryTitles} ${isPro ? ' (🏆 Reto PRO)' : ''}
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0 bg-pink-100 text-pink-900 font-black px-3.5 py-1.5 rounded-xl border-2 border-pink-300 text-sm">
+                                        ${modelLabel}
+                                    </div>
+                                </div>
+
+                                <!-- Datos del alumno -->
+                                <div class="grid grid-cols-12 gap-4 mb-6 text-base font-extrabold text-slate-800 bg-sky-50/60 p-3.5 rounded-xl border border-sky-200">
+                                    <div class="col-span-7 flex items-end">
+                                        <span class="mr-2">Nombre:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5"></div>
+                                    </div>
+                                    <div class="col-span-3 flex items-end">
+                                        <span class="mr-2">Fecha:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5"></div>
+                                    </div>
+                                    <div class="col-span-2 flex items-end">
+                                        <span class="mr-2">Aciertos:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5 text-right text-slate-400 text-xs">/ 20</div>
+                                    </div>
+                                </div>
+
+                                <!-- Cuerpo de 20 operaciones en 2 columnas ordenadas -->
+                                <div class="grid grid-cols-2 gap-x-10 mt-2">
+                                    <div class="space-y-1">${leftColHTML}</div>
+                                    <div class="space-y-1">${rightColHTML}</div>
+                                </div>
+                            </div>
+
+                            <!-- Pie de ficha -->
+                            <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-500 font-bold">
+                                <span>🚀 ¡Piensa el truco en tu cabeza antes de escribir el resultado!</span>
+                                <span>2º Educación Primaria · ${modelLabel}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    let solItemsHTML = '';
+                    worksheetProblems.forEach((p, i) => {
+                        solItemsHTML += `
+                            <div class="flex items-baseline py-1 text-sm border-b border-slate-200/60">
+                                <span class="w-6 text-slate-400 font-extrabold shrink-0">${i + 1}.</span>
+                                <div class="flex-1">${formatSolutionItem(p)}</div>
                             </div>
                         `;
                     });
 
-                    html += `
+                    allVersionsSolutionsHTML += `
+                        <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                            <h3 class="font-black text-base mb-2.5 pb-1.5 border-b-2 border-emerald-500 text-emerald-950 flex justify-between">
+                                <span>Soluciones - ${modelLabel}</span>
+                                <span class="text-xs text-emerald-700 font-bold">${isPro ? '🏆 PRO' : 'Normal'}</span>
+                            </h3>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-0.5">
+                                ${solItemsHTML}
                             </div>
                         </div>
                     `;
-                    solCol += `</div></div>`;
-                    solutionsHtml += solCol;
                 }
 
-                solutionsHtml += `</div></div>`;
-                html += solutionsHtml;
+                if (includeSolutions) {
+                    sheetsHTML += `
+                        <div class="a4-sheet">
+                            <div>
+                                <div class="border-b-4 border-emerald-600 pb-3 mb-5 flex justify-between items-end">
+                                    <div>
+                                        <h1 class="text-2xl font-black text-emerald-900 uppercase">✅ SOLUCIONARIO DOCENTE</h1>
+                                        <p class="text-xs text-slate-600 font-bold mt-1">
+                                            ${customTitle}
+                                        </p>
+                                    </div>
+                                    <span class="bg-emerald-100 text-emerald-900 font-extrabold px-3 py-1 rounded-lg text-xs border border-emerald-300">
+                                        Hoja de control
+                                    </span>
+                                </div>
 
-                const fullHtml = `<!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8"><title>Fichas Cálculo</title>
-                    <script src="https://cdn.tailwindcss.com"></s`+`cript>
-                    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-                    <style>
-                        body { font-family: 'Nunito', sans-serif; }
-                        @media print {
-                            @page { size: A4; margin: 1.5cm; }
-                            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                            .page-break { page-break-before: always !important; }
-                            .no-print { display: none !important; }
-                        }
-                    </style>
-                </head>
-                <body class="bg-white p-4">
-                    <div class="no-print text-center py-6 bg-sky-50 border-b-4 border-sky-200 mb-8 rounded-2xl">
-                        <p class="text-sky-800 font-black text-2xl mb-2">🖨️ Fichas Generadas</p>
-                        <button onclick="window.print()" class="bg-pink-500 text-white px-8 py-3 rounded-xl font-black hover:bg-pink-600 mt-2">Imprimir Ahora</button>
-                    </div>
-                    ${html}
-                    <script>setTimeout(() => window.print(), 1000);</s`+`cript>
-                </body>
-                </html>`;
+                                <div class="grid grid-cols-1 ${numVersions > 1 ? 'md:grid-cols-2 print:grid-cols-2' : ''} gap-5">
+                                    ${allVersionsSolutionsHTML}
+                                </div>
+                            </div>
 
-                const printBlob = new Blob([fullHtml], { type: 'text/html' });
-                const printUrl = URL.createObjectURL(printBlob);
-                window.open(printUrl, '_blank');
-                document.getElementById('print-modal').classList.add('hidden');
+                            <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-400 font-bold">
+                                <span>Documento de corrección para el docente</span>
+                                <span>2º Educación Primaria</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('print-sheets-container').innerHTML = sheetsHTML;
+                closePrintModal();
+                document.getElementById('print-view-wrapper').classList.remove('hidden');
+                document.getElementById('print-view-wrapper').scrollTop = 0;
             }
 
             init();
