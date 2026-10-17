@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generador de Tickets de Salida - 3º Primaria</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .ticket-font {
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    /* Estilos para los espacios de respuesta con línea ultrafina (1px) */
+    .pauta-escolar {
+      background-image: linear-gradient(to bottom, transparent calc(100% - 1px), #cbd5e1 calc(100% - 1px));
+      background-size: 100% 1.4rem;
+      line-height: 1.4rem;
+      background-color: #ffffff;
+      border: 0.5px solid #cbd5e1;
+    }
+    .cuadricula-escolar {
+      background-size: 16px 16px;
+      background-image: 
+        linear-gradient(to right, #e2e8f0 0.5px, transparent 0.5px),
+        linear-gradient(to bottom, #e2e8f0 0.5px, transparent 0.5px);
+      border: 0.5px solid #cbd5e1;
+      background-color: #ffffff;
+    }
+    .espacio-blanco {
+      border: 1px dashed #cbd5e1;
+      background-color: #ffffff;
+    }
+
+    /* Contenedor con escalado proporcional para que el A4 se vea entero en cualquier pantalla */
+    #preview-viewport {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .page-scale-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Hoja DIN A4 Vertical estricta (210mm x 297mm) con márgenes exteriores amplios (15mm) */
+    .a4-page {
+      width: 210mm;
+      height: 297mm;
+      min-width: 210mm;
+      min-height: 297mm;
+      max-width: 210mm;
+      max-height: 297mm;
+      background: #ffffff;
+      padding: 15mm;
+      box-sizing: border-box;
+      box-shadow: 0 12px 30px -5px rgba(15, 23, 42, 0.18), 0 4px 10px -4px rgba(15, 23, 42, 0.1);
+      border: 1px solid #cbd5e1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transform-origin: top center;
+    }
+
+    .ticket-card {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      box-sizing: border-box;
+    }
+
+    /* Reglas estrictas de Impresión A4 */
+    @page {
+      size: A4 portrait;
+      margin: 0mm;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #preview-viewport,
+      #pdf-root {
+        width: 210mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+      .page-scale-wrapper {
+        margin: 0 !important;
+        height: auto !important;
+        display: block !important;
+      }
+      .a4-page {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 15mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        transform: none !important;
+        page-break-after: always;
+        break-after: page;
+      }
+      .page-scale-wrapper:last-child .a4-page {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      .solution-page {
+        page-break-before: always;
+        break-before: page;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- BARRA SUPERIOR DOCENTE (NO IMPRIMIBLE) -->
+  <header class="no-print bg-slate-900 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🎟️</span>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-tight">Generador de Tickets de Salida · 3º Primaria</h1>
+          <p class="text-xs text-slate-300">Formato DIN A4 Vertical real (210×297 mm) · Doble semáforo (docente y alumno) y solucionario</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="copiarPromptIA()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5" title="Copia un prompt listo para pedirle a Gemini un JSON de cualquier tema">
+          <span>🤖</span> Copiar Prompt para IA
+        </button>
+        <button onclick="descargarPlantillaJSON()" class="bg-slate-700 hover:bg-slate-600 text-white border border-slate-500 font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+          <span>📥</span> Descargar JSON
+        </button>
+        <label class="cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5">
+          <span>📂</span> Subir JSON
+          <input type="file" id="jsonFileInput" accept=".json" class="hidden" onchange="cargarArchivoJSON(event)" />
+        </label>
+        <button onclick="abrirModalPegarJSON()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+          <span>📋</span> Pegar JSON
+        </button>
+        <button onclick="window.print()" class="bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+          <span>🖨️</span> Imprimir / Guardar PDF
+        </button>
+        <button onclick="exportarPDFDirecto()" class="bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5" title="Descarga directa mediante html2pdf">
+          <span>📄</span> Exportar PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTIFICACIÓN TOAST -->
+  <div id="toast" class="no-print fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-semibold flex items-center gap-2 border border-slate-700">
+    <span id="toast-icon">✅</span>
+    <span id="toast-msg">Acción completada</span>
+  </div>
+
+  <!-- MODAL PARA PEGAR JSON -->
+  <div id="modalJSON" class="no-print fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 border border-slate-200">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">📋 Pegar código JSON de preguntas</h3>
+        <button onclick="cerrarModalPegarJSON()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-500 mb-3">Pega aquí el bloque JSON generado por la IA o editado por ti. Se validará automáticamente y cargará las preguntas en el editor.</p>
+      <textarea id="textareaPasteJSON" rows="10" class="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50" placeholder='{"asignatura": "Matemáticas", "tema": "...", "preguntas": [...]}'></textarea>
+      <div id="jsonPasteError" class="hidden mt-2 text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg font-semibold"></div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="cerrarModalPegarJSON()" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100">Cancelar</button>
+        <button onclick="procesarJSONPegado()" class="px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow">Cargar Preguntas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- PANEL IZQUIERDO: CONFIGURACIÓN Y EDITOR DE PREGUNTAS (NO IMPRIMIBLE) -->
+    <section class="no-print lg:col-span-5 space-y-5">
+
+      <!-- 1. Ajustes Generales del Ticket -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+        <h2 class="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+          <span>⚙️</span> 1. Configuración del Ticket de Salida
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Asignatura y Color</label>
+            <select id="cfgAsignatura" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+              <option value="Matemáticas">🔴 Matemáticas (Rojo)</option>
+              <option value="Lengua Castellana">🔵 Lengua Castellana (Azul)</option>
+              <option value="Ciencias Sociales">🌸 Ciencias Sociales (Rosa claro)</option>
+              <option value="Ciencias Naturales">🌿 Ciencias Naturales (Verde)</option>
+              <option value="Música">🎵 Música (Morado)</option>
+              <option value="Tutoría / Emociones">💡 Tutoría (Turquesa)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Distribución en Folio A4</label>
+            <select id="cfgLayout" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+              <option value="2">2 Tickets por A4 (Amplio Vertical)</option>
+              <option value="4">4 Tickets por A4 (Cuadrícula 2×2)</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Título o Saberes de la Sesión</label>
+            <input type="text" id="cfgTema" oninput="generarVistaPrevia()" value="Multiplicaciones por una cifra y problemas" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Preguntas por Ticket</label>
+            <select id="cfgNumPreguntas" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+              <option value="1">1 pregunta</option>
+              <option value="2">2 preguntas</option>
+              <option value="3" selected>3 preguntas (Recomendado)</option>
+              <option value="4">4 preguntas</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Modelos Anticopia</label>
+            <select id="cfgNumModelos" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+              <option value="1">1 Modelo único (A)</option>
+              <option value="2">2 Modelos (A y B)</option>
+              <option value="3" selected>3 Modelos (A, B y C)</option>
+              <option value="4">4 Modelos (A, B, C y D)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Total Tickets (Alumnos)</label>
+            <input type="number" id="cfgTotalCopias" min="1" max="60" value="6" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" />
+          </div>
+
+          <div class="flex items-center pt-4">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="cfgBarajarOrden" onchange="generarVistaPrevia()" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
+              <span class="text-xs font-bold text-slate-700">Alternar orden entre modelos</span>
+            </label>
+          </div>
+
+          <div class="sm:col-span-2 pt-2 border-t border-slate-100">
+            <label class="inline-flex items-center gap-2.5 cursor-pointer select-none bg-emerald-50 border border-emerald-200 px-3 py-2.5 rounded-xl w-full">
+              <input type="checkbox" id="cfgIncluirSoluciones" checked onchange="generarVistaPrevia()" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500" />
+              <div>
+                <span class="block text-xs font-extrabold text-emerald-950">✅ Incluir Hoja de Soluciones para el profesor al final del PDF</span>
+                <span class="block text-[11px] text-emerald-700">Genera una página A4 final independiente con las respuestas de cada modelo.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Banco de Preguntas y Variantes -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <span>📝</span> 2. Banco de Bloques y Variantes
+            </h2>
+            <p class="text-xs text-slate-500">Cada bloque es una pregunta del ticket. Sus variantes se reparten en los modelos A, B, C y D.</p>
+          </div>
+          <button onclick="anadirBloquePregunta()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition shrink-0">
+            + Añadir Bloque
+          </button>
+        </div>
+
+        <!-- Lista dinámica de bloques -->
+        <div id="contenedorBloques" class="space-y-4 max-h-[600px] overflow-y-auto pr-1"></div>
+      </div>
+
+    </section>
+
+    <!-- PANEL DERECHO: VISTA PREVIA DIN A4 VERTICAL REAL -->
+    <section class="lg:col-span-7" id="columnaDerecha">
+      <div class="no-print mb-3 flex flex-wrap items-center justify-between gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+          <span>📐</span>
+          <span>Vista Previa DIN A4 Vertical (210 × 297 mm · Márgenes de 15 mm · Pauta ultrafina)</span>
+        </div>
+        <span id="resumenPaginas" class="text-xs font-extrabold bg-slate-900 text-white px-2.5 py-1 rounded-full"></span>
+      </div>
+
+      <!-- Contenedor donde se inyectan y escalan proporcionalmente las páginas A4 -->
+      <div id="preview-viewport" class="pb-10">
+        <div id="pdf-root" class="w-full flex flex-col items-center"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ==========================================
+    // DATOS DE DEMO INICIAL (3º PRIMARIA)
+    // ==========================================
+    let estadoDatos = {
+      asignatura: "Matemáticas",
+      tema: "Multiplicaciones por una cifra y resolución de problemas",
+      preguntas: [
+        {
+          bloque: "Cálculo y algoritmo",
+          tipo_espacio: "cuadricula",
+          variantes: [
+            { enunciado: "Coloca en vertical y resuelve: 243 × 3 =", solucion: "243 × 3 = 729" },
+            { enunciado: "Coloca en vertical y resuelve: 314 × 3 =", solucion: "314 × 3 = 942" },
+            { enunciado: "Coloca en vertical y resuelve: 421 × 3 =", solucion: "421 × 3 = 1.263" },
+            { enunciado: "Coloca en vertical y resuelve: 232 × 4 =", solucion: "232 × 4 = 928" }
+          ]
+        },
+        {
+          bloque: "Problema de la vida cotidiana",
+          tipo_espacio: "pauta",
+          variantes: [
+            { enunciado: "En el cole hay 6 cajas con 8 flautas en cada una. ¿Cuántas flautas hay en total?", solucion: "6 × 8 = 48 flautas en total." },
+            { enunciado: "Un álbum tiene 7 páginas con 6 cromos en cada página. ¿Cuántos cromos tiene el álbum?", solucion: "7 × 6 = 42 cromos en total." },
+            { enunciado: "Hemos plantado 8 filas con 5 tomates en cada fila. ¿Cuántas tomateras hay en el huerto?", solucion: "8 × 5 = 40 tomateras en total." },
+            { enunciado: "En una excursión van 4 mesas con 9 niños en cada mesa. ¿Cuántos niños van en total?", solucion: "4 × 9 = 36 niños en total." }
+          ]
+        },
+        {
+          bloque: "Razonamiento y propiedad conmutativa",
+          tipo_espacio: "pauta",
+          variantes: [
+            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 7 × 4 = 4 × ___", solucion: "Falta el 7 (da 28). Por la propiedad conmutativa: el orden de los factores no altera el producto." },
+            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 8 × 3 = 3 × ___", solucion: "Falta el 8 (da 24). Por la propiedad conmutativa: el orden de los factores no cambia el resultado." },
+            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 9 × 5 = 5 × ___", solucion: "Falta el 9 (da 45). Por la propiedad conmutativa: da igual multiplicar 9×5 que 5×9." },
+            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 6 × 7 = 7 × ___", solucion: "Falta el 6 (da 42). Por la propiedad conmutativa." }
+          ]
+        },
+        {
+          bloque: "Reto rápido de dobles y triples",
+          tipo_espacio: "blanco",
+          variantes: [
+            { enunciado: "Calcula mentalmente: ¿Cuál es el TRIPLE de 12? Dibújalo o escribe la operación.", solucion: "12 × 3 = 36" },
+            { enunciado: "Calcula mentalmente: ¿Cuál es el TRIPLE de 15? Dibújalo o escribe la operación.", solucion: "15 × 3 = 45" },
+            { enunciado: "Calcula mentalmente: ¿Cuál es el DOBLE de 24? Dibújalo o escribe la operación.", solucion: "24 × 2 = 48" },
+            { enunciado: "Calcula mentalmente: ¿Cuál es el DOBLE de 35? Dibújalo o escribe la operación.", solucion: "35 × 2 = 70" }
+          ]
+        }
+      ]
+    };
+
+    // Metadatos visuales por modelo anticopia
+    const MODELOS_META = [
+      { id: "A", nombre: "🚀 Modelo A", nombreLargo: "Modelo 🚀 Cohete (A)", badgeBg: "bg-white text-slate-900 border-slate-400" },
+      { id: "B", nombre: "⭐ Modelo B", nombreLargo: "Modelo ⭐ Estrella (B)", badgeBg: "bg-white text-slate-900 border-slate-400" },
+      { id: "C", nombre: "⚡ Modelo C", nombreLargo: "Modelo ⚡ Rayo (C)", badgeBg: "bg-white text-slate-900 border-slate-400" },
+      { id: "D", nombre: "🌍 Modelo D", nombreLargo: "Modelo 🌍 Planeta (D)", badgeBg: "bg-white text-slate-900 border-slate-400" }
+    ];
+
+    // PALETA DE COLORES PERSONALIZADA:
+    // Lengua = Azul, Matemáticas = Rojo, Ciencias Sociales = Rosa claro
+    const ASIGNATURAS_META = {
+      "Matemáticas": {
+        icono: "📐",
+        bordeTicket: "border-red-600",
+        colorHeader: "bg-red-50 border-red-200",
+        badge: "bg-red-600 text-white",
+        numCircle: "bg-red-600 text-white",
+        semaforoBg: "bg-red-50/50 border-red-200"
+      },
+      "Lengua Castellana": {
+        icono: "📚",
+        bordeTicket: "border-blue-600",
+        colorHeader: "bg-blue-50 border-blue-200",
+        badge: "bg-blue-600 text-white",
+        numCircle: "bg-blue-600 text-white",
+        semaforoBg: "bg-blue-50/50 border-blue-200"
+      },
+      "Ciencias Sociales": {
+        icono: "🌍",
+        bordeTicket: "border-pink-400",
+        colorHeader: "bg-pink-100/90 border-pink-300",
+        badge: "bg-pink-500 text-white",
+        numCircle: "bg-pink-500 text-white",
+        semaforoBg: "bg-pink-50/60 border-pink-200"
+      },
+      "Ciencias Naturales": {
+        icono: "🌿",
+        bordeTicket: "border-emerald-600",
+        colorHeader: "bg-emerald-50 border-emerald-200",
+        badge: "bg-emerald-600 text-white",
+        numCircle: "bg-emerald-600 text-white",
+        semaforoBg: "bg-emerald-50/50 border-emerald-200"
+      },
+      "Música": {
+        icono: "🎵",
+        bordeTicket: "border-purple-600",
+        colorHeader: "bg-purple-50 border-purple-200",
+        badge: "bg-purple-600 text-white",
+        numCircle: "bg-purple-600 text-white",
+        semaforoBg: "bg-purple-50/50 border-purple-200"
+      },
+      "Tutoría / Emociones": {
+        icono: "💡",
+        bordeTicket: "border-teal-600",
+        colorHeader: "bg-teal-50 border-teal-200",
+        badge: "bg-teal-600 text-white",
+        numCircle: "bg-teal-600 text-white",
+        semaforoBg: "bg-teal-50/50 border-teal-200"
+      }
+    };
+
+    // ==========================================
+    // RENDERIZADO DEL EDITOR MANUAL (PANEL IZQ)
+    // ==========================================
+    function renderizarEditorBloques() {
+      const contenedor = document.getElementById("contenedorBloques");
+      contenedor.innerHTML = "";
+
+      estadoDatos.preguntas.forEach((item, bIdx) => {
+        const divBloque = document.createElement("div");
+        divBloque.className = "border border-slate-200 rounded-xl p-3.5 bg-slate-50/70 space-y-2.5";
+
+        let variantesHTML = "";
+        item.variantes.forEach((v, vIdx) => {
+          const letraModelo = MODELOS_META[vIdx % MODELOS_META.length].id;
+          variantesHTML += `
+            <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                  Variante ${vIdx + 1} (Prioridad Modelo ${letraModelo})
+                </span>
+                ${item.variantes.length > 1 ? `
+                  <button onclick="eliminarVariante(${bIdx},${vIdx})" class="text-xs text-rose-500 hover:text-rose-700 font-bold" title="Eliminar variante">✕</button>
+                ` : ''}
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase">Enunciado para el alumno:</label>
+                <input type="text" value="${escaparHTML(v.enunciado)}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'enunciado', this.value)"
+                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-semibold text-slate-800 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-emerald-700 uppercase">Solución para el profesor:</label>
+                <input type="text" value="${escaparHTML(v.solucion || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'solucion', this.value)"
+                  placeholder="Escribe aquí la respuesta correcta..."
+                  class="w-full text-xs border border-emerald-200 bg-emerald-50/40 rounded px-2 py-1 font-semibold text-emerald-950 focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+              </div>
+            </div>
+          `;
+        });
+
+        divBloque.innerHTML = `
+          <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+            <div class="flex items-center gap-1.5 flex-1">
+              <span class="bg-slate-800 text-white text-xs font-extrabold w-6 h-6 rounded-full flex items-center justify-center shrink-0">${bIdx + 1}</span>
+              <input type="text" value="${escaparHTML(item.bloque)}" oninput="actualizarBloque(${bIdx}, 'bloque', this.value)"
+                class="w-full text-xs font-extrabold text-slate-800 bg-transparent border-b border-transparent focus:border-blue-400 focus:outline-none px-1 py-0.5"
+                placeholder="Título del bloque..." />
+            </div>
+            <select onchange="actualizarBloque(${bIdx}, 'tipo_espacio', this.value)" class="text-xs border border-slate-300 rounded-md px-2 py-1 bg-white font-semibold text-slate-700">
+              <option value="pauta" ${item.tipo_espacio === 'pauta' ? 'selected' : ''}>✍️ Pauta líneas</option>
+              <option value="cuadricula" ${item.tipo_espacio === 'cuadricula' ? 'selected' : ''}>🔢 Cuadrícula mates</option>
+              <option value="blanco" ${item.tipo_espacio === 'blanco' ? 'selected' : ''}>⬜ Recuadro blanco</option>
+            </select>
+            ${estadoDatos.preguntas.length > 1 ? `
+              <button onclick="eliminarBloque(${bIdx})" class="text-xs text-rose-600 hover:bg-rose-50 px-2 py-1 rounded font-bold" title="Eliminar bloque">🗑️</button>
+            ` : ''}
+          </div>
+          <div class="space-y-2">
+            ${variantesHTML}
+          </div>
+          <button onclick="anadirVariante(${bIdx})" class="w-full py-1.5 border border-dashed border-blue-300 hover:border-blue-500 text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-bold transition">
+            + Añadir Variante Anticopia a este bloque
+          </button>
+        `;
+
+        contenedor.appendChild(divBloque);
+      });
+    }
+
+    function actualizarBloque(bIdx, campo, valor) {
+      estadoDatos.preguntas[bIdx][campo] = valor;
+      generarVistaPrevia();
+    }
+
+    function actualizarVariante(bIdx, vIdx, campo, valor) {
+      estadoDatos.preguntas[bIdx].variantes[vIdx][campo] = valor;
+      generarVistaPrevia();
+    }
+
+    function anadirVariante(bIdx) {
+      estadoDatos.preguntas[bIdx].variantes.push({
+        enunciado: "Nueva variante de pregunta...",
+        solucion: "Respuesta correcta..."
+      });
+      renderizarEditorBloques();
+      generarVistaPrevia();
+    }
+
+    function eliminarVariante(bIdx, vIdx) {
+      if (estadoDatos.preguntas[bIdx].variantes.length <= 1) return;
+      estadoDatos.preguntas[bIdx].variantes.splice(vIdx, 1);
+      renderizarEditorBloques();
+      generarVistaPrevia();
+    }
+
+    function anadirBloquePregunta() {
+      estadoDatos.preguntas.push({
+        bloque: `Bloque ${estadoDatos.preguntas.length + 1}`,
+        tipo_espacio: "pauta",
+        variantes: [
+          { enunciado: "Escribe aquí la pregunta para el Modelo A...", solucion: "Solución A" },
+          { enunciado: "Escribe aquí la variante para el Modelo B...", solucion: "Solución B" }
+        ]
+      });
+      renderizarEditorBloques();
+      generarVistaPrevia();
+    }
+
+    function eliminarBloque(bIdx) {
+      if (estadoDatos.preguntas.length <= 1) return;
+      estadoDatos.preguntas.splice(bIdx, 1);
+      renderizarEditorBloques();
+      generarVistaPrevia();
+    }
+
+    // ==========================================
+    // LÓGICA ANTICOPIA Y GENERACIÓN DE MODELOS
+    // ==========================================
+    function construirModelos(numPreguntas, numModelos, barajarOrden) {
+      const bloquesActivos = estadoDatos.preguntas.slice(0, numPreguntas);
+      const modelosGenerados = [];
+
+      for (let m = 0; m < numModelos; m++) {
+        const meta = MODELOS_META[m % MODELOS_META.length];
+        let itemsModelo = bloquesActivos.map((bloqueObj, idxOriginal) => {
+          const listaVar = bloqueObj.variantes || [];
+          const varElegida = listaVar[m % listaVar.length] || { enunciado: "Sin pregunta", solucion: "Sin solución" };
+          const textoEnunciado = typeof varElegida === "string" ? varElegida : (varElegida.enunciado || "");
+          const textoSolucion = typeof varElegida === "string" ? "Ver criterio docente" : (varElegida.solucion || "Respuesta abierta / personal");
+
+          return {
+            numOriginal: idxOriginal + 1,
+            bloque: bloqueObj.bloque || `Pregunta ${idxOriginal + 1}`,
+            tipo_espacio: bloqueObj.tipo_espacio || "pauta",
+            enunciado: textoEnunciado,
+            solucion: textoSolucion
+          };
+        });
+
+        if (barajarOrden && m > 0 && itemsModelo.length > 1) {
+          itemsModelo = rotarArray(itemsModelo, m);
+        }
+
+        modelosGenerados.push({
+          indiceModelo: m,
+          id: meta.id,
+          nombre: meta.nombre,
+          nombreLargo: meta.nombreLargo,
+          badgeBg: meta.badgeBg,
+          preguntas: itemsModelo
+        });
+      }
+
+      return modelosGenerados;
+    }
+
+    function rotarArray(arr, pasos) {
+      const copia = [...arr];
+      const n = pasos % copia.length;
+      return copia.slice(n).concat(copia.slice(0, n));
+    }
+
+    // ==========================================
+    // RENDERIZADO DE TICKETS Y SOLUCIONARIO A4
+    // ==========================================
+    function generarVistaPrevia() {
+      const asignatura = document.getElementById("cfgAsignatura").value;
+      const tema = document.getElementById("cfgTema").value;
+      const layoutPorHoja = parseInt(document.getElementById("cfgLayout").value, 10);
+      const numPreguntas = Math.min(
+        parseInt(document.getElementById("cfgNumPreguntas").value, 10),
+        estadoDatos.preguntas.length
+      );
+      const numModelos = parseInt(document.getElementById("cfgNumModelos").value, 10);
+      const totalCopias = Math.max(1, parseInt(document.getElementById("cfgTotalCopias").value, 10) || 1);
+      const barajarOrden = document.getElementById("cfgBarajarOrden").checked;
+      const incluirSoluciones = document.getElementById("cfgIncluirSoluciones").checked;
+
+      estadoDatos.asignatura = asignatura;
+      estadoDatos.tema = tema;
+
+      const metaAsig = ASIGNATURAS_META[asignatura] || ASIGNATURAS_META["Matemáticas"];
+      const modelosUnicos = construirModelos(numPreguntas, numModelos, barajarOrden);
+
+      const listaTicketsImprimir = [];
+      for (let i = 0; i < totalCopias; i++) {
+        listaTicketsImprimir.push(modelosUnicos[i % modelosUnicos.length]);
+      }
+
+      const paginasTickets = [];
+      for (let i = 0; i < listaTicketsImprimir.length; i += layoutPorHoja) {
+        paginasTickets.push(listaTicketsImprimir.slice(i, i + layoutPorHoja));
+      }
+
+      const root = document.getElementById("pdf-root");
+      root.innerHTML = "";
+
+      // Renderizar cada folio A4 de alumnos dentro de un wrapper escalable
+      paginasTickets.forEach((grupoTickets) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "page-scale-wrapper";
+
+        const pageEl = document.createElement("div");
+        pageEl.className = "a4-page ticket-font";
+
+        if (layoutPorHoja === 2) {
+          let htmlInterno = `<div class="flex flex-col justify-between h-full">`;
+          grupoTickets.forEach((modelo, idxEnHoja) => {
+            htmlInterno += `<div class="h-[46.5%] flex flex-col">${crearHTMLTicket(modelo, asignatura, tema, metaAsig, "2up")}</div>`;
+            if (idxEnHoja === 0 && grupoTickets.length > 1) {
+              htmlInterno += `
+                <div class="flex items-center gap-2 text-slate-400 text-[11px] my-1 select-none px-2">
+                  <span>✂️</span>
+                  <div class="border-b border-dashed border-slate-400 w-full"></div>
+                </div>
+              `;
+            } else if (grupoTickets.length === 1) {
+              htmlInterno += `<div class="h-[46.5%]"></div>`;
+            }
+          });
+          htmlInterno += `</div>`;
+          pageEl.innerHTML = htmlInterno;
+        } else {
+          let htmlInterno = `<div class="grid grid-cols-2 grid-rows-2 gap-5 h-full">`;
+          grupoTickets.forEach((modelo) => {
+            htmlInterno += crearHTMLTicket(modelo, asignatura, tema, metaAsig, "4up");
+          });
+          htmlInterno += `</div>`;
+          pageEl.innerHTML = htmlInterno;
+        }
+
+        wrapper.appendChild(pageEl);
+        root.appendChild(wrapper);
+      });
+
+      // Renderizar Hoja de Soluciones Automática al final del PDF
+      if (incluirSoluciones) {
+        const wrapperSol = document.createElement("div");
+        wrapperSol.className = "page-scale-wrapper";
+
+        const solPage = document.createElement("div");
+        solPage.className = "a4-page solution-page ticket-font";
+        solPage.innerHTML = crearHTMLHojaSoluciones(modelosUnicos, asignatura, tema, metaAsig);
+
+        wrapperSol.appendChild(solPage);
+        root.appendChild(wrapperSol);
+      }
+
+      const totalPaginas = paginasTickets.length + (incluirSoluciones ? 1 : 0);
+      document.getElementById("resumenPaginas").textContent =
+        `${totalCopias} tickets · ${numModelos} modelo(s) · ${totalPaginas} hoja(s) DIN A4`;
+
+      ajustarEscalaVistaPrevia();
+    }
+
+    function crearHTMLTicket(modelo, asignatura, tema, metaAsig, modoLayout) {
+      const esCompacto = modoLayout === "4up";
+      const numPregs = modelo.preguntas.length;
+
+      // Alturas calibradas para encajar con holgura dentro del A4 con margen de 15mm
+      let alturaCaja = "h-12";
+      if (!esCompacto) {
+        if (numPregs === 1) alturaCaja = "h-28";
+        else if (numPregs === 2) alturaCaja = "h-16";
+        else if (numPregs === 3) alturaCaja = "h-11";
+        else alturaCaja = "h-8";
+      } else {
+        if (numPregs === 1) alturaCaja = "h-20";
+        else if (numPregs === 2) alturaCaja = "h-12";
+        else if (numPregs === 3) alturaCaja = "h-8";
+        else alturaCaja = "h-6";
+      }
+
+      let preguntasHTML = "";
+      modelo.preguntas.forEach((p, idx) => {
+        let claseEspacio = "pauta-escolar rounded-lg";
+        if (p.tipo_espacio === "cuadricula") claseEspacio = "cuadricula-escolar rounded-lg";
+        if (p.tipo_espacio === "blanco") claseEspacio = "espacio-blanco rounded-lg";
+
+        preguntasHTML += `
+          <div class="space-y-1 px-1">
+            <div class="flex items-start gap-2">
+              <span class="${metaAsig.numCircle} font-extrabold ${esCompacto ? 'text-[10px] w-4 h-4' : 'text-xs w-5 h-5'} rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                ${idx + 1}
+              </span>
+              <p class="font-bold text-slate-900 ${esCompacto ? 'text-[10.5px] leading-tight' : 'text-xs leading-snug'}">
+                ${escaparHTML(p.enunciado)}
+              </p>
+            </div>
+            <div class="w-full ${alturaCaja} ${claseEspacio}"></div>
+          </div>
+        `;
+      });
+
+      const tamanoCirculoDocente = esCompacto ? "w-3.5 h-3.5 text-[7px]" : "w-4 h-4 text-[8px]";
+
+      return `
+        <article class="ticket-card h-full border-2 ${metaAsig.bordeTicket} rounded-2xl ${esCompacto ? 'p-3.5' : 'p-5'} flex flex-col justify-between bg-white relative">
+          <!-- Parte superior: Cabecera + Datos + Preguntas -->
+          <div>
+            <!-- Cabecera del Ticket con Semáforo Docente Integrado -->
+            <div class="flex items-center justify-between gap-2 pb-2 mb-2.5 border-b ${metaAsig.colorHeader} px-3 py-2 rounded-xl">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="${esCompacto ? 'text-base' : 'text-xl'} shrink-0">${metaAsig.icono}</span>
+                <div class="truncate">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${metaAsig.badge}">
+                      ${escaparHTML(asignatura)} · 3º
+                    </span>
+                    <span class="font-extrabold border px-1.5 py-0.5 rounded-full text-[9px] ${modelo.badgeBg}">
+                      ${esCompacto ? modelo.nombre : modelo.nombreLargo}
+                    </span>
+                  </div>
+                  <h3 class="font-extrabold text-slate-900 truncate ${esCompacto ? 'text-[10.5px]' : 'text-xs'} mt-0.5">
+                    ${escaparHTML(tema)}
+                  </h3>
+                </div>
+              </div>
+
+              <!-- Semáforo de Evaluación Docente en el Encabezado -->
+              <div class="shrink-0 bg-white border border-slate-300 rounded-xl ${esCompacto ? 'px-1.5 py-1' : 'px-2.5 py-1'} flex items-center gap-1.5 shadow-2xs" title="Espacio para que el docente marque el nivel alcanzado por el alumno">
+                <span class="font-extrabold text-slate-600 uppercase tracking-tighter ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} leading-none">
+                  👩‍🏫 Nivel<br/>Docente:
+                </span>
+                <div class="flex items-center gap-1">
+                  <span class="${tamanoCirculoDocente} rounded-full border-2 border-emerald-500 bg-emerald-50/70 flex items-center justify-center font-extrabold text-emerald-800">V</span>
+                  <span class="${tamanoCirculoDocente} rounded-full border-2 border-amber-400 bg-amber-50/70 flex items-center justify-center font-extrabold text-amber-800">A</span>
+                  <span class="${tamanoCirculoDocente} rounded-full border-2 border-rose-500 bg-rose-50/70 flex items-center justify-center font-extrabold text-rose-800">R</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Datos del Alumno con margen lateral -->
+            <div class="grid grid-cols-12 gap-3 mb-2.5 px-1 text-slate-700 font-bold ${esCompacto ? 'text-[10px]' : 'text-xs'}">
+              <div class="col-span-8 flex items-end gap-1.5">
+                <span class="shrink-0">👦👧 Nombre:</span>
+                <div class="border-b border-slate-300 w-full h-3.5"></div>
+              </div>
+              <div class="col-span-4 flex items-end gap-1.5">
+                <span class="shrink-0">📅 Fecha:</span>
+                <div class="border-b border-slate-300 w-full h-3.5"></div>
+              </div>
+            </div>
+
+            <!-- Cuerpo de Preguntas -->
+            <div class="${esCompacto ? 'space-y-1.5' : 'space-y-2.5'}">
+              ${preguntasHTML}
+            </div>
+          </div>
+
+          <!-- Semáforo de Autoevaluación Infantil (Alumno) -->
+          <div class="mt-2 pt-2 border ${metaAsig.semaforoBg} rounded-xl px-3 py-2">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-extrabold text-slate-800 ${esCompacto ? 'text-[9px]' : 'text-[10.5px]'} uppercase tracking-wide flex items-center gap-1">
+                🚦 Mi Autoevaluación: ¿Cómo lo he entendido hoy?
+              </span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <!-- Verde -->
+              <div class="flex items-center gap-1.5 bg-white border border-emerald-400 rounded-lg px-1.5 py-1">
+                <div class="w-4 h-4 rounded-full border-[2px] border-emerald-500 bg-emerald-50/40 shrink-0"></div>
+                <div class="leading-tight">
+                  <span class="font-extrabold text-emerald-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} block">😊 VERDE</span>
+                  <span class="text-slate-600 ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} block">¡Lo sé explicar!</span>
+                </div>
+              </div>
+              <!-- Amarillo -->
+              <div class="flex items-center gap-1.5 bg-white border border-amber-400 rounded-lg px-1.5 py-1">
+                <div class="w-4 h-4 rounded-full border-[2px] border-amber-400 bg-amber-50/40 shrink-0"></div>
+                <div class="leading-tight">
+                  <span class="font-extrabold text-amber-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} block">🤔 AMARILLO</span>
+                  <span class="text-slate-600 ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} block">Tengo alguna duda.</span>
+                </div>
+              </div>
+              <!-- Rojo -->
+              <div class="flex items-center gap-1.5 bg-white border border-rose-400 rounded-lg px-1.5 py-1">
+                <div class="w-4 h-4 rounded-full border-[2px] border-rose-500 bg-rose-50/40 shrink-0"></div>
+                <div class="leading-tight">
+                  <span class="font-extrabold text-rose-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} block">🙋‍♂️ ROJO</span>
+                  <span class="text-slate-600 ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} block">Necesito ayuda.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function crearHTMLHojaSoluciones(modelosUnicos, asignatura, tema, metaAsig) {
+      let tarjetasModelosHTML = "";
+
+      modelosUnicos.forEach((m) => {
+        let filasPreguntas = "";
+        m.preguntas.forEach((p, idx) => {
+          filasPreguntas += `
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-extrabold text-slate-500 uppercase">Pregunta ${idx + 1} · ${escaparHTML(p.bloque)}</span>
+              </div>
+              <p class="text-[11px] font-semibold text-slate-800">${escaparHTML(p.enunciado)}</p>
+              <div class="mt-1 bg-emerald-50 border border-emerald-300 rounded-md px-2.5 py-1 flex items-start gap-1.5">
+                <span class="text-xs">✅</span>
+                <p class="text-[11px] font-extrabold text-emerald-950">${escaparHTML(p.solucion)}</p>
+              </div>
+            </div>
+          `;
+        });
+
+        tarjetasModelosHTML += `
+          <div class="border-2 ${metaAsig.bordeTicket} rounded-2xl p-4 bg-white space-y-2.5 break-inside-avoid">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-2 ${metaAsig.colorHeader} -mx-4 -mt-4 px-4 py-2.5 rounded-t-xl">
+              <span class="font-extrabold text-xs px-3 py-0.5 rounded-full border ${m.badgeBg}">
+                ${m.nombreLargo}
+              </span>
+              <span class="text-[11px] font-bold text-slate-600">Clave de corrección</span>
+            </div>
+            <div class="space-y-2 pt-1">
+              ${filasPreguntas}
+            </div>
+          </div>
+        `;
+      });
+
+      return `
+        <div class="space-y-4">
+          <div class="border-2 ${metaAsig.bordeTicket} rounded-2xl p-4 ${metaAsig.colorHeader} flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">🔑</span>
+              <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${metaAsig.badge}">
+                  SOLUCIONARIO DOCENTE · ${escaparHTML(asignatura)}
+                </span>
+                <h2 class="text-base font-extrabold text-slate-900 mt-1">
+                  ${escaparHTML(tema)} (3º Primaria)
+                </h2>
+              </div>
+            </div>
+            <div class="text-right text-xs font-bold text-slate-700">
+              <p>Modelos: ${modelosUnicos.length}</p>
+              <p>Preguntas: ${modelosUnicos[0]?.preguntas.length || 0}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            ${tarjetasModelosHTML}
+          </div>
+        </div>
+        <div class="text-center text-[10px] text-slate-400 font-semibold pt-2 border-t border-slate-200">
+          Guía rápida de corrección generada automáticamente · Formato DIN A4 Vertical (Márgenes 15 mm)
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // ESCALADO PROPORCIONAL A4 EN PANTALLA
+    // ==========================================
+    function ajustarEscalaVistaPrevia() {
+      const contenedor = document.getElementById("preview-viewport");
+      if (!contenedor) return;
+      const anchoDisponible = contenedor.clientWidth;
+      const anchoA4Px = 794;
+      const altoA4Px = 1123;
+      const escala = Math.min(1, (anchoDisponible - 16) / anchoA4Px);
+
+      const wrappers = document.querySelectorAll(".page-scale-wrapper");
+      wrappers.forEach((wrap) => {
+        const page = wrap.querySelector(".a4-page");
+        if (page) {
+          page.style.transform = `scale(${escala})`;
+          wrap.style.height = `${Math.ceil(altoA4Px * escala)}px`;
+        }
+      });
+    }
+
+    window.addEventListener("resize", ajustarEscalaVistaPrevia);
+
+    // ==========================================
+    // IMPORTACIÓN / EXPORTACIÓN JSON Y PROMPT IA
+    // ==========================================
+    function aplicarJSONCargado(obj) {
+      if (!obj || !Array.isArray(obj.preguntas) || obj.preguntas.length === 0) {
+        throw new Error("El JSON debe incluir un array 'preguntas' con al menos un bloque.");
+      }
+
+      const preguntasNormalizadas = obj.preguntas.map((b, idx) => ({
+        bloque: b.bloque || `Bloque ${idx + 1}`,
+        tipo_espacio: ["pauta", "cuadricula", "blanco"].includes(b.tipo_espacio) ? b.tipo_espacio : "pauta",
+        variantes: Array.isArray(b.variantes) && b.variantes.length > 0
+          ? b.variantes.map(v => typeof v === "string"
+              ? { enunciado: v, solucion: "Ver corrección docente" }
+              : { enunciado: v.enunciado || "", solucion: v.solucion || "" }
+            )
+          : [{ enunciado: "Pregunta sin definir", solucion: "" }]
+      }));
+
+      estadoDatos.asignatura = obj.asignatura || "Matemáticas";
+      estadoDatos.tema = obj.tema || "Sesión de evaluación";
+      estadoDatos.preguntas = preguntasNormalizadas;
+
+      const selAsig = document.getElementById("cfgAsignatura");
+      if ([...selAsig.options].some(o => o.value === estadoDatos.asignatura)) {
+        selAsig.value = estadoDatos.asignatura;
+      }
+      document.getElementById("cfgTema").value = estadoDatos.tema;
+      document.getElementById("cfgNumPreguntas").value = Math.min(4, Math.max(1, preguntasNormalizadas.length)).toString();
+
+      renderizarEditorBloques();
+      generarVistaPrevia();
+    }
+
+    function cargarArchivoJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const obj = JSON.parse(e.target.result);
+          aplicarJSONCargado(obj);
+          mostrarToast("✅ Archivo JSON cargado correctamente");
+        } catch (err) {
+          mostrarToast("❌ Error en el archivo JSON: " + err.message, true);
+        }
+        event.target.value = "";
+      };
+      reader.readAsText(file);
+    }
+
+    function abrirModalPegarJSON() {
+      document.getElementById("textareaPasteJSON").value = JSON.stringify(estadoDatos, null, 2);
+      document.getElementById("jsonPasteError").classList.add("hidden");
+      const modal = document.getElementById("modalJSON");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function cerrarModalPegarJSON() {
+      const modal = document.getElementById("modalJSON");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function procesarJSONPegado() {
+      const raw = document.getElementById("textareaPasteJSON").value.trim();
+      const errBox = document.getElementById("jsonPasteError");
+      try {
+        const obj = JSON.parse(raw);
+        aplicarJSONCargado(obj);
+        cerrarModalPegarJSON();
+        mostrarToast("✅ Preguntas y soluciones actualizadas desde el JSON");
+      } catch (err) {
+        errBox.textContent = "⚠️ Error de formato JSON: " + err.message;
+        errBox.classList.remove("hidden");
+      }
+    }
+
+    function descargarPlantillaJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(estadoDatos, null, 2));
+      const dlAnchor = document.createElement("a");
+      dlAnchor.setAttribute("href", dataStr);
+      const nombreLimpio = (estadoDatos.tema || "tickets_3primaria").toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      dlAnchor.setAttribute("download", `tickets_${nombreLimpio}.json`);
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+      mostrarToast("📥 Archivo JSON descargado");
+    }
+
+    function copiarPromptIA() {
+      const promptTexto = `Actúa como maestro de 3º de Primaria. Genera un archivo JSON válido para evaluar el tema "[ESCRIBE AQUÍ TU TEMA Y ASIGNATURA]" mediante Tickets de Salida con 4 bloques de preguntas y 4 variantes equivalentes anticopia por bloque, incluyendo la solución exacta para el profesor.
+
+Responde ÚNICAMENTE con un bloque JSON que siga exactamente esta estructura:
+{
+  "asignatura": "Lengua Castellana",
+  "tema": "Título del contenido evaluado",
+  "preguntas": [
+    {
+      "bloque": "Nombre del bloque 1",
+      "tipo_espacio": "pauta",
+      "variantes": [
+        { "enunciado": "Pregunta para Modelo A", "solucion": "Respuesta correcta A" },
+        { "enunciado": "Pregunta equivalente para Modelo B", "solucion": "Respuesta correcta B" },
+        { "enunciado": "Pregunta equivalente para Modelo C", "solucion": "Respuesta correcta C" },
+        { "enunciado": "Pregunta equivalente para Modelo D", "solucion": "Respuesta correcta D" }
+      ]
+    }
+  ]
+}
+Nota: "asignatura" puede ser "Lengua Castellana", "Matemáticas" o "Ciencias Sociales". "tipo_espacio" solo puede ser "pauta" (líneas para escribir), "cuadricula" (operaciones matemáticas) o "blanco" (dibujar/esquemas).`;
+
+      navigator.clipboard.writeText(promptTexto).then(() => {
+        mostrarToast("🤖 Prompt copiado al portapapeles. ¡Pégalo en Gemini!");
+      });
+    }
+
+    async function exportarPDFDirecto() {
+      const root = document.getElementById("pdf-root");
+      const wrappers = document.querySelectorAll(".page-scale-wrapper");
+      const pages = document.querySelectorAll(".a4-page");
+
+      wrappers.forEach(w => { w.style.height = "auto"; w.style.marginBottom = "0"; });
+      pages.forEach(p => { p.style.transform = "none"; p.style.boxShadow = "none"; p.style.border = "none"; });
+
+      const nombreLimpio = (estadoDatos.tema || "tickets_salida").toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      mostrarToast("📄 Generando archivo PDF en formato A4...");
+
+      const opt = {
+        margin: 0,
+        filename: `tickets_salida_${nombreLimpio}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
+      };
+
+      try {
+        await html2pdf().set(opt).from(root).save();
+        mostrarToast("✅ PDF A4 descargado correctamente");
+      } finally {
+        pages.forEach(p => { p.style.boxShadow = ""; p.style.border = ""; });
+        wrappers.forEach(w => { w.style.marginBottom = "1.5rem"; });
+        ajustarEscalaVistaPrevia();
+      }
+    }
+
+    // ==========================================
+    // UTILIDADES
+    // ==========================================
+    function escaparHTML(str) {
+      if (typeof str !== "string") return "";
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    let toastTimer = null;
+    function mostrarToast(mensaje, esError = false) {
+      const toast = document.getElementById("toast");
+      const icon = document.getElementById("toast-icon");
+      const msg = document.getElementById("toast-msg");
+      icon.textContent = esError ? "⚠️" : "✅";
+      msg.textContent = mensaje;
+      toast.classList.remove("hidden");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 3500);
+    }
+
+    // Inicializar al abrir
+    window.addEventListener("DOMContentLoaded", () => {
+      renderizarEditorBloques();
+      generarVistaPrevia();
+    });
+  </script>
+</body>
+</html>
