@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     body {
@@ -19,6 +19,29 @@
     }
     .ticket-font {
       font-family: 'Quicksand', sans-serif;
+    }
+
+    /* Estilos diferenciados para Pregunta (Consigna) vs Datos de trabajo */
+    .pregunta-consigna {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 800;
+      text-decoration: underline;
+      text-decoration-thickness: 1.8px;
+      text-underline-offset: 3px;
+      color: #0f172a;
+    }
+    .datos-trabajo {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      text-decoration: none !important;
+      color: #1e293b;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 3.5px solid #475569;
+      border-radius: 6px;
+      padding: 2px 8px;
+      display: inline-block;
+      margin-top: 3px;
     }
 
     /* Estilos para los espacios de respuesta con línea ultrafina (1px) */
@@ -142,7 +165,7 @@
         <span class="text-3xl">🎟️</span>
         <div>
           <h1 class="text-xl font-extrabold tracking-tight">Generador de Tickets de Salida · 3º Primaria</h1>
-          <p class="text-xs text-slate-300">Formato DIN A4 Vertical real (210×297 mm) · Doble semáforo (docente y alumno) y solucionario</p>
+          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Preguntas subrayadas y datos diferenciados para primaria</p>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
@@ -182,8 +205,8 @@
         <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">📋 Pegar código JSON de preguntas</h3>
         <button onclick="cerrarModalPegarJSON()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
-      <p class="text-xs text-slate-500 mb-3">Pega aquí el bloque JSON generado por la IA o editado por ti. Se validará automáticamente y cargará las preguntas en el editor.</p>
-      <textarea id="textareaPasteJSON" rows="10" class="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50" placeholder='{"asignatura": "Matemáticas", "tema": "...", "preguntas": [...]}'></textarea>
+      <p class="text-xs text-slate-500 mb-3">Pega aquí el bloque JSON generado por la IA o editado por ti. Se validará automáticamente y separará la pregunta subrayada de los datos.</p>
+      <textarea id="textareaPasteJSON" rows="10" class="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50" placeholder='{"asignatura": "Lengua Castellana", "tema": "...", "preguntas": [...]}'></textarea>
       <div id="jsonPasteError" class="hidden mt-2 text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg font-semibold"></div>
       <div class="mt-4 flex justify-end gap-2">
         <button onclick="cerrarModalPegarJSON()" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100">Cancelar</button>
@@ -208,8 +231,8 @@
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">Asignatura y Color</label>
             <select id="cfgAsignatura" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+              <option value="Lengua Castellana" selected>🔵 Lengua Castellana (Azul)</option>
               <option value="Matemáticas">🔴 Matemáticas (Rojo)</option>
-              <option value="Lengua Castellana">🔵 Lengua Castellana (Azul)</option>
               <option value="Ciencias Sociales">🌸 Ciencias Sociales (Rosa claro)</option>
               <option value="Ciencias Naturales">🌿 Ciencias Naturales (Verde)</option>
               <option value="Música">🎵 Música (Morado)</option>
@@ -227,7 +250,7 @@
 
           <div class="sm:col-span-2">
             <label class="block text-xs font-bold text-slate-700 mb-1">Título o Saberes de la Sesión</label>
-            <input type="text" id="cfgTema" oninput="generarVistaPrevia()" value="Multiplicaciones por una cifra y problemas" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" />
+            <input type="text" id="cfgTema" oninput="generarVistaPrevia()" value="Las sílabas, sustantivos y orden alfabético" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" />
           </div>
 
           <div>
@@ -279,9 +302,9 @@
         <div class="flex items-center justify-between mb-3">
           <div>
             <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <span>📝</span> 2. Banco de Bloques y Variantes
+              <span>📝</span> 2. Banco de Preguntas y Datos
             </h2>
-            <p class="text-xs text-slate-500">Cada bloque es una pregunta del ticket. Sus variantes se reparten en los modelos A, B, C y D.</p>
+            <p class="text-xs text-slate-500">La <b>Pregunta</b> saldrá subrayada y los <b>Datos</b> en una cajita destacada.</p>
           </div>
           <button onclick="anadirBloquePregunta()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition shrink-0">
             + Añadir Bloque
@@ -299,7 +322,7 @@
       <div class="no-print mb-3 flex flex-wrap items-center justify-between gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
           <span>📐</span>
-          <span>Vista Previa DIN A4 Vertical (210 × 297 mm · Márgenes de 15 mm · Pauta ultrafina)</span>
+          <span>Vista Previa DIN A4 Vertical (Pregunta subrayada + Datos diferenciados)</span>
         </div>
         <span id="resumenPaginas" class="text-xs font-extrabold bg-slate-900 text-white px-2.5 py-1 rounded-full"></span>
       </div>
@@ -315,49 +338,88 @@
   <script>
     // ==========================================
     // DATOS DE DEMO INICIAL (3º PRIMARIA)
+    // Con separación clara entre "enunciado" (pregunta subrayada) y "datos" (elementos de trabajo)
     // ==========================================
     let estadoDatos = {
-      asignatura: "Matemáticas",
-      tema: "Multiplicaciones por una cifra y resolución de problemas",
+      asignatura: "Lengua Castellana",
+      tema: "Las sílabas, sustantivos y orden alfabético",
       preguntas: [
         {
-          bloque: "Cálculo y algoritmo",
-          tipo_espacio: "cuadricula",
-          variantes: [
-            { enunciado: "Coloca en vertical y resuelve: 243 × 3 =", solucion: "243 × 3 = 729" },
-            { enunciado: "Coloca en vertical y resuelve: 314 × 3 =", solucion: "314 × 3 = 942" },
-            { enunciado: "Coloca en vertical y resuelve: 421 × 3 =", solucion: "421 × 3 = 1.263" },
-            { enunciado: "Coloca en vertical y resuelve: 232 × 4 =", solucion: "232 × 4 = 928" }
-          ]
-        },
-        {
-          bloque: "Problema de la vida cotidiana",
+          bloque: "Conteo de sílabas",
           tipo_espacio: "pauta",
           variantes: [
-            { enunciado: "En el cole hay 6 cajas con 8 flautas en cada una. ¿Cuántas flautas hay en total?", solucion: "6 × 8 = 48 flautas en total." },
-            { enunciado: "Un álbum tiene 7 páginas con 6 cromos en cada página. ¿Cuántos cromos tiene el álbum?", solucion: "7 × 6 = 42 cromos en total." },
-            { enunciado: "Hemos plantado 8 filas con 5 tomates en cada fila. ¿Cuántas tomateras hay en el huerto?", solucion: "8 × 5 = 40 tomateras en total." },
-            { enunciado: "En una excursión van 4 mesas con 9 niños en cada mesa. ¿Cuántos niños van en total?", solucion: "4 × 9 = 36 niños en total." }
+            {
+              enunciado: "¿Qué palabras tienen dos sílabas (bisílabas)? Escríbelas:",
+              datos: "Casa, sol, perro, dinosaurio, mesa, pan.",
+              solucion: "Casa, perro, mesa."
+            },
+            {
+              enunciado: "¿Qué palabras tienen tres sílabas (trisílabas)? Escríbelas:",
+              datos: "Camisa, flor, pelota, ventana, mar, coche.",
+              solucion: "Camisa, pelota, ventana."
+            },
+            {
+              enunciado: "¿Qué palabras tienen dos sílabas (bisílabas)? Escríbelas:",
+              datos: "Gato, árbol, elefante, tren, nube, luz.",
+              solucion: "Gato, árbol, nube."
+            },
+            {
+              enunciado: "¿Qué palabras tienen una sola sílaba (monosílabas)? Escríbelas:",
+              datos: "Mar, carpeta, sol, sal, mochila, pan.",
+              solucion: "Mar, sol, sal, pan."
+            }
           ]
         },
         {
-          bloque: "Razonamiento y propiedad conmutativa",
+          bloque: "Identificación de sustantivos",
           tipo_espacio: "pauta",
           variantes: [
-            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 7 × 4 = 4 × ___", solucion: "Falta el 7 (da 28). Por la propiedad conmutativa: el orden de los factores no altera el producto." },
-            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 8 × 3 = 3 × ___", solucion: "Falta el 8 (da 24). Por la propiedad conmutativa: el orden de los factores no cambia el resultado." },
-            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 9 × 5 = 5 × ___", solucion: "Falta el 9 (da 45). Por la propiedad conmutativa: da igual multiplicar 9×5 que 5×9." },
-            { enunciado: "Completa el hueco y explica por qué dan lo mismo: 6 × 7 = 7 × ___", solucion: "Falta el 6 (da 42). Por la propiedad conmutativa." }
+            {
+              enunciado: "Copia únicamente los sustantivos (nombres) que encuentres en esta oración:",
+              datos: "El perro pequeño juega con la pelota roja.",
+              solucion: "perro, pelota."
+            },
+            {
+              enunciado: "Copia únicamente los sustantivos (nombres) que encuentres en esta oración:",
+              datos: "Mi hermana mayor lee un libro divertido.",
+              solucion: "hermana, libro."
+            },
+            {
+              enunciado: "Copia únicamente los sustantivos (nombres) que encuentres en esta oración:",
+              datos: "El gato blanco duerme en el sofá nuevo.",
+              solucion: "gato, sofá."
+            },
+            {
+              enunciado: "Copia únicamente los sustantivos (nombres) que encuentres en esta oración:",
+              datos: "La maestra simpática escribe en la pizarra grande.",
+              solucion: "maestra, pizarra."
+            }
           ]
         },
         {
-          bloque: "Reto rápido de dobles y triples",
-          tipo_espacio: "blanco",
+          bloque: "Sílaba tónica",
+          tipo_espacio: "pauta",
           variantes: [
-            { enunciado: "Calcula mentalmente: ¿Cuál es el TRIPLE de 12? Dibújalo o escribe la operación.", solucion: "12 × 3 = 36" },
-            { enunciado: "Calcula mentalmente: ¿Cuál es el TRIPLE de 15? Dibújalo o escribe la operación.", solucion: "15 × 3 = 45" },
-            { enunciado: "Calcula mentalmente: ¿Cuál es el DOBLE de 24? Dibújalo o escribe la operación.", solucion: "24 × 2 = 48" },
-            { enunciado: "Calcula mentalmente: ¿Cuál es el DOBLE de 35? Dibújalo o escribe la operación.", solucion: "35 × 2 = 70" }
+            {
+              enunciado: "Separa en sílabas estas palabras y rodea la sílaba tónica:",
+              datos: "Pizarra - Camión - Árbol",
+              solucion: "Pi-[za]-rra, Ca-[mión], [Ár]-bol."
+            },
+            {
+              enunciado: "Separa en sílabas estas palabras y rodea la sílaba tónica:",
+              datos: "Mochila - Café - Lápiz",
+              solucion: "Mo-[chi]-la, Ca-[fé], [Lá]-piz."
+            },
+            {
+              enunciado: "Separa en sílabas estas palabras y rodea la sílaba tónica:",
+              datos: "Ventana - Balón - Césped",
+              solucion: "Ven-[ta]-na, Ba-[lón], [Cés]-ped."
+            },
+            {
+              enunciado: "Separa en sílabas estas palabras y rodea la sílaba tónica:",
+              datos: "Estuche - Sofá - Azúcar",
+              solucion: "Es-[tu]-che, So-[fá], A-[zú]-car."
+            }
           ]
         }
       ]
@@ -380,7 +442,8 @@
         colorHeader: "bg-red-50 border-red-200",
         badge: "bg-red-600 text-white",
         numCircle: "bg-red-600 text-white",
-        semaforoBg: "bg-red-50/50 border-red-200"
+        semaforoBg: "bg-red-50/50 border-red-200",
+        datosBorder: "border-l-red-500 bg-red-50/30"
       },
       "Lengua Castellana": {
         icono: "📚",
@@ -388,7 +451,8 @@
         colorHeader: "bg-blue-50 border-blue-200",
         badge: "bg-blue-600 text-white",
         numCircle: "bg-blue-600 text-white",
-        semaforoBg: "bg-blue-50/50 border-blue-200"
+        semaforoBg: "bg-blue-50/50 border-blue-200",
+        datosBorder: "border-l-blue-600 bg-blue-50/40"
       },
       "Ciencias Sociales": {
         icono: "🌍",
@@ -396,7 +460,8 @@
         colorHeader: "bg-pink-100/90 border-pink-300",
         badge: "bg-pink-500 text-white",
         numCircle: "bg-pink-500 text-white",
-        semaforoBg: "bg-pink-50/60 border-pink-200"
+        semaforoBg: "bg-pink-50/60 border-pink-200",
+        datosBorder: "border-l-pink-500 bg-pink-50/40"
       },
       "Ciencias Naturales": {
         icono: "🌿",
@@ -404,7 +469,8 @@
         colorHeader: "bg-emerald-50 border-emerald-200",
         badge: "bg-emerald-600 text-white",
         numCircle: "bg-emerald-600 text-white",
-        semaforoBg: "bg-emerald-50/50 border-emerald-200"
+        semaforoBg: "bg-emerald-50/50 border-emerald-200",
+        datosBorder: "border-l-emerald-600 bg-emerald-50/40"
       },
       "Música": {
         icono: "🎵",
@@ -412,7 +478,8 @@
         colorHeader: "bg-purple-50 border-purple-200",
         badge: "bg-purple-600 text-white",
         numCircle: "bg-purple-600 text-white",
-        semaforoBg: "bg-purple-50/50 border-purple-200"
+        semaforoBg: "bg-purple-50/50 border-purple-200",
+        datosBorder: "border-l-purple-600 bg-purple-50/40"
       },
       "Tutoría / Emociones": {
         icono: "💡",
@@ -420,9 +487,45 @@
         colorHeader: "bg-teal-50 border-teal-200",
         badge: "bg-teal-600 text-white",
         numCircle: "bg-teal-600 text-white",
-        semaforoBg: "bg-teal-50/50 border-teal-200"
+        semaforoBg: "bg-teal-50/50 border-teal-200",
+        datosBorder: "border-l-teal-600 bg-teal-50/40"
       }
     };
+
+    // ==========================================
+    // SEPARADOR INTELIGENTE DE PREGUNTA Y DATOS
+    // Si el usuario no rellenó "datos" por separado pero puso "¿Pregunta? Datos" o "Orden: Datos",
+    // lo divide automáticamente para que siempre salgan con formatos distintos.
+    // ==========================================
+    function obtenerPreguntaYDatos(enunciadoRaw, datosRaw) {
+      const enunciado = (enunciadoRaw || "").trim();
+      const datos = (datosRaw || "").trim();
+
+      if (datos.length > 0) {
+        return { pregunta: enunciado, datos: datos };
+      }
+
+      // 1. Si hay un cierre de interrogación '?' o exclamación '!' seguido de texto (ej. "¿Qué palabras tienen dos sílabas? Casa, perro...")
+      const matchInterrogacion = enunciado.match(/^(.+?[?!])\s+(.+)$/);
+      if (matchInterrogacion) {
+        return {
+          pregunta: matchInterrogacion[1].trim(),
+          datos: matchInterrogacion[2].trim()
+        };
+      }
+
+      // 2. Si hay dos puntos ':' seguidos de los datos (ej. "Coloca y resuelve: 243 x 3 =")
+      const idxDosPuntos = enunciado.indexOf(":");
+      if (idxDosPuntos !== -1 && idxDosPuntos < enunciado.length - 2) {
+        return {
+          pregunta: enunciado.slice(0, idxDosPuntos + 1).trim(),
+          datos: enunciado.slice(idxDosPuntos + 1).trim()
+        };
+      }
+
+      // 3. Si es una única oración sin datos aparte, toda ella se subraya como pregunta
+      return { pregunta: enunciado, datos: "" };
+    }
 
     // ==========================================
     // RENDERIZADO DEL EDITOR MANUAL (PANEL IZQ)
@@ -439,7 +542,7 @@
         item.variantes.forEach((v, vIdx) => {
           const letraModelo = MODELOS_META[vIdx % MODELOS_META.length].id;
           variantesHTML += `
-            <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-1.5">
+            <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                   Variante ${vIdx + 1} (Prioridad Modelo ${letraModelo})
@@ -449,12 +552,23 @@
                 ` : ''}
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-slate-500 uppercase">Enunciado para el alumno:</label>
-                <input type="text" value="${escaparHTML(v.enunciado)}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'enunciado', this.value)"
-                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-semibold text-slate-800 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                <label class="block text-[10px] font-bold text-slate-700 uppercase">
+                  1️⃣ Pregunta o consigna <span class="underline text-blue-700">(Saldrá subrayada)</span>:
+                </label>
+                <input type="text" value="${escaparHTML(v.enunciado || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'enunciado', this.value)"
+                  placeholder="Ej: ¿Qué palabras tienen dos sílabas?"
+                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-bold underline decoration-slate-400 text-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-emerald-700 uppercase">Solución para el profesor:</label>
+                <label class="block text-[10px] font-bold text-indigo-700 uppercase">
+                  2️⃣ Datos / Palabras / Operaciones <span class="text-slate-500 font-normal">(Otro formato destacado en caja)</span>:
+                </label>
+                <input type="text" value="${escaparHTML(v.datos || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'datos', this.value)"
+                  placeholder="Ej: Casa, perro, dinosaurio, mesa (Opcional)"
+                  class="w-full text-xs border border-indigo-200 bg-indigo-50/30 rounded px-2 py-1.5 font-semibold text-slate-800 focus:ring-1 focus:ring-indigo-500 focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-emerald-700 uppercase">3️⃣ Solución para el profesor:</label>
                 <input type="text" value="${escaparHTML(v.solucion || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'solucion', this.value)"
                   placeholder="Escribe aquí la respuesta correcta..."
                   class="w-full text-xs border border-emerald-200 bg-emerald-50/40 rounded px-2 py-1 font-semibold text-emerald-950 focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
@@ -504,7 +618,8 @@
 
     function anadirVariante(bIdx) {
       estadoDatos.preguntas[bIdx].variantes.push({
-        enunciado: "Nueva variante de pregunta...",
+        enunciado: "¿Nueva pregunta para el alumno?",
+        datos: "Datos o palabras de ejemplo",
         solucion: "Respuesta correcta..."
       });
       renderizarEditorBloques();
@@ -523,8 +638,8 @@
         bloque: `Bloque ${estadoDatos.preguntas.length + 1}`,
         tipo_espacio: "pauta",
         variantes: [
-          { enunciado: "Escribe aquí la pregunta para el Modelo A...", solucion: "Solución A" },
-          { enunciado: "Escribe aquí la variante para el Modelo B...", solucion: "Solución B" }
+          { enunciado: "¿Escribe aquí la pregunta para el Modelo A?", datos: "Palabra 1, palabra 2, palabra 3.", solucion: "Solución A" },
+          { enunciado: "¿Escribe aquí la pregunta para el Modelo B?", datos: "Palabra 4, palabra 5, palabra 6.", solucion: "Solución B" }
         ]
       });
       renderizarEditorBloques();
@@ -549,15 +664,19 @@
         const meta = MODELOS_META[m % MODELOS_META.length];
         let itemsModelo = bloquesActivos.map((bloqueObj, idxOriginal) => {
           const listaVar = bloqueObj.variantes || [];
-          const varElegida = listaVar[m % listaVar.length] || { enunciado: "Sin pregunta", solucion: "Sin solución" };
-          const textoEnunciado = typeof varElegida === "string" ? varElegida : (varElegida.enunciado || "");
+          const varElegida = listaVar[m % listaVar.length] || { enunciado: "Sin pregunta", datos: "", solucion: "Sin solución" };
+          const rawEnunciado = typeof varElegida === "string" ? varElegida : (varElegida.enunciado || "");
+          const rawDatos = typeof varElegida === "string" ? "" : (varElegida.datos || "");
           const textoSolucion = typeof varElegida === "string" ? "Ver criterio docente" : (varElegida.solucion || "Respuesta abierta / personal");
+
+          const separado = obtenerPreguntaYDatos(rawEnunciado, rawDatos);
 
           return {
             numOriginal: idxOriginal + 1,
             bloque: bloqueObj.bloque || `Pregunta ${idxOriginal + 1}`,
             tipo_espacio: bloqueObj.tipo_espacio || "pauta",
-            enunciado: textoEnunciado,
+            pregunta: separado.pregunta,
+            datos: separado.datos,
             solucion: textoSolucion
           };
         });
@@ -604,7 +723,7 @@
       estadoDatos.asignatura = asignatura;
       estadoDatos.tema = tema;
 
-      const metaAsig = ASIGNATURAS_META[asignatura] || ASIGNATURAS_META["Matemáticas"];
+      const metaAsig = ASIGNATURAS_META[asignatura] || ASIGNATURAS_META["Lengua Castellana"];
       const modelosUnicos = construirModelos(numPreguntas, numModelos, barajarOrden);
 
       const listaTicketsImprimir = [];
@@ -620,7 +739,6 @@
       const root = document.getElementById("pdf-root");
       root.innerHTML = "";
 
-      // Renderizar cada folio A4 de alumnos dentro de un wrapper escalable
       paginasTickets.forEach((grupoTickets) => {
         const wrapper = document.createElement("div");
         wrapper.className = "page-scale-wrapper";
@@ -658,7 +776,6 @@
         root.appendChild(wrapper);
       });
 
-      // Renderizar Hoja de Soluciones Automática al final del PDF
       if (incluirSoluciones) {
         const wrapperSol = document.createElement("div");
         wrapperSol.className = "page-scale-wrapper";
@@ -682,18 +799,18 @@
       const esCompacto = modoLayout === "4up";
       const numPregs = modelo.preguntas.length;
 
-      // Alturas calibradas para encajar con holgura dentro del A4 con margen de 15mm
-      let alturaCaja = "h-12";
+      // Alturas calibradas para encajar con holgura incluyendo la caja de datos
+      let alturaCaja = "h-10";
       if (!esCompacto) {
-        if (numPregs === 1) alturaCaja = "h-28";
-        else if (numPregs === 2) alturaCaja = "h-16";
-        else if (numPregs === 3) alturaCaja = "h-11";
-        else alturaCaja = "h-8";
+        if (numPregs === 1) alturaCaja = "h-24";
+        else if (numPregs === 2) alturaCaja = "h-14";
+        else if (numPregs === 3) alturaCaja = "h-9";
+        else alturaCaja = "h-7";
       } else {
-        if (numPregs === 1) alturaCaja = "h-20";
-        else if (numPregs === 2) alturaCaja = "h-12";
-        else if (numPregs === 3) alturaCaja = "h-8";
-        else alturaCaja = "h-6";
+        if (numPregs === 1) alturaCaja = "h-16";
+        else if (numPregs === 2) alturaCaja = "h-10";
+        else if (numPregs === 3) alturaCaja = "h-7";
+        else alturaCaja = "h-5";
       }
 
       let preguntasHTML = "";
@@ -702,15 +819,27 @@
         if (p.tipo_espacio === "cuadricula") claseEspacio = "cuadricula-escolar rounded-lg";
         if (p.tipo_espacio === "blanco") claseEspacio = "espacio-blanco rounded-lg";
 
+        // Bloque diferenciado de DATOS si existen
+        const bloqueDatosHTML = p.datos
+          ? `<div class="datos-trabajo ${metaAsig.datosBorder} ${esCompacto ? 'text-[10px] py-0.5 px-2' : 'text-xs py-1 px-2.5'}">
+               ${escaparHTML(p.datos)}
+             </div>`
+          : "";
+
         preguntasHTML += `
           <div class="space-y-1 px-1">
             <div class="flex items-start gap-2">
               <span class="${metaAsig.numCircle} font-extrabold ${esCompacto ? 'text-[10px] w-4 h-4' : 'text-xs w-5 h-5'} rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                 ${idx + 1}
               </span>
-              <p class="font-bold text-slate-900 ${esCompacto ? 'text-[10.5px] leading-tight' : 'text-xs leading-snug'}">
-                ${escaparHTML(p.enunciado)}
-              </p>
+              <div class="flex-1 min-w-0">
+                <!-- FORMATO 1: PREGUNTA SUBRAYADA -->
+                <p class="pregunta-consigna ${esCompacto ? 'text-[10.5px] leading-tight' : 'text-xs leading-snug'}">
+                  ${escaparHTML(p.pregunta)}
+                </p>
+                <!-- FORMATO 2: DATOS DESTACADOS EN CAJA CON OTRA TIPOGRAFÍA -->
+                ${bloqueDatosHTML}
+              </div>
             </div>
             <div class="w-full ${alturaCaja} ${claseEspacio}"></div>
           </div>
@@ -720,11 +849,10 @@
       const tamanoCirculoDocente = esCompacto ? "w-3.5 h-3.5 text-[7px]" : "w-4 h-4 text-[8px]";
 
       return `
-        <article class="ticket-card h-full border-2 ${metaAsig.bordeTicket} rounded-2xl ${esCompacto ? 'p-3.5' : 'p-5'} flex flex-col justify-between bg-white relative">
-          <!-- Parte superior: Cabecera + Datos + Preguntas -->
+        <article class="ticket-card h-full border-2 ${metaAsig.bordeTicket} rounded-2xl ${esCompacto ? 'p-3.5' : 'p-4'} flex flex-col justify-between bg-white relative">
           <div>
             <!-- Cabecera del Ticket con Semáforo Docente Integrado -->
-            <div class="flex items-center justify-between gap-2 pb-2 mb-2.5 border-b ${metaAsig.colorHeader} px-3 py-2 rounded-xl">
+            <div class="flex items-center justify-between gap-2 pb-1.5 mb-2 border-b ${metaAsig.colorHeader} px-3 py-1.5 rounded-xl">
               <div class="flex items-center gap-2 min-w-0">
                 <span class="${esCompacto ? 'text-base' : 'text-xl'} shrink-0">${metaAsig.icono}</span>
                 <div class="truncate">
@@ -755,8 +883,8 @@
               </div>
             </div>
 
-            <!-- Datos del Alumno con margen lateral -->
-            <div class="grid grid-cols-12 gap-3 mb-2.5 px-1 text-slate-700 font-bold ${esCompacto ? 'text-[10px]' : 'text-xs'}">
+            <!-- Datos del Alumno -->
+            <div class="grid grid-cols-12 gap-3 mb-2 px-1 text-slate-700 font-bold ${esCompacto ? 'text-[10px]' : 'text-xs'}">
               <div class="col-span-8 flex items-end gap-1.5">
                 <span class="shrink-0">👦👧 Nombre:</span>
                 <div class="border-b border-slate-300 w-full h-3.5"></div>
@@ -768,41 +896,38 @@
             </div>
 
             <!-- Cuerpo de Preguntas -->
-            <div class="${esCompacto ? 'space-y-1.5' : 'space-y-2.5'}">
+            <div class="${esCompacto ? 'space-y-1.5' : 'space-y-2'}">
               ${preguntasHTML}
             </div>
           </div>
 
           <!-- Semáforo de Autoevaluación Infantil (Alumno) -->
-          <div class="mt-2 pt-2 border ${metaAsig.semaforoBg} rounded-xl px-3 py-2">
+          <div class="mt-1.5 pt-1.5 border ${metaAsig.semaforoBg} rounded-xl px-3 py-1.5">
             <div class="flex items-center justify-between mb-1">
-              <span class="font-extrabold text-slate-800 ${esCompacto ? 'text-[9px]' : 'text-[10.5px]'} uppercase tracking-wide flex items-center gap-1">
+              <span class="font-extrabold text-slate-800 ${esCompacto ? 'text-[8.5px]' : 'text-[10px]'} uppercase tracking-wide flex items-center gap-1">
                 🚦 Mi Autoevaluación: ¿Cómo lo he entendido hoy?
               </span>
             </div>
             <div class="grid grid-cols-3 gap-2">
-              <!-- Verde -->
-              <div class="flex items-center gap-1.5 bg-white border border-emerald-400 rounded-lg px-1.5 py-1">
-                <div class="w-4 h-4 rounded-full border-[2px] border-emerald-500 bg-emerald-50/40 shrink-0"></div>
+              <div class="flex items-center gap-1.5 bg-white border border-emerald-400 rounded-lg px-1.5 py-0.5">
+                <div class="w-3.5 h-3.5 rounded-full border-[2px] border-emerald-500 bg-emerald-50/40 shrink-0"></div>
                 <div class="leading-tight">
-                  <span class="font-extrabold text-emerald-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} block">😊 VERDE</span>
-                  <span class="text-slate-600 ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} block">¡Lo sé explicar!</span>
+                  <span class="font-extrabold text-emerald-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">😊 VERDE</span>
+                  <span class="text-slate-600 ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">¡Lo sé explicar!</span>
                 </div>
               </div>
-              <!-- Amarillo -->
-              <div class="flex items-center gap-1.5 bg-white border border-amber-400 rounded-lg px-1.5 py-1">
-                <div class="w-4 h-4 rounded-full border-[2px] border-amber-400 bg-amber-50/40 shrink-0"></div>
+              <div class="flex items-center gap-1.5 bg-white border border-amber-400 rounded-lg px-1.5 py-0.5">
+                <div class="w-3.5 h-3.5 rounded-full border-[2px] border-amber-400 bg-amber-50/40 shrink-0"></div>
                 <div class="leading-tight">
-                  <span class="font-extrabold text-amber-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} block">🤔 AMARILLO</span>
-                  <span class="text-slate-600 ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} block">Tengo alguna duda.</span>
+                  <span class="font-extrabold text-amber-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">🤔 AMARILLO</span>
+                  <span class="text-slate-600 ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">Tengo alguna duda.</span>
                 </div>
               </div>
-              <!-- Rojo -->
-              <div class="flex items-center gap-1.5 bg-white border border-rose-400 rounded-lg px-1.5 py-1">
-                <div class="w-4 h-4 rounded-full border-[2px] border-rose-500 bg-rose-50/40 shrink-0"></div>
+              <div class="flex items-center gap-1.5 bg-white border border-rose-400 rounded-lg px-1.5 py-0.5">
+                <div class="w-3.5 h-3.5 rounded-full border-[2px] border-rose-500 bg-rose-50/40 shrink-0"></div>
                 <div class="leading-tight">
-                  <span class="font-extrabold text-rose-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} block">🙋‍♂️ ROJO</span>
-                  <span class="text-slate-600 ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} block">Necesito ayuda.</span>
+                  <span class="font-extrabold text-rose-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">🙋‍♂️ ROJO</span>
+                  <span class="text-slate-600 ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">Necesito ayuda.</span>
                 </div>
               </div>
             </div>
@@ -822,7 +947,8 @@
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-extrabold text-slate-500 uppercase">Pregunta ${idx + 1} · ${escaparHTML(p.bloque)}</span>
               </div>
-              <p class="text-[11px] font-semibold text-slate-800">${escaparHTML(p.enunciado)}</p>
+              <p class="text-[11px] font-bold underline text-slate-900">${escaparHTML(p.pregunta)}</p>
+              ${p.datos ? `<p class="text-[10.5px] font-semibold text-slate-700 bg-white border border-slate-200 rounded px-2 py-0.5 inline-block">${escaparHTML(p.datos)}</p>` : ''}
               <div class="mt-1 bg-emerald-50 border border-emerald-300 rounded-md px-2.5 py-1 flex items-start gap-1.5">
                 <span class="text-xs">✅</span>
                 <p class="text-[11px] font-extrabold text-emerald-950">${escaparHTML(p.solucion)}</p>
@@ -911,14 +1037,18 @@
         bloque: b.bloque || `Bloque ${idx + 1}`,
         tipo_espacio: ["pauta", "cuadricula", "blanco"].includes(b.tipo_espacio) ? b.tipo_espacio : "pauta",
         variantes: Array.isArray(b.variantes) && b.variantes.length > 0
-          ? b.variantes.map(v => typeof v === "string"
-              ? { enunciado: v, solucion: "Ver corrección docente" }
-              : { enunciado: v.enunciado || "", solucion: v.solucion || "" }
-            )
-          : [{ enunciado: "Pregunta sin definir", solucion: "" }]
+          ? b.variantes.map(v => {
+              if (typeof v === "string") {
+                const sep = obtenerPreguntaYDatos(v, "");
+                return { enunciado: sep.pregunta, datos: sep.datos, solucion: "Ver corrección docente" };
+              }
+              const sep = obtenerPreguntaYDatos(v.enunciado || "", v.datos || "");
+              return { enunciado: sep.pregunta, datos: sep.datos, solucion: v.solucion || "" };
+            })
+          : [{ enunciado: "Pregunta sin definir", datos: "", solucion: "" }]
       }));
 
-      estadoDatos.asignatura = obj.asignatura || "Matemáticas";
+      estadoDatos.asignatura = obj.asignatura || "Lengua Castellana";
       estadoDatos.tema = obj.tema || "Sesión de evaluación";
       estadoDatos.preguntas = preguntasNormalizadas;
 
@@ -942,7 +1072,7 @@
         try {
           const obj = JSON.parse(e.target.result);
           aplicarJSONCargado(obj);
-          mostrarToast("✅ Archivo JSON cargado correctamente");
+          mostrarToast("✅ Archivo JSON cargado con preguntas y datos diferenciados");
         } catch (err) {
           mostrarToast("❌ Error en el archivo JSON: " + err.message, true);
         }
@@ -972,7 +1102,7 @@
         const obj = JSON.parse(raw);
         aplicarJSONCargado(obj);
         cerrarModalPegarJSON();
-        mostrarToast("✅ Preguntas y soluciones actualizadas desde el JSON");
+        mostrarToast("✅ Preguntas, datos y soluciones actualizados");
       } catch (err) {
         errBox.textContent = "⚠️ Error de formato JSON: " + err.message;
         errBox.classList.remove("hidden");
@@ -992,7 +1122,9 @@
     }
 
     function copiarPromptIA() {
-      const promptTexto = `Actúa como maestro de 3º de Primaria. Genera un archivo JSON válido para evaluar el tema "[ESCRIBE AQUÍ TU TEMA Y ASIGNATURA]" mediante Tickets de Salida con 4 bloques de preguntas y 4 variantes equivalentes anticopia por bloque, incluyendo la solución exacta para el profesor.
+      const promptTexto = `Actúa como maestro de 3º de Primaria. Genera un archivo JSON válido para evaluar el tema "[ESCRIBE AQUÍ TU TEMA Y ASIGNATURA]" mediante Tickets de Salida con 4 bloques de preguntas y 4 variantes equivalentes anticopia por bloque.
+
+IMPORTANTE: Separa siempre la pregunta o consigna ("enunciado") de las palabras, frases u operaciones sobre las que trabaja el alumno ("datos"), e incluye la "solucion" para el profesor.
 
 Responde ÚNICAMENTE con un bloque JSON que siga exactamente esta estructura:
 {
@@ -1003,10 +1135,26 @@ Responde ÚNICAMENTE con un bloque JSON que siga exactamente esta estructura:
       "bloque": "Nombre del bloque 1",
       "tipo_espacio": "pauta",
       "variantes": [
-        { "enunciado": "Pregunta para Modelo A", "solucion": "Respuesta correcta A" },
-        { "enunciado": "Pregunta equivalente para Modelo B", "solucion": "Respuesta correcta B" },
-        { "enunciado": "Pregunta equivalente para Modelo C", "solucion": "Respuesta correcta C" },
-        { "enunciado": "Pregunta equivalente para Modelo D", "solucion": "Respuesta correcta D" }
+        {
+          "enunciado": "¿Qué palabras tienen dos sílabas?",
+          "datos": "Casa, perro, dinosaurio, sol.",
+          "solucion": "Casa, perro."
+        },
+        {
+          "enunciado": "¿Qué palabras tienen dos sílabas?",
+          "datos": "Mesa, elefante, gato, mar.",
+          "solucion": "Mesa, gato."
+        },
+        {
+          "enunciado": "¿Qué palabras tienen dos sílabas?",
+          "datos": "Nube, árbol, ordenador, luz.",
+          "solucion": "Nube, árbol."
+        },
+        {
+          "enunciado": "¿Qué palabras tienen dos sílabas?",
+          "datos": "Coche, libro, mariposa, pan.",
+          "solucion": "Coche, libro."
+        }
       ]
     }
   ]
