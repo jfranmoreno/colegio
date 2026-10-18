@@ -21,13 +21,11 @@
       font-family: 'Quicksand', sans-serif;
     }
 
-    /* Estilos diferenciados para Pregunta (Consigna) vs Datos de trabajo */
+    /* Estilos diferenciados para Pregunta (Consigna sin subrayar) vs Caja de Datos */
     .pregunta-consigna {
       font-family: 'Quicksand', sans-serif;
       font-weight: 800;
-      text-decoration: underline;
-      text-decoration-thickness: 1.8px;
-      text-underline-offset: 3px;
+      text-decoration: none;
       color: #0f172a;
     }
     .datos-trabajo {
@@ -44,7 +42,11 @@
       margin-top: 3px;
     }
 
-    /* Estilos para los espacios de respuesta con línea ultrafina (1px) */
+    /* Estilos para los espacios de respuesta (Caja de texto por defecto, pauta fina y cuadrícula) */
+    .espacio-blanco {
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+    }
     .pauta-escolar {
       background-image: linear-gradient(to bottom, transparent calc(100% - 1px), #cbd5e1 calc(100% - 1px));
       background-size: 100% 1.4rem;
@@ -58,10 +60,6 @@
         linear-gradient(to right, #e2e8f0 0.5px, transparent 0.5px),
         linear-gradient(to bottom, #e2e8f0 0.5px, transparent 0.5px);
       border: 0.5px solid #cbd5e1;
-      background-color: #ffffff;
-    }
-    .espacio-blanco {
-      border: 1px dashed #cbd5e1;
       background-color: #ffffff;
     }
 
@@ -165,7 +163,7 @@
         <span class="text-3xl">🎟️</span>
         <div>
           <h1 class="text-xl font-extrabold tracking-tight">Generador de Tickets de Salida · 3º Primaria</h1>
-          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Preguntas subrayadas y datos diferenciados para primaria</p>
+          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Caja de datos destacada y respuesta en caja de texto por defecto</p>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
@@ -205,7 +203,7 @@
         <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">📋 Pegar código JSON de preguntas</h3>
         <button onclick="cerrarModalPegarJSON()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
-      <p class="text-xs text-slate-500 mb-3">Pega aquí el bloque JSON generado por la IA o editado por ti. Se validará automáticamente y separará la pregunta subrayada de los datos.</p>
+      <p class="text-xs text-slate-500 mb-3">Pega aquí el bloque JSON generado por la IA o editado por ti. Se validará automáticamente y separará la pregunta de la caja de datos.</p>
       <textarea id="textareaPasteJSON" rows="10" class="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50" placeholder='{"asignatura": "Lengua Castellana", "tema": "...", "preguntas": [...]}'></textarea>
       <div id="jsonPasteError" class="hidden mt-2 text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg font-semibold"></div>
       <div class="mt-4 flex justify-end gap-2">
@@ -304,7 +302,7 @@
             <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
               <span>📝</span> 2. Banco de Preguntas y Datos
             </h2>
-            <p class="text-xs text-slate-500">La <b>Pregunta</b> saldrá subrayada y los <b>Datos</b> en una cajita destacada.</p>
+            <p class="text-xs text-slate-500">La <b>Pregunta</b> saldrá en negrita limpia y los <b>Datos</b> en su cajita destacada.</p>
           </div>
           <button onclick="anadirBloquePregunta()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition shrink-0">
             + Añadir Bloque
@@ -322,7 +320,7 @@
       <div class="no-print mb-3 flex flex-wrap items-center justify-between gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
           <span>📐</span>
-          <span>Vista Previa DIN A4 Vertical (Pregunta subrayada + Datos diferenciados)</span>
+          <span>Vista Previa DIN A4 Vertical (Pregunta limpia + Caja de datos + Respuesta en caja)</span>
         </div>
         <span id="resumenPaginas" class="text-xs font-extrabold bg-slate-900 text-white px-2.5 py-1 rounded-full"></span>
       </div>
@@ -338,7 +336,7 @@
   <script>
     // ==========================================
     // DATOS DE DEMO INICIAL (3º PRIMARIA)
-    // Con separación clara entre "enunciado" (pregunta subrayada) y "datos" (elementos de trabajo)
+    // Por defecto todas las preguntas usan "blanco" (Caja de texto)
     // ==========================================
     let estadoDatos = {
       asignatura: "Lengua Castellana",
@@ -346,7 +344,7 @@
       preguntas: [
         {
           bloque: "Conteo de sílabas",
-          tipo_espacio: "pauta",
+          tipo_espacio: "blanco",
           variantes: [
             {
               enunciado: "¿Qué palabras tienen dos sílabas (bisílabas)? Escríbelas:",
@@ -372,7 +370,7 @@
         },
         {
           bloque: "Identificación de sustantivos",
-          tipo_espacio: "pauta",
+          tipo_espacio: "blanco",
           variantes: [
             {
               enunciado: "Copia únicamente los sustantivos (nombres) que encuentres en esta oración:",
@@ -398,7 +396,7 @@
         },
         {
           bloque: "Sílaba tónica",
-          tipo_espacio: "pauta",
+          tipo_espacio: "blanco",
           variantes: [
             {
               enunciado: "Separa en sílabas estas palabras y rodea la sílaba tónica:",
@@ -494,8 +492,6 @@
 
     // ==========================================
     // SEPARADOR INTELIGENTE DE PREGUNTA Y DATOS
-    // Si el usuario no rellenó "datos" por separado pero puso "¿Pregunta? Datos" o "Orden: Datos",
-    // lo divide automáticamente para que siempre salgan con formatos distintos.
     // ==========================================
     function obtenerPreguntaYDatos(enunciadoRaw, datosRaw) {
       const enunciado = (enunciadoRaw || "").trim();
@@ -505,7 +501,7 @@
         return { pregunta: enunciado, datos: datos };
       }
 
-      // 1. Si hay un cierre de interrogación '?' o exclamación '!' seguido de texto (ej. "¿Qué palabras tienen dos sílabas? Casa, perro...")
+      // 1. Si hay un cierre de interrogación '?' o exclamación '!' seguido de texto
       const matchInterrogacion = enunciado.match(/^(.+?[?!])\s+(.+)$/);
       if (matchInterrogacion) {
         return {
@@ -514,7 +510,7 @@
         };
       }
 
-      // 2. Si hay dos puntos ':' seguidos de los datos (ej. "Coloca y resuelve: 243 x 3 =")
+      // 2. Si hay dos puntos ':' seguidos de los datos
       const idxDosPuntos = enunciado.indexOf(":");
       if (idxDosPuntos !== -1 && idxDosPuntos < enunciado.length - 2) {
         return {
@@ -523,7 +519,6 @@
         };
       }
 
-      // 3. Si es una única oración sin datos aparte, toda ella se subraya como pregunta
       return { pregunta: enunciado, datos: "" };
     }
 
@@ -553,15 +548,15 @@
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-slate-700 uppercase">
-                  1️⃣ Pregunta o consigna <span class="underline text-blue-700">(Saldrá subrayada)</span>:
+                  1️⃣ Pregunta o consigna <span class="text-slate-500 font-normal">(Negrita sin subrayar)</span>:
                 </label>
                 <input type="text" value="${escaparHTML(v.enunciado || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'enunciado', this.value)"
                   placeholder="Ej: ¿Qué palabras tienen dos sílabas?"
-                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-bold underline decoration-slate-400 text-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-bold text-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-indigo-700 uppercase">
-                  2️⃣ Datos / Palabras / Operaciones <span class="text-slate-500 font-normal">(Otro formato destacado en caja)</span>:
+                  2️⃣ Caja de Datos / Palabras / Operaciones:
                 </label>
                 <input type="text" value="${escaparHTML(v.datos || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'datos', this.value)"
                   placeholder="Ej: Casa, perro, dinosaurio, mesa (Opcional)"
@@ -586,9 +581,9 @@
                 placeholder="Título del bloque..." />
             </div>
             <select onchange="actualizarBloque(${bIdx}, 'tipo_espacio', this.value)" class="text-xs border border-slate-300 rounded-md px-2 py-1 bg-white font-semibold text-slate-700">
+              <option value="blanco" ${(!item.tipo_espacio || item.tipo_espacio === 'blanco') ? 'selected' : ''}>⬜ Caja de texto</option>
               <option value="pauta" ${item.tipo_espacio === 'pauta' ? 'selected' : ''}>✍️ Pauta líneas</option>
               <option value="cuadricula" ${item.tipo_espacio === 'cuadricula' ? 'selected' : ''}>🔢 Cuadrícula mates</option>
-              <option value="blanco" ${item.tipo_espacio === 'blanco' ? 'selected' : ''}>⬜ Recuadro blanco</option>
             </select>
             ${estadoDatos.preguntas.length > 1 ? `
               <button onclick="eliminarBloque(${bIdx})" class="text-xs text-rose-600 hover:bg-rose-50 px-2 py-1 rounded font-bold" title="Eliminar bloque">🗑️</button>
@@ -636,7 +631,7 @@
     function anadirBloquePregunta() {
       estadoDatos.preguntas.push({
         bloque: `Bloque ${estadoDatos.preguntas.length + 1}`,
-        tipo_espacio: "pauta",
+        tipo_espacio: "blanco",
         variantes: [
           { enunciado: "¿Escribe aquí la pregunta para el Modelo A?", datos: "Palabra 1, palabra 2, palabra 3.", solucion: "Solución A" },
           { enunciado: "¿Escribe aquí la pregunta para el Modelo B?", datos: "Palabra 4, palabra 5, palabra 6.", solucion: "Solución B" }
@@ -674,7 +669,7 @@
           return {
             numOriginal: idxOriginal + 1,
             bloque: bloqueObj.bloque || `Pregunta ${idxOriginal + 1}`,
-            tipo_espacio: bloqueObj.tipo_espacio || "pauta",
+            tipo_espacio: bloqueObj.tipo_espacio || "blanco",
             pregunta: separado.pregunta,
             datos: separado.datos,
             solucion: textoSolucion
@@ -815,9 +810,9 @@
 
       let preguntasHTML = "";
       modelo.preguntas.forEach((p, idx) => {
-        let claseEspacio = "pauta-escolar rounded-lg";
+        let claseEspacio = "espacio-blanco rounded-lg";
+        if (p.tipo_espacio === "pauta") claseEspacio = "pauta-escolar rounded-lg";
         if (p.tipo_espacio === "cuadricula") claseEspacio = "cuadricula-escolar rounded-lg";
-        if (p.tipo_espacio === "blanco") claseEspacio = "espacio-blanco rounded-lg";
 
         // Bloque diferenciado de DATOS si existen
         const bloqueDatosHTML = p.datos
@@ -833,11 +828,11 @@
                 ${idx + 1}
               </span>
               <div class="flex-1 min-w-0">
-                <!-- FORMATO 1: PREGUNTA SUBRAYADA -->
+                <!-- FORMATO 1: PREGUNTA EN NEGRITA LIMPIA SIN SUBRAYAR -->
                 <p class="pregunta-consigna ${esCompacto ? 'text-[10.5px] leading-tight' : 'text-xs leading-snug'}">
                   ${escaparHTML(p.pregunta)}
                 </p>
-                <!-- FORMATO 2: DATOS DESTACADOS EN CAJA CON OTRA TIPOGRAFÍA -->
+                <!-- FORMATO 2: DATOS DESTACADOS EN CAJA -->
                 ${bloqueDatosHTML}
               </div>
             </div>
@@ -947,7 +942,7 @@
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-extrabold text-slate-500 uppercase">Pregunta ${idx + 1} · ${escaparHTML(p.bloque)}</span>
               </div>
-              <p class="text-[11px] font-bold underline text-slate-900">${escaparHTML(p.pregunta)}</p>
+              <p class="text-[11px] font-bold text-slate-900">${escaparHTML(p.pregunta)}</p>
               ${p.datos ? `<p class="text-[10.5px] font-semibold text-slate-700 bg-white border border-slate-200 rounded px-2 py-0.5 inline-block">${escaparHTML(p.datos)}</p>` : ''}
               <div class="mt-1 bg-emerald-50 border border-emerald-300 rounded-md px-2.5 py-1 flex items-start gap-1.5">
                 <span class="text-xs">✅</span>
@@ -1035,7 +1030,7 @@
 
       const preguntasNormalizadas = obj.preguntas.map((b, idx) => ({
         bloque: b.bloque || `Bloque ${idx + 1}`,
-        tipo_espacio: ["pauta", "cuadricula", "blanco"].includes(b.tipo_espacio) ? b.tipo_espacio : "pauta",
+        tipo_espacio: ["blanco", "pauta", "cuadricula"].includes(b.tipo_espacio) ? b.tipo_espacio : "blanco",
         variantes: Array.isArray(b.variantes) && b.variantes.length > 0
           ? b.variantes.map(v => {
               if (typeof v === "string") {
@@ -1072,7 +1067,7 @@
         try {
           const obj = JSON.parse(e.target.result);
           aplicarJSONCargado(obj);
-          mostrarToast("✅ Archivo JSON cargado con preguntas y datos diferenciados");
+          mostrarToast("✅ Archivo JSON cargado con caja de texto por defecto");
         } catch (err) {
           mostrarToast("❌ Error en el archivo JSON: " + err.message, true);
         }
@@ -1124,7 +1119,7 @@
     function copiarPromptIA() {
       const promptTexto = `Actúa como maestro de 3º de Primaria. Genera un archivo JSON válido para evaluar el tema "[ESCRIBE AQUÍ TU TEMA Y ASIGNATURA]" mediante Tickets de Salida con 4 bloques de preguntas y 4 variantes equivalentes anticopia por bloque.
 
-IMPORTANTE: Separa siempre la pregunta o consigna ("enunciado") de las palabras, frases u operaciones sobre las que trabaja el alumno ("datos"), e incluye la "solucion" para el profesor.
+IMPORTANTE: Separa siempre la pregunta o consigna ("enunciado") de las palabras, frases u operaciones sobre las que trabaja el alumno ("datos"), e incluye la "solucion" para el profesor. Deja por defecto "tipo_espacio": "blanco" (caja de texto).
 
 Responde ÚNICAMENTE con un bloque JSON que siga exactamente esta estructura:
 {
@@ -1133,7 +1128,7 @@ Responde ÚNICAMENTE con un bloque JSON que siga exactamente esta estructura:
   "preguntas": [
     {
       "bloque": "Nombre del bloque 1",
-      "tipo_espacio": "pauta",
+      "tipo_espacio": "blanco",
       "variantes": [
         {
           "enunciado": "¿Qué palabras tienen dos sílabas?",
@@ -1159,7 +1154,7 @@ Responde ÚNICAMENTE con un bloque JSON que siga exactamente esta estructura:
     }
   ]
 }
-Nota: "asignatura" puede ser "Lengua Castellana", "Matemáticas" o "Ciencias Sociales". "tipo_espacio" solo puede ser "pauta" (líneas para escribir), "cuadricula" (operaciones matemáticas) o "blanco" (dibujar/esquemas).`;
+Nota: "asignatura" puede ser "Lengua Castellana", "Matemáticas" o "Ciencias Sociales". "tipo_espacio" debe ser por defecto "blanco" (caja de texto), o bien "pauta" o "cuadricula".`;
 
       navigator.clipboard.writeText(promptTexto).then(() => {
         mostrarToast("🤖 Prompt copiado al portapapeles. ¡Pégalo en Gemini!");
