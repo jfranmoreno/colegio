@@ -167,7 +167,7 @@
         <span class="text-3xl">🎟️</span>
         <div>
           <h1 class="text-xl font-bold tracking-tight">TICKET DE SALIDA 🎟️ · Generador 3º Primaria</h1>
-          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Exportación en Alta Resolución (384 DPI) y tipografía suave</p>
+          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Exportación en Alta Resolución (600 DPI) y tipografía suave</p>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
@@ -1175,7 +1175,7 @@ Nota: "asignatura" puede ser "Lengua Castellana", "Matemáticas" o "Ciencias Soc
       pages.forEach(p => { p.style.transform = "none"; p.style.boxShadow = "none"; p.style.border = "none"; });
 
       const nombreLimpio = (estadoDatos.tema || "tickets_salida").toLowerCase().replace(/[^a-z0-9]+/g, "_");
-      mostrarToast("📄 Generando PDF en Alta Resolución (384 DPI)...");
+      mostrarToast("📄 Generando PDF en Alta Resolución (600 DPI)...");
 
       const opt = {
         margin: 0,
