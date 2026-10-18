@@ -3,54 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>¡Atasco! - Aventura Matemática</title>
+    <title>¡Atasco! - Lógica y Matemáticas 3º Primaria</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --board-bg: #334155;
+            --board-border: #1e293b;
+        }
+
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: #e0f2fe; /* Light sky blue */
-            background-image: radial-gradient(#bae6fd 2px, transparent 2px);
-            background-size: 30px 30px;
+            background-color: #f0f9ff;
+            background-image: 
+                radial-gradient(#bae6fd 2.5px, transparent 2.5px), 
+                radial-gradient(#e0f2fe 2.5px, #f0f9ff 2.5px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
-            overflow: hidden; /* Prevent pull-to-refresh on mobile/boards */
+            overflow: hidden;
         }
 
-        /* Prevent scrolling when dragging cars */
+        /* Marco exterior del parking con coordenadas */
+        .parking-wrapper {
+            background: #64748b;
+            padding: 28px 28px 20px 28px;
+            border-radius: 24px;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.25), inset 0 2px 4px rgba(255,255,255,0.3);
+            position: relative;
+            border: 5px solid #334155;
+        }
+
+        /* Etiquetas de coordenadas para uso en MDI / Pizarra */
+        .coord-top {
+            position: absolute;
+            top: 4px; left: 28px; right: 28px;
+            height: 20px;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            text-align: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #f8fafc;
+        }
+
+        .coord-left {
+            position: absolute;
+            left: 6px; top: 28px; bottom: 20px;
+            width: 18px;
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            align-items: center;
+            justify-items: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #f8fafc;
+        }
+
+        /* Contenedor del tablero 6x6 */
         .board-container {
             touch-action: none;
-            background: #cbd5e1;
-            border: 8px solid #475569;
-            border-radius: 12px;
+            background: var(--board-bg);
+            border: 4px solid var(--board-border);
+            border-radius: 14px;
             position: relative;
             aspect-ratio: 1 / 1;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1), 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.45);
+            overflow: visible;
         }
 
-        /* The Exit */
+        /* Puerta de Salida */
         .exit-gate {
             position: absolute;
-            right: -10px;
-            top: 33.33%; /* Row 2 (0, 1, 2) out of 6 -> 2/6 = 33.33% */
+            right: -18px;
+            top: 33.33%;
             height: 16.66%;
-            width: 10px;
+            width: 18px;
             background: repeating-linear-gradient(
                 45deg,
-                #fbbf24,
-                #fbbf24 10px,
-                #000000 10px,
-                #000000 20px
+                #facc15,
+                #facc15 8px,
+                #1e293b 8px,
+                #1e293b 16px
             );
-            border-radius: 0 8px 8px 0;
-            z-index: 10;
+            border-radius: 0 10px 10px 0;
+            z-index: 5;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Grid lines */
+        .exit-gate::after {
+            content: '🏁';
+            position: absolute;
+            right: -28px;
+            font-size: 1.5rem;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            animation: bounceRight 1.2s infinite;
+        }
+
+        @keyframes bounceRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        /* Cuadrícula de asfalto */
         .grid-lines {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            inset: 0;
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             grid-template-rows: repeat(6, 1fr);
@@ -58,232 +123,752 @@
         }
 
         .grid-cell {
-            border: 1px dashed rgba(255, 255, 255, 0.4);
+            border: 1.5px dashed rgba(255, 255, 255, 0.18);
+            position: relative;
         }
 
+        /* Carril de salida destacado en fila C (índice 2) */
+        .exit-lane-highlight {
+            position: absolute;
+            left: 0; right: 0;
+            top: 33.333%;
+            height: 16.666%;
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.05), rgba(250, 204, 21, 0.18));
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            color: rgba(250, 204, 21, 0.35);
+            font-weight: 900;
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+        }
+
+        /* Estilo de los Vehículos */
         .vehicle {
             position: absolute;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
+            transition: left 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.12s;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(0,0,0,0.2);
+            padding: 4px;
+            box-sizing: border-box;
+            z-index: 10;
         }
 
-        .vehicle:active {
+        .vehicle.dragging {
+            transition: none !important;
             cursor: grabbing;
-            transform: scale(1.02);
-            z-index: 20;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+            transform: scale(1.04);
+            z-index: 30;
+            filter: brightness(1.08) drop-shadow(0 12px 16px rgba(0,0,0,0.45));
         }
 
-        /* Vehicle details to look like cute cars */
-        .vehicle::before, .vehicle::after {
+        .vehicle-body {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: inset 0 3px 4px rgba(255,255,255,0.4), inset 0 -4px 4px rgba(0,0,0,0.25), 0 4px 6px rgba(0,0,0,0.35);
+            border: 2px solid rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Parabrisas y ventanillas */
+        .vehicle.dir-H .vehicle-body::before,
+        .vehicle.dir-H .vehicle-body::after {
             content: '';
             position: absolute;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 4px;
+            background: rgba(224, 242, 254, 0.78);
+            border-radius: 5px;
+            height: 68%;
+            width: 18%;
+            border: 1px solid rgba(0,0,0,0.15);
         }
+        .vehicle.dir-H .vehicle-body::before { left: 12%; }
+        .vehicle.dir-H .vehicle-body::after { right: 12%; }
 
-        /* Horizontal car windows */
-        .vehicle.dir-H::before { width: 20%; height: 60%; left: 15%; }
-        .vehicle.dir-H::after { width: 20%; height: 60%; right: 15%; }
-        
-        /* Vertical car windows */
-        .vehicle.dir-V::before { width: 60%; height: 20%; top: 15%; }
-        .vehicle.dir-V::after { width: 60%; height: 20%; bottom: 15%; }
-
-        .hero-car {
-            background: linear-gradient(135deg, #ef4444, #b91c1c); /* Red */
+        .vehicle.dir-V .vehicle-body::before,
+        .vehicle.dir-V .vehicle-body::after {
+            content: '';
+            position: absolute;
+            background: rgba(224, 242, 254, 0.78);
+            border-radius: 5px;
+            width: 68%;
+            height: 18%;
+            border: 1px solid rgba(0,0,0,0.15);
         }
-        
-        .hero-car::after {
-            content: '⭐';
-            font-size: 1.5rem;
-            background: none;
+        .vehicle.dir-V .vehicle-body::before { top: 12%; }
+        .vehicle.dir-V .vehicle-body::after { bottom: 12%; }
+
+        /* Indicador de dirección sutil en el techo del vehículo */
+        .dir-badge {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.92);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+            z-index: 2;
+            pointer-events: none;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 2px;
         }
 
-        .car-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .car-green { background: linear-gradient(135deg, #22c55e, #15803d); }
-        .car-yellow { background: linear-gradient(135deg, #eab308, #a16207); }
-        .truck-purple { background: linear-gradient(135deg, #a855f7, #6b21a8); }
-        .truck-orange { background: linear-gradient(135deg, #f97316, #c2410c); }
+        /* Colores de vehículos vibrantes y diferenciados */
+        .hero-car .vehicle-body {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #991b1b;
+        }
+        .car-blue .vehicle-body { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .car-green .vehicle-body { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .car-yellow .vehicle-body { background: linear-gradient(135deg, #eab308, #ca8a04); }
+        .car-pink .vehicle-body { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .truck-purple .vehicle-body { background: linear-gradient(135deg, #a855f7, #7e22ce); }
+        .truck-orange .vehicle-body { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .truck-teal .vehicle-body { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+
+        /* Animación de Pista (Hint) */
+        @keyframes hintPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px #facc15); }
+            50% { transform: scale(1.07); filter: drop-shadow(0 0 16px #facc15) brightness(1.2); }
+        }
+        .hint-active {
+            animation: hintPulse 0.8s ease-in-out 4;
+            z-index: 25 !important;
+        }
+
+        /* Vehículo bloqueado con reto matemático */
+        .vehicle.locked .vehicle-body {
+            filter: saturate(0.65);
+        }
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            z-index: 5;
+            backdrop-filter: blur(1px);
+        }
+
+        .btn-bouncy {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-bouncy:active:not(:disabled) {
+            transform: scale(0.94);
+        }
 
         .modal-overlay {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(5px);
         }
-        
-        .btn-bouncy {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-bouncy:active {
-            transform: scale(0.95);
+
+        /* Canvas de Confeti */
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 100;
         }
     </style>
 </head>
-<body class="w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
+<body class="w-screen h-screen flex flex-col items-center justify-center overflow-hidden select-none">
 
-    <!-- MAIN MENU -->
-    <div id="screen-menu" class="w-full h-full flex flex-col items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-2xl border-4 border-blue-400 w-full">
-            <h1 class="text-5xl md:text-6xl font-black text-blue-600 mb-2 drop-shadow-md">¡ATASCO!</h1>
-            <p class="text-xl text-gray-600 mb-6 font-bold">Ayuda al coche estrella a salir por la puerta</p>
+    <!-- Canvas para celebraciones con confeti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ==================== PANTALLA DE MENÚ PRINCIPAL ==================== -->
+    <div id="screen-menu" class="w-full h-full flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl text-center max-w-3xl border-4 border-sky-400 w-full relative">
             
-            <!-- Difficulty Selector -->
-            <div class="flex items-center justify-center gap-2 md:gap-4 mb-8 bg-gray-100 p-2 rounded-2xl w-max mx-auto border-2 border-gray-200">
-                <span class="font-bold text-gray-600 ml-2 hidden md:inline">Dificultad:</span>
-                <button id="btn-diff-normal" onclick="setDifficulty('normal')" class="px-6 py-2 rounded-xl font-black bg-green-500 text-white shadow-md transform scale-105 transition-all">
-                    Normal 🟢
-                </button>
-                <button id="btn-diff-pro" onclick="setDifficulty('pro')" class="px-6 py-2 rounded-xl font-bold bg-white text-gray-500 hover:bg-red-50 transition-all">
-                    PRO 🔥
-                </button>
+            <!-- Botón de Sonido Flotante en Menú -->
+            <button onclick="toggleSound()" id="btn-sound-menu" class="btn-bouncy absolute top-5 right-5 w-14 h-14 rounded-2xl bg-sky-100 hover:bg-sky-200 text-2xl flex items-center justify-center border-2 border-sky-300 shadow-sm" title="Activar/Desactivar sonido">
+                🔊
+            </button>
+
+            <div class="inline-flex items-center gap-3 bg-red-100 text-red-700 px-4 py-1.5 rounded-full font-black text-sm mb-2 border border-red-200">
+                <span>🚗 PENSAMIENTO LÓGICO · 3º PRIMARIA</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <button onclick="startGame('individual')" class="btn-bouncy bg-green-500 hover:bg-green-600 text-white rounded-2xl p-6 shadow-lg border-b-4 border-green-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">🧑‍🚀</span>
-                    <span class="text-xl font-black">Juego Libre</span>
-                    <span class="text-sm font-semibold mt-1">Niveles infinitos</span>
+            <h1 class="text-5xl md:text-6xl font-black text-sky-600 mb-1 tracking-tight drop-shadow-sm">¡ATASCO!</h1>
+            <p class="text-lg md:text-xl text-slate-600 mb-6 font-bold">Desliza los vehículos y libera al <span class="text-red-600 font-black">coche estrella ⭐</span></p>
+            
+            <!-- Panel de Configuración Pedagógica -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                
+                <!-- Selector de Dificultad (3 Niveles) -->
+                <div class="flex flex-col items-center justify-center">
+                    <span class="text-xs font-black uppercase tracking-wider text-slate-400 mb-2">Nivel de Dificultad</span>
+                    <div class="flex items-center gap-2 bg-white p-1.5 rounded-xl border-2 border-slate-200 w-full justify-center">
+                        <button id="btn-diff-easy" onclick="setDifficulty('easy')" class="flex-1 py-2 px-3 rounded-lg font-black text-sm bg-emerald-500 text-white shadow transition-all">
+                            Inicial 🌱
+                        </button>
+                        <button id="btn-diff-normal" onclick="setDifficulty('normal')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all">
+                            Medio 🚗
+                        </button>
+                        <button id="btn-diff-pro" onclick="setDifficulty('pro')" class="flex-1 py-2 px-3 rounded-lg font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all">
+                            Experto 🔥
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Activador de Reto Matemático Curricular -->
+                <div class="flex flex-col items-center justify-center">
+                    <span class="text-xs font-black uppercase tracking-wider text-slate-400 mb-2">Complemento Matemático</span>
+                    <button id="btn-math-toggle" onclick="toggleMathMode()" class="w-full py-2.5 px-4 rounded-xl font-black text-sm border-2 border-slate-300 bg-white text-slate-600 flex items-center justify-center gap-2 transition-all hover:border-amber-400">
+                        <span id="math-toggle-icon" class="text-lg">🔓</span>
+                        <span id="math-toggle-text">Coches con Candado Mate: OFF</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modos de Juego (Botones grandes para MDI) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+                <button onclick="startGame('individual')" class="btn-bouncy bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl p-5 shadow-lg border-b-8 border-emerald-700 flex flex-col items-center justify-center min-h-[140px]">
+                    <span class="text-5xl mb-2">🧠</span>
+                    <span class="text-2xl font-black">Modo Ingenio</span>
+                    <span class="text-xs font-bold bg-emerald-700/40 px-3 py-1 rounded-full mt-1">Con pistas y estrellas</span>
                 </button>
                 
-                <button onclick="startGame('challenge')" class="btn-bouncy bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl p-6 shadow-lg border-b-4 border-yellow-600 flex flex-col items-center">
-                    <span class="text-4xl mb-2">⏱️</span>
-                    <span class="text-xl font-black">Reto Reloj</span>
-                    <span class="text-sm font-semibold mt-1">Contra el tiempo</span>
+                <button onclick="startGame('challenge')" class="btn-bouncy bg-amber-500 hover:bg-amber-600 text-white rounded-2xl p-5 shadow-lg border-b-8 border-amber-700 flex flex-col items-center justify-center min-h-[140px]">
+                    <span class="text-5xl mb-2">⏱️</span>
+                    <span class="text-2xl font-black">Contrarreloj</span>
+                    <span class="text-xs font-bold bg-amber-700/40 px-3 py-1 rounded-full mt-1">¿Cuántos resuelves?</span>
                 </button>
 
-                <button onclick="startGame('versus')" class="btn-bouncy bg-purple-500 hover:bg-purple-600 text-white rounded-2xl p-6 shadow-lg border-b-4 border-purple-700 flex flex-col items-center">
-                    <span class="text-4xl mb-2">⚔️</span>
-                    <span class="text-xl font-black">Reto Doble</span>
-                    <span class="text-sm font-semibold mt-1">2 Jugadores</span>
+                <button onclick="startGame('versus')" class="btn-bouncy bg-purple-500 hover:bg-purple-600 text-white rounded-2xl p-5 shadow-lg border-b-8 border-purple-700 flex flex-col items-center justify-center min-h-[140px]">
+                    <span class="text-5xl mb-2">⚔️</span>
+                    <span class="text-2xl font-black">Duelo Pizarra</span>
+                    <span class="text-xs font-bold bg-purple-700/40 px-3 py-1 rounded-full mt-1">2 Jugadores a la vez</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- GAME SCREEN -->
-    <div id="screen-game" class="w-full h-full hidden flex-col">
-        <!-- Header -->
-        <div class="bg-white shadow-md p-4 flex justify-between items-center z-10">
-            <button onclick="returnToMenu()" class="btn-bouncy bg-red-500 text-white font-bold py-2 px-6 rounded-full shadow border-b-4 border-red-700 text-lg">
-                ⬅️ Salir
-            </button>
-            <div class="text-center">
-                <h2 id="game-title" class="text-2xl font-black text-blue-600 uppercase">Modo de Juego</h2>
-                <p id="level-indicator" class="text-gray-500 font-bold">Nivel 1</p>
+    <!-- ==================== PANTALLA DE JUEGO ==================== -->
+    <div id="screen-game" class="w-full h-full hidden flex-col justify-between">
+        
+        <!-- Cabecera adaptada a MDI -->
+        <header class="bg-white shadow-md px-4 py-2.5 flex flex-wrap justify-between items-center gap-2 z-20 border-b-4 border-sky-200">
+            <div class="flex items-center gap-2">
+                <button onclick="returnToMenu()" class="btn-bouncy bg-rose-500 hover:bg-rose-600 text-white font-black py-2.5 px-5 rounded-2xl shadow border-b-4 border-rose-700 text-base md:text-lg flex items-center gap-2 min-h-[52px]">
+                    <span>🏠</span> <span class="hidden sm:inline">Menú</span>
+                </button>
+                <button onclick="toggleSound()" id="btn-sound-game" class="btn-bouncy bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold w-13 h-13 min-w-[52px] min-h-[52px] rounded-2xl border-2 border-slate-300 flex items-center justify-center text-xl">
+                    🔊
+                </button>
             </div>
-            <div class="bg-gray-800 text-white font-mono font-bold text-2xl py-2 px-6 rounded-xl border-4 border-gray-600 shadow-inner flex items-center gap-2">
-                ⏳ <span id="timer-display">00:00</span>
-            </div>
-        </div>
 
-        <!-- Boards Area -->
-        <div id="boards-container" class="flex-1 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-12 p-4 md:p-8 bg-blue-50">
-            <!-- Board 1 -->
-            <div id="board-1-wrapper" class="w-full max-w-md md:max-w-xl hidden flex-col items-center">
-                <h3 id="board-1-title" class="text-xl font-bold text-gray-700 mb-2 hidden">Jugador 1</h3>
-                <div id="board-1" class="board-container w-full">
-                    <div class="grid-lines" id="grid-1"></div>
-                    <div class="exit-gate"></div>
-                    <!-- Cars injected here -->
+            <!-- Indicador Central de Nivel y Modo -->
+            <div class="flex items-center gap-3 bg-sky-50 px-5 py-1.5 rounded-2xl border-2 border-sky-200">
+                <div class="text-center">
+                    <div class="flex items-center gap-2 justify-center">
+                        <span id="game-title" class="text-lg md:text-xl font-black text-sky-700 uppercase">Modo Ingenio</span>
+                        <span id="level-indicator" class="bg-sky-600 text-white text-sm font-black px-3 py-0.5 rounded-full">Nivel 1</span>
+                    </div>
+                    <p id="par-indicator" class="text-xs md:text-sm text-slate-500 font-bold">Récord óptimo: 8 movimientos</p>
                 </div>
             </div>
 
-            <!-- Board 2 (Only for Versus) -->
-            <div id="board-2-wrapper" class="w-full max-w-md md:max-w-xl hidden flex-col items-center">
-                <h3 id="board-2-title" class="text-xl font-bold text-gray-700 mb-2">Jugador 2</h3>
-                <div id="board-2" class="board-container w-full">
-                    <div class="grid-lines" id="grid-2"></div>
-                    <div class="exit-gate"></div>
-                    <!-- Cars injected here -->
+            <!-- Cronómetro y Nuevo Tablero -->
+            <div class="flex items-center gap-2">
+                <div class="bg-slate-800 text-amber-400 font-mono font-black text-xl md:text-2xl py-2 px-4 rounded-2xl border-b-4 border-slate-950 shadow-inner flex items-center gap-2 min-h-[52px]">
+                    <span>⏳</span> <span id="timer-display">00:00</span>
+                </div>
+                <button onclick="skipToNewLevel()" class="btn-bouncy bg-sky-500 hover:bg-sky-600 text-white font-black py-2.5 px-4 rounded-2xl shadow border-b-4 border-sky-700 text-sm md:text-base min-h-[52px]" title="Generar otro atasco distinto">
+                    🎲 <span class="hidden lg:inline">Otro Mapa</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Área Central de Tableros -->
+        <main id="boards-container" class="flex-1 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 px-4 py-2 overflow-hidden">
+            
+            <!-- TABLERO JUGADOR 1 -->
+            <div id="board-1-wrapper" class="w-full max-w-[380px] lg:max-w-[430px] flex flex-col items-center">
+                <!-- Barra de estado y herramientas del Jugador 1 -->
+                <div class="w-full flex justify-between items-center mb-2 bg-white px-4 py-2 rounded-2xl shadow-sm border-2 border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <span id="board-1-title" class="font-black text-purple-700 bg-purple-100 px-3 py-1 rounded-xl text-sm hidden">J1</span>
+                        <span class="font-extrabold text-slate-700 text-sm md:text-base">Movimientos: <strong id="moves-1" class="text-sky-600 text-lg">0</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="board1 && board1.undoMove()" class="btn-bouncy bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-3 py-1.5 rounded-xl border-b-2 border-slate-300 text-sm flex items-center gap-1" title="Deshacer último movimiento">
+                            ↩️ <span class="hidden sm:inline">Atrás</span>
+                        </button>
+                        <button onclick="board1 && board1.resetLevel()" class="btn-bouncy bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-3 py-1.5 rounded-xl border-b-2 border-slate-300 text-sm flex items-center gap-1" title="Reiniciar al principio">
+                            🔄
+                        </button>
+                        <button id="btn-hint-1" onclick="board1 && board1.showHint()" class="btn-bouncy bg-amber-400 hover:bg-amber-500 text-slate-900 font-black px-3 py-1.5 rounded-xl border-b-2 border-amber-600 text-sm flex items-center gap-1 shadow-sm" title="Ver pista del mejor movimiento">
+                            💡 <span class="hidden sm:inline">Pista</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tablero con coordenadas -->
+                <div class="parking-wrapper w-full">
+                    <div class="coord-top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+                    <div class="coord-left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+                    <div id="board-1" class="board-container w-full">
+                        <div class="grid-lines" id="grid-1"></div>
+                        <div class="exit-lane-highlight">SALIDA ➔</div>
+                        <div class="exit-gate"></div>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- TABLERO JUGADOR 2 (Modo Duelo Pizarra) -->
+            <div id="board-2-wrapper" class="w-full max-w-[380px] lg:max-w-[430px] hidden flex-col items-center">
+                <div class="w-full flex justify-between items-center mb-2 bg-white px-4 py-2 rounded-2xl shadow-sm border-2 border-slate-200">
+                    <div class="flex items-center gap-2">
+                        <span id="board-2-title" class="font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-xl text-sm">J2</span>
+                        <span class="font-extrabold text-slate-700 text-sm md:text-base">Movimientos: <strong id="moves-2" class="text-emerald-600 text-lg">0</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="board2 && board2.undoMove()" class="btn-bouncy bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-3 py-1.5 rounded-xl border-b-2 border-slate-300 text-sm">
+                            ↩️
+                        </button>
+                        <button onclick="board2 && board2.resetLevel()" class="btn-bouncy bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-3 py-1.5 rounded-xl border-b-2 border-slate-300 text-sm">
+                            🔄
+                        </button>
+                        <button id="btn-hint-2" onclick="board2 && board2.showHint()" class="btn-bouncy bg-amber-400 hover:bg-amber-500 text-slate-900 font-black px-3 py-1.5 rounded-xl border-b-2 border-amber-600 text-sm">
+                            💡
+                        </button>
+                    </div>
+                </div>
+
+                <div class="parking-wrapper w-full">
+                    <div class="coord-top"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+                    <div class="coord-left"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span></div>
+                    <div id="board-2" class="board-container w-full">
+                        <div class="grid-lines" id="grid-2"></div>
+                        <div class="exit-lane-highlight">SALIDA ➔</div>
+                        <div class="exit-gate"></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <!-- MODAL / FEEDBACK -->
+    <!-- ==================== MODAL DE VICTORIA / FIN DE JUEGO ==================== -->
     <div id="modal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-lg transform scale-95 transition-transform duration-300 border-4 border-yellow-400" id="modal-content">
-            <div id="modal-icon" class="text-7xl mb-4">🏆</div>
-            <h2 id="modal-title" class="text-4xl font-black text-gray-800 mb-4">¡Nivel Superado!</h2>
-            <p id="modal-message" class="text-xl text-gray-600 font-bold mb-8">¡Lo has hecho genial!</p>
-            <button id="modal-btn" class="btn-bouncy bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg border-b-4 border-blue-700 text-xl w-full">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-md w-full transform scale-95 transition-transform duration-300 border-4 border-amber-400" id="modal-content">
+            <div id="modal-icon" class="text-6xl mb-2">🏆</div>
+            <div id="modal-stars" class="text-4xl mb-2 tracking-widest">⭐⭐⭐</div>
+            <h2 id="modal-title" class="text-3xl md:text-4xl font-black text-slate-800 mb-2">¡Nivel Superado!</h2>
+            <p id="modal-message" class="text-lg text-slate-600 font-bold mb-6">¡Estrategia impecable!</p>
+            <button id="modal-btn" class="btn-bouncy bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 px-8 rounded-2xl shadow-lg border-b-4 border-emerald-700 text-xl w-full">
                 Siguiente Nivel ➡️
             </button>
         </div>
     </div>
 
+    <!-- ==================== MODAL DE RETO MATEMÁTICO (3º PRIMARIA) ==================== -->
+    <div id="math-modal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl text-center max-w-md w-full border-4 border-sky-400">
+            <div class="inline-block bg-amber-100 text-amber-800 font-black px-4 py-1 rounded-full text-sm mb-2">
+                🔒 COCHE CON CANDADO MATEMÁTICO
+            </div>
+            <h3 class="text-2xl font-black text-slate-700 mb-1">¡Resuelve para desbloquear!</h3>
+            <p class="text-sm text-slate-500 font-bold mb-4">Toca la respuesta correcta para mover este vehículo:</p>
+            
+            <div id="math-question" class="bg-slate-100 text-slate-800 font-black text-4xl py-5 px-6 rounded-2xl mb-5 border-2 border-slate-200 shadow-inner">
+                6 × 7 = ?
+            </div>
+
+            <div id="math-options" class="grid grid-cols-3 gap-3 mb-4">
+                <!-- Botones generados dinámicamente -->
+            </div>
+
+            <button onclick="closeMathModal()" class="text-slate-400 hover:text-slate-600 font-bold text-sm underline mt-1">
+                Cancelar y elegir otro coche
+            </button>
+        </div>
+    </div>
+
     <script>
-        // --- GLOBAL STATE ---
-        let currentMode = '';
+        /* =========================================================================
+         * 1. SINTETIZADOR DE SONIDO AUTOCONTENIDO (WEB AUDIO API)
+         * ========================================================================= */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let soundEnabled = true;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('btn-sound-menu').innerText = icon;
+            document.getElementById('btn-sound-game').innerText = icon;
+            if (soundEnabled) playSound('pop');
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'move') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(340, now + 0.08);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.09);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.09);
+            } 
+            else if (type === 'pop' || type === 'undo') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(420, now);
+                osc.frequency.exponentialRampToValueAtTime(280, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.09);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.09);
+            }
+            else if (type === 'hint') {
+                [523.25, 659.25, 783.99].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                    gain.gain.setValueAtTime(0.12, now + idx * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.008, now + idx * 0.07 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + idx * 0.07);
+                    osc.stop(now + idx * 0.07 + 0.2);
+                });
+            }
+            else if (type === 'error') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(160, now);
+                osc.frequency.linearRampToValueAtTime(120, now + 0.22);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.24);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.24);
+            }
+            else if (type === 'win') {
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.11);
+                    gain.gain.setValueAtTime(0.2, now + i * 0.11);
+                    gain.gain.exponentialRampToValueAtTime(0.008, now + i * 0.11 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + i * 0.11);
+                    osc.stop(now + i * 0.11 + 0.35);
+                });
+            }
+        }
+
+        /* =========================================================================
+         * 2. BANCO DE PREGUNTAS MATEMÁTICAS (PERSONALIZABLE POR EL DOCENTE)
+         * ========================================================================= */
+        let mathModeEnabled = false;
+        let pendingUnlockCallback = null;
+
+        function toggleMathMode() {
+            mathModeEnabled = !mathModeEnabled;
+            const btn = document.getElementById('btn-math-toggle');
+            const icon = document.getElementById('math-toggle-icon');
+            const txt = document.getElementById('math-toggle-text');
+            playSound('pop');
+
+            if (mathModeEnabled) {
+                btn.className = "w-full py-2.5 px-4 rounded-xl font-black text-sm border-2 border-amber-500 bg-amber-100 text-amber-900 flex items-center justify-center gap-2 transition-all shadow-sm";
+                icon.innerText = "🔒";
+                txt.innerText = "Coches con Candado Mate: ON";
+            } else {
+                btn.className = "w-full py-2.5 px-4 rounded-xl font-black text-sm border-2 border-slate-300 bg-white text-slate-600 flex items-center justify-center gap-2 transition-all hover:border-amber-400";
+                icon.innerText = "🔓";
+                txt.innerText = "Coches con Candado Mate: OFF";
+            }
+        }
+
+        // Generador de cálculo mental adaptado a 3º de Primaria (tablas, sumas, restas y dobles)
+        function generateMathChallenge() {
+            const types = ['mult', 'add', 'sub'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            let question = '';
+            let answer = 0;
+
+            if (type === 'mult') {
+                const a = Math.floor(Math.random() * 8) + 2; // Tablas del 2 al 9
+                const b = Math.floor(Math.random() * 9) + 2;
+                question = `${a} × ${b} = ?`;
+                answer = a * b;
+            } else if (type === 'add') {
+                const a = Math.floor(Math.random() * 40) + 15;
+                const b = Math.floor(Math.random() * 35) + 12;
+                question = `${a} + ${b} = ?`;
+                answer = a + b;
+            } else {
+                const a = Math.floor(Math.random() * 50) + 40;
+                const b = Math.floor(Math.random() * 25) + 11;
+                question = `${a} - ${b} = ?`;
+                answer = a - b;
+            }
+
+            // Generar 2 distractores cercanos plausibles
+            const options = new Set([answer]);
+            while (options.size < 3) {
+                const offset = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                const candidate = answer + offset;
+                if (candidate > 0) options.add(candidate);
+            }
+
+            return {
+                question,
+                answer,
+                options: Array.from(options).sort(() => Math.random() - 0.5)
+            };
+        }
+
+        function openMathModal(onSuccess) {
+            pendingUnlockCallback = onSuccess;
+            const challenge = generateMathChallenge();
+            document.getElementById('math-question').innerText = challenge.question;
+            
+            const optionsContainer = document.getElementById('math-options');
+            optionsContainer.innerHTML = '';
+
+            challenge.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-bouncy bg-sky-500 hover:bg-sky-600 text-white font-black text-2xl py-4 rounded-2xl border-b-4 border-sky-700 shadow";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === challenge.answer) {
+                        playSound('hint');
+                        document.getElementById('math-modal').classList.add('hidden');
+                        if (pendingUnlockCallback) pendingUnlockCallback();
+                    } else {
+                        playSound('error');
+                        btn.className = "bg-rose-500 text-white font-black text-2xl py-4 rounded-2xl border-b-4 border-rose-700 opacity-60";
+                        btn.disabled = true;
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('math-modal').classList.remove('hidden');
+        }
+
+        function closeMathModal() {
+            document.getElementById('math-modal').classList.add('hidden');
+            pendingUnlockCallback = null;
+        }
+
+        /* =========================================================================
+         * 3. MOTOR DE RESOLUCIÓN BFS Y GENERADOR DE NIVELES CON PISTAS
+         * ========================================================================= */
+        let currentMode = 'individual';
         let currentLevelIndex = 0;
+        let currentDifficulty = 'easy'; // 'easy', 'normal', 'pro'
         let timerInterval = null;
         let timeSeconds = 0;
         let gameActive = false;
-        let currentDifficulty = 'normal'; // 'normal' o 'pro'
-        
+        let currentParMoves = 6;
+
         let board1 = null;
         let board2 = null;
 
-        // --- LEVEL GENERATOR & SOLVER ---
-        function createRandomLevel() {
-            let level = null;
-            let attempts = 0;
-            // Damos más intentos en modo PRO porque encontrar un puzzle resoluble con alta complejidad es estadísticamente más raro
-            const maxAttempts = currentDifficulty === 'pro' ? 100 : 50; 
-            
-            while (!level && attempts < maxAttempts) {
-                attempts++;
-                const candidate = generateRandomCandidate(currentDifficulty);
-                if (isSolvableAndChallenging(candidate, currentDifficulty)) {
-                    level = candidate;
+        /**
+         * Resuelve cualquier estado del tablero mediante Búsqueda en Anchura (BFS).
+         * Devuelve { solvable: boolean, minMoves: number, firstMove: { vehicleIdx, newPos } }
+         */
+        function solveBoardState(vehicles) {
+            const heroIdx = vehicles.findIndex(v => v.isHero);
+            const info = vehicles.map(v => ({
+                isH: v.dir === 'H',
+                fixed: v.dir === 'H' ? v.y : v.x,
+                len: v.len
+            }));
+
+            const startState = vehicles.map(v => v.dir === 'H' ? v.x : v.y);
+            const queue = [{ state: startState, depth: 0, firstMove: null }];
+            const visited = new Set([startState.join(',')]);
+
+            const maxNodes = 9000;
+            let nodes = 0;
+
+            while (queue.length > 0) {
+                const { state, depth, firstMove } = queue.shift();
+                nodes++;
+                if (nodes > maxNodes) return { solvable: false };
+
+                // Meta alcanzada: el coche rojo llega a la columna 4 (ocupa 4 y 5)
+                if (state[heroIdx] === 4) {
+                    return {
+                        solvable: true,
+                        minMoves: depth,
+                        firstMove: firstMove
+                    };
+                }
+
+                // Construir matriz 6x6 de ocupación actual
+                const grid = Array(6).fill(0).map(() => Array(6).fill(0));
+                for (let i = 0; i < state.length; i++) {
+                    const inf = info[i];
+                    const pos = state[i];
+                    for (let j = 0; j < inf.len; j++) {
+                        if (inf.isH) grid[inf.fixed][pos + j] = 1;
+                        else grid[pos + j][inf.fixed] = 1;
+                    }
+                }
+
+                // Explorar movimientos de cualquier longitud (1 a 4 casillas de un tirón = 1 movimiento)
+                for (let i = 0; i < state.length; i++) {
+                    const inf = info[i];
+                    const pos = state[i];
+
+                    // Hacia atrás / arriba
+                    for (let step = 1; pos - step >= 0; step++) {
+                        const free = inf.isH 
+                            ? grid[inf.fixed][pos - step] === 0 
+                            : grid[pos - step][inf.fixed] === 0;
+                        if (!free) break;
+
+                        const next = [...state];
+                        next[i] = pos - step;
+                        const hash = next.join(',');
+                        if (!visited.has(hash)) {
+                            visited.add(hash);
+                            queue.push({
+                                state: next,
+                                depth: depth + 1,
+                                firstMove: firstMove || { vehicleIdx: i, newPos: pos - step }
+                            });
+                        }
+                    }
+
+                    // Hacia adelante / abajo
+                    for (let step = 1; pos + inf.len - 1 + step < 6; step++) {
+                        const free = inf.isH 
+                            ? grid[inf.fixed][pos + inf.len - 1 + step] === 0 
+                            : grid[pos + inf.len - 1 + step][inf.fixed] === 0;
+                        if (!free) break;
+
+                        const next = [...state];
+                        next[i] = pos + step;
+                        const hash = next.join(',');
+                        if (!visited.has(hash)) {
+                            visited.add(hash);
+                            queue.push({
+                                state: next,
+                                depth: depth + 1,
+                                firstMove: firstMove || { vehicleIdx: i, newPos: pos + step }
+                            });
+                        }
+                    }
                 }
             }
-            
-            // Mapas de respaldo en caso de que la aleatoriedad no encuentre solución a tiempo
-            if (!level) {
-                if (currentDifficulty === 'pro') {
-                    // Mapa PRO genérico difícil garantizado
-                    level = [
-                        { id: 'hero', color: 'hero-car', x: 0, y: 2, len: 2, dir: 'H', isHero: true },
-                        { id: 'c1', color: 'car-green', x: 3, y: 1, len: 3, dir: 'V' }, // blocker
-                        { id: 't1', color: 'truck-purple', x: 0, y: 0, len: 3, dir: 'H' },
-                        { id: 't2', color: 'truck-orange', x: 0, y: 3, len: 3, dir: 'V' },
-                        { id: 'c2', color: 'car-blue', x: 1, y: 4, len: 2, dir: 'H' },
-                        { id: 'c3', color: 'car-yellow', x: 4, y: 4, len: 2, dir: 'V' },
-                        { id: 't3', color: 'truck-purple', x: 5, y: 0, len: 3, dir: 'V' },
-                        { id: 'c4', color: 'car-green', x: 3, y: 0, len: 2, dir: 'H' }
-                    ];
-                } else {
-                    // Mapa Normal genérico
-                    level = [
-                        { id: 'hero', color: 'hero-car', x: 0, y: 2, len: 2, dir: 'H', isHero: true },
-                        { id: 'c1', color: 'car-green', x: 2, y: 1, len: 2, dir: 'V' },
-                        { id: 'c2', color: 'car-blue', x: 3, y: 0, len: 2, dir: 'H' },
-                        { id: 't1', color: 'truck-purple', x: 5, y: 0, len: 3, dir: 'V' },
-                        { id: 't2', color: 'truck-orange', x: 3, y: 3, len: 3, dir: 'H' },
-                        { id: 'c3', color: 'car-yellow', x: 2, y: 4, len: 2, dir: 'H' }
-                    ];
-                }
-            }
-            return level;
+
+            return { solvable: false };
         }
 
-        function generateRandomCandidate(difficulty) {
+        function createRandomLevel() {
+            const config = {
+                easy:   { minMoves: 3, maxMoves: 6,  minVeh: 5, maxVeh: 7 },
+                normal: { minMoves: 6, maxMoves: 11, minVeh: 7, maxVeh: 9 },
+                pro:    { minMoves: 10, maxMoves: 25, minVeh: 9, maxVeh: 12 }
+            }[currentDifficulty];
+
+            for (let attempt = 0; attempt < 90; attempt++) {
+                const candidate = generateRandomCandidate(config.minVeh, config.maxVeh);
+                const solution = solveBoardState(candidate);
+                if (solution.solvable && solution.minMoves >= config.minMoves && solution.minMoves <= config.maxMoves) {
+                    currentParMoves = solution.minMoves;
+                    applyMathLocksIfNeeded(candidate);
+                    return candidate;
+                }
+            }
+
+            // Niveles de respaldo curados por dificultad si el aleatorio agota intentos
+            const fallbacks = {
+                easy: [
+                    { id: 'hero', color: 'hero-car', x: 1, y: 2, len: 2, dir: 'H', isHero: true },
+                    { id: 'v1', color: 'truck-purple', x: 3, y: 1, len: 3, dir: 'V' },
+                    { id: 'v2', color: 'car-blue', x: 2, y: 4, len: 2, dir: 'H' },
+                    { id: 'v3', color: 'car-green', x: 5, y: 3, len: 2, dir: 'V' },
+                    { id: 'v4', color: 'car-yellow', x: 0, y: 0, len: 2, dir: 'H' }
+                ],
+                normal: [
+                    { id: 'hero', color: 'hero-car', x: 0, y: 2, len: 2, dir: 'H', isHero: true },
+                    { id: 'v1', color: 'car-green', x: 2, y: 1, len: 2, dir: 'V' },
+                    { id: 'v2', color: 'car-blue', x: 3, y: 0, len: 2, dir: 'H' },
+                    { id: 'v3', color: 'truck-purple', x: 5, y: 0, len: 3, dir: 'V' },
+                    { id: 'v4', color: 'truck-orange', x: 3, y: 3, len: 3, dir: 'H' },
+                    { id: 'v5', color: 'car-yellow', x: 2, y: 4, len: 2, dir: 'H' }
+                ],
+                pro: [
+                    { id: 'hero', color: 'hero-car', x: 0, y: 2, len: 2, dir: 'H', isHero: true },
+                    { id: 'v1', color: 'truck-purple', x: 2, y: 0, len: 3, dir: 'V' },
+                    { id: 'v2', color: 'car-blue', x: 0, y: 0, len: 2, dir: 'H' },
+                    { id: 'v3', color: 'truck-orange', x: 0, y: 3, len: 3, dir: 'V' },
+                    { id: 'v4', color: 'car-green', x: 1, y: 4, len: 2, dir: 'H' },
+                    { id: 'v5', color: 'car-yellow', x: 4, y: 3, len: 2, dir: 'V' },
+                    { id: 'v6', color: 'truck-teal', x: 5, y: 0, len: 3, dir: 'V' },
+                    { id: 'v7', color: 'car-pink', x: 3, y: 0, len: 2, dir: 'H' }
+                ]
+            };
+
+            const chosen = fallbacks[currentDifficulty];
+            const sol = solveBoardState(chosen);
+            currentParMoves = sol.solvable ? sol.minMoves : 6;
+            applyMathLocksIfNeeded(chosen);
+            return chosen;
+        }
+
+        function applyMathLocksIfNeeded(vehicles) {
+            vehicles.forEach(v => v.locked = false);
+            if (!mathModeEnabled) return;
+
+            // Bloquear 1 o 2 coches que no sean el protagonista
+            const candidates = vehicles.filter(v => !v.isHero);
+            if (candidates.length > 0) {
+                candidates[0].locked = true;
+                if (candidates.length > 3 && currentDifficulty !== 'easy') {
+                    candidates[2].locked = true;
+                }
+            }
+        }
+
+        function generateRandomCandidate(minVehicles, maxVehicles) {
             const vehicles = [];
-            const grid = Array(6).fill().map(() => Array(6).fill(null));
+            const grid = Array(6).fill(null).map(() => Array(6).fill(null));
 
             function addVehicle(v) {
                 if (v.dir === 'H' && v.x + v.len > 6) return false;
                 if (v.dir === 'V' && v.y + v.len > 6) return false;
+                // Evitar otros coches horizontales en la fila del protagonista (fila 2)
+                if (!v.isHero && v.dir === 'H' && v.y === 2) return false;
+
                 for (let i = 0; i < v.len; i++) {
                     if (v.dir === 'H' && grid[v.y][v.x + i] !== null) return false;
                     if (v.dir === 'V' && grid[v.y + i][v.x] !== null) return false;
@@ -296,38 +881,29 @@
                 return true;
             }
 
-            // 1. Coche protagonista
-            const heroX = Math.floor(Math.random() * 2); 
+            const heroX = Math.floor(Math.random() * 2);
             addVehicle({ id: 'hero', color: 'hero-car', x: heroX, y: 2, len: 2, dir: 'H', isHero: true });
 
-            // 2. Obstáculo frente al protagonista
-            const blockerX = heroX + 2 + Math.floor(Math.random() * (4 - heroX)); 
-            const blockerY = Math.floor(Math.random() * 2); 
+            const blockerX = heroX + 2 + Math.floor(Math.random() * (4 - heroX));
+            const blockerY = Math.floor(Math.random() * 2);
             const blockerLen = Math.random() > 0.5 ? 2 : 3;
             addVehicle({ id: 'v1', color: 'car-green', x: blockerX, y: blockerY, len: blockerLen, dir: 'V' });
 
-            // 3. Más vehículos
-            const colors = ['car-blue', 'car-yellow', 'truck-purple', 'truck-orange', 'car-green'];
+            const carColors = ['car-blue', 'car-yellow', 'car-green', 'car-pink'];
+            const truckColors = ['truck-purple', 'truck-orange', 'truck-teal'];
             let vId = 2;
-            
-            // Dificultad determina la cantidad de vehículos en el tablero
-            let minVehicles = 5;
-            let maxVehicles = 8;
-            if (difficulty === 'pro') {
-                minVehicles = 8;
-                maxVehicles = 11;
-            }
-            
-            const targetCount = Math.floor(Math.random() * (maxVehicles - minVehicles + 1)) + minVehicles; 
-            
-            for (let i = 0; i < 25 && vehicles.length < targetCount; i++) {
-                const isTruck = Math.random() > 0.4;
+
+            const targetCount = Math.floor(Math.random() * (maxVehicles - minVehicles + 1)) + minVehicles;
+
+            for (let i = 0; i < 32 && vehicles.length < targetCount; i++) {
+                const isTruck = Math.random() > 0.62;
                 const len = isTruck ? 3 : 2;
                 const dir = Math.random() > 0.5 ? 'H' : 'V';
                 const x = Math.floor(Math.random() * 6);
                 const y = Math.floor(Math.random() * 6);
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                
+                const palette = isTruck ? truckColors : carColors;
+                const color = palette[Math.floor(Math.random() * palette.length)];
+
                 if (addVehicle({ id: `v${vId}`, color, x, y, len, dir })) {
                     vId++;
                 }
@@ -335,301 +911,95 @@
             return vehicles;
         }
 
-        function isSolvableAndChallenging(initialVehicles, difficulty) {
-            if (initialVehicles.length < 5) return false; 
-
-            // Configurar umbrales según dificultad
-            const minDepthReq = difficulty === 'pro' ? 14 : 6;
-            const maxNodesLimit = difficulty === 'pro' ? 12000 : 3000;
-
-            const heroIdx = initialVehicles.findIndex(v => v.isHero);
-            const info = initialVehicles.map(v => ({
-                isH: v.dir === 'H',
-                fixed: v.dir === 'H' ? v.y : v.x,
-                len: v.len
-            }));
-
-            const startState = initialVehicles.map(v => v.dir === 'H' ? v.x : v.y);
-            const queue = [{ state: startState, depth: 0 }];
-            const visited = new Set([startState.join(',')]);
-
-            let nodes = 0;
-            
-            while(queue.length > 0) {
-                const { state, depth } = queue.shift();
-                nodes++;
-                
-                // Evitamos bloqueos de pantalla cortando búsquedas demasiado extensas
-                if (nodes > maxNodesLimit) return false; 
-
-                if (state[heroIdx] === 4) {
-                    return depth >= minDepthReq; 
-                }
-
-                const grid = Array(6).fill().map(() => Array(6).fill(0));
-                for (let i = 0; i < state.length; i++) {
-                    const inf = info[i];
-                    const pos = state[i];
-                    for (let j = 0; j < inf.len; j++) {
-                        if (inf.isH) grid[inf.fixed][pos + j] = 1;
-                        else grid[pos + j][inf.fixed] = 1;
-                    }
-                }
-
-                for (let i = 0; i < state.length; i++) {
-                    const inf = info[i];
-                    const pos = state[i];
-                    
-                    if (pos > 0) {
-                        if (inf.isH && grid[inf.fixed][pos - 1] === 0) {
-                            const next = [...state]; next[i] = pos - 1;
-                            const hash = next.join(',');
-                            if (!visited.has(hash)) { visited.add(hash); queue.push({state: next, depth: depth+1}); }
-                        } else if (!inf.isH && grid[pos - 1][inf.fixed] === 0) {
-                            const next = [...state]; next[i] = pos - 1;
-                            const hash = next.join(',');
-                            if (!visited.has(hash)) { visited.add(hash); queue.push({state: next, depth: depth+1}); }
-                        }
-                    }
-                    
-                    if (pos + inf.len < 6) {
-                        if (inf.isH && grid[inf.fixed][pos + inf.len] === 0) {
-                            const next = [...state]; next[i] = pos + 1;
-                            const hash = next.join(',');
-                            if (!visited.has(hash)) { visited.add(hash); queue.push({state: next, depth: depth+1}); }
-                        } else if (!inf.isH && grid[pos + inf.len][inf.fixed] === 0) {
-                            const next = [...state]; next[i] = pos + 1;
-                            const hash = next.join(',');
-                            if (!visited.has(hash)) { visited.add(hash); queue.push({state: next, depth: depth+1}); }
-                        }
-                    }
-                }
-            }
-            return false; 
-        }
-
-        // --- Motivational Messages ---
-        const winMessages = [
-            "¡Eres un genio!",
-            "¡Trabajo fantástico!",
-            "¡Cerebro en forma!",
-            "¡Mente brillante!",
-            "¡Súper estrategia!",
-            "¡Increíble lógica!"
-        ];
-
-        // --- UTILS ---
-        function formatTime(totalSeconds) {
-            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
-            const s = (totalSeconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        function getRandomWinMessage() {
-            return winMessages[Math.floor(Math.random() * winMessages.length)];
-        }
-
-        // --- UI NAVIGATION ---
-        function setDifficulty(level) {
-            currentDifficulty = level;
-            const btnNormal = document.getElementById('btn-diff-normal');
-            const btnPro = document.getElementById('btn-diff-pro');
-            
-            if (level === 'normal') {
-                btnNormal.className = "px-6 py-2 rounded-xl font-black bg-green-500 text-white shadow-md transform scale-105 transition-all";
-                btnPro.className = "px-6 py-2 rounded-xl font-bold bg-white text-gray-500 hover:bg-red-50 transition-all";
-            } else {
-                btnPro.className = "px-6 py-2 rounded-xl font-black bg-red-500 text-white shadow-md transform scale-105 transition-all";
-                btnNormal.className = "px-6 py-2 rounded-xl font-bold bg-white text-gray-500 hover:bg-green-50 transition-all";
-            }
-        }
-
-        function showScreen(screenId) {
-            document.getElementById('screen-menu').classList.add('hidden');
-            document.getElementById('screen-game').classList.add('hidden');
-            document.getElementById('modal').classList.add('hidden');
-            
-            document.getElementById(screenId).classList.remove('hidden');
-            if(screenId === 'screen-game') {
-                document.getElementById('screen-game').classList.add('flex');
-            }
-        }
-
-        function returnToMenu() {
-            clearInterval(timerInterval);
-            gameActive = false;
-            showScreen('screen-menu');
-        }
-
-        function showModal(title, message, icon, btnText, btnAction) {
-            const modal = document.getElementById('modal');
-            const content = document.getElementById('modal-content');
-            
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-message').innerText = message;
-            document.getElementById('modal-icon').innerText = icon;
-            
-            const btn = document.getElementById('modal-btn');
-            btn.innerText = btnText;
-            btn.onclick = () => {
-                modal.classList.add('hidden');
-                btnAction();
-            };
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }, 10);
-        }
-
-        // --- GAME LOOP & MODES ---
-        function startGame(mode) {
-            currentMode = mode;
-            currentLevelIndex = 0;
-            gameActive = true;
-            
-            const b1Wrap = document.getElementById('board-1-wrapper');
-            const b2Wrap = document.getElementById('board-2-wrapper');
-            const title = document.getElementById('game-title');
-            
-            b1Wrap.classList.remove('hidden');
-            b1Wrap.classList.add('flex');
-            
-            document.getElementById('grid-1').innerHTML = Array(36).fill('<div class="grid-cell"></div>').join('');
-            document.getElementById('grid-2').innerHTML = Array(36).fill('<div class="grid-cell"></div>').join('');
-
-            if (mode === 'individual' || mode === 'challenge') {
-                b2Wrap.classList.add('hidden');
-                b2Wrap.classList.remove('flex');
-                document.getElementById('board-1-title').classList.add('hidden');
-            } 
-            else if (mode === 'versus') {
-                b2Wrap.classList.remove('hidden');
-                b2Wrap.classList.add('flex');
-                document.getElementById('board-1-title').classList.remove('hidden');
-            }
-
-            showScreen('screen-game');
-
-            setTimeout(() => {
-                const difIndicator = currentDifficulty === 'pro' ? ' 🔥' : '';
-                if (mode === 'individual') {
-                    title.innerText = "Juego Libre" + difIndicator;
-                    timeSeconds = 0;
-                    startTimer(true); 
-                    loadLevel(currentLevelIndex);
-                } 
-                else if (mode === 'challenge') {
-                    title.innerText = "Reto Reloj" + difIndicator;
-                    timeSeconds = currentDifficulty === 'pro' ? 180 : 120; // 3 min para PRO, 2 min Normal
-                    startTimer(false); 
-                    loadLevel(currentLevelIndex);
-                } 
-                else if (mode === 'versus') {
-                    title.innerText = "Reto Doble" + difIndicator;
-                    timeSeconds = 0;
-                    startTimer(true);
-                    loadVersusLevel(currentLevelIndex);
-                }
-            }, 50);
-        }
-
-        function startTimer(countUp) {
-            clearInterval(timerInterval);
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                if (!gameActive) return;
-                
-                if (countUp) {
-                    timeSeconds++;
-                } else {
-                    timeSeconds--;
-                    if (timeSeconds <= 0) {
-                        clearInterval(timerInterval);
-                        gameActive = false;
-                        showModal("¡Tiempo agotado!", "No te rindas, vuelve a intentarlo.", "⏳", "Volver al Menú", returnToMenu);
-                        return;
-                    }
-                }
-                updateTimerDisplay();
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            document.getElementById('timer-display').innerText = formatTime(timeSeconds);
-        }
-
-        function loadLevel(index) {
-            document.getElementById('level-indicator').innerText = `Nivel ${index + 1}`;
-            const levelData = createRandomLevel();
-            board1 = new GameBoard('board-1', levelData, () => onWinSingle(1));
-        }
-
-        function loadVersusLevel(index) {
-            document.getElementById('level-indicator').innerText = `Nivel ${index + 1}`;
-            const levelData = createRandomLevel();
-            const levelData1 = JSON.parse(JSON.stringify(levelData));
-            const levelData2 = JSON.parse(JSON.stringify(levelData));
-            
-            board1 = new GameBoard('board-1', levelData1, () => onWinVersus(1));
-            board2 = new GameBoard('board-2', levelData2, () => onWinVersus(2));
-        }
-
-        function onWinSingle(player) {
-            gameActive = false;
-            if (currentMode === 'challenge') {
-                clearInterval(timerInterval);
-            }
-
-            showModal("¡Nivel Superado!", getRandomWinMessage(), "⭐", "Siguiente Nivel ➡️", () => {
-                currentLevelIndex++;
-                gameActive = true;
-                if (currentMode === 'challenge') startTimer(false); // resume
-                loadLevel(currentLevelIndex);
-            });
-        }
-
-        function onWinVersus(winnerNum) {
-            gameActive = false;
-            clearInterval(timerInterval);
-            board1.disable();
-            board2.disable();
-            
-            showModal(`¡Ganó el Jugador ${winnerNum}!`, "¡Qué rapidez! Excelente competencia.", winnerNum === 1 ? "🥇" : "🥈", "Siguiente Nivel ➡️", () => {
-                currentLevelIndex++;
-                gameActive = true;
-                startTimer(true);
-                loadVersusLevel(currentLevelIndex);
-            });
-        }
-
-        // --- GAME LOGIC (Board Class) ---
+        /* =========================================================================
+         * 4. CLASE DEL TABLERO INTERACTIVO (DRAG, UNDO, HINT, RESIZE OBSERVER)
+         * ========================================================================= */
         class GameBoard {
-            constructor(containerId, vehicles, onWinCallback) {
+            constructor(containerId, movesId, vehicles, onWinCallback) {
                 this.container = document.getElementById(containerId);
-                this.vehicles = vehicles;
+                this.movesEl = document.getElementById(movesId);
+                this.initialVehicles = JSON.parse(JSON.stringify(vehicles));
+                this.vehicles = JSON.parse(JSON.stringify(vehicles));
                 this.onWin = onWinCallback;
                 this.disabled = false;
-                
-                const oldVehicles = this.container.querySelectorAll('.vehicle');
-                oldVehicles.forEach(v => v.remove());
+                this.movesCount = 0;
+                this.history = [];
+
+                this.clearBoardDOM();
+                this.updateMovesUI();
 
                 this.cellSize = 0;
                 this.draggingVehicle = null;
                 this.dragStartObj = null;
 
                 this.render();
-                
-                window.addEventListener('resize', () => this.render());
+
+                // ResizeObserver único por contenedor para evitar fugas de memoria
+                if (this.container._resizeObserver) {
+                    this.container._resizeObserver.disconnect();
+                }
+                this.container._resizeObserver = new ResizeObserver(() => this.render());
+                this.container._resizeObserver.observe(this.container);
+            }
+
+            clearBoardDOM() {
+                const oldVehicles = this.container.querySelectorAll('.vehicle');
+                oldVehicles.forEach(v => v.remove());
             }
 
             disable() {
                 this.disabled = true;
             }
 
+            updateMovesUI() {
+                if (this.movesEl) this.movesEl.innerText = this.movesCount;
+            }
+
+            saveHistoryState() {
+                this.history.push(JSON.parse(JSON.stringify(this.vehicles)));
+            }
+
+            undoMove() {
+                if (this.disabled || this.history.length === 0) return;
+                playSound('undo');
+                this.vehicles = this.history.pop();
+                this.movesCount = Math.max(0, this.movesCount - 1);
+                this.updateMovesUI();
+                this.clearBoardDOM();
+                this.render();
+            }
+
+            resetLevel() {
+                if (this.disabled || this.movesCount === 0) return;
+                playSound('undo');
+                this.vehicles = JSON.parse(JSON.stringify(this.initialVehicles));
+                this.history = [];
+                this.movesCount = 0;
+                this.updateMovesUI();
+                this.clearBoardDOM();
+                this.render();
+            }
+
+            showHint() {
+                if (this.disabled) return;
+                const sol = solveBoardState(this.vehicles);
+                if (!sol.solvable || !sol.firstMove) {
+                    playSound('error');
+                    return;
+                }
+                playSound('hint');
+                const targetVehicle = this.vehicles[sol.firstMove.vehicleIdx];
+                const el = document.getElementById(`${this.container.id}-${targetVehicle.id}`);
+                if (el) {
+                    el.classList.remove('hint-active');
+                    void el.offsetWidth; // reflow
+                    el.classList.add('hint-active');
+                }
+            }
+
             render() {
                 const rect = this.container.getBoundingClientRect();
+                if (rect.width === 0) return;
                 this.cellSize = rect.width / 6;
 
                 this.vehicles.forEach(v => {
@@ -637,12 +1007,32 @@
                     if (!el) {
                         el = document.createElement('div');
                         el.id = `${this.container.id}-${v.id}`;
-                        el.className = `vehicle dir-${v.dir} ${v.color}`;
-                        
+                        el.className = `vehicle dir-${v.dir} ${v.color} ${v.locked ? 'locked' : ''}`;
+
+                        const body = document.createElement('div');
+                        body.className = 'vehicle-body';
+
+                        const badge = document.createElement('div');
+                        badge.className = 'dir-badge';
+                        if (v.isHero) {
+                            badge.innerHTML = '⭐ <span class="text-xs">➔</span>';
+                        } else {
+                            badge.innerHTML = v.dir === 'H' ? '↔' : '↕';
+                        }
+                        body.appendChild(badge);
+
+                        if (v.locked) {
+                            const lock = document.createElement('div');
+                            lock.className = 'lock-overlay';
+                            lock.innerHTML = '<span class="text-2xl drop-shadow">🔒</span>';
+                            body.appendChild(lock);
+                        }
+
+                        el.appendChild(body);
                         el.addEventListener('pointerdown', (e) => this.startDrag(e, v, el));
                         this.container.appendChild(el);
                     }
-                    
+
                     el.style.width = v.dir === 'H' ? `${this.cellSize * v.len}px` : `${this.cellSize}px`;
                     el.style.height = v.dir === 'V' ? `${this.cellSize * v.len}px` : `${this.cellSize}px`;
                     el.style.left = `${v.x * this.cellSize}px`;
@@ -653,10 +1043,24 @@
             startDrag(e, vehicle, el) {
                 if (this.disabled) return;
                 e.preventDefault();
+
+                // Si el vehículo tiene candado matemático, abrir reto antes de permitir arrastrar
+                if (vehicle.locked) {
+                    playSound('pop');
+                    openMathModal(() => {
+                        vehicle.locked = false;
+                        el.classList.remove('locked');
+                        const lockOverlay = el.querySelector('.lock-overlay');
+                        if (lockOverlay) lockOverlay.remove();
+                    });
+                    return;
+                }
+
                 el.setPointerCapture(e.pointerId);
+                el.classList.add('dragging');
+                el.classList.remove('hint-active');
 
                 this.draggingVehicle = vehicle;
-                
                 const bounds = this.calculateBounds(vehicle);
 
                 this.dragStartObj = {
@@ -664,6 +1068,8 @@
                     pointerId: e.pointerId,
                     startX: e.clientX,
                     startY: e.clientY,
+                    origGridX: vehicle.x,
+                    origGridY: vehicle.y,
                     initialLeft: vehicle.x * this.cellSize,
                     initialTop: vehicle.y * this.cellSize,
                     minPos: bounds.min * this.cellSize,
@@ -688,7 +1094,6 @@
 
                 const dx = e.clientX - this.dragStartObj.startX;
                 const dy = e.clientY - this.dragStartObj.startY;
-
                 const v = this.draggingVehicle;
                 const el = this.dragStartObj.el;
 
@@ -705,36 +1110,52 @@
 
             endDrag(e) {
                 if (!this.draggingVehicle) return;
-                
+
                 const v = this.draggingVehicle;
                 const el = this.dragStartObj.el;
-                
-                if (v.dir === 'H') {
-                    const currentLeft = parseFloat(el.style.left);
-                    v.x = Math.round(currentLeft / this.cellSize);
-                } else {
-                    const currentTop = parseFloat(el.style.top);
-                    v.y = Math.round(currentTop / this.cellSize);
+                el.classList.remove('dragging');
+
+                const newX = v.dir === 'H' ? Math.round(parseFloat(el.style.left) / this.cellSize) : v.x;
+                const newY = v.dir === 'V' ? Math.round(parseFloat(el.style.top) / this.cellSize) : v.y;
+
+                const moved = (newX !== this.dragStartObj.origGridX) || (newY !== this.dragStartObj.origGridY);
+
+                if (moved) {
+                    // Guardar estado previo antes de consolidar el cambio
+                    const prevSnapshot = JSON.parse(JSON.stringify(this.vehicles));
+                    this.history.push(prevSnapshot);
+
+                    v.x = newX;
+                    v.y = newY;
+                    this.movesCount++;
+                    this.updateMovesUI();
+                    playSound('move');
                 }
 
                 el.style.left = `${v.x * this.cellSize}px`;
                 el.style.top = `${v.y * this.cellSize}px`;
-                el.releasePointerCapture(this.dragStartObj.pointerId);
+                if (el.hasPointerCapture(this.dragStartObj.pointerId)) {
+                    el.releasePointerCapture(this.dragStartObj.pointerId);
+                }
 
                 this.draggingVehicle = null;
                 this.dragStartObj = null;
 
+                // Comprobar victoria (el coche estrella llega a la salida en x === 4)
                 if (v.isHero && v.x === 6 - v.len) {
-                    el.style.left = `${6 * this.cellSize}px`;
+                    this.disabled = true;
+                    el.style.left = `${6.2 * this.cellSize}px`;
+                    playSound('win');
+                    launchConfetti();
                     setTimeout(() => {
-                        this.onWin();
-                    }, 300);
+                        this.onWin(this.movesCount);
+                    }, 380);
                 }
             }
 
             calculateBounds(targetVehicle) {
-                const grid = Array(6).fill().map(() => Array(6).fill(null));
-                
+                const grid = Array(6).fill(null).map(() => Array(6).fill(null));
+
                 this.vehicles.forEach(v => {
                     if (v.id === targetVehicle.id) return;
                     for (let i = 0; i < v.len; i++) {
@@ -766,6 +1187,259 @@
             }
         }
 
+        /* =========================================================================
+         * 5. CONTROL DE NAVEGACIÓN, MODOS Y RECOMPENSAS
+         * ========================================================================= */
+        const winMessages = [
+            "¡Visión espacial de campeonato!",
+            "¡Has despejado el atasco como un profesional!",
+            "¡Lógica brillante, sigue así!",
+            "¡Qué gran planificación de movimientos!",
+            "¡Mente matemática en plena forma!"
+        ];
+
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function setDifficulty(level) {
+            currentDifficulty = level;
+            playSound('pop');
+
+            const styles = {
+                easy:   { active: "flex-1 py-2 px-3 rounded-lg font-black text-sm bg-emerald-500 text-white shadow transition-all" },
+                normal: { active: "flex-1 py-2 px-3 rounded-lg font-black text-sm bg-sky-500 text-white shadow transition-all" },
+                pro:    { active: "flex-1 py-2 px-3 rounded-lg font-black text-sm bg-rose-500 text-white shadow transition-all" }
+            };
+            const inactive = "flex-1 py-2 px-3 rounded-lg font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all";
+
+            document.getElementById('btn-diff-easy').className = level === 'easy' ? styles.easy.active : inactive;
+            document.getElementById('btn-diff-normal').className = level === 'normal' ? styles.normal.active : inactive;
+            document.getElementById('btn-diff-pro').className = level === 'pro' ? styles.pro.active : inactive;
+        }
+
+        function showScreen(screenId) {
+            document.getElementById('screen-menu').classList.add('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('math-modal').classList.add('hidden');
+
+            const target = document.getElementById(screenId);
+            target.classList.remove('hidden');
+            if (screenId === 'screen-game') target.classList.add('flex');
+        }
+
+        function returnToMenu() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            playSound('pop');
+            showScreen('screen-menu');
+        }
+
+        function skipToNewLevel() {
+            playSound('pop');
+            if (currentMode === 'versus') {
+                loadVersusLevel(currentLevelIndex);
+            } else {
+                loadLevel(currentLevelIndex);
+            }
+        }
+
+        function startGame(mode) {
+            playSound('pop');
+            currentMode = mode;
+            currentLevelIndex = 0;
+            gameActive = true;
+
+            const b1Wrap = document.getElementById('board-1-wrapper');
+            const b2Wrap = document.getElementById('board-2-wrapper');
+            const title = document.getElementById('game-title');
+
+            document.getElementById('grid-1').innerHTML = Array(36).fill('<div class="grid-cell"></div>').join('');
+            document.getElementById('grid-2').innerHTML = Array(36).fill('<div class="grid-cell"></div>').join('');
+
+            if (mode === 'versus') {
+                b2Wrap.classList.remove('hidden');
+                b2Wrap.classList.add('flex');
+                document.getElementById('board-1-title').classList.remove('hidden');
+            } else {
+                b2Wrap.classList.add('hidden');
+                b2Wrap.classList.remove('flex');
+                document.getElementById('board-1-title').classList.add('hidden');
+            }
+
+            showScreen('screen-game');
+
+            setTimeout(() => {
+                const badge = currentDifficulty === 'pro' ? ' 🔥' : (currentDifficulty === 'easy' ? ' 🌱' : ' 🚗');
+                if (mode === 'individual') {
+                    title.innerText = "Modo Ingenio" + badge;
+                    timeSeconds = 0;
+                    startTimer(true);
+                    loadLevel(currentLevelIndex);
+                } else if (mode === 'challenge') {
+                    title.innerText = "Contrarreloj" + badge;
+                    timeSeconds = currentDifficulty === 'pro' ? 180 : 120;
+                    startTimer(false);
+                    loadLevel(currentLevelIndex);
+                } else if (mode === 'versus') {
+                    title.innerText = "Duelo Pizarra" + badge;
+                    timeSeconds = 0;
+                    startTimer(true);
+                    loadVersusLevel(currentLevelIndex);
+                }
+            }, 40);
+        }
+
+        function startTimer(countUp) {
+            clearInterval(timerInterval);
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                if (!gameActive) return;
+
+                if (countUp) {
+                    timeSeconds++;
+                } else {
+                    timeSeconds--;
+                    if (timeSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        gameActive = false;
+                        playSound('error');
+                        showModal(
+                            "¡Tiempo agotado!",
+                            `Has superado ${currentLevelIndex} niveles. ¡Inténtalo de nuevo!`,
+                            "⏳",
+                            "",
+                            "Volver al Menú",
+                            returnToMenu
+                        );
+                        return;
+                    }
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer-display').innerText = formatTime(timeSeconds);
+        }
+
+        function loadLevel(index) {
+            document.getElementById('level-indicator').innerText = `Nivel ${index + 1}`;
+            const levelData = createRandomLevel();
+            document.getElementById('par-indicator').innerText = `Meta estrella (3⭐): ${currentParMoves} movimientos`;
+            board1 = new GameBoard('board-1', 'moves-1', levelData, (moves) => onWinSingle(moves));
+        }
+
+        function loadVersusLevel(index) {
+            document.getElementById('level-indicator').innerText = `Duelo ${index + 1}`;
+            const levelData = createRandomLevel();
+            document.getElementById('par-indicator').innerText = `Óptimo del mapa: ${currentParMoves} movimientos`;
+            board1 = new GameBoard('board-1', 'moves-1', levelData, (moves) => onWinVersus(1, moves));
+            board2 = new GameBoard('board-2', 'moves-2', levelData, (moves) => onWinVersus(2, moves));
+        }
+
+        function onWinSingle(movesUsed) {
+            gameActive = false;
+            let stars = '⭐⭐⭐';
+            if (movesUsed > currentParMoves + 5) stars = '⭐';
+            else if (movesUsed > currentParMoves + 2) stars = '⭐⭐';
+
+            const randomPraise = winMessages[Math.floor(Math.random() * winMessages.length)];
+            const detailMsg = `${randomPraise} (Resuelto en ${movesUsed} movimientos · Óptimo: ${currentParMoves})`;
+
+            showModal("¡Coche Liberado!", detailMsg, "🏆", stars, "Siguiente Nivel ➡️", () => {
+                currentLevelIndex++;
+                gameActive = true;
+                loadLevel(currentLevelIndex);
+            });
+        }
+
+        function onWinVersus(winnerNum, movesUsed) {
+            gameActive = false;
+            board1.disable();
+            board2.disable();
+
+            showModal(
+                `¡Punto para el Jugador ${winnerNum}!`,
+                `Logró escapar en ${movesUsed} movimientos.`,
+                winnerNum === 1 ? "🟣" : "🟢",
+                "⭐⭐⭐",
+                "Siguiente Duelo ➡️",
+                () => {
+                    currentLevelIndex++;
+                    gameActive = true;
+                    loadVersusLevel(currentLevelIndex);
+                }
+            );
+        }
+
+        function showModal(title, message, icon, stars, btnText, btnAction) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modal-content');
+
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-icon').innerText = icon;
+            document.getElementById('modal-stars').innerText = stars;
+
+            const btn = document.getElementById('modal-btn');
+            btn.innerText = btnText;
+            btn.onclick = () => {
+                playSound('pop');
+                modal.classList.add('hidden');
+                btnAction();
+            };
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        /* =========================================================================
+         * 6. SISTEMA LIGERO DE CONFETI EN CANVAS
+         * ========================================================================= */
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = Array.from({ length: 70 }, () => ({
+                x: Math.random() * canvas.width,
+                y: -20 - Math.random() * 100,
+                size: Math.random() * 8 + 6,
+                color: ['#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#ec4899'][Math.floor(Math.random() * 6)],
+                speedY: Math.random() * 4 + 3,
+                speedX: (Math.random() - 0.5) * 4,
+                angle: Math.random() * Math.PI * 2,
+                spin: (Math.random() - 0.5) * 0.2
+            }));
+
+            let frame = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    p.angle += p.spin;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    ctx.restore();
+                });
+                frame++;
+                if (frame < 95) requestAnimationFrame(animate);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            animate();
+        }
     </script>
 </body>
 </html>
