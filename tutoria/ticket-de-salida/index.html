@@ -3,39 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Tickets de Salida - 3º Primaria</title>
+  <title>TICKET DE SALIDA 🎟️ - 3º Primaria</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     body {
       font-family: 'Nunito', sans-serif;
+      font-weight: 400;
       background-color: #f1f5f9;
       color: #1e293b;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
     }
     .ticket-font {
       font-family: 'Quicksand', sans-serif;
     }
 
-    /* Estilos diferenciados para Pregunta (Consigna sin subrayar) vs Caja de Datos */
+    /* Estilos diferenciados para Pregunta (peso medio, sin exceso de negrita) vs Caja de Datos */
     .pregunta-consigna {
       font-family: 'Quicksand', sans-serif;
-      font-weight: 800;
+      font-weight: 600;
       text-decoration: none;
       color: #0f172a;
     }
     .datos-trabajo {
       font-family: 'Nunito', sans-serif;
-      font-weight: 700;
+      font-weight: 500;
       text-decoration: none !important;
       color: #1e293b;
       background-color: #f8fafc;
       border: 1px solid #cbd5e1;
-      border-left: 3.5px solid #475569;
+      border-left: 3px solid #475569;
       border-radius: 6px;
       padding: 2px 8px;
       display: inline-block;
@@ -52,14 +56,14 @@
       background-size: 100% 1.4rem;
       line-height: 1.4rem;
       background-color: #ffffff;
-      border: 0.5px solid #cbd5e1;
+      border: 1px solid #cbd5e1;
     }
     .cuadricula-escolar {
       background-size: 16px 16px;
       background-image: 
-        linear-gradient(to right, #e2e8f0 0.5px, transparent 0.5px),
-        linear-gradient(to bottom, #e2e8f0 0.5px, transparent 0.5px);
-      border: 0.5px solid #cbd5e1;
+        linear-gradient(to right, #cbd5e1 0.75px, transparent 0.75px),
+        linear-gradient(to bottom, #cbd5e1 0.75px, transparent 0.75px);
+      border: 1px solid #cbd5e1;
       background-color: #ffffff;
     }
 
@@ -104,7 +108,7 @@
       box-sizing: border-box;
     }
 
-    /* Reglas estrictas de Impresión A4 */
+    /* Reglas estrictas de Impresión A4 Vectorial */
     @page {
       size: A4 portrait;
       margin: 0mm;
@@ -162,36 +166,36 @@
       <div class="flex items-center gap-3">
         <span class="text-3xl">🎟️</span>
         <div>
-          <h1 class="text-xl font-extrabold tracking-tight">Generador de Tickets de Salida · 3º Primaria</h1>
-          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Caja de datos destacada y respuesta en caja de texto por defecto</p>
+          <h1 class="text-xl font-bold tracking-tight">TICKET DE SALIDA 🎟️ · Generador 3º Primaria</h1>
+          <p class="text-xs text-slate-300">Formato DIN A4 Vertical · Exportación en Alta Resolución (384 DPI) y tipografía suave</p>
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <button onclick="copiarPromptIA()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5" title="Copia un prompt listo para pedirle a Gemini un JSON de cualquier tema">
+        <button onclick="copiarPromptIA()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold text-xs px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5" title="Copia un prompt listo para pedirle a Gemini un JSON de cualquier tema">
           <span>🤖</span> Copiar Prompt para IA
         </button>
-        <button onclick="descargarPlantillaJSON()" class="bg-slate-700 hover:bg-slate-600 text-white border border-slate-500 font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+        <button onclick="descargarPlantillaJSON()" class="bg-slate-700 hover:bg-slate-600 text-white border border-slate-500 font-medium text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5">
           <span>📥</span> Descargar JSON
         </button>
-        <label class="cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5">
+        <label class="cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs px-3 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5">
           <span>📂</span> Subir JSON
           <input type="file" id="jsonFileInput" accept=".json" class="hidden" onchange="cargarArchivoJSON(event)" />
         </label>
-        <button onclick="abrirModalPegarJSON()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5">
+        <button onclick="abrirModalPegarJSON()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-medium text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5">
           <span>📋</span> Pegar JSON
         </button>
-        <button onclick="window.print()" class="bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-xs px-4 py-2 rounded-lg shadow transition flex items-center gap-1.5">
-          <span>🖨️</span> Imprimir / Guardar PDF
+        <button onclick="window.print()" class="bg-white hover:bg-slate-100 text-slate-900 font-semibold text-xs px-4 py-2 rounded-lg shadow transition flex items-center gap-1.5" title="Genera un PDF vectorial 100% nítido usando Guardar como PDF">
+          <span>🖨️</span> Imprimir / PDF Vectorial
         </button>
-        <button onclick="exportarPDFDirecto()" class="bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5" title="Descarga directa mediante html2pdf">
-          <span>📄</span> Exportar PDF
+        <button onclick="exportarPDFDirecto()" class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5" title="Descarga directa en alta resolución (Scale 4x)">
+          <span>📄</span> Exportar PDF HD
         </button>
       </div>
     </div>
   </header>
 
   <!-- NOTIFICACIÓN TOAST -->
-  <div id="toast" class="no-print fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-semibold flex items-center gap-2 border border-slate-700">
+  <div id="toast" class="no-print fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center gap-2 border border-slate-700">
     <span id="toast-icon">✅</span>
     <span id="toast-msg">Acción completada</span>
   </div>
@@ -200,15 +204,15 @@
   <div id="modalJSON" class="no-print fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 border border-slate-200">
       <div class="flex justify-between items-center mb-3">
-        <h3 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">📋 Pegar código JSON de preguntas</h3>
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">📋 Pegar código JSON de preguntas</h3>
         <button onclick="cerrarModalPegarJSON()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
       </div>
       <p class="text-xs text-slate-500 mb-3">Pega aquí el bloque JSON generado por la IA o editado por ti. Se validará automáticamente y separará la pregunta de la caja de datos.</p>
       <textarea id="textareaPasteJSON" rows="10" class="w-full font-mono text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-slate-50" placeholder='{"asignatura": "Lengua Castellana", "tema": "...", "preguntas": [...]}'></textarea>
-      <div id="jsonPasteError" class="hidden mt-2 text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg font-semibold"></div>
+      <div id="jsonPasteError" class="hidden mt-2 text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg font-medium"></div>
       <div class="mt-4 flex justify-end gap-2">
-        <button onclick="cerrarModalPegarJSON()" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100">Cancelar</button>
-        <button onclick="procesarJSONPegado()" class="px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow">Cargar Preguntas</button>
+        <button onclick="cerrarModalPegarJSON()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100">Cancelar</button>
+        <button onclick="procesarJSONPegado()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow">Cargar Preguntas</button>
       </div>
     </div>
   </div>
@@ -221,14 +225,14 @@
 
       <!-- 1. Ajustes Generales del Ticket -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-        <h2 class="text-base font-extrabold text-slate-900 mb-4 flex items-center gap-2">
-          <span>⚙️</span> 1. Configuración del Ticket de Salida
+        <h2 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <span>⚙️</span> 1. Configuración de TICKET DE SALIDA 🎟️
         </h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Asignatura y Color</label>
-            <select id="cfgAsignatura" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Asignatura y Color</label>
+            <select id="cfgAsignatura" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
               <option value="Lengua Castellana" selected>🔵 Lengua Castellana (Azul)</option>
               <option value="Matemáticas">🔴 Matemáticas (Rojo)</option>
               <option value="Ciencias Sociales">🌸 Ciencias Sociales (Rosa claro)</option>
@@ -239,21 +243,21 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Distribución en Folio A4</label>
-            <select id="cfgLayout" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Distribución en Folio A4</label>
+            <select id="cfgLayout" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
               <option value="2">2 Tickets por A4 (Amplio Vertical)</option>
               <option value="4">4 Tickets por A4 (Cuadrícula 2×2)</option>
             </select>
           </div>
 
           <div class="sm:col-span-2">
-            <label class="block text-xs font-bold text-slate-700 mb-1">Título o Saberes de la Sesión</label>
-            <input type="text" id="cfgTema" oninput="generarVistaPrevia()" value="Las sílabas, sustantivos y orden alfabético" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" />
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Título o Saberes de la Sesión</label>
+            <input type="text" id="cfgTema" oninput="generarVistaPrevia()" value="Las sílabas, sustantivos y orden alfabético" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium" />
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Preguntas por Ticket</label>
-            <select id="cfgNumPreguntas" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Preguntas por Ticket</label>
+            <select id="cfgNumPreguntas" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
               <option value="1">1 pregunta</option>
               <option value="2">2 preguntas</option>
               <option value="3" selected>3 preguntas (Recomendado)</option>
@@ -262,8 +266,8 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Modelos Anticopia</label>
-            <select id="cfgNumModelos" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Modelos Anticopia</label>
+            <select id="cfgNumModelos" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium">
               <option value="1">1 Modelo único (A)</option>
               <option value="2">2 Modelos (A y B)</option>
               <option value="3" selected>3 Modelos (A, B y C)</option>
@@ -272,14 +276,14 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Total Tickets (Alumnos)</label>
-            <input type="number" id="cfgTotalCopias" min="1" max="60" value="6" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-semibold" />
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Total Tickets (Alumnos)</label>
+            <input type="number" id="cfgTotalCopias" min="1" max="60" value="6" onchange="generarVistaPrevia()" class="w-full text-sm border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none font-medium" />
           </div>
 
           <div class="flex items-center pt-4">
             <label class="inline-flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="cfgBarajarOrden" onchange="generarVistaPrevia()" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
-              <span class="text-xs font-bold text-slate-700">Alternar orden entre modelos</span>
+              <span class="text-xs font-medium text-slate-700">Alternar orden entre modelos</span>
             </label>
           </div>
 
@@ -287,7 +291,7 @@
             <label class="inline-flex items-center gap-2.5 cursor-pointer select-none bg-emerald-50 border border-emerald-200 px-3 py-2.5 rounded-xl w-full">
               <input type="checkbox" id="cfgIncluirSoluciones" checked onchange="generarVistaPrevia()" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500" />
               <div>
-                <span class="block text-xs font-extrabold text-emerald-950">✅ Incluir Hoja de Soluciones para el profesor al final del PDF</span>
+                <span class="block text-xs font-semibold text-emerald-950">✅ Incluir Hoja de Soluciones para el profesor al final del PDF</span>
                 <span class="block text-[11px] text-emerald-700">Genera una página A4 final independiente con las respuestas de cada modelo.</span>
               </div>
             </label>
@@ -299,12 +303,12 @@
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
         <div class="flex items-center justify-between mb-3">
           <div>
-            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
               <span>📝</span> 2. Banco de Preguntas y Datos
             </h2>
-            <p class="text-xs text-slate-500">La <b>Pregunta</b> saldrá en negrita limpia y los <b>Datos</b> en su cajita destacada.</p>
+            <p class="text-xs text-slate-500">La pregunta saldrá con peso suave y los datos en su cajita destacada.</p>
           </div>
-          <button onclick="anadirBloquePregunta()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition shrink-0">
+          <button onclick="anadirBloquePregunta()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-sm transition shrink-0">
             + Añadir Bloque
           </button>
         </div>
@@ -318,11 +322,11 @@
     <!-- PANEL DERECHO: VISTA PREVIA DIN A4 VERTICAL REAL -->
     <section class="lg:col-span-7" id="columnaDerecha">
       <div class="no-print mb-3 flex flex-wrap items-center justify-between gap-2 bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm">
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
           <span>📐</span>
-          <span>Vista Previa DIN A4 Vertical (Pregunta limpia + Caja de datos + Respuesta en caja)</span>
+          <span>Vista Previa DIN A4 Vertical (Alta resolución · Tipografía limpia sin exceso de negrita)</span>
         </div>
-        <span id="resumenPaginas" class="text-xs font-extrabold bg-slate-900 text-white px-2.5 py-1 rounded-full"></span>
+        <span id="resumenPaginas" class="text-xs font-semibold bg-slate-800 text-white px-2.5 py-1 rounded-full"></span>
       </div>
 
       <!-- Contenedor donde se inyectan y escalan proporcionalmente las páginas A4 -->
@@ -425,10 +429,10 @@
 
     // Metadatos visuales por modelo anticopia
     const MODELOS_META = [
-      { id: "A", nombre: "🚀 Modelo A", nombreLargo: "Modelo 🚀 Cohete (A)", badgeBg: "bg-white text-slate-900 border-slate-400" },
-      { id: "B", nombre: "⭐ Modelo B", nombreLargo: "Modelo ⭐ Estrella (B)", badgeBg: "bg-white text-slate-900 border-slate-400" },
-      { id: "C", nombre: "⚡ Modelo C", nombreLargo: "Modelo ⚡ Rayo (C)", badgeBg: "bg-white text-slate-900 border-slate-400" },
-      { id: "D", nombre: "🌍 Modelo D", nombreLargo: "Modelo 🌍 Planeta (D)", badgeBg: "bg-white text-slate-900 border-slate-400" }
+      { id: "A", nombre: "🚀 Modelo A", nombreLargo: "Modelo 🚀 Cohete (A)", badgeBg: "bg-white text-slate-800 border-slate-300" },
+      { id: "B", nombre: "⭐ Modelo B", nombreLargo: "Modelo ⭐ Estrella (B)", badgeBg: "bg-white text-slate-800 border-slate-300" },
+      { id: "C", nombre: "⚡ Modelo C", nombreLargo: "Modelo ⚡ Rayo (C)", badgeBg: "bg-white text-slate-800 border-slate-300" },
+      { id: "D", nombre: "🌍 Modelo D", nombreLargo: "Modelo 🌍 Planeta (D)", badgeBg: "bg-white text-slate-800 border-slate-300" }
     ];
 
     // PALETA DE COLORES PERSONALIZADA:
@@ -436,57 +440,57 @@
     const ASIGNATURAS_META = {
       "Matemáticas": {
         icono: "📐",
-        bordeTicket: "border-red-600",
+        bordeTicket: "border-red-500",
         colorHeader: "bg-red-50 border-red-200",
         badge: "bg-red-600 text-white",
         numCircle: "bg-red-600 text-white",
-        semaforoBg: "bg-red-50/50 border-red-200",
-        datosBorder: "border-l-red-500 bg-red-50/30"
+        semaforoBg: "bg-red-50/40 border-red-200",
+        datosBorder: "border-l-red-500 bg-red-50/20"
       },
       "Lengua Castellana": {
         icono: "📚",
-        bordeTicket: "border-blue-600",
+        bordeTicket: "border-blue-500",
         colorHeader: "bg-blue-50 border-blue-200",
         badge: "bg-blue-600 text-white",
         numCircle: "bg-blue-600 text-white",
-        semaforoBg: "bg-blue-50/50 border-blue-200",
-        datosBorder: "border-l-blue-600 bg-blue-50/40"
+        semaforoBg: "bg-blue-50/40 border-blue-200",
+        datosBorder: "border-l-blue-600 bg-blue-50/30"
       },
       "Ciencias Sociales": {
         icono: "🌍",
         bordeTicket: "border-pink-400",
-        colorHeader: "bg-pink-100/90 border-pink-300",
+        colorHeader: "bg-pink-100/80 border-pink-300",
         badge: "bg-pink-500 text-white",
         numCircle: "bg-pink-500 text-white",
-        semaforoBg: "bg-pink-50/60 border-pink-200",
-        datosBorder: "border-l-pink-500 bg-pink-50/40"
+        semaforoBg: "bg-pink-50/50 border-pink-200",
+        datosBorder: "border-l-pink-400 bg-pink-50/30"
       },
       "Ciencias Naturales": {
         icono: "🌿",
-        bordeTicket: "border-emerald-600",
+        bordeTicket: "border-emerald-500",
         colorHeader: "bg-emerald-50 border-emerald-200",
         badge: "bg-emerald-600 text-white",
         numCircle: "bg-emerald-600 text-white",
-        semaforoBg: "bg-emerald-50/50 border-emerald-200",
-        datosBorder: "border-l-emerald-600 bg-emerald-50/40"
+        semaforoBg: "bg-emerald-50/40 border-emerald-200",
+        datosBorder: "border-l-emerald-600 bg-emerald-50/30"
       },
       "Música": {
         icono: "🎵",
-        bordeTicket: "border-purple-600",
+        bordeTicket: "border-purple-500",
         colorHeader: "bg-purple-50 border-purple-200",
         badge: "bg-purple-600 text-white",
         numCircle: "bg-purple-600 text-white",
-        semaforoBg: "bg-purple-50/50 border-purple-200",
-        datosBorder: "border-l-purple-600 bg-purple-50/40"
+        semaforoBg: "bg-purple-50/40 border-purple-200",
+        datosBorder: "border-l-purple-600 bg-purple-50/30"
       },
       "Tutoría / Emociones": {
         icono: "💡",
-        bordeTicket: "border-teal-600",
+        bordeTicket: "border-teal-500",
         colorHeader: "bg-teal-50 border-teal-200",
         badge: "bg-teal-600 text-white",
         numCircle: "bg-teal-600 text-white",
-        semaforoBg: "bg-teal-50/50 border-teal-200",
-        datosBorder: "border-l-teal-600 bg-teal-50/40"
+        semaforoBg: "bg-teal-50/40 border-teal-200",
+        datosBorder: "border-l-teal-600 bg-teal-50/30"
       }
     };
 
@@ -501,7 +505,6 @@
         return { pregunta: enunciado, datos: datos };
       }
 
-      // 1. Si hay un cierre de interrogación '?' o exclamación '!' seguido de texto
       const matchInterrogacion = enunciado.match(/^(.+?[?!])\s+(.+)$/);
       if (matchInterrogacion) {
         return {
@@ -510,7 +513,6 @@
         };
       }
 
-      // 2. Si hay dos puntos ':' seguidos de los datos
       const idxDosPuntos = enunciado.indexOf(":");
       if (idxDosPuntos !== -1 && idxDosPuntos < enunciado.length - 2) {
         return {
@@ -539,34 +541,34 @@
           variantesHTML += `
             <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                <span class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                   Variante ${vIdx + 1} (Prioridad Modelo ${letraModelo})
                 </span>
                 ${item.variantes.length > 1 ? `
-                  <button onclick="eliminarVariante(${bIdx},${vIdx})" class="text-xs text-rose-500 hover:text-rose-700 font-bold" title="Eliminar variante">✕</button>
+                  <button onclick="eliminarVariante(${bIdx},${vIdx})" class="text-xs text-rose-500 hover:text-rose-700 font-semibold" title="Eliminar variante">✕</button>
                 ` : ''}
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-slate-700 uppercase">
-                  1️⃣ Pregunta o consigna <span class="text-slate-500 font-normal">(Negrita sin subrayar)</span>:
+                <label class="block text-[10px] font-semibold text-slate-600 uppercase">
+                  1️⃣ Pregunta o consigna:
                 </label>
                 <input type="text" value="${escaparHTML(v.enunciado || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'enunciado', this.value)"
                   placeholder="Ej: ¿Qué palabras tienen dos sílabas?"
-                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-bold text-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                  class="w-full text-xs border border-slate-300 rounded px-2 py-1.5 font-medium text-slate-900 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-indigo-700 uppercase">
+                <label class="block text-[10px] font-semibold text-indigo-700 uppercase">
                   2️⃣ Caja de Datos / Palabras / Operaciones:
                 </label>
                 <input type="text" value="${escaparHTML(v.datos || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'datos', this.value)"
                   placeholder="Ej: Casa, perro, dinosaurio, mesa (Opcional)"
-                  class="w-full text-xs border border-indigo-200 bg-indigo-50/30 rounded px-2 py-1.5 font-semibold text-slate-800 focus:ring-1 focus:ring-indigo-500 focus:outline-none" />
+                  class="w-full text-xs border border-indigo-200 bg-indigo-50/30 rounded px-2 py-1.5 font-normal text-slate-800 focus:ring-1 focus:ring-indigo-500 focus:outline-none" />
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-emerald-700 uppercase">3️⃣ Solución para el profesor:</label>
+                <label class="block text-[10px] font-semibold text-emerald-700 uppercase">3️⃣ Solución para el profesor:</label>
                 <input type="text" value="${escaparHTML(v.solucion || '')}" oninput="actualizarVariante(${bIdx}, ${vIdx}, 'solucion', this.value)"
                   placeholder="Escribe aquí la respuesta correcta..."
-                  class="w-full text-xs border border-emerald-200 bg-emerald-50/40 rounded px-2 py-1 font-semibold text-emerald-950 focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
+                  class="w-full text-xs border border-emerald-200 bg-emerald-50/40 rounded px-2 py-1 font-medium text-emerald-950 focus:ring-1 focus:ring-emerald-500 focus:outline-none" />
               </div>
             </div>
           `;
@@ -575,24 +577,24 @@
         divBloque.innerHTML = `
           <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
             <div class="flex items-center gap-1.5 flex-1">
-              <span class="bg-slate-800 text-white text-xs font-extrabold w-6 h-6 rounded-full flex items-center justify-center shrink-0">${bIdx + 1}</span>
+              <span class="bg-slate-700 text-white text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center shrink-0">${bIdx + 1}</span>
               <input type="text" value="${escaparHTML(item.bloque)}" oninput="actualizarBloque(${bIdx}, 'bloque', this.value)"
-                class="w-full text-xs font-extrabold text-slate-800 bg-transparent border-b border-transparent focus:border-blue-400 focus:outline-none px-1 py-0.5"
+                class="w-full text-xs font-semibold text-slate-800 bg-transparent border-b border-transparent focus:border-blue-400 focus:outline-none px-1 py-0.5"
                 placeholder="Título del bloque..." />
             </div>
-            <select onchange="actualizarBloque(${bIdx}, 'tipo_espacio', this.value)" class="text-xs border border-slate-300 rounded-md px-2 py-1 bg-white font-semibold text-slate-700">
+            <select onchange="actualizarBloque(${bIdx}, 'tipo_espacio', this.value)" class="text-xs border border-slate-300 rounded-md px-2 py-1 bg-white font-medium text-slate-700">
               <option value="blanco" ${(!item.tipo_espacio || item.tipo_espacio === 'blanco') ? 'selected' : ''}>⬜ Caja de texto</option>
               <option value="pauta" ${item.tipo_espacio === 'pauta' ? 'selected' : ''}>✍️ Pauta líneas</option>
               <option value="cuadricula" ${item.tipo_espacio === 'cuadricula' ? 'selected' : ''}>🔢 Cuadrícula mates</option>
             </select>
             ${estadoDatos.preguntas.length > 1 ? `
-              <button onclick="eliminarBloque(${bIdx})" class="text-xs text-rose-600 hover:bg-rose-50 px-2 py-1 rounded font-bold" title="Eliminar bloque">🗑️</button>
+              <button onclick="eliminarBloque(${bIdx})" class="text-xs text-rose-600 hover:bg-rose-50 px-2 py-1 rounded font-semibold" title="Eliminar bloque">🗑️</button>
             ` : ''}
           </div>
           <div class="space-y-2">
             ${variantesHTML}
           </div>
-          <button onclick="anadirVariante(${bIdx})" class="w-full py-1.5 border border-dashed border-blue-300 hover:border-blue-500 text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-bold transition">
+          <button onclick="anadirVariante(${bIdx})" class="w-full py-1.5 border border-dashed border-blue-300 hover:border-blue-500 text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-semibold transition">
             + Añadir Variante Anticopia a este bloque
           </button>
         `;
@@ -749,7 +751,7 @@
               htmlInterno += `
                 <div class="flex items-center gap-2 text-slate-400 text-[11px] my-1 select-none px-2">
                   <span>✂️</span>
-                  <div class="border-b border-dashed border-slate-400 w-full"></div>
+                  <div class="border-b border-dashed border-slate-300 w-full"></div>
                 </div>
               `;
             } else if (grupoTickets.length === 1) {
@@ -814,7 +816,6 @@
         if (p.tipo_espacio === "pauta") claseEspacio = "pauta-escolar rounded-lg";
         if (p.tipo_espacio === "cuadricula") claseEspacio = "cuadricula-escolar rounded-lg";
 
-        // Bloque diferenciado de DATOS si existen
         const bloqueDatosHTML = p.datos
           ? `<div class="datos-trabajo ${metaAsig.datosBorder} ${esCompacto ? 'text-[10px] py-0.5 px-2' : 'text-xs py-1 px-2.5'}">
                ${escaparHTML(p.datos)}
@@ -824,15 +825,15 @@
         preguntasHTML += `
           <div class="space-y-1 px-1">
             <div class="flex items-start gap-2">
-              <span class="${metaAsig.numCircle} font-extrabold ${esCompacto ? 'text-[10px] w-4 h-4' : 'text-xs w-5 h-5'} rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+              <span class="${metaAsig.numCircle} font-semibold ${esCompacto ? 'text-[10px] w-4 h-4' : 'text-xs w-5 h-5'} rounded-full flex items-center justify-center shrink-0 mt-0.5">
                 ${idx + 1}
               </span>
               <div class="flex-1 min-w-0">
-                <!-- FORMATO 1: PREGUNTA EN NEGRITA LIMPIA SIN SUBRAYAR -->
+                <!-- FORMATO 1: PREGUNTA CON PESO MEDIO SIN EXCESO DE NEGRITA -->
                 <p class="pregunta-consigna ${esCompacto ? 'text-[10.5px] leading-tight' : 'text-xs leading-snug'}">
                   ${escaparHTML(p.pregunta)}
                 </p>
-                <!-- FORMATO 2: DATOS DESTACADOS EN CAJA -->
+                <!-- FORMATO 2: DATOS EN CAJA CON PESO SUAVE -->
                 ${bloqueDatosHTML}
               </div>
             </div>
@@ -844,42 +845,45 @@
       const tamanoCirculoDocente = esCompacto ? "w-3.5 h-3.5 text-[7px]" : "w-4 h-4 text-[8px]";
 
       return `
-        <article class="ticket-card h-full border-2 ${metaAsig.bordeTicket} rounded-2xl ${esCompacto ? 'p-3.5' : 'p-4'} flex flex-col justify-between bg-white relative">
+        <article class="ticket-card h-full border-[1.5px] ${metaAsig.bordeTicket} rounded-2xl ${esCompacto ? 'p-3.5' : 'p-4'} flex flex-col justify-between bg-white relative">
           <div>
-            <!-- Cabecera del Ticket con Semáforo Docente Integrado -->
+            <!-- Cabecera con título TICKET DE SALIDA 🎟️ y Semáforo Docente -->
             <div class="flex items-center justify-between gap-2 pb-1.5 mb-2 border-b ${metaAsig.colorHeader} px-3 py-1.5 rounded-xl">
               <div class="flex items-center gap-2 min-w-0">
                 <span class="${esCompacto ? 'text-base' : 'text-xl'} shrink-0">${metaAsig.icono}</span>
                 <div class="truncate">
-                  <div class="flex items-center gap-1.5">
-                    <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${metaAsig.badge}">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="${esCompacto ? 'text-[9.5px]' : 'text-[11px]'} font-bold tracking-wide text-slate-900">
+                      TICKET DE SALIDA 🎟️
+                    </span>
+                    <span class="text-[8.5px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded ${metaAsig.badge}">
                       ${escaparHTML(asignatura)} · 3º
                     </span>
-                    <span class="font-extrabold border px-1.5 py-0.5 rounded-full text-[9px] ${modelo.badgeBg}">
+                    <span class="font-medium border px-1.5 py-0.5 rounded-full text-[8.5px] ${modelo.badgeBg}">
                       ${esCompacto ? modelo.nombre : modelo.nombreLargo}
                     </span>
                   </div>
-                  <h3 class="font-extrabold text-slate-900 truncate ${esCompacto ? 'text-[10.5px]' : 'text-xs'} mt-0.5">
+                  <h3 class="font-semibold text-slate-800 truncate ${esCompacto ? 'text-[10px]' : 'text-xs'} mt-0.5">
                     ${escaparHTML(tema)}
                   </h3>
                 </div>
               </div>
 
               <!-- Semáforo de Evaluación Docente en el Encabezado -->
-              <div class="shrink-0 bg-white border border-slate-300 rounded-xl ${esCompacto ? 'px-1.5 py-1' : 'px-2.5 py-1'} flex items-center gap-1.5 shadow-2xs" title="Espacio para que el docente marque el nivel alcanzado por el alumno">
-                <span class="font-extrabold text-slate-600 uppercase tracking-tighter ${esCompacto ? 'text-[7.5px]' : 'text-[8.5px]'} leading-none">
+              <div class="shrink-0 bg-white border border-slate-300 rounded-xl ${esCompacto ? 'px-1.5 py-1' : 'px-2.5 py-1'} flex items-center gap-1.5" title="Espacio para que el docente marque el nivel alcanzado por el alumno">
+                <span class="font-semibold text-slate-600 uppercase tracking-tighter ${esCompacto ? 'text-[7px]' : 'text-[8px]'} leading-none">
                   👩‍🏫 Nivel<br/>Docente:
                 </span>
                 <div class="flex items-center gap-1">
-                  <span class="${tamanoCirculoDocente} rounded-full border-2 border-emerald-500 bg-emerald-50/70 flex items-center justify-center font-extrabold text-emerald-800">V</span>
-                  <span class="${tamanoCirculoDocente} rounded-full border-2 border-amber-400 bg-amber-50/70 flex items-center justify-center font-extrabold text-amber-800">A</span>
-                  <span class="${tamanoCirculoDocente} rounded-full border-2 border-rose-500 bg-rose-50/70 flex items-center justify-center font-extrabold text-rose-800">R</span>
+                  <span class="${tamanoCirculoDocente} rounded-full border-[1.5px] border-emerald-500 bg-emerald-50/70 flex items-center justify-center font-semibold text-emerald-800">V</span>
+                  <span class="${tamanoCirculoDocente} rounded-full border-[1.5px] border-amber-400 bg-amber-50/70 flex items-center justify-center font-semibold text-amber-800">A</span>
+                  <span class="${tamanoCirculoDocente} rounded-full border-[1.5px] border-rose-500 bg-rose-50/70 flex items-center justify-center font-semibold text-rose-800">R</span>
                 </div>
               </div>
             </div>
 
             <!-- Datos del Alumno -->
-            <div class="grid grid-cols-12 gap-3 mb-2 px-1 text-slate-700 font-bold ${esCompacto ? 'text-[10px]' : 'text-xs'}">
+            <div class="grid grid-cols-12 gap-3 mb-2 px-1 text-slate-700 font-medium ${esCompacto ? 'text-[10px]' : 'text-xs'}">
               <div class="col-span-8 flex items-end gap-1.5">
                 <span class="shrink-0">👦👧 Nombre:</span>
                 <div class="border-b border-slate-300 w-full h-3.5"></div>
@@ -899,30 +903,30 @@
           <!-- Semáforo de Autoevaluación Infantil (Alumno) -->
           <div class="mt-1.5 pt-1.5 border ${metaAsig.semaforoBg} rounded-xl px-3 py-1.5">
             <div class="flex items-center justify-between mb-1">
-              <span class="font-extrabold text-slate-800 ${esCompacto ? 'text-[8.5px]' : 'text-[10px]'} uppercase tracking-wide flex items-center gap-1">
+              <span class="font-semibold text-slate-800 ${esCompacto ? 'text-[8.5px]' : 'text-[9.5px]'} uppercase tracking-wide flex items-center gap-1">
                 🚦 Mi Autoevaluación: ¿Cómo lo he entendido hoy?
               </span>
             </div>
             <div class="grid grid-cols-3 gap-2">
               <div class="flex items-center gap-1.5 bg-white border border-emerald-400 rounded-lg px-1.5 py-0.5">
-                <div class="w-3.5 h-3.5 rounded-full border-[2px] border-emerald-500 bg-emerald-50/40 shrink-0"></div>
+                <div class="w-3.5 h-3.5 rounded-full border-[1.5px] border-emerald-500 bg-emerald-50/40 shrink-0"></div>
                 <div class="leading-tight">
-                  <span class="font-extrabold text-emerald-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">😊 VERDE</span>
-                  <span class="text-slate-600 ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">¡Lo sé explicar!</span>
+                  <span class="font-semibold text-emerald-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">😊 VERDE</span>
+                  <span class="text-slate-600 font-normal ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">¡Lo sé explicar!</span>
                 </div>
               </div>
               <div class="flex items-center gap-1.5 bg-white border border-amber-400 rounded-lg px-1.5 py-0.5">
-                <div class="w-3.5 h-3.5 rounded-full border-[2px] border-amber-400 bg-amber-50/40 shrink-0"></div>
+                <div class="w-3.5 h-3.5 rounded-full border-[1.5px] border-amber-400 bg-amber-50/40 shrink-0"></div>
                 <div class="leading-tight">
-                  <span class="font-extrabold text-amber-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">🤔 AMARILLO</span>
-                  <span class="text-slate-600 ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">Tengo alguna duda.</span>
+                  <span class="font-semibold text-amber-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">🤔 AMARILLO</span>
+                  <span class="text-slate-600 font-normal ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">Tengo alguna duda.</span>
                 </div>
               </div>
               <div class="flex items-center gap-1.5 bg-white border border-rose-400 rounded-lg px-1.5 py-0.5">
-                <div class="w-3.5 h-3.5 rounded-full border-[2px] border-rose-500 bg-rose-50/40 shrink-0"></div>
+                <div class="w-3.5 h-3.5 rounded-full border-[1.5px] border-rose-500 bg-rose-50/40 shrink-0"></div>
                 <div class="leading-tight">
-                  <span class="font-extrabold text-rose-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">🙋‍♂️ ROJO</span>
-                  <span class="text-slate-600 ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">Necesito ayuda.</span>
+                  <span class="font-semibold text-rose-800 ${esCompacto ? 'text-[8px]' : 'text-[9px]'} block">🙋‍♂️ ROJO</span>
+                  <span class="text-slate-600 font-normal ${esCompacto ? 'text-[7px]' : 'text-[8px]'} block">Necesito ayuda.</span>
                 </div>
               </div>
             </div>
@@ -940,25 +944,25 @@
           filasPreguntas += `
             <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-extrabold text-slate-500 uppercase">Pregunta ${idx + 1} · ${escaparHTML(p.bloque)}</span>
+                <span class="text-[10px] font-semibold text-slate-500 uppercase">Pregunta ${idx + 1} · ${escaparHTML(p.bloque)}</span>
               </div>
-              <p class="text-[11px] font-bold text-slate-900">${escaparHTML(p.pregunta)}</p>
-              ${p.datos ? `<p class="text-[10.5px] font-semibold text-slate-700 bg-white border border-slate-200 rounded px-2 py-0.5 inline-block">${escaparHTML(p.datos)}</p>` : ''}
+              <p class="text-[11px] font-semibold text-slate-900">${escaparHTML(p.pregunta)}</p>
+              ${p.datos ? `<p class="text-[10.5px] font-normal text-slate-700 bg-white border border-slate-200 rounded px-2 py-0.5 inline-block">${escaparHTML(p.datos)}</p>` : ''}
               <div class="mt-1 bg-emerald-50 border border-emerald-300 rounded-md px-2.5 py-1 flex items-start gap-1.5">
                 <span class="text-xs">✅</span>
-                <p class="text-[11px] font-extrabold text-emerald-950">${escaparHTML(p.solucion)}</p>
+                <p class="text-[11px] font-semibold text-emerald-950">${escaparHTML(p.solucion)}</p>
               </div>
             </div>
           `;
         });
 
         tarjetasModelosHTML += `
-          <div class="border-2 ${metaAsig.bordeTicket} rounded-2xl p-4 bg-white space-y-2.5 break-inside-avoid">
+          <div class="border-[1.5px] ${metaAsig.bordeTicket} rounded-2xl p-4 bg-white space-y-2.5 break-inside-avoid">
             <div class="flex items-center justify-between border-b border-slate-200 pb-2 ${metaAsig.colorHeader} -mx-4 -mt-4 px-4 py-2.5 rounded-t-xl">
-              <span class="font-extrabold text-xs px-3 py-0.5 rounded-full border ${m.badgeBg}">
+              <span class="font-semibold text-xs px-3 py-0.5 rounded-full border ${m.badgeBg}">
                 ${m.nombreLargo}
               </span>
-              <span class="text-[11px] font-bold text-slate-600">Clave de corrección</span>
+              <span class="text-[11px] font-medium text-slate-600">Clave de corrección</span>
             </div>
             <div class="space-y-2 pt-1">
               ${filasPreguntas}
@@ -969,19 +973,19 @@
 
       return `
         <div class="space-y-4">
-          <div class="border-2 ${metaAsig.bordeTicket} rounded-2xl p-4 ${metaAsig.colorHeader} flex items-center justify-between">
+          <div class="border-[1.5px] ${metaAsig.bordeTicket} rounded-2xl p-4 ${metaAsig.colorHeader} flex items-center justify-between">
             <div class="flex items-center gap-3">
               <span class="text-2xl">🔑</span>
               <div>
-                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded ${metaAsig.badge}">
-                  SOLUCIONARIO DOCENTE · ${escaparHTML(asignatura)}
+                <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${metaAsig.badge}">
+                  TICKET DE SALIDA 🎟️ · SOLUCIONARIO DOCENTE · ${escaparHTML(asignatura)}
                 </span>
-                <h2 class="text-base font-extrabold text-slate-900 mt-1">
+                <h2 class="text-base font-bold text-slate-900 mt-1">
                   ${escaparHTML(tema)} (3º Primaria)
                 </h2>
               </div>
             </div>
-            <div class="text-right text-xs font-bold text-slate-700">
+            <div class="text-right text-xs font-medium text-slate-700">
               <p>Modelos: ${modelosUnicos.length}</p>
               <p>Preguntas: ${modelosUnicos[0]?.preguntas.length || 0}</p>
             </div>
@@ -991,8 +995,8 @@
             ${tarjetasModelosHTML}
           </div>
         </div>
-        <div class="text-center text-[10px] text-slate-400 font-semibold pt-2 border-t border-slate-200">
-          Guía rápida de corrección generada automáticamente · Formato DIN A4 Vertical (Márgenes 15 mm)
+        <div class="text-center text-[10px] text-slate-400 font-normal pt-2 border-t border-slate-200">
+          TICKET DE SALIDA 🎟️ · Guía rápida de corrección · Formato DIN A4 Vertical (Márgenes 15 mm)
         </div>
       `;
     }
@@ -1067,7 +1071,7 @@
         try {
           const obj = JSON.parse(e.target.result);
           aplicarJSONCargado(obj);
-          mostrarToast("✅ Archivo JSON cargado con caja de texto por defecto");
+          mostrarToast("✅ Archivo JSON cargado con éxito");
         } catch (err) {
           mostrarToast("❌ Error en el archivo JSON: " + err.message, true);
         }
@@ -1161,6 +1165,7 @@ Nota: "asignatura" puede ser "Lengua Castellana", "Matemáticas" o "Ciencias Soc
       });
     }
 
+    // Exportación a PDF en Alta Resolución (Scale 4x + PNG sin pérdida)
     async function exportarPDFDirecto() {
       const root = document.getElementById("pdf-root");
       const wrappers = document.querySelectorAll(".page-scale-wrapper");
@@ -1170,20 +1175,26 @@ Nota: "asignatura" puede ser "Lengua Castellana", "Matemáticas" o "Ciencias Soc
       pages.forEach(p => { p.style.transform = "none"; p.style.boxShadow = "none"; p.style.border = "none"; });
 
       const nombreLimpio = (estadoDatos.tema || "tickets_salida").toLowerCase().replace(/[^a-z0-9]+/g, "_");
-      mostrarToast("📄 Generando archivo PDF en formato A4...");
+      mostrarToast("📄 Generando PDF en Alta Resolución (384 DPI)...");
 
       const opt = {
         margin: 0,
-        filename: `tickets_salida_${nombreLimpio}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        filename: `ticket_salida_${nombreLimpio}.pdf`,
+        image: { type: 'png', quality: 1.0 },
+        html2canvas: {
+          scale: 4,
+          useCORS: true,
+          letterRendering: true,
+          backgroundColor: '#ffffff',
+          scrollY: 0
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
         pagebreak: { mode: ['css', 'legacy'] }
       };
 
       try {
         await html2pdf().set(opt).from(root).save();
-        mostrarToast("✅ PDF A4 descargado correctamente");
+        mostrarToast("✅ PDF en Alta Resolución descargado correctamente");
       } finally {
         pages.forEach(p => { p.style.boxShadow = ""; p.style.border = ""; });
         wrappers.forEach(w => { w.style.marginBottom = "1.5rem"; });
