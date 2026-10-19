@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>La Montaña del Redondeo - 3º Primaria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-sky: #e0f2fe;
+      --bg-card: #ffffff;
+      --primary: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --secondary: #8b5cf6;
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --success: #10b981;
+      --success-dark: #059669;
+      --danger: #ef4444;
+      --danger-dark: #b91c1c;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --valley-left: #f97316;
+      --valley-right: #10b981;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(180deg, #bae6fd 0%, #f0f9ff 60%, #dcfce7 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* CABECERA Y BARRA DE PROGRESO */
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: #f1f5f9;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .stat-pill.gold {
+      background: #fef3c7;
+      border-color: #fde68a;
+      color: #b45309;
+    }
+
+    .stat-pill.streak {
+      background: #ffedd5;
+      border-color: #fed7aa;
+      color: #c2410c;
+    }
+
+    .sound-btn {
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+    }
+
+    .sound-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* NAVEGACIÓN PRINCIPAL */
+    nav.main-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 20px 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      min-height: 60px;
+      padding: 12px 24px;
+      font-family: inherit;
+      font-size: 1.15rem;
+      font-weight: 800;
+      border: none;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-muted);
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 4px solid #cbd5e1;
+    }
+
+    .tab-btn:hover {
+      background: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-bottom-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 12px 20px 30px;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      border: 3px solid #e2e8f0;
+    }
+
+    /* =========================================
+       SECCIÓN 1: LABORATORIO DE LA MONTAÑA
+       ========================================= */
+    .lab-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
+      margin-bottom: 16px;
+      align-items: stretch;
+    }
+
+    .control-box {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 2px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .control-label {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .number-input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .big-input {
+      width: 100%;
+      height: 62px;
+      font-family: inherit;
+      font-size: 2.1rem;
+      font-weight: 800;
+      text-align: center;
+      border: 3px solid var(--primary);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      background: white;
+      outline: none;
+    }
+
+    .btn-action {
+      min-height: 62px;
+      padding: 0 18px;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: transform 0.12s, background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: white;
+    }
+
+    .btn-action:active {
+      transform: scale(0.95);
+    }
+
+    .btn-random {
+      background: var(--secondary);
+      border-bottom: 4px solid #6d28d9;
+    }
+
+    .playback-controls {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-play-pause {
+      background: var(--accent);
+      border-bottom: 4px solid var(--accent-dark);
+      font-size: 1.15rem;
+    }
+
+    .btn-play-pause.paused-state {
+      background: var(--success);
+      border-bottom-color: var(--success-dark);
+    }
+
+    .btn-reset-pos {
+      background: #64748b;
+      border-bottom: 4px solid #475569;
+      font-size: 1.05rem;
+    }
+
+    .round-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .round-opt {
+      min-height: 62px;
+      border: 2px solid #cbd5e1;
+      background: white;
+      border-radius: 14px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+
+    .round-opt span.sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .round-opt.active {
+      background: #eff6ff;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
+
+    /* =======================================================
+       MEJORA 1: DESGLOSE VISUAL DE CIFRAS SIN SOLAPAMIENTOS
+       ======================================================= */
+    .digit-analyzer {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 24px;
+      margin: 22px 0 26px;
+      flex-wrap: wrap;
+    }
+
+    .digit-card {
+      width: 122px;
+      min-height: 126px;
+      background: #f1f5f9;
+      border: 3px solid #cbd5e1;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 8px 8px;
+      position: relative;
+      transition: all 0.25s;
+    }
+
+    .digit-card .pos-label {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .digit-card .digit-val {
+      font-size: 2.7rem;
+      font-weight: 800;
+      line-height: 1;
+      margin: 4px 0;
+    }
+
+    .digit-card .role-badge {
+      width: 100%;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 5px 6px;
+      border-radius: 10px;
+      white-space: nowrap;
+      visibility: hidden;
+    }
+
+    .digit-card.target-order {
+      background: #dbeafe;
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.18);
+    }
+
+    .digit-card.target-order .role-badge {
+      visibility: visible;
+      background: var(--primary);
+      color: white;
+    }
+
+    .digit-card.key-digit {
+      background: #fef3c7;
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      animation: pulseKey 1.8s infinite;
+    }
+
+    .digit-card.key-digit .role-badge {
+      visibility: visible;
+      background: var(--accent-dark);
+      color: white;
+    }
+
+    @keyframes pulseKey {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45); }
+      50% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+    }
+
+    /* ESCENARIO SVG DE LA MONTAÑA */
+    .mountain-stage {
+      position: relative;
+      width: 100%;
+      background: linear-gradient(180deg, #dbeafe 0%, #eff6ff 70%, #dcfce7 100%);
+      border-radius: var(--radius-lg);
+      border: 3px solid #bfdbfe;
+      overflow: hidden;
+      padding-top: 6px;
+    }
+
+    .mountain-svg {
+      width: 100%;
+      height: auto;
+      max-height: 450px;
+      display: block;
+    }
+
+    .slope-node {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .slope-node:hover circle {
+      r: 22;
+    }
+
+    /* CAJA DE EXPLICACIÓN PASO A PASO */
+    .explanation-banner {
+      margin-top: 18px;
+      padding: 20px;
+      border-radius: var(--radius-md);
+      background: #eff6ff;
+      border-left: 8px solid var(--primary);
+      font-size: 1.25rem;
+      line-height: 1.5;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .explanation-banner.left-win {
+      background: #fff7ed;
+      border-left-color: var(--valley-left);
+    }
+
+    .explanation-banner.right-win {
+      background: #ecfdf5;
+      border-left-color: var(--valley-right);
+    }
+
+    .quick-digits-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .quick-digit-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      border: 2px solid #cbd5e1;
+      font-family: inherit;
+      font-size: 1.4rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-digit-btn.down-side {
+      background: #ffedd5;
+      color: #9a3412;
+      border-color: #fdba74;
+    }
+
+    .quick-digit-btn.up-side {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #6ee7b7;
+    }
+
+    .quick-digit-btn.active {
+      transform: translateY(-5px) scale(1.1);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      border-width: 3px;
+      border-color: #1e293b;
+    }
+
+    /* =========================================
+       SECCIÓN 2: JUEGOS Y RETOS
+       ========================================= */
+    .game-Modes-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .mode-card {
+      background: white;
+      border: 3px solid #e2e8f0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+    }
+
+    .mode-card:hover {
+      border-color: #93c5fd;
+      transform: translateY(-2px);
+    }
+
+    .mode-card.active {
+      background: #eff6ff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.15);
+    }
+
+    .mode-icon {
+      font-size: 2.4rem;
+      background: #f1f5f9;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mode-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--text-main);
+    }
+
+    .mode-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* ARENA DEL JUEGO */
+    .game-arena {
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    .question-badge {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      padding: 8px 20px;
+      border-radius: 99px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+    }
+
+    .big-challenge-number {
+      font-size: 4.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 10px 0 20px;
+      letter-spacing: 2px;
+      background: #f8fafc;
+      display: inline-block;
+      padding: 12px 36px;
+      border-radius: var(--radius-lg);
+      border: 3px dashed #cbd5e1;
+    }
+
+    .story-box {
+      max-width: 780px;
+      margin: 0 auto 24px;
+      font-size: 1.45rem;
+      line-height: 1.5;
+      font-weight: 700;
+      background: #fefce8;
+      border: 3px solid #fde047;
+      padding: 22px;
+      border-radius: var(--radius-md);
+      color: #422006;
+    }
+
+    .answers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      max-width: 850px;
+      margin: 20px auto;
+    }
+
+    .answer-btn {
+      min-height: 84px;
+      font-family: inherit;
+      font-size: 1.9rem;
+      font-weight: 800;
+      background: white;
+      border: 3px solid #cbd5e1;
+      border-bottom-width: 6px;
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .answer-btn span.valley-sub {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    .answer-btn:active:not(:disabled) {
+      transform: translateY(2px);
+    }
+
+    .answer-btn.correct {
+      background: #d1fae5 !important;
+      border-color: var(--success-dark) !important;
+      color: #065f46 !important;
+    }
+
+    .answer-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: var(--danger-dark) !important;
+      color: #991b1b !important;
+    }
+
+    .feedback-area {
+      min-height: 70px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .feedback-msg {
+      font-size: 1.35rem;
+      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+    }
+
+    .hint-btn {
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    /* =========================================
+       SECCIÓN 3: MEDALLERO DE LOGROS
+       ========================================= */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+
+    .badge-item {
+      background: #f8fafc;
+      border: 3px solid #e2e8f0;
+      border-radius: var(--radius-lg);
+      padding: 24px 16px;
+      text-align: center;
+      filter: grayscale(1);
+      opacity: 0.65;
+      transition: all 0.3s;
+    }
+
+    .badge-item.unlocked {
+      background: linear-gradient(180deg, #ffffff 0%, #fef9c3 100%);
+      border-color: #facc15;
+      filter: grayscale(0);
+      opacity: 1;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(250, 204, 21, 0.2);
+    }
+
+    .badge-emoji {
+      font-size: 4rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .badge-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .badge-req {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* CONFETI CANVAS */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    @media (max-width: 768px) {
+      .big-challenge-number { font-size: 3rem; padding: 10px 24px; }
+      .digit-analyzer { gap: 12px; }
+      .digit-card { width: 102px; min-height: 112px; }
+      .digit-card .digit-val { font-size: 2.2rem; }
+      .explanation-banner { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- CABECERA -->
+  <header>
+    <div class="brand">
+      <span>🏔️</span>
+      <span>La Montaña del Redondeo</span>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-pill gold" title="Puntos acumulados">
+        <span>⭐</span>
+        <span id="score-display">0</span> pts
+      </div>
+      <div class="stat-pill streak" title="Racha de aciertos seguidos">
+        <span>🔥</span>
+        Racha: <span id="streak-display">0</span>
+      </div>
+      <button class="sound-btn" id="sound-toggle" title="Activar/Desactivar sonido" aria-label="Sonido">
+        🔊
+      </button>
+    </div>
+  </header>
+
+  <!-- PESTAÑAS PRINCIPALES -->
+  <nav class="main-tabs">
+    <button class="tab-btn active" onclick="switchTab('lab')">
+      <span>🔬</span> 1. Explora la Montaña
+    </button>
+    <button class="tab-btn" onclick="switchTab('games')">
+      <span>🎮</span> 2. Retos y Juegos
+    </button>
+    <button class="tab-btn" onclick="switchTab('badges')">
+      <span>🏆</span> 3. Mis Medallas
+    </button>
+  </nav>
+
+  <main>
+    <!-- ==========================================
+         VISTA 1: LABORATORIO INTERACTIVO
+         ========================================== -->
+    <section id="view-lab" class="view-section active">
+      <div class="card">
+        <div class="lab-controls">
+          <!-- Control 1: Número de hasta 4 cifras -->
+          <div class="control-box">
+            <label class="control-label" for="lab-number-input">1. Escribe o genera un número (hasta 9.999)</label>
+            <div class="number-input-group">
+              <input type="number" id="lab-number-input" class="big-input" value="2582" min="10" max="9999" oninput="handleLabInput()">
+              <button class="btn-action btn-random" onclick="generateRandomLabNumber()" title="Número aleatorio">
+                🎲 Azar
+              </button>
+            </div>
+          </div>
+
+          <!-- Control 2: Orden de redondeo -->
+          <div class="control-box">
+            <span class="control-label">2. ¿A qué orden redondeamos?</span>
+            <div class="round-selector">
+              <button class="round-opt" id="opt-10" onclick="setRoundingOrder(10)">
+                Decena (D)
+                <span class="sub">de 10 en 10</span>
+              </button>
+              <button class="round-opt" id="opt-100" onclick="setRoundingOrder(100)">
+                Centena (C)
+                <span class="sub">de 100 en 100</span>
+              </button>
+              <button class="round-opt active" id="opt-1000" onclick="setRoundingOrder(1000)">
+                Millar (UM)
+                <span class="sub">de 1.000 en 1.000</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Control 3: Botones de Reproducir / Pausar y Reiniciar para adivinar -->
+          <div class="control-box">
+            <span class="control-label">3. ¡Adivina y lanza la bola!</span>
+            <div class="playback-controls">
+              <button class="btn-action btn-play-pause" id="btn-play-pause" onclick="toggleBoulderPlayPause()">
+                ▶️ Lanzar Bola
+              </button>
+              <button class="btn-action btn-reset-pos" onclick="resetBoulderToStart()" title="Devolver la bola a su posición inicial">
+                🔄 Subir
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desglose interactivo de las 4 cifras (SIN SOLAPAMIENTO) -->
+        <div class="digit-analyzer" id="digit-analyzer">
+          <!-- Generado dinámicamente por JS -->
+        </div>
+
+        <!-- ESCENARIO DE LA MONTAÑA EN SVG -->
+        <div class="mountain-stage">
+          <svg class="mountain-svg" viewBox="0 0 1000 450" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mountainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#94a3b8" />
+                <stop offset="45%" stop-color="#64748b" />
+                <stop offset="100%" stop-color="#475569" />
+              </linearGradient>
+              <linearGradient id="snowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="100%" stop-color="#e2e8f0" />
+              </linearGradient>
+              <!-- Gradiente 3D para la bola -->
+              <radialGradient id="ballGrad" cx="35%" cy="30%" r="65%">
+                <stop offset="0%" stop-color="#fde047" />
+                <stop offset="55%" stop-color="#f59e0b" />
+                <stop offset="100%" stop-color="#b45309" />
+              </radialGradient>
+              <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.28"/>
+              </filter>
+            </defs>
+
+            <!-- Nubes decorativas -->
+            <g fill="rgba(255,255,255,0.78)">
+              <circle cx="140" cy="80" r="28"/>
+              <circle cx="170" cy="75" r="35"/>
+              <circle cx="205" cy="82" r="25"/>
+              <circle cx="810" cy="75" r="26"/>
+              <circle cx="840" cy="70" r="32"/>
+              <circle cx="870" cy="80" r="24"/>
+            </g>
+
+            <!-- Cuerpo principal de la montaña -->
+            <path d="M 40,365 L 140,365 L 500,115 L 860,365 L 960,365 L 960,450 L 40,450 Z" fill="url(#mountainGrad)" />
+
+            <!-- Nieve en la cumbre -->
+            <path d="M 500,115 L 410,177 L 442,192 L 474,168 L 500,196 L 530,170 L 556,188 L 590,177 Z" fill="url(#snowGrad)" />
+
+            <!-- MEJORA 2: Banderín de CIMA 5 amplio, con cola de golondrina y texto 100% dentro -->
+            <g id="summit-flag" filter="url(#dropShadow)">
+              <!-- Mástil -->
+              <line x1="528" y1="125" x2="528" y2="28" stroke="#1e293b" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="528" cy="26" r="6" fill="#f59e0b" stroke="#1e293b" stroke-width="2"/>
+              <!-- Paño de la bandera tipo banderola ancha -->
+              <polygon points="531,32 678,32 660,54 678,76 531,76" fill="#ef4444" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+              <text x="598" y="60" text-anchor="middle" fill="#ffffff" font-size="19" font-weight="800" font-family="Quicksand" letter-spacing="0.5">¡CIMA 5!</text>
+            </g>
+
+            <!-- Flechas indicadoras de caída en las laderas -->
+            <text x="275" y="198" fill="#c2410c" font-size="18" font-weight="800" transform="rotate(-35 275 198)">⬅ RETROCEDE (0 a 4)</text>
+            <text x="635" y="176" fill="#047857" font-size="18" font-weight="800" transform="rotate(35 635 176)">AVANZA (5 a 9) ➡</text>
+
+            <!-- CARTEL VALLE IZQUIERDO (Inferior) -->
+            <g transform="translate(20, 368)" filter="url(#dropShadow)">
+              <rect x="0" y="0" width="215" height="68" rx="16" fill="#fff7ed" stroke="#f97316" stroke-width="4"/>
+              <text x="107" y="25" text-anchor="middle" fill="#9a3412" font-size="14" font-weight="800">VALLE INFERIOR</text>
+              <text id="svg-left-valley" x="107" y="55" text-anchor="middle" fill="#c2410c" font-size="28" font-weight="800">2.000</text>
+            </g>
+
+            <!-- CARTEL VALLE DERECHO (Superior) -->
+            <g transform="translate(765, 368)" filter="url(#dropShadow)">
+              <rect x="0" y="0" width="215" height="68" rx="16" fill="#ecfdf5" stroke="#10b981" stroke-width="4"/>
+              <text x="107" y="25" text-anchor="middle" fill="#065f46" font-size="14" font-weight="800">VALLE SUPERIOR</text>
+              <text id="svg-right-valley" x="107" y="55" text-anchor="middle" fill="#047857" font-size="28" font-weight="800">3.000</text>
+            </g>
+
+            <!-- Nodos interactivos (0 al 9) sobre la montaña -->
+            <g id="mountain-nodes"></g>
+
+            <!-- MEJORA 3: BOLA / PERSONAJE MEJORADO QUE FLOTA SOBRE EL NODO Y GIRA AL RODAR -->
+            <g id="boulder-group" transform="translate(528, 128)" filter="url(#dropShadow)">
+              <!-- Sombra en el suelo bajo la bola -->
+              <ellipse cx="0" cy="-18" rx="20" ry="5" fill="rgba(15, 23, 42, 0.25)"/>
+
+              <!-- Cuerpo esférico que rota al caer -->
+              <g id="boulder- wheel" transform="translate(0, -48)">
+                <g id="boulder-spin">
+                  <circle cx="0" cy="0" r="26" fill="url(#ballGrad)" stroke="#78350f" stroke-width="4"/>
+                  <!-- Brillo superior -->
+                  <ellipse cx="-8" cy="-11" rx="8" ry="4" fill="rgba(255,255,255,0.45)" transform="rotate(-25 -8 -11)"/>
+                  <!-- Ojos y sonrisa simpática -->
+                  <circle cx="-8" cy="-4" r="4" fill="#451a03"/>
+                  <circle cx="8" cy="-4" r="4" fill="#451a03"/>
+                  <circle cx="-9" cy="-5.5" r="1.3" fill="#ffffff"/>
+                  <circle cx="7" cy="-5.5" r="1.3" fill="#ffffff"/>
+                  <path d="M -9,6 Q 0,15 9,6" stroke="#451a03" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                  <!-- Mejillas -->
+                  <ellipse cx="-14" cy="3" rx="3.5" ry="2" fill="#ef4444" opacity="0.45"/>
+                  <ellipse cx="14" cy="3" rx="3.5" ry="2" fill="#ef4444" opacity="0.45"/>
+                </g>
+              </g>
+
+              <!-- Cartel superior con el número (separado con antena para no tapar la bola) -->
+              <line x1="0" y1="-74" x2="0" y2="-84" stroke="#1e293b" stroke-width="4"/>
+              <rect x="-48" y="-118" width="96" height="36" rx="12" fill="#1e293b" stroke="#ffffff" stroke-width="2.5"/>
+              <text id="boulder-label" x="0" y="-94" text-anchor="middle" fill="#ffffff" font-size="19" font-weight="800">2.582</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Botonera táctil para experimentar cambiando la cifra llave directamente -->
+        <div style="text-align:center; margin-top: 14px;">
+          <span style="font-weight:800; color:var(--text-muted); font-size:0.95rem;">
+            👆 TOCA UNA CIFRA LLAVE PARA COLOCAR LA BOLA EN LA LADERA Y ADIVINAR:
+          </span>
+          <div class="quick-digits-bar" id="quick-digits-bar">
+            <!-- Botones 0-9 generados por JS -->
+          </div>
+        </div>
+
+        <!-- Explicación dinámica del resultado -->
+        <div class="explanation-banner" id="lab-explanation">
+          <!-- Texto explicativo dinámico -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 2: JUEGOS Y RETOS GAMIFICADOS
+         ========================================== -->
+    <section id="view-games" class="view-section">
+      <div class="game-Modes-nav">
+        <button class="mode-card active" id="mode-btn-valley" onclick="selectGameMode('valley')">
+          <div class="mode-icon">⛰️</div>
+          <div>
+            <div class="mode-title">1. ¿A qué valle cae?</div>
+            <div class="mode-desc">Decide rápido si retrocede o avanza</div>
+          </div>
+        </button>
+
+        <button class="mode-card" id="mode-btn-quiz" onclick="selectGameMode('quiz')">
+          <div class="mode-icon">🎯</div>
+          <div>
+            <div class="mode-title">2. Cazadores de Cimas</div>
+            <div class="mode-desc">Elige el redondeo exacto entre 4 opciones</div>
+          </div>
+        </button>
+
+        <button class="mode-card" id="mode-btn-story" onclick="selectGameMode('story')">
+          <div class="mode-icon">🎒</div>
+          <div>
+            <div class="mode-title">3. Expedición Real</div>
+            <div class="mode-desc">Problemas de compras y viajes de 3º</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="card game-arena">
+        <div class="question-badge" id="game-order-badge">Redondea a la CENTENA</div>
+
+        <div id="game-story-container" class="story-box" style="display:none;"></div>
+
+        <div id="game-big-number" class="big-challenge-number">3.482</div>
+
+        <div>
+          <button class="hint-btn" onclick="toggleGameHint()">💡 Ver pista de la montaña</button>
+          <div id="game-hint-text" style="display:none; font-weight:800; color:var(--primary-dark); margin-bottom:12px; font-size:1.15rem;"></div>
+        </div>
+
+        <div class="answers-grid" id="game-answers"></div>
+
+        <div class="feedback-area">
+          <div id="game-feedback" class="feedback-msg" style="display:none;"></div>
+          <button id="next-question-btn" class="btn-action btn-play-pause" style="max-width:320px; display:none;" onclick="nextGameQuestion()">
+            Siguiente Reto ➡
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 3: MEDALLERO
+         ========================================== -->
+    <section id="view-badges" class="view-section">
+      <div class="card">
+        <h2 style="text-align:center; font-size:1.8rem; margin-bottom:8px; color:var(--primary-dark);">
+          🏆 Álbum de Medallas de Montañero
+        </h2>
+        <p style="text-align:center; color:var(--text-muted); font-weight:700; margin-bottom:24px;">
+          Supera retos en los juegos para desbloquear todas las insignias de 3º de Primaria.
+        </p>
+
+        <div class="badges-grid">
+          <div class="badge-item" id="badge-1">
+            <span class="badge-emoji">🥾</span>
+            <div class="badge-name">Explorador de Colinas</div>
+            <div class="badge-req">Consigue tus primeros 30 puntos</div>
+          </div>
+          <div class="badge-item" id="badge-2">
+            <span class="badge-emoji">🧗</span>
+            <div class="badge-name">Cuerda de Seguridad</div>
+            <div class="badge-req">Logra una racha de 5 aciertos seguidos</div>
+          </div>
+          <div class="badge-item" id="badge-3">
+            <span class="badge-emoji">⛺</span>
+            <div class="badge-name">Guía de Expedición</div>
+            <div class="badge-req">Resuelve 3 problemas de Expedición Real</div>
+          </div>
+          <div class="badge-item" id="badge-4">
+            <span class="badge-emoji">👑</span>
+            <div class="badge-name">Rey de los 4 Miles</div>
+            <div class="badge-req">Alcanza 100 puntos totales</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =====================================================
+       1. SINTETIZADOR DE SONIDO (WEB AUDIO API)
+       ===================================================== */
+    let soundEnabled = true;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'tick') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(680, now + 0.06);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      } else if (type === 'roll') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(170, now + 0.35);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      } else if (type === 'success') {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.08);
+          gain.gain.setValueAtTime(0.18, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.25);
+        });
+      } else if (type === 'error') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.28);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      }
+    }
+
+    document.getElementById('sound-toggle').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) playSound('tick');
+    });
+
+    /* =====================================================
+       2. ESTADO DEL LABORATORIO Y CONTROL PLAY/PAUSE
+       ===================================================== */
+    let labNumber = 2582;
+    let labOrder = 1000; // 10, 100, 1000
+
+    // Estado de la animación de caída (permite pausar y reanudar en cualquier punto)
+    let rollState = {
+      status: 'idle', // 'idle' | 'playing' | 'paused' | 'finished'
+      progress: 0,    // 0 a 1
+      rafId: null,
+      lastTimestamp: null
+    };
+
+    // Coordenadas de los dígitos 0-9 sobre la montaña (ajustadas para no chocar con los valles)
+    const SLOPE_COORDS = [
+      { d: 0, x: 185, y: 332 },
+      { d: 1, x: 252, y: 286 },
+      { d: 2, x: 320, y: 240 },
+      { d: 3, x: 388, y: 192 },
+      { d: 4, x: 454, y: 146 },
+      { d: 5, x: 528, y: 132 }, // Cima inclinada a la derecha
+      { d: 6, x: 600, y: 182 },
+      { d: 7, x: 668, y: 230 },
+      { d: 8, x: 736, y: 278 },
+      { d: 9, x: 804, y: 325 }
+    ];
+
+    function formatSpanishNumber(n) {
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function getOrderName(order) {
+      if (order === 10) return { singular: 'Decena', plural: 'Decenas', short: 'D' };
+      if (order === 100) return { singular: 'Centena', plural: 'Centenas', short: 'C' };
+      return { singular: 'Unidad de Millar', plural: 'Unidades de Millar', short: 'UM' };
+    }
+
+    function calculateRoundingData(num, order) {
+      const lowerValley = Math.floor(num / order) * order;
+      const upperValley = lowerValley + order;
+      const keyDigit = Math.floor((num % order) / (order / 10));
+      const roundsUp = keyDigit >= 5;
+      const result = roundsUp ? upperValley : lowerValley;
+      return { lowerValley, upperValley, keyDigit, roundsUp, result };
+    }
+
+    function renderMountainNodes(activeKeyDigit) {
+      const group = document.getElementById('mountain-nodes');
+      group.innerHTML = '';
+
+      SLOPE_COORDS.forEach(pt => {
+        const isUp = pt.d >= 5;
+        const isSelected = pt.d === activeKeyDigit;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'slope-node');
+        g.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+        g.onclick = () => setKeyDigitDirectly(pt.d);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('r', isSelected ? '22' : '18');
+        circle.setAttribute('fill', isUp ? '#10b981' : '#f97316');
+        circle.setAttribute('stroke', isSelected ? '#1e293b' : '#ffffff');
+        circle.setAttribute('stroke-width', isSelected ? '4.5' : '3');
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('y', '6');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('fill', '#ffffff');
+        text.setAttribute('font-size', isSelected ? '19' : '16');
+        text.setAttribute('font-weight', '800');
+        text.setAttribute('font-family', 'Quicksand');
+        text.textContent = pt.d;
+
+        g.appendChild(circle);
+        g.appendChild(text);
+        group.appendChild(g);
+      });
+    }
+
+    function renderQuickDigitButtons(activeKeyDigit) {
+      const bar = document.getElementById('quick-digits-bar');
+      bar.innerHTML = '';
+      for (let d = 0; d <= 9; d++) {
+        const btn = document.createElement('button');
+        btn.className = `quick-digit-btn ${d < 5 ? 'down-side' : 'up-side'} ${d === activeKeyDigit ? 'active' : ''}`;
+        btn.textContent = d;
+        btn.onclick = () => setKeyDigitDirectly(d);
+        bar.appendChild(btn);
+      }
+    }
+
+    // Coloca la bola en el dígito pulsado en pausa lista para adivinar
+    function setKeyDigitDirectly(newDigit) {
+      playSound('tick');
+      const keyOrder = labOrder / 10;
+      const currentKeyDigit = Math.floor((labNumber % labOrder) / keyOrder);
+      labNumber = labNumber - (currentKeyDigit * keyOrder) + (newDigit * keyOrder);
+      if (labNumber < 10) labNumber = 10 + newDigit;
+      document.getElementById('lab-number-input').value = labNumber;
+      updateLabUI();
+    }
+
+    function handleLabInput() {
+      let val = parseInt(document.getElementById('lab-number-input').value, 10);
+      if (isNaN(val) || val < 0) val = 0;
+      if (val > 9999) {
+        val = 9999;
+        document.getElementById('lab-number-input').value = 9999;
+      }
+      labNumber = val;
+      updateLabUI();
+    }
+
+    function setRoundingOrder(order) {
+      playSound('tick');
+      labOrder = order;
+      document.querySelectorAll('.round-opt').forEach(b => b.classList.remove('active'));
+      document.getElementById(`opt-${order}`).classList.add('active');
+      updateLabUI();
+    }
+
+    function generateRandomLabNumber() {
+      playSound('tick');
+      const min = labOrder === 1000 ? 1000 : (labOrder === 100 ? 100 : 20);
+      labNumber = Math.floor(Math.random() * (9999 - min + 1)) + min;
+      document.getElementById('lab-number-input').value = labNumber;
+      updateLabUI();
+    }
+
+    function updateLabUI() {
+      stopAnimationLoop();
+      rollState.status = 'idle';
+      rollState.progress = 0;
+      updatePlayPauseButtonUI();
+
+      const data = calculateRoundingData(labNumber, labOrder);
+
+      // Actualizar carteles de los valles en el SVG
+      document.getElementById('svg-left-valley').textContent = formatSpanishNumber(data.lowerValley);
+      document.getElementById('svg-right-valley').textContent = formatSpanishNumber(data.upperValley);
+      document.getElementById('boulder-label').textContent = formatSpanishNumber(labNumber);
+
+      // Renderizar tarjetas de análisis de cifras (UM, C, D, U) sin solapamiento
+      const padded = labNumber.toString().padStart(4, '0');
+      const positions = [
+        { label: 'UM', pow: 1000, digit: padded[0] },
+        { label: 'C',  pow: 100,  digit: padded[1] },
+        { label: 'D',  pow: 10,   digit: padded[2] },
+        { label: 'U',  pow: 1,    digit: padded[3] }
+      ];
+
+      const analyzer = document.getElementById('digit-analyzer');
+      analyzer.innerHTML = '';
+
+      positions.forEach(pos => {
+        const card = document.createElement('div');
+        let extraClass = '';
+        let badgeText = '&nbsp;';
+
+        if (pos.pow === labOrder) {
+          extraClass = 'target-order';
+          badgeText = '🎯 Redondeamos';
+        } else if (pos.pow === labOrder / 10) {
+          extraClass = 'key-digit';
+          badgeText = '🔑 Cifra Llave';
+        }
+
+        card.className = `digit-card ${extraClass}`;
+        card.innerHTML = `
+          <span class="pos-label">${pos.label}</span>
+          <span class="digit-val">${pos.digit}</span>
+          <span class="role-badge">${badgeText}</span>
+        `;
+        analyzer.appendChild(card);
+      });
+
+      renderMountainNodes(data.keyDigit);
+      renderQuickDigitButtons(data.keyDigit);
+
+      // Posicionar la bola en la salida (sin caer aún para que puedan adivinar)
+      const startPt = SLOPE_COORDS[data.keyDigit];
+      setBoulderPositionAndRotation(startPt.x, startPt.y, 0);
+
+      renderExplanationBanner(false);
+    }
+
+    function renderExplanationBanner(revealed) {
+      const data = calculateRoundingData(labNumber, labOrder);
+      const exp = document.getElementById('lab-explanation');
+
+      if (!revealed) {
+        exp.className = 'explanation-banner';
+        exp.innerHTML = `
+          <div>
+            🤔 <strong>¡Modo Adivinanza!</strong> La bola está en la <strong>cifra llave ${data.keyDigit}</strong>. ¿Caerá hacia el valle del <strong>${formatSpanishNumber(data.lowerValley)}</strong> o hacia el del <strong>${formatSpanishNumber(data.upperValley)}</strong>?
+          </div>
+          <div style="font-size:1.35rem; font-weight:800; color:var(--primary-dark);">
+            Pulsa ▶️ Lanzar Bola para comprobarlo
+          </div>
+        `;
+        return;
+      }
+
+      exp.className = `explanation-banner ${data.roundsUp ? 'right-win' : 'left-win'}`;
+      if (data.roundsUp) {
+        exp.innerHTML = `
+          <div>
+            🔎 Nos fijamos en la <strong>cifra llave (${data.keyDigit})</strong>. Como <strong>${data.keyDigit} es 5 o mayor</strong>, la bola supera la cima y rueda hasta el valle superior: <strong>${formatSpanishNumber(data.result)}</strong>.
+          </div>
+          <div style="font-size:1.8rem; font-weight:800; color:#047857;">
+            ✅ ${formatSpanishNumber(labNumber)} ➔ ${formatSpanishNumber(data.result)}
+          </div>
+        `;
+      } else {
+        exp.innerHTML = `
+          <div>
+            🔎 Nos fijamos en la <strong>cifra llave (${data.keyDigit})</strong>. Como <strong>${data.keyDigit} es menor que 5</strong>, no llega a la cima y retrocede rodando al valle inferior: <strong>${formatSpanishNumber(data.result)}</strong>.
+          </div>
+          <div style="font-size:1.8rem; font-weight:800; color:#c2410c;">
+            ⬅️ ${formatSpanishNumber(labNumber)} ➔ ${formatSpanishNumber(data.result)}
+          </div>
+        `;
+      }
+    }
+
+    /* =====================================================
+       MEJORA 3 Y 4: ANIMACIÓN CON PAUSA, REPRODUCCIÓN Y GIRO
+       ===================================================== */
+    function setBoulderPositionAndRotation(x, y, angleDeg) {
+      const boulder = document.getElementById('boulder-group');
+      const spinGroup = document.getElementById('boulder-spin');
+      boulder.setAttribute('transform', `translate(${x}, ${y})`);
+      if (spinGroup) {
+        spinGroup.setAttribute('transform', `rotate(${angleDeg})`);
+      }
+    }
+
+    function stopAnimationLoop() {
+      if (rollState.rafId) {
+        cancelAnimationFrame(rollState.rafId);
+        rollState.rafId = null;
+      }
+      rollState.lastTimestamp = null;
+    }
+
+    function updatePlayPauseButtonUI() {
+      const btn = document.getElementById('btn-play-pause');
+      if (rollState.status === 'playing') {
+        btn.innerHTML = '⏸️ Pausar Caída';
+        btn.classList.remove('paused-state');
+      } else if (rollState.status === 'paused') {
+        btn.innerHTML = '▶️ Reanudar';
+        btn.classList.add('paused-state');
+      } else if (rollState.status === 'finished') {
+        btn.innerHTML = '🔁 Repetir Caída';
+        btn.classList.remove('paused-state');
+      } else {
+        btn.innerHTML = '▶️ Lanzar Bola';
+        btn.classList.remove('paused-state');
+      }
+    }
+
+    function toggleBoulderPlayPause() {
+      if (rollState.status === 'playing') {
+        // Pausar en el punto exacto donde esté
+        stopAnimationLoop();
+        rollState.status = 'paused';
+        playSound('tick');
+        updatePlayPauseButtonUI();
+      } else if (rollState.status === 'paused') {
+        // Reanudar desde donde se pausó
+        rollState.status = 'playing';
+        playSound('roll');
+        updatePlayPauseButtonUI();
+        rollState.rafId = requestAnimationFrame(stepBoulderAnimation);
+      } else {
+        // Iniciar desde el principio ('idle' o 'finished')
+        rollState.progress = 0;
+        rollState.status = 'playing';
+        renderExplanationBanner(false);
+        playSound('roll');
+        updatePlayPauseButtonUI();
+        rollState.rafId = requestAnimationFrame(stepBoulderAnimation);
+      }
+    }
+
+    function resetBoulderToStart() {
+      playSound('tick');
+      stopAnimationLoop();
+      rollState.status = 'idle';
+      rollState.progress = 0;
+      updatePlayPauseButtonUI();
+
+      const data = calculateRoundingData(labNumber, labOrder);
+      const startPt = SLOPE_COORDS[data.keyDigit];
+      setBoulderPositionAndRotation(startPt.x, startPt.y, 0);
+      renderExplanationBanner(false);
+    }
+
+    function stepBoulderAnimation(timestamp) {
+      if (rollState.status !== 'playing') return;
+
+      if (!rollState.lastTimestamp) {
+        rollState.lastTimestamp = timestamp;
+      }
+      const deltaMs = timestamp - rollState.lastTimestamp;
+      rollState.lastTimestamp = timestamp;
+
+      // Duración de 1.6 segundos para dar tiempo al docente/alumno a pausar si quiere
+      const totalDuration = 1600;
+      rollState.progress = Math.min(rollState.progress + deltaMs / totalDuration, 1);
+
+      const data = calculateRoundingData(labNumber, labOrder);
+      const startPt = SLOPE_COORDS[data.keyDigit];
+      // Posición final encima del cartel del valle sin tapar el número 9 ni el recuadro
+      const endPt = data.roundsUp ? { x: 885, y: 365 } : { x: 115, y: 365 };
+
+      // Aceleración suave
+      const ease = rollState.progress * rollState.progress;
+      const curX = startPt.x + (endPt.x - startPt.x) * ease;
+      const curY = startPt.y + (endPt.y - startPt.y) * ease;
+
+      // Rotación proporcional al desplazamiento
+      const spinDirection = data.roundsUp ? 1 : -1;
+      const angleDeg = ease * 360 * 1.5 * spinDirection;
+
+      setBoulderPositionAndRotation(curX, curY, angleDeg);
+
+      if (rollState.progress < 1) {
+        rollState.rafId = requestAnimationFrame(stepBoulderAnimation);
+      } else {
+        stopAnimationLoop();
+        rollState.status = 'finished';
+        playSound('success');
+        updatePlayPauseButtonUI();
+        renderExplanationBanner(true);
+      }
+    }
+
+    /* =====================================================
+       3. SISTEMA DE GAMIFICACIÓN Y RETOS
+       ===================================================== */
+    let score = 0;
+    let streak = 0;
+    let storiesSolved = 0;
+    let currentGameMode = 'valley';
+    let currentQuestion = null;
+
+    const STORY_TEMPLATES = [
+      {
+        text: "En la excursión del colegio hemos recorrido {NUM} metros por la montaña. ¿Cuántas {ORDER_PLURAL} de metros hemos caminado aproximadamente?",
+        orders: [100, 1000]
+      },
+      {
+        text: "Para la biblioteca del cole se han comprado {NUM} libros nuevos. Redondea a la {ORDER_SINGULAR} para saber cuántos hay aproximadamente.",
+        orders: [10, 100, 1000]
+      },
+      {
+        text: "Un viaje familiar en caravana recorre {NUM} kilómetros en total. Si redondeamos a la {ORDER_SINGULAR}, ¿cuántos kilómetros son?",
+        orders: [10, 100, 1000]
+      },
+      {
+        text: "Al concierto de música del auditorio han asistido {NUM} personas. Redondea el público a la {ORDER_SINGULAR} más cercana.",
+        orders: [100, 1000]
+      },
+      {
+        text: "En el huerto escolar hemos recogido {NUM} tomates cherry. ¿Cuántas {ORDER_PLURAL} son si redondeamos?",
+        orders: [10, 100]
+      }
+    ];
+
+    function selectGameMode(mode) {
+      playSound('tick');
+      currentGameMode = mode;
+      document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+      document.getElementById(`mode-btn-${mode}`).classList.add('active');
+      generateQuestion();
+    }
+
+    function generateQuestion() {
+      document.getElementById('game-feedback').style.display = 'none';
+      document.getElementById('next-question-btn').style.display = 'none';
+      document.getElementById('game-hint-text').style.display = 'none';
+
+      const orders = [10, 100, 1000];
+      let order = orders[Math.floor(Math.random() * orders.length)];
+      let min = order === 1000 ? 1050 : (order === 100 ? 120 : 25);
+      let num = Math.floor(Math.random() * (9890 - min)) + min;
+
+      const roundData = calculateRoundingData(num, order);
+      const orderInfo = getOrderName(order);
+
+      currentQuestion = {
+        num,
+        order,
+        roundData,
+        orderInfo
+      };
+
+      document.getElementById('game-order-badge').textContent = `🎯 Redondea a la ${orderInfo.singular.toUpperCase()} (${orderInfo.short})`;
+
+      const storyBox = document.getElementById('game-story-container');
+      const bigNumBox = document.getElementById('game-big-number');
+
+      if (currentGameMode === 'story') {
+        const tpl = STORY_TEMPLATES[Math.floor(Math.random() * STORY_TEMPLATES.length)];
+        order = tpl.orders[Math.floor(Math.random() * tpl.orders.length)];
+        const newRoundData = calculateRoundingData(num, order);
+        const newOrderInfo = getOrderName(order);
+        currentQuestion = { num, order, roundData: newRoundData, orderInfo: newOrderInfo };
+
+        document.getElementById('game-order-badge').textContent = `🎒 Problema: Redondea a la ${newOrderInfo.singular.toUpperCase()}`;
+        storyBox.style.display = 'block';
+        bigNumBox.style.display = 'none';
+        storyBox.innerHTML = tpl.text
+          .replace('{NUM}', `<strong>${formatSpanishNumber(num)}</strong>`)
+          .replace('{ORDER_SINGULAR}', `<strong>${newOrderInfo.singular.toLowerCase()}</strong>`)
+          .replace('{ORDER_PLURAL}', `<strong>${newOrderInfo.plural.toLowerCase()}</strong>`);
+      } else {
+        storyBox.style.display = 'none';
+        bigNumBox.style.display = 'inline-block';
+        bigNumBox.textContent = formatSpanishNumber(num);
+      }
+
+      const q = currentQuestion;
+      document.getElementById('game-hint-text').innerHTML =
+        `Pista: El número está entre <strong>${formatSpanishNumber(q.roundData.lowerValley)}</strong> y <strong>${formatSpanishNumber(q.roundData.upperValley)}</strong>. La cifra llave de la derecha es <strong>${q.roundData.keyDigit}</strong>.`;
+
+      renderGameOptions();
+    }
+
+    function renderGameOptions() {
+      const container = document.getElementById('game-answers');
+      container.innerHTML = '';
+      const q = currentQuestion;
+
+      if (currentGameMode === 'valley') {
+        const leftBtn = document.createElement('button');
+        leftBtn.className = 'answer-btn';
+        leftBtn.innerHTML = `⬅️ ${formatSpanishNumber(q.roundData.lowerValley)} <span class="valley-sub">Valle Inferior (Retrocede)</span>`;
+        leftBtn.onclick = () => checkAnswer(q.roundData.lowerValley, leftBtn);
+
+        const rightBtn = document.createElement('button');
+        rightBtn.className = 'answer-btn';
+        rightBtn.innerHTML = `${formatSpanishNumber(q.roundData.upperValley)} ➡️ <span class="valley-sub">Valle Superior (Avanza)</span>`;
+        rightBtn.onclick = () => checkAnswer(q.roundData.upperValley, rightBtn);
+
+        container.appendChild(leftBtn);
+        container.appendChild(rightBtn);
+      } else {
+        const optionsSet = new Set([
+          q.roundData.lowerValley,
+          q.roundData.upperValley,
+          Math.max(0, q.roundData.lowerValley - q.order),
+          q.roundData.upperValley + q.order
+        ]);
+
+        while (optionsSet.size < 4) {
+          optionsSet.add(q.roundData.upperValley + q.order * 2);
+        }
+
+        const options = Array.from(optionsSet).sort((a, b) => a - b);
+        options.forEach(optVal => {
+          const btn = document.createElement('button');
+          btn.className = 'answer-btn';
+          btn.textContent = formatSpanishNumber(optVal);
+          btn.onclick = () => checkAnswer(optVal, btn);
+          container.appendChild(btn);
+        });
+      }
+    }
+
+    function toggleGameHint() {
+      playSound('tick');
+      const hint = document.getElementById('game-hint-text');
+      hint.style.display = hint.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function checkAnswer(selectedValue, btnElement) {
+      const q = currentQuestion;
+      const isCorrect = selectedValue === q.roundData.result;
+      const allButtons = document.querySelectorAll('#game-answers .answer-btn');
+      allButtons.forEach(b => b.disabled = true);
+
+      const feedback = document.getElementById('game-feedback');
+      feedback.style.display = 'block';
+
+      if (isCorrect) {
+        btnElement.classList.add('correct');
+        playSound('success');
+        score += 10;
+        streak += 1;
+        if (currentGameMode === 'story') storiesSolved += 1;
+
+        feedback.style.background = '#d1fae5';
+        feedback.style.color = '#065f46';
+        feedback.innerHTML = `🎉 ¡Genial! Como la cifra llave es ${q.roundData.keyDigit}, redondea a <strong>${formatSpanishNumber(q.roundData.result)}</strong>.`;
+
+        if (streak % 5 === 0) launchConfetti();
+      } else {
+        btnElement.classList.add('wrong');
+        playSound('error');
+        streak = 0;
+
+        allButtons.forEach(b => {
+          if (b.textContent.includes(formatSpanishNumber(q.roundData.result))) {
+            b.classList.add('correct');
+          }
+        });
+
+        feedback.style.background = '#fee2e2';
+        feedback.style.color = '#991b1b';
+        feedback.innerHTML = `👀 ¡Casi! La cifra llave es <strong>${q.roundData.keyDigit}</strong> (${q.roundData.roundsUp ? '5 o más, avanza' : 'menor que 5, retrocede'}), así que cae a <strong>${formatSpanishNumber(q.roundData.result)}</strong>.`;
+      }
+
+      updateStatsAndBadges();
+      document.getElementById('next-question-btn').style.display = 'inline-flex';
+    }
+
+    function nextGameQuestion() {
+      playSound('tick');
+      generateQuestion();
+    }
+
+    function updateStatsAndBadges() {
+      document.getElementById('score-display').textContent = score;
+      document.getElementById('streak-display').textContent = streak;
+
+      if (score >= 30) unlockBadge('badge-1');
+      if (streak >= 5) unlockBadge('badge-2');
+      if (storiesSolved >= 3) unlockBadge('badge-3');
+      if (score >= 100) unlockBadge('badge-4');
+    }
+
+    function unlockBadge(id) {
+      const el = document.getElementById(id);
+      if (!el.classList.contains('unlocked')) {
+        el.classList.add('unlocked');
+        launchConfetti();
+      }
+    }
+
+    /* =====================================================
+       4. NAVEGACIÓN ENTRE PESTAÑAS Y CONFETI
+       ===================================================== */
+    function switchTab(tabName) {
+      playSound('tick');
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+      document.getElementById(`view-${tabName}`).classList.add('active');
+      const index = tabName === 'lab' ? 0 : (tabName === 'games' ? 1 : 2);
+      document.querySelectorAll('.tab-btn')[index].classList.add('active');
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const pieces = Array.from({ length: 70 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -20,
+        size: Math.random() * 10 + 6,
+        color: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)],
+        speedY: Math.random() * 4 + 3,
+        speedX: (Math.random() - 0.5) * 4,
+        angle: Math.random() * 360
+      }));
+
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.angle += 5;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+        frames++;
+        if (frames < 110) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLabUI();
+      generateQuestion();
+    });
+  </script>
+</body>
+</html>
