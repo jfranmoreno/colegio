@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo Mental Primaria (1º a 6º) - Progresión LOMLOE-ABN</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+
+        /* Efectos 3D táctiles (MDI Friendly - botones gruesos) */
+        .btn-3d {
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom-width: 6px;
+        }
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(6px);
+            border-bottom-width: 0px;
+            margin-bottom: 6px;
+        }
+
+        /* Pestañas */
+        .tab-active {
+            background-color: #ffffff;
+            color: #7c3aed;
+            border-bottom: 4px solid #7c3aed;
+            transform: translateY(2px);
+            z-index: 10;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.04);
+        }
+        .tab-inactive {
+            background-color: #e2e8f0;
+            color: #64748b;
+            border-bottom: 4px solid #cbd5e1;
+        }
+
+        /* Animaciones */
+        .answer-reveal {
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.4); }
+            50% { opacity: 1; transform: scale(1.08); }
+            75% { transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .shake-anim {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        /* Estilos de hoja A4 en vista previa */
+        .a4-sheet {
+            background: white;
+            width: 210mm;
+            min-height: 295mm;
+            margin: 0 auto 2rem auto;
+            padding: 15mm 18mm;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 850px) {
+            .a4-sheet {
+                width: 100%;
+                min-height: auto;
+                padding: 1.5rem;
+            }
+        }
+
+        /* Reglas estrictas para impresión / Exportar a PDF */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                background-image: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            #course-screen, #app-container, #print-modal, #print-toolbar, .no-print {
+                display: none !important;
+            }
+            #print-view-wrapper {
+                display: block !important;
+                position: static !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            #print-sheets-container {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .a4-sheet {
+                width: 100% !important;
+                min-height: 272mm !important;
+                max-height: 276mm !important;
+                margin: 0 !important;
+                padding: 2mm 4mm !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+            }
+            .a4-sheet:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
+
+    <!-- PANTALLA 1: SELECCIÓN DE CURSO DE PRIMARIA (1º a 6º) -->
+    <div id="course-screen" class="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl border-4 border-white overflow-hidden">
+        <div class="text-center p-6 md:p-10 bg-gradient-to-b from-violet-600 to-indigo-700 text-white border-b-8 border-indigo-900">
+            <span class="inline-block bg-white/20 text-white font-bold px-4 py-1 rounded-full text-sm uppercase tracking-wider mb-3 border border-white/30">
+                Progresión LOMLOE · Metodología ABN
+            </span>
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-2 drop-shadow-md">
+                ⚡ Cálculo Mental en Educación Primaria
+            </h1>
+            <p class="text-lg md:text-xl font-semibold text-indigo-100 max-w-2xl mx-auto">
+                Sentido numérico, descomposición, compensación y agilidad mental de 1º a 6º de Primaria
+            </p>
+        </div>
+
+        <div class="p-6 md:p-10 bg-slate-50">
+            <h2 class="text-center text-xl md:text-2xl font-bold text-slate-700 mb-6">
+                🎓 Selecciona el curso para comenzar a trabajar:
+            </h2>
+
+            <!-- Tarjetas de los 6 cursos -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- 1º Primaria -->
+                <button data-grade="1" class="course-card text-left bg-white hover:bg-emerald-50/70 p-6 rounded-3xl border-4 border-emerald-200 hover:border-emerald-500 shadow-md transition-all group btn-3d flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-xl text-xs uppercase tracking-wider border border-emerald-300">Primer Ciclo</span>
+                            <span class="text-4xl group-hover:scale-110 transition-transform">🌱</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-emerald-900 mb-1">1º de Primaria</h3>
+                        <p class="text-slate-600 font-semibold text-sm leading-snug">La cimentación del 10: amigos del 10, dobles, subitización y tabla del 100.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-emerald-700 font-bold text-sm">
+                        <span>20 niveles progresivos</span>
+                        <span>Entrar ➡️</span>
+                    </div>
+                </button>
+
+                <!-- 2º Primaria -->
+                <button data-grade="2" class="course-card text-left bg-white hover:bg-teal-50/70 p-6 rounded-3xl border-4 border-teal-200 hover:border-teal-500 shadow-md transition-all group btn-3d flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-teal-100 text-teal-800 font-bold px-3 py-1 rounded-xl text-xs uppercase tracking-wider border border-teal-300">Primer Ciclo</span>
+                            <span class="text-4xl group-hover:scale-110 transition-transform">🚀</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-teal-900 mb-1">2º de Primaria</h3>
+                        <p class="text-slate-600 font-semibold text-sm leading-snug">Expansión a la centena: amigos del 100, compensación (±9, ±11), mitades y ABN.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-teal-700 font-bold text-sm">
+                        <span>20 niveles progresivos</span>
+                        <span>Entrar ➡️</span>
+                    </div>
+                </button>
+
+                <!-- 3º Primaria -->
+                <button data-grade="3" class="course-card text-left bg-white hover:bg-violet-50/70 p-6 rounded-3xl border-4 border-violet-200 hover:border-violet-500 shadow-md transition-all group btn-3d flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-violet-100 text-violet-800 font-bold px-3 py-1 rounded-xl text-xs uppercase tracking-wider border border-violet-300">Segundo Ciclo</span>
+                            <span class="text-4xl group-hover:scale-110 transition-transform">⚡</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-violet-900 mb-1">3º de Primaria</h3>
+                        <p class="text-slate-600 font-semibold text-sm leading-snug">Consolidación aditiva y bases multiplicativas: amigos del 1.000 y producto ABN.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-violet-700 font-bold text-sm">
+                        <span>20 niveles progresivos</span>
+                        <span>Entrar ➡️</span>
+                    </div>
+                </button>
+
+                <!-- 4º Primaria -->
+                <button data-grade="4" class="course-card text-left bg-white hover:bg-blue-50/70 p-6 rounded-3xl border-4 border-blue-200 hover:border-blue-500 shadow-md transition-all group btn-3d flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-xl text-xs uppercase tracking-wider border border-blue-300">Segundo Ciclo</span>
+                            <span class="text-4xl group-hover:scale-110 transition-transform">🧭</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-blue-900 mb-1">4º de Primaria</h3>
+                        <p class="text-slate-600 font-semibold text-sm leading-snug">Flexibilidad con grandes números: redondeo (±99, ±101), millares y uso cruzado.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-blue-700 font-bold text-sm">
+                        <span>20 niveles progresivos</span>
+                        <span>Entrar ➡️</span>
+                    </div>
+                </button>
+
+                <!-- 5º Primaria -->
+                <button data-grade="5" class="course-card text-left bg-white hover:bg-amber-50/70 p-6 rounded-3xl border-4 border-amber-200 hover:border-amber-500 shadow-md transition-all group btn-3d flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-xl text-xs uppercase tracking-wider border border-amber-300">Tercer Ciclo</span>
+                            <span class="text-4xl group-hover:scale-110 transition-transform">🔥</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-amber-900 mb-1">5º de Primaria</h3>
+                        <p class="text-slate-600 font-semibold text-sm leading-snug">Estrategias avanzadas de producto y división: dobles, mitades, ×3, :3, ×4, :4 y más.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-amber-700 font-bold text-sm">
+                        <span>20 niveles progresivos</span>
+                        <span>Entrar ➡️</span>
+                    </div>
+                </button>
+
+                <!-- 6º Primaria -->
+                <button data-grade="6" class="course-card text-left bg-white hover:bg-rose-50/70 p-6 rounded-3xl border-4 border-rose-200 hover:border-rose-500 shadow-md transition-all group btn-3d flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-rose-100 text-rose-800 font-bold px-3 py-1 rounded-xl text-xs uppercase tracking-wider border border-rose-300">Tercer Ciclo</span>
+                            <span class="text-4xl group-hover:scale-110 transition-transform">👑</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-rose-900 mb-1">6º de Primaria</h3>
+                        <p class="text-slate-600 font-semibold text-sm leading-snug">Culminación del Sentido Numérico: decimales, porcentajes (10%, 25%, 50%) y enteros.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-rose-700 font-bold text-sm">
+                        <span>20 niveles progresivos</span>
+                        <span>Entrar ➡️</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL DE LA APP INTERACTIVA (Oculto hasta elegir curso) -->
+    <div id="app-container" class="hidden w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl border-4 border-white overflow-hidden relative">
+        
+        <!-- Cabecera Dinámica -->
+        <header id="app-header" class="text-center p-5 md:p-8 bg-gradient-to-b from-[#8b5cf6] to-[#7c3aed] text-white relative border-b-8 border-violet-800 shadow-sm z-20 transition-colors">
+            <!-- Botón Cambiar Curso -->
+            <button id="change-course-btn" title="Volver a elegir curso" class="absolute top-4 left-4 bg-black/20 hover:bg-black/30 text-white font-bold py-2.5 px-4 rounded-2xl border-2 border-white/40 shadow transition-transform active:scale-95 flex items-center gap-2 text-sm md:text-base">
+                <span>🎓</span> <span class="hidden sm:inline">Cambiar Curso</span>
+            </button>
+
+            <!-- Botón de Sonido Flotante -->
+            <button id="sound-toggle-btn" title="Activar/Desactivar sonido" class="absolute top-4 right-4 bg-black/20 hover:bg-black/30 text-white p-2.5 md:p-3 rounded-2xl border-2 border-white/40 shadow transition-transform active:scale-95">
+                🔊
+            </button>
+
+            <div class="mt-8 sm:mt-2">
+                <span id="course-cycle-badge" class="inline-block bg-white/20 text-white font-bold px-3 py-0.5 rounded-full text-xs uppercase tracking-wider mb-1">
+                    Segundo Ciclo
+                </span>
+                <h1 id="course-main-title" class="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-1 drop-shadow-md">
+                    ⚡ Desafíos de Cálculo: 3º Primaria
+                </h1>
+                <p id="course-main-subtitle" class="text-base md:text-xl font-semibold text-white/90 mb-5 drop-shadow">
+                    Consolidación aditiva y bases multiplicativas
+                </p>
+            </div>
+            
+            <!-- Selector de Niveles con Botones Anterior/Siguiente -->
+            <div class="max-w-2xl mx-auto flex items-center gap-2">
+                <button id="prev-level-btn" title="Nivel anterior" class="bg-black/25 hover:bg-black/35 text-white font-bold p-4 rounded-2xl border-b-4 border-black/40 active:translate-y-1 active:border-b-0 transition-all">
+                    ◀
+                </button>
+                <div class="relative flex-1">
+                    <select id="level-selector" aria-label="Seleccionar nivel de cálculo" class="w-full p-4 pr-12 text-base md:text-xl font-bold text-slate-900 bg-white rounded-2xl shadow-inner border-4 border-white/60 focus:ring-4 focus:ring-amber-400 focus:outline-none appearance-none cursor-pointer">
+                        <!-- Opciones inyectadas por JS -->
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-700">
+                        <svg class="fill-current h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+                <button id="next-level-btn" title="Siguiente nivel" class="bg-black/25 hover:bg-black/35 text-white font-bold p-4 rounded-2xl border-b-4 border-black/40 active:translate-y-1 active:border-b-0 transition-all">
+                    ▶
+                </button>
+            </div>
+
+            <!-- Botón Principal de Impresión -->
+            <div class="mt-5 flex flex-wrap justify-center gap-4">
+                <button id="open-print-modal-btn" class="bg-[#fbbf24] text-amber-950 font-bold py-3 px-8 rounded-2xl shadow-lg border-b-4 border-[#d97706] hover:bg-[#f59e0b] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
+                    🖨️ Crear Prueba Escrita / PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Pestañas de Navegación -->
+        <div class="flex text-lg md:text-2xl font-bold z-10 relative bg-slate-100">
+            <button id="tab-practico" class="flex-1 py-4 md:py-5 rounded-tr-3xl transition-all duration-200 flex items-center justify-center gap-2">
+                <span>🧠</span> <span>Estrategia Paso a Paso</span>
+            </button>
+            <button id="tab-reto" class="flex-1 py-4 md:py-5 rounded-tl-3xl transition-all duration-200 flex items-center justify-center gap-2">
+                <span>🎯</span> <span>Reto Interactivo</span>
+            </button>
+        </div>
+
+        <!-- PESTAÑA 1: Teoría / Estrategia -->
+        <div id="content-practico" class="p-5 md:p-10 min-h-[420px] bg-slate-50"></div>
+
+        <!-- PESTAÑA 2: Reto / Juego -->
+        <div id="content-reto" class="p-5 md:p-8 min-h-[480px] bg-slate-50 hidden flex-col justify-between">
+            
+            <!-- Barra Superior del Reto -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="bg-violet-100 text-violet-800 font-bold px-4 py-1.5 rounded-full border-2 border-violet-200 shadow-sm text-base md:text-lg">
+                        Operación <span id="progress-text">1 de 20</span>
+                    </div>
+                    <span id="pro-badge" class="hidden bg-rose-600 text-white font-bold px-3 py-1.5 rounded-full text-sm uppercase tracking-wider shadow-sm animate-pulse">
+                        🔥 Modo PRO
+                    </span>
+                </div>
+
+                <!-- Selector de Modo: Pizarra vs Teclado -->
+                <div class="flex items-center bg-slate-200 p-1 rounded-2xl border-2 border-slate-300">
+                    <button id="mode-flashcard-btn" class="px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white text-violet-700 shadow-sm">
+                        👁️ Modo Pizarra
+                    </button>
+                    <button id="mode-keypad-btn" class="px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900">
+                        ⌨️ Modo Práctica
+                    </button>
+                </div>
+
+                <!-- Puntuación en Modo Práctica -->
+                <div id="score-badge" class="hidden bg-emerald-100 text-emerald-800 font-bold px-4 py-1.5 rounded-full border-2 border-emerald-300 text-base">
+                    ⭐ Aciertos: <span id="score-count">0</span>
+                </div>
+            </div>
+
+            <!-- Barra de progreso visual -->
+            <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden mb-6 border border-slate-300">
+                <div id="progress-bar" class="bg-gradient-to-r from-violet-500 to-emerald-500 h-full transition-all duration-300" style="width: 5%"></div>
+            </div>
+
+            <!-- Zona Central del Problema -->
+            <div class="text-center flex-1 flex flex-col justify-center">
+                
+                <!-- Pizarra Principal -->
+                <div id="problem-container" class="bg-white p-6 md:p-10 rounded-[2rem] mb-4 shadow-md border-4 border-slate-200 relative min-h-[160px] md:min-h-[200px] flex flex-col items-center justify-center transition-colors">
+                    <div class="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-700 tracking-tight select-none" id="problem-text">300 + 700</div>
+                    
+                    <!-- Pista rápida desplegable -->
+                    <button id="toggle-hint-btn" class="mt-4 text-sm font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1 rounded-full transition-colors">
+                        💡 Ver truco del nivel
+                    </button>
+                    <p id="Quick-hint-box" class="hidden mt-2 text-base font-semibold text-amber-900 bg-amber-100/80 px-4 py-2 rounded-xl max-w-lg"></p>
+                </div>
+                
+                <!-- MODO 1: Pizarra (Ver respuesta directa) -->
+                <div id="flashcard-controls" class="flex flex-col items-center">
+                    <div id="answer-container" class="h-20 md:h-24 flex items-center justify-center mb-4">
+                        <p id="answer-text" class="text-5xl md:text-7xl font-bold text-[#10b981] opacity-0 drop-shadow-sm">= 1000</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-xl">
+                        <button id="show-answer-btn" class="flex-1 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-bold py-5 px-8 rounded-2xl text-2xl md:text-3xl btn-3d border-[#1d4ed8]">
+                            👁️ Ver Respuesta <span class="block text-xs font-normal opacity-80 mt-0.5">(Espacio / Enter)</span>
+                        </button>
+                        <button id="next-problem-btn" class="flex-1 bg-[#10b981] hover:bg-[#059669] text-white font-bold py-5 px-8 rounded-2xl text-2xl md:text-3xl btn-3d border-[#047857] hidden">
+                            Siguiente ➡️ <span class="block text-xs font-normal opacity-80 mt-0.5">(Espacio / Enter)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MODO 2: Práctica con Teclado Numérico (Soporta negativos y decimales) -->
+                <div id="keypad-controls" class="hidden flex-col items-center w-full max-w-lg mx-auto">
+                    <div class="flex items-center gap-3 w-full mb-3">
+                        <div id="user-input-display" class="flex-1 bg-white border-4 border-violet-400 rounded-2xl py-3 px-6 text-4xl font-bold text-violet-900 min-h-[68px] flex items-center justify-center shadow-inner">
+                            <span id="user-input-value" class="text-slate-300">?</span>
+                        </div>
+                        <button id="check-answer-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-2xl text-2xl btn-3d border-emerald-700">
+                            ✔️ Comprobar
+                        </button>
+                        <button id="keypad-next-btn" class="hidden bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl text-2xl btn-3d border-blue-700">
+                            Siguiente ➡️
+                        </button>
+                    </div>
+
+                    <p id="keypad-feedback" class="h-7 font-bold text-lg mb-2"></p>
+
+                    <!-- Botonera numérica táctil extendida -->
+                    <div class="grid grid-cols-7 gap-2 w-full">
+                        <button data-key="1" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">1</button>
+                        <button data-key="2" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">2</button>
+                        <button data-key="3" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">3</button>
+                        <button data-key="4" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">4</button>
+                        <button data-key="5" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">5</button>
+                        <button data-key="," class="num-key bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold py-3 rounded-xl text-2xl border-2 border-indigo-300 btn-3d" title="Coma decimal">,</button>
+                        <button data-key="DEL" class="num-key bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-3 rounded-xl text-xl border-2 border-amber-300 btn-3d" title="Borrar">⌫</button>
+                        
+                        <button data-key="6" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">6</button>
+                        <button data-key="7" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">7</button>
+                        <button data-key="8" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">8</button>
+                        <button data-key="9" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">9</button>
+                        <button data-key="0" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">0</button>
+                        <button data-key="-" class="num-key bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold py-3 rounded-xl text-xl border-2 border-indigo-300 btn-3d" title="Signo negativo / positivo">±</button>
+                        <button data-key="CLR" class="num-key bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold py-3 rounded-xl text-lg border-2 border-rose-300 btn-3d" title="Limpiar todo">C</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles Secundarios -->
+            <div class="mt-8 pt-5 border-t-4 border-slate-200 flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="new-challenge-btn" class="w-full sm:w-auto bg-slate-200 text-slate-700 font-bold py-3.5 px-7 rounded-xl btn-3d border-slate-300 text-lg flex items-center justify-center gap-2 hover:bg-slate-300">
+                    🔄 Nivel Normal
+                </button>
+                <button id="pro-challenge-btn" class="w-full sm:w-auto bg-[#f43f5e] hover:bg-[#e11d48] text-white font-bold py-3.5 px-7 rounded-xl btn-3d border-[#be123c] text-lg flex items-center justify-center gap-2">
+                    🔥 Activar Modo PRO (Difícil)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIGURADOR DE FICHAS PDF -->
+    <div id="print-modal" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-3 md:p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col border-4 border-violet-400 overflow-hidden">
+            
+            <div class="p-5 md:p-7 border-b-4 border-slate-100 bg-violet-50 flex justify-between items-start">
+                <div>
+                    <h2 id="print-modal-title" class="text-2xl md:text-3xl font-bold text-violet-900 flex items-center gap-3">
+                        🖨️ Generador de Pruebas en PDF
+                    </h2>
+                    <p class="text-slate-600 mt-1 font-semibold text-base md:text-lg">Configura e imprime pruebas escritas A4 listas para el aula.</p>
+                </div>
+                <button id="close-modal-x" class="text-slate-400 hover:text-slate-700 text-3xl font-bold leading-none px-2">&times;</button>
+            </div>
+            
+            <div class="p-5 md:p-7 overflow-y-auto flex-1 bg-slate-50 space-y-6">
+                <div id="print-error-msg" class="hidden p-4 bg-red-100 text-red-800 border-2 border-red-300 rounded-xl font-bold text-base flex items-center gap-2">
+                    <span>⚠️</span> <span>Por favor, selecciona al menos una estrategia de la lista.</span>
+                </div>
+
+                <!-- Opciones de Formato -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200">
+                        <label for="print-versions" class="block font-bold text-amber-950 mb-2 text-base">¿Cuántos modelos distintos?</label>
+                        <select id="print-versions" class="w-full p-3 border-2 border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-400 outline-none text-slate-800 font-bold text-base bg-white">
+                            <option value="1">1 modelo único (1 hoja)</option>
+                            <option value="2">2 modelos distintos (A y B)</option>
+                            <option value="3">3 modelos distintos (A, B y C)</option>
+                            <option value="4">4 modelos distintos (A, B, C y D)</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
+                        <label for="print-custom-title" class="block font-bold text-blue-950 mb-2 text-base">Título del encabezado:</label>
+                        <input type="text" id="print-custom-title" value="CÁLCULO MENTAL - 3º PRIMARIA" maxlength="45" class="w-full p-3 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-slate-800 font-bold text-base bg-white">
+                    </div>
+                </div>
+
+                <!-- Selección de Niveles con botones rápidos -->
+                <div>
+                    <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                        <h3 class="font-bold text-slate-700 text-lg flex items-center gap-2">
+                            <span>📝</span> <span>Estrategias del curso a incluir (20 operaciones por prueba):</span>
+                        </h3>
+                        <div class="flex gap-2">
+                            <button type="button" id="select-current-level-btn" class="text-xs md:text-sm bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold px-3 py-1.5 rounded-lg border border-violet-300 transition">
+                                Solo nivel actual
+                            </button>
+                            <button type="button" id="select-all-levels-btn" class="text-xs md:text-sm bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold px-3 py-1.5 rounded-lg border border-emerald-300 transition">
+                                Marcar todos
+                            </button>
+                            <button type="button" id="deselect-all-levels-btn" class="text-xs md:text-sm bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-lg border border-slate-300 transition">
+                                Desmarcar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-2 bg-white p-4 rounded-2xl border-2 border-slate-200 max-h-64 overflow-y-auto">
+                        <!-- Checkboxes generados dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Opciones Adicionales: Modo PRO y Solucionario -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200 flex items-center">
+                        <label class="flex items-center cursor-pointer w-full">
+                            <input type="checkbox" id="print-pro-cb" class="h-6 w-6 text-rose-600 rounded-lg focus:ring-rose-500 border-2 border-rose-300 cursor-pointer">
+                            <span class="ml-3 font-bold text-rose-950 text-base">Usar números del Modo PRO 🔥</span>
+                        </label>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200 flex items-center">
+                        <label class="flex items-center cursor-pointer w-full">
+                            <input type="checkbox" id="print-solutions-cb" checked class="h-6 w-6 text-emerald-600 rounded-lg focus:ring-emerald-500 border-2 border-emerald-300 cursor-pointer">
+                            <span class="ml-3 font-bold text-emerald-950 text-base">Incluir hoja de Solucionario ✅</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 md:p-6 bg-slate-100 border-t-4 border-slate-200 flex flex-col sm:flex-row justify-end gap-3">
+                <button id="cancel-print-btn" class="px-6 py-3.5 rounded-xl text-slate-600 font-bold hover:bg-slate-200 transition-colors border-2 border-slate-300 text-lg">
+                    Cancelar
+                </button>
+                <button id="generate-print-btn" class="px-8 py-3.5 rounded-xl bg-violet-600 text-white font-bold btn-3d border-violet-800 hover:bg-violet-500 text-lg flex justify-center items-center gap-2">
+                    ✨ Vista Previa e Imprimir PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISOR DE FICHAS E IMPRESIÓN INTEGRADO -->
+    <div id="print-view-wrapper" class="hidden fixed inset-0 bg-slate-800/95 z-50 overflow-y-auto">
+        <div id="print-toolbar" class="no-print sticky top-0 z-50 bg-slate-900 text-white border-b-4 border-violet-500 px-4 py-3 shadow-xl">
+            <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">📄</span>
+                    <div>
+                        <h3 class="font-bold text-lg leading-tight">Vista Previa de Prueba Escrita / PDF</h3>
+                        <p class="text-xs text-slate-300">En la ventana de impresión elige <strong>"Guardar como PDF"</strong> o tu impresora.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="regenerate-sheets-btn" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl border border-slate-500 text-sm flex items-center gap-1.5 transition">
+                        🎲 Otros números
+                    </button>
+                    <button id="back-to-config-btn" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-bold py-2.5 px-4 rounded-xl text-sm flex items-center gap-1.5 transition">
+                        ⚙️ Configurar
+                    </button>
+                    <button id="trigger-print-btn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 px-6 rounded-xl shadow-lg text-base flex items-center gap-2 transition transform hover:scale-105">
+                        🖨️ Imprimir / Guardar PDF
+                    </button>
+                    <button id="close-print-view-btn" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition">
+                        ✖ Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor donde se inyectan las páginas A4 -->
+        <div id="print-sheets-container" class="p-4 md:p-8"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- SISTEMA DE AUDIO (Web Audio API) ---
+            let soundEnabled = true;
+            let audioCtx = null;
+
+            function getAudioContext() {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) audioCtx = new AudioContextClass();
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                return audioCtx;
+            }
+
+            function playSuccessSound() {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    if (!ctx) return;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.22);
+                    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.35);
+                } catch (e) {}
+            }
+
+            function playErrorSound() {
+                if (!soundEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    if (!ctx) return;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } catch (e) {}
+            }
+
+            // --- UTILIDADES MATEMÁTICAS ---
+            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            const pick = (arr) => arr[rand(0, arr.length - 1)];
+            const fmtDec = (n) => Number(n.toFixed(3)).toString().replace('.', ',');
+            const fmtSigned = (n) => (n >= 0 ? `(+${n})` : `(${n})`);
+            const diceFaces = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+            function buildProblemSet(generatorFn, count = 20) {
+                const results = [];
+                const seen = new Set();
+                let safety = 0;
+                while (results.length < count && safety < 350) {
+                    safety++;
+                    const item = generatorFn();
+                    if (!seen.has(item.text) || safety > 140) {
+                        if (results.length === 0 || results[results.length - 1].text !== item.text || safety > 260) {
+                            results.push(item);
+                            seen.add(item.text);
+                        }
+                    }
+                }
+                return results;
+            }
+
+            function buildTheoryUI(title, subtitle, operation, steps, tip) {
+                return `
+                    <div class="bg-white rounded-3xl p-6 md:p-10 shadow-sm border-4 border-violet-100">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b-2 border-slate-100 pb-4">
+                            <div>
+                                <h2 class="text-2xl md:text-4xl font-bold text-violet-800 mb-1">${title}</h2>
+                                <p class="text-lg md:text-xl text-slate-600 font-semibold">${subtitle}</p>
+                            </div>
+                            <button onclick="document.getElementById('tab-reto').click()" class="self-start md:self-center bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-6 rounded-2xl btn-3d border-violet-800 text-base shrink-0">
+                                🎯 ¡Ir al Reto!
+                            </button>
+                        </div>
+
+                        <div class="bg-emerald-50 rounded-3xl p-6 md:p-8 border-4 border-emerald-200 mb-8 relative">
+                            <div class="absolute -top-4 left-6 bg-emerald-600 text-white font-bold px-5 py-1.5 rounded-xl shadow-sm text-sm tracking-wider uppercase">PASO A PASO</div>
+                            <h3 class="text-2xl sm:text-3xl md:text-5xl font-bold text-emerald-950 mb-6 mt-2 text-center tracking-wide bg-white py-4 px-6 rounded-2xl border-2 border-emerald-200 shadow-inner">${operation}</h3>
+                            <ul class="space-y-3.5">
+                                ${steps.map((s, i) => `
+                                    <li class="flex items-center bg-white p-4 rounded-2xl shadow-sm border-2 border-emerald-100">
+                                        <span class="mr-4 bg-emerald-100 text-emerald-800 font-bold w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-lg">${i + 1}</span>
+                                        <span class="text-slate-700 font-semibold text-lg md:text-xl">${s}</span>
+                                    </li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="bg-amber-50 rounded-3xl p-6 border-4 border-amber-300 flex flex-col sm:flex-row gap-5 items-center">
+                            <div class="text-5xl sm:text-6xl select-none">💡</div>
+                            <div>
+                                <h3 class="font-bold text-amber-950 text-xl md:text-2xl mb-1">El truco mental ABN</h3>
+                                <p class="text-lg md:text-xl text-amber-900 font-medium">${tip}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Helper compacto para crear niveles rápidamente
+            function createLevel(title, subtitle, exampleOp, steps, tip, genFn, genProFn) {
+                return {
+                    title,
+                    subtitle,
+                    tip,
+                    practicoHTML: buildTheoryUI(title, subtitle, exampleOp, steps, tip),
+                    gen: () => buildProblemSet(genFn),
+                    genPro: () => buildProblemSet(genProFn || genFn)
+                };
+            }
+
+            // =========================================================================
+            // BASE DE DATOS COMPLETA: PROGRESIÓN LOMLOE-ABN (6 CURSOS × 20 NIVELES = 120)
+            // =========================================================================
+            const coursesData = {
+                1: {
+                    name: "1º de Primaria",
+                    cycle: "Primer Ciclo · Fase Manipulativa y Tabla del 100",
+                    subtitle: "La cimentación del 10: amigos del 10, dobles y decenas",
+                    headerClass: "from-emerald-500 to-emerald-700 border-emerald-900",
+                    levels: [
+                        createLevel("1.1 Contar hacia delante y atrás (hasta 100)", "Continuar la serie numérica desde cualquier número dado.", "45, 46, 47... / 32, 31, 30...",
+                            ["Localiza el número en la fila de la tabla del 100.", "Si los números suben, avanza un paso a la derecha (+1).", "Si los números bajan, retrocede un paso a la izquierda (-1)."],
+                            "Fíjate muy bien cuando termines en 9 (ej. 29 -> 30) o en 0 hacia atrás (ej. 30 -> 29).",
+                            () => { let s = rand(5, 85); return Math.random() > 0.5 ? {text: `${s}, ${s+1}, ${s+2}, _`, answer: s+3} : {text: `${s+3}, ${s+2}, ${s+1}, _`, answer: s}; },
+                            () => { let s = rand(2, 9) * 10; return Math.random() > 0.5 ? {text: `${s-2}, ${s-1}, ${s}, _`, answer: s+1} : {text: `${s+2}, ${s+1}, ${s}, _`, answer: s-1}; }
+                        ),
+                        createLevel("1.2 Subitización (dados y patrones)", "Reconocer cantidades de un vistazo sin contar uno a uno.", "⚃ = 4  |  ⚄ + ⚁ = 7",
+                            ["Mira el dibujo de los puntos del dado como una figura completa.", "Reconoce el patrón de golpe sin contar puntito a puntito.", "Si hay dos dados, junta las dos imágenes en tu cabeza."],
+                            "El 5 tiene un punto en el centro y 4 esquinas; el 6 son dos columnas de 3.",
+                            () => { if (Math.random() > 0.45) { let d = rand(1, 6); return {text: `¿Cuántos puntos? ${diceFaces[d]}`, answer: d}; } let a = rand(1, 5), b = rand(1, 5); return {text: `${diceFaces[a]} + ${diceFaces[b]}`, answer: a+b}; },
+                            () => { let a = rand(2, 6), b = rand(2, 6), c = rand(1, 4); return {text: `${diceFaces[a]} + ${diceFaces[b]} + ${diceFaces[c]}`, answer: a+b+c}; }
+                        ),
+                        createLevel("1.3 Sumas de dobles sencillos (hasta 5+5)", "Cálculo automático de parejas iguales pequeñas.", "4 + 4 = 8",
+                            ["Imagina la misma cantidad en tu mano izquierda y en la derecha.", "1+1=2, 2+2=4, 3+3=6, 4+4=8, 5+5=10.", "Todos los resultados de sumar dobles son números pares."],
+                            "Usa tus dos manos en espejo: 4 dedos y 4 dedos son 8.",
+                            () => { let n = rand(1, 5); return Math.random() > 0.3 ? {text: `${n} + ${n}`, answer: n*2} : {text: `Doble de ${n}`, answer: n*2}; },
+                            () => { let n = rand(4, 10); return Math.random() > 0.4 ? {text: `${n} + ${n}`, answer: n*2} : {text: `${n} + _ = ${n*2}`, answer: n}; }
+                        ),
+                        createLevel("1.4 Descomposición del 10 (Amigos del 10)", "Parejas de números que juntos completan una decena.", "7 + 3 = 10  |  6 + 4 = 10",
+                            ["Tenemos 10 dedos en las dos manos.", "Si escondes 7 dedos, ¿cuántos quedan levantados? ¡Quedan 3!", "Las parejas son: 9+1, 8+2, 7+3, 6+4 y 5+5."],
+                            "Los amigos del 10 son la llave mágica para todo el cálculo mental de Primaria.",
+                            () => { let a = rand(1, 9); return Math.random() > 0.5 ? {text: `${a} + _ = 10`, answer: 10-a} : {text: `_ + ${a} = 10`, answer: 10-a}; },
+                            () => { let a = rand(1, 9); return {text: `10 - ${a}`, answer: 10-a}; }
+                        ),
+                        createLevel("1.5 Sumar 1 a cualquier número", "Dar un paso adelante en la recta o tabla del 100.", "24 + 1 = 25",
+                            ["Sumar 1 es decir el número siguiente al contar.", "La decena se queda igual, solo sube la unidad.", "Si termina en 9 (ej. 29 + 1), estrenamos la siguiente decena (30)."],
+                            "Piensa simplemente: ¿qué número viene justo después?",
+                            () => { let n = rand(5, 89); return {text: `${n} + 1`, answer: n+1}; },
+                            () => { let n = rand(1, 9) * 10 + 9; return {text: `${n} + 1`, answer: n+1}; }
+                        ),
+                        createLevel("1.6 Restar 1 a cualquier número", "Dar un paso atrás (el número anterior).", "19 - 1 = 18",
+                            ["Restar 1 es decir el número que va justo antes.", "A la cifra de las unidades le quitamos 1.", "Si termina en 0 (ej. 40 - 1), volvemos al 9 de la familia anterior (39)."],
+                            "Cuenta hacia atrás un solo escalón.",
+                            () => { let n = rand(6, 90); return {text: `${n} - 1`, answer: n-1}; },
+                            () => { let n = rand(2, 10) * 10; return {text: `${n} - 1`, answer: n-1}; }
+                        ),
+                        createLevel("1.7 Sumar 2 (contar saltando uno)", "Avanzar dos casillas en la tabla del 100.", "14 + 2 = 16",
+                            ["Imagina que saltas por encima del número siguiente.", "Si estás en un número par (14), caes en el siguiente par (16).", "Si estás en un impar (15), caes en el siguiente impar (17)."],
+                            "Salta un número en silencio y di en voz alta el siguiente.",
+                            () => { let n = rand(4, 85); return {text: `${n} + 2`, answer: n+2}; },
+                            () => { let n = rand(1, 8) * 10 + rand(8, 9); return {text: `${n} + 2`, answer: n+2}; }
+                        ),
+                        createLevel("1.8 Restar 2 (contar atrás saltando uno)", "Retroceder dos casillas en la tabla del 100.", "28 - 2 = 26",
+                            ["Colócate en el 28 y da dos pasitos hacia atrás.", "Saltas el 27 y aterrizas en el 26.", "Los pares siguen siendo pares y los impares siguen siendo impares."],
+                            "Es como bajar los escalones de dos en dos.",
+                            () => { let n = rand(6, 89); return {text: `${n} - 2`, answer: n-2}; },
+                            () => { let n = rand(2, 9) * 10 + rand(0, 1); return {text: `${n} - 2`, answer: n-2}; }
+                        ),
+                        createLevel("1.9 Sumar 10 a números de una cifra", "Formación directa de la familia del 10.", "7 + 10 = 17",
+                            ["Tenemos 1 decena completa (10) y 7 unidades sueltas.", "El 7 ocupa el lugar del cero del 10.", "10 + 7 o 7 + 10 forman el 17."],
+                            "El 1 de la decena va delante y el número de una cifra va detrás.",
+                            () => { let u = rand(1, 9); return Math.random() > 0.5 ? {text: `${u} + 10`, answer: u+10} : {text: `10 + ${u}`, answer: u+10}; },
+                            () => { let u = rand(1, 9); return {text: `_ + 10 = ${10+u}`, answer: u}; }
+                        ),
+                        createLevel("1.10 Sumar 10 a cualquier número", "Bajar un piso en la tabla del 100.", "34 + 10 = 44",
+                            ["Busca el 34 en la tabla del 100 y baja una casilla en vertical.", "Las unidades (4) no cambian porque sumamos 0 unidades.", "Las decenas suben una: de 3 decenas pasamos a 4 decenas (44)."],
+                            "¡Baja un piso en el ascensor de la tabla del 100! El último número no cambia.",
+                            () => { let n = rand(11, 89); return {text: `${n} + 10`, answer: n+10}; },
+                            () => { let n = rand(11, 79); return {text: `${n} + _ = ${n+10}`, answer: 10}; }
+                        ),
+                        createLevel("1.11 Restar 10 a cualquier número", "Subir un piso en la tabla del 100.", "56 - 10 = 46",
+                            ["Busca el 56 en la tabla del 100 y sube un piso hacia arriba.", "Las unidades (6) se quedan intactas.", "Quitamos 1 a las decenas: de 5 decenas pasamos a 4 (46)."],
+                            "¡Sube un piso en el ascensor! Las unidades se quedan igual.",
+                            () => { let n = rand(15, 99); return {text: `${n} - 10`, answer: n-10}; },
+                            () => { let n = rand(21, 99); return {text: `${n} - _ = ${n-10}`, answer: 10}; }
+                        ),
+                        createLevel("1.12 Sumar unidades a una decena completa", "Composición directa de decenas y unidades.", "20 + 4 = 24",
+                            ["El 20 tiene 2 decenas y 0 unidades sueltas.", "El 4 entra directo a ocupar el sitio del cero.", "20 + 4 se lee casi igual que se escribe: veinticuatro (24)."],
+                            "El número pequeño machaca al cero de la decena.",
+                            () => { let d = rand(1, 9) * 10, u = rand(1, 9); return {text: `${d} + ${u}`, answer: d+u}; },
+                            () => { let d = rand(2, 9) * 10, u = rand(1, 9); return {text: `${d} + _ = ${d+u}`, answer: u}; }
+                        ),
+                        createLevel("1.13 Restar las unidades para dejar la decena", "Vuelta a la decena exacta quitando el pico.", "24 - 4 = 20",
+                            ["El 24 está formado por 20 y 4.", "Si le quitamos las 4 unidades sueltas...", "¡Nos quedamos con la decena limpia: 20!"],
+                            "Quítale la 'cola' de unidades al número y pon un cero.",
+                            () => { let d = rand(1, 9) * 10, u = rand(1, 9); return {text: `${d+u} - ${u}`, answer: d}; },
+                            () => { let d = rand(2, 9) * 10, u = rand(1, 9); return {text: `${d+u} - _ = ${d}`, answer: u}; }
+                        ),
+                        createLevel("1.14 Sumas apoyándose en dobles (Dobles + 1)", "Estrategia para sumar números consecutivos.", "4 + 5 -> (4 + 4) + 1 = 9",
+                            ["El 4 y el 5 son vecinos (el 5 es 4 + 1).", "Calcula primero el doble del pequeño: 4 + 4 = 8.", "Añade el 1 que faltaba: 8 + 1 = 9."],
+                            "Cuando dos números son vecinos, haz el doble del pequeño y súmale 1.",
+                            () => { let n = rand(2, 6); return Math.random() > 0.5 ? {text: `${n} + ${n+1}`, answer: 2*n+1} : {text: `${n+1} + ${n}`, answer: 2*n+1}; },
+                            () => { let n = rand(5, 9); return Math.random() > 0.5 ? {text: `${n} + ${n+1}`, answer: 2*n+1} : {text: `${n+1} + ${n}`, answer: 2*n+1}; }
+                        ),
+                        createLevel("1.15 Sumas como Dobles menos 1", "Pensar en el doble del número mayor y quitar 1.", "5 + 4 -> (5 + 5) - 1 = 9",
+                            ["El 5 + 5 es facilísimo porque da 10.", "Como sumamos 5 + 4 (uno menos), pensamos en 5 + 5 = 10.", "Le quitamos 1 a 10 y obtenemos 9."],
+                            "Usa el doble que te resulte más fácil de recordar y ajusta 1.",
+                            () => { let n = rand(3, 6); return {text: `${n} + ${n-1}`, answer: 2*n-1}; },
+                            () => { let n = rand(6, 10); return {text: `${n} + ${n-1}`, answer: 2*n-1}; }
+                        ),
+                        createLevel("1.16 Sumar 1 cifra rebasando el 10 (Amigo del 10)", "Descomponer el segundo sumando para completar el 10.", "8 + 5 -> (8 + 2) + 3 = 13",
+                            ["Queremos llegar primero al 10. ¿Quién es el amigo del 8? ¡El 2!", "Rompemos el 5 en 2 y 3.", "8 + 2 = 10, y 10 + 3 = 13."],
+                            "Haz siempre escala en el 10 usando los amigos del 10.",
+                            () => { let a = rand(6, 9), b = rand(11 - a, 9); return {text: `${a} + ${b}`, answer: a+b}; },
+                            () => { let a = rand(6, 9), b = rand(11 - a, 9); return {text: `${a} + _ = ${a+b}`, answer: b}; }
+                        ),
+                        createLevel("1.17 Sumar decenas completas (hasta 100)", "Suma de grupos exactos de 10.", "20 + 30 = 50",
+                            ["20 son 2 decenas y 30 son 3 decenas.", "Sumamos las decenas: 2 + 3 = 5 decenas.", "Ponemos el cero al final: 50."],
+                            "Tapa los ceros, suma los números pequeños y devuelve el cero.",
+                            () => { let a = rand(1, 7), b = rand(1, 9 - a); return {text: `${a*10} + ${b*10}`, answer: (a+b)*10}; },
+                            () => { let a = rand(1, 8), b = rand(1, 10 - a); return {text: `${a*10} + _ = ${(a+b)*10}`, answer: b*10}; }
+                        ),
+                        createLevel("1.18 Restar decenas completas (hasta 100)", "Resta de grupos exactos de 10.", "60 - 20 = 40",
+                            ["60 son 6 decenas y le quitamos 2 decenas.", "Restamos como números de una cifra: 6 - 2 = 4.", "Le añadimos el cero de las decenas: 40."],
+                            "Si sabes hacer 6 - 2 = 4, ya sabes hacer 60 - 20 = 40.",
+                            () => { let a = rand(3, 9), b = rand(1, a - 1); return {text: `${a*10} - ${b*10}`, answer: (a-b)*10}; },
+                            () => { let b = rand(1, 9); return {text: `100 - ${b*10}`, answer: (10-b)*10}; }
+                        ),
+                        createLevel("1.19 Sumar decenas completas a nº de 2 cifras", "Bajar varios pisos de golpe en la tabla del 100.", "45 + 30 = 75",
+                            ["Las unidades (5) no cambian porque el 30 termina en 0.", "Sumamos solo las decenas: 4 decenas + 3 decenas = 7 decenas.", "Juntamos con las 5 unidades: 75."],
+                            "Baja tantos pisos en la tabla del 100 como indique la decena.",
+                            () => { let d1 = rand(1, 6), u = rand(1, 9), d2 = rand(1, 9 - d1); return {text: `${d1*10+u} + ${d2*10}`, answer: (d1+d2)*10+u}; },
+                            () => { let d1 = rand(2, 6), u = rand(1, 9), d2 = rand(2, 9 - d1); return {text: `${d1*10+u} + _ = ${(d1+d2)*10+u}`, answer: d2*10}; }
+                        ),
+                        createLevel("1.20 Restar decenas completas a nº de 2 cifras", "Subir varios pisos de golpe en la tabla del 100.", "82 - 40 = 42",
+                            ["El 2 de las unidades está a salvo porque restamos 0 unidades.", "Restamos las decenas: 8 decenas - 4 decenas = 4 decenas.", "Mantenemos el 2 al final: 42."],
+                            "Sube pisos en la tabla del 100 sin tocar las unidades.",
+                            () => { let d1 = rand(4, 9), u = rand(1, 9), d2 = rand(1, d1 - 1); return {text: `${d1*10+u} - ${d2*10}`, answer: (d1-d2)*10+u}; },
+                            () => { let d1 = rand(5, 9), u = rand(1, 9), d2 = rand(2, d1 - 1); return {text: `${d1*10+u} - _ = ${(d1-d2)*10+u}`, answer: d2*10}; }
+                        )
+                    ]
+                },
+
+                2: {
+                    name: "2º de Primaria",
+                    cycle: "Primer Ciclo · Expansión a la Centena",
+                    subtitle: "Amigos del 100, compensación (±9, ±11), mitades y descomposición ABN",
+                    headerClass: "from-teal-500 to-teal-700 border-teal-900",
+                    levels: [
+                        createLevel("2.1 Amigos del 100 con decenas", "Parejas de decenas completas que suman 100.", "40 + 60 = 100",
+                            ["Recuerda los amigos del 10: 4 + 6 = 10.", "Como trabajamos con decenas, añadimos un cero a cada número.", "40 + 60 = 100."],
+                            "Los amigos del 100 con decenas son los amigos del 10 disfrazados con un cero.",
+                            () => { let d = rand(1, 9) * 10; return Math.random() > 0.5 ? {text: `${d} + _ = 100`, answer: 100-d} : {text: `${d} + ${100-d}`, answer: 100}; },
+                            () => { let d = rand(1, 9) * 10; return {text: `100 - ${d}`, answer: 100-d}; }
+                        ),
+                        createLevel("2.2 Sumar 9 (sumar 10 y restar 1)", "Estrategia de compensación para el 9.", "34 + 9 -> 34 + 10 - 1 = 43",
+                            ["El 9 está a solo 1 paso del 10.", "Bajamos un piso sumando 10: 34 + 10 = 44.", "Como hemos sumado 1 de más, damos un pasito atrás: 44 - 1 = 43."],
+                            "Para sumar 9: baja un piso (+10) y da un paso a la izquierda (-1).",
+                            () => { let n = rand(12, 88); return {text: `${n} + 9`, answer: n+9}; },
+                            () => { let n = rand(45, 145); return {text: `${n} + 9`, answer: n+9}; }
+                        ),
+                        createLevel("2.3 Restar 9 (restar 10 y sumar 1)", "Estrategia de compensación al restar 9.", "45 - 9 -> 45 - 10 + 1 = 36",
+                            ["Quitamos primero una decena entera: 45 - 10 = 35.", "Como hemos quitado 10 en vez de 9, devolvemos 1.", "35 + 1 = 36."],
+                            "Para restar 9: sube un piso (-10) y da un paso a la derecha (+1).",
+                            () => { let n = rand(15, 95); return {text: `${n} - 9`, answer: n-9}; },
+                            () => { let n = rand(50, 150); return {text: `${n} - 9`, answer: n-9}; }
+                        ),
+                        createLevel("2.4 Sumar 11 (sumar 10 y sumar 1)", "Descomposición del 11 en 10 + 1.", "52 + 11 -> 52 + 10 + 1 = 63",
+                            ["El 11 es una decena (10) más una unidad (1).", "Primero sumamos 10: 52 + 10 = 62.", "Luego sumamos 1: 62 + 1 = 63."],
+                            "Baja un piso en la tabla (+10) y avanza una casilla a la derecha (+1).",
+                            () => { let n = rand(11, 85); return {text: `${n} + 11`, answer: n+11}; },
+                            () => { let n = rand(60, 160); return {text: `${n} + 11`, answer: n+11}; }
+                        ),
+                        createLevel("2.5 Restar 11 (restar 10 y restar 1)", "Descomposición de la resta del 11.", "68 - 11 -> 68 - 10 - 1 = 57",
+                            ["Para quitar 11, primero quitamos 10 y luego quitamos 1.", "Subimos un piso: 68 - 10 = 58.", "Damos un paso atrás: 58 - 1 = 57."],
+                            "Sube un piso (-10) y retrocede una casilla a la izquierda (-1).",
+                            () => { let n = rand(21, 98); return {text: `${n} - 11`, answer: n-11}; },
+                            () => { let n = rand(70, 170); return {text: `${n} - 11`, answer: n-11}; }
+                        ),
+                        createLevel("2.6 Descomposición aditiva de 2 cifras", "Separar un número en decenas completas y unidades.", "47 -> 40 + 7",
+                            ["Escucha cómo suena el número: cuarenta (40) y siete (7).", "El 4 vale 40 porque son 4 decenas.", "El 7 vale 7 unidades sueltas."],
+                            "Escucha el nombre del número al decirlo en voz alta: ¡él mismo te dice la suma!",
+                            () => { let d = rand(1, 9)*10, u = rand(1, 9); return Math.random() > 0.5 ? {text: `${d+u} = ${d} + _`, answer: u} : {text: `${d+u} = _ + ${u}`, answer: d}; },
+                            () => { let d = rand(2, 8)*10, u = rand(1, 9); return {text: `${d+u} = ${d-10} + _`, answer: 10+u}; }
+                        ),
+                        createLevel("2.7 Sumar dos números de 2 cifras sin rebase", "Decenas con decenas y unidades con unidades.", "42 + 35 -> (40+30) + (2+5) = 77",
+                            ["Sumamos primero las decenas: 40 + 30 = 70.", "Sumamos después las unidades: 2 + 5 = 7.", "Juntamos ambos resultados: 70 + 7 = 77."],
+                            "Empieza siempre por los grandes (las decenas) de izquierda a derecha.",
+                            () => { let d1 = rand(1, 6), d2 = rand(1, 9-d1), u1 = rand(1, 6), u2 = rand(1, 9-u1); return {text: `${d1*10+u1} + ${d2*10+u2}`, answer: (d1+d2)*10+(u1+u2)}; },
+                            () => { let d1 = rand(2, 5), d2 = rand(2, 9-d1), u1 = rand(1, 5), u2 = rand(1, 9-u1); return {text: `${d1*10+u1} + _ = ${(d1+d2)*10+(u1+u2)}`, answer: d2*10+u2}; }
+                        ),
+                        createLevel("2.8 Restar dos números de 2 cifras sin rebase", "Restar decenas con decenas y unidades con unidades.", "58 - 23 -> (50-20) + (8-3) = 35",
+                            ["Restamos las decenas: 50 - 20 = 30.", "Restamos las unidades: 8 - 3 = 5.", "Unimos lo que nos queda: 30 + 5 = 35."],
+                            "Quita primero las decenas completas y luego las unidades.",
+                            () => { let d1 = rand(3, 9), d2 = rand(1, d1-1), u1 = rand(3, 9), u2 = rand(1, u1-1); return {text: `${d1*10+u1} - ${d2*10+u2}`, answer: (d1-d2)*10+(u1-u2)}; },
+                            () => { let d1 = rand(4, 9), d2 = rand(1, d1-1), u1 = rand(4, 9), u2 = rand(1, u1-1); return {text: `${d1*10+u1} - _ = ${(d1-d2)*10+(u1-u2)}`, answer: d2*10+u2}; }
+                        ),
+                        createLevel("2.9 Dobles de decenas completas", "Duplicar decenas exactas.", "Doble de 40 = 80",
+                            ["Tapamos el cero del 40 y nos quedamos con el 4.", "Calculamos el doble de 4: 4 + 4 = 8.", "Devolvemos el cero: 80."],
+                            "Si el número pasa de 50 (como el doble de 60), pasaremos de 100 (120).",
+                            () => { let d = rand(1, 5) * 10; return {text: `Doble de ${d}`, answer: d*2}; },
+                            () => { let d = rand(5, 9) * 10; return {text: `Doble de ${d}`, answer: d*2}; }
+                        ),
+                        createLevel("2.10 Dobles de 2 cifras sin rebase", "Duplicar por separado decenas y unidades.", "Doble de 24 -> 40 + 8 = 48",
+                            ["Rompemos el 24 en 20 y 4.", "Doble de 20 = 40.", "Doble de 4 = 8. Total: 40 + 8 = 48."],
+                            "Mientras las cifras sean menores que 5 (1, 2, 3, 4), el doble sale directo.",
+                            () => { let d = rand(1, 4)*10, u = rand(1, 4); return {text: `Doble de ${d+u}`, answer: (d+u)*2}; },
+                            () => { let d = rand(5, 9)*10, u = rand(1, 4); return {text: `Doble de ${d+u}`, answer: (d+u)*2}; }
+                        ),
+                        createLevel("2.11 Mitades de decenas completas pares", "Repartir en dos partes iguales decenas pares.", "Mitad de 60 = 30",
+                            ["Las decenas pares son 20, 40, 60, 80 y 100.", "Calculamos la mitad de la primera cifra: mitad de 6 es 3.", "Añadimos el cero: 30."],
+                            "Piensa: ¿qué decena sumada consigo misma da 60? ¡30 + 30!",
+                            () => { let d = pick([20, 40, 60, 80, 100]); return {text: `Mitad de ${d}`, answer: d/2}; },
+                            () => { let d = pick([120, 140, 160, 180, 200]); return {text: `Mitad de ${d}`, answer: d/2}; }
+                        ),
+                        createLevel("2.12 Mitades de decenas completas impares", "Mitades que terminan en 5 (30, 50, 70, 90).", "Mitad de 50 = 25",
+                            ["Rompemos el 50 en una decena par (40) + 10.", "Mitad de 40 = 20.", "Mitad de 10 = 5. Total: 20 + 5 = 25."],
+                            "Todas las decenas impares (10, 30, 50, 70, 90) tienen una mitad que acaba en 5.",
+                            () => { let d = pick([10, 30, 50, 70, 90]); return {text: `Mitad de ${d}`, answer: d/2}; },
+                            () => { let d = pick([110, 130, 150, 170, 190]); return {text: `Mitad de ${d}`, answer: d/2}; }
+                        ),
+                        createLevel("2.13 Mitades de números pares sin rebase", "Todas las cifras del número son pares.", "Mitad de 48 -> 20 + 4 = 24",
+                            ["Separamos el 48 en 40 + 8.", "Mitad de 40 = 20 y mitad de 8 = 4.", "Juntamos: 20 + 4 = 24."],
+                            "Saca la mitad de cada cifra de izquierda a derecha.",
+                            () => { let d = pick([2, 4, 6, 8])*10, u = pick([2, 4, 6, 8]); return {text: `Mitad de ${d+u}`, answer: (d+u)/2}; },
+                            () => { let c = pick([2, 4])*100, d = pick([2, 4, 6, 8])*10, u = pick([2, 4, 6, 8]); return {text: `Mitad de ${c+d+u}`, answer: (c+d+u)/2}; }
+                        ),
+                        createLevel("2.14 Series ascendentes de 2 en 2, 5 en 5 y 10 en 10", "Conteo rítmico y patrones de salto constante.", "5, 10, 15, 20...",
+                            ["Descubre primero de cuánto es el salto entre un número y otro.", "De 5 en 5 siempre alternamos números acabados en 5 y en 0.", "De 2 en 2 vamos siempre por la vía de los pares (o impares)."],
+                            "El conteo de 5 en 5 y de 2 en 2 prepara tu mente para las tablas de multiplicar.",
+                            () => { let step = pick([2, 5, 10]); let s = rand(1, 10) * step; return {text: `${s}, ${s+step}, ${s+step*2}, _`, answer: s+step*3}; },
+                            () => { let step = pick([2, 5, 10]); let s = rand(8, 18) * step; return {text: `${s}, ${s-step}, ${s-step*2}, _`, answer: s-step*3}; }
+                        ),
+                        createLevel("2.15 Sumar rebasando la decena (ABN)", "Descomponer el segundo sumando en decenas y unidades.", "38 + 25 -> 38 + 20 + 5 = 63",
+                            ["Rompemos el 25 en 20 y 5.", "Sumamos las decenas al primer número: 38 + 20 = 58.", "Ahora sumamos las 5 unidades cruzando al 60: 58 + 5 = 63."],
+                            "Deja intacto el primer número y trocea solo el segundo.",
+                            () => { let d1 = rand(2, 6), u1 = rand(4, 9), d2 = rand(1, 8-d1), u2 = rand(11-u1, 9); return {text: `${d1*10+u1} + ${d2*10+u2}`, answer: (d1+d2)*10+u1+u2}; },
+                            () => { let n1 = rand(45, 88), n2 = rand(25, 58); return {text: `${n1} + ${n2}`, answer: n1+n2}; }
+                        ),
+                        createLevel("2.16 Restar rebasando la decena (ABN)", "Bajar primero las decenas y luego las unidades.", "72 - 35 -> 72 - 30 - 5 = 37",
+                            ["Rompemos el 35 en 30 y 5.", "Quitamos primero las 3 decenas: 72 - 30 = 42.", "Al 42 le quitamos 5 (42 - 2 = 40, y 40 - 3 = 37)."],
+                            "Usa la parada en la decena (40) cuando quites las unidades finales.",
+                            () => { let d1 = rand(4, 9), u1 = rand(1, 6), d2 = rand(1, d1-2), u2 = rand(u1+1, 9); return {text: `${d1*10+u1} - ${d2*10+u2}`, answer: (d1*10+u1)-(d2*10+u2)}; },
+                            () => { let n1 = rand(81, 125), n2 = rand(26, 59); return {text: `${n1} - ${n2}`, answer: n1-n2}; }
+                        ),
+                        createLevel("2.17 ¿Cuánto falta para llegar a 100?", "Escalera ascendente hasta la centena completa.", "De 85 a 100 -> +5 (90) + 10 (100) = 15",
+                            ["Completa primero hasta la siguiente decena con el amigo del 10: 85 + 5 = 90.", "Desde 90 hasta 100 falta 1 decena (10).", "Junta los dos saltos: 5 + 10 = 15."],
+                            "Truco rápido: las decenas suman 9 y las unidades suman 10 (en 85: 8+1=9 y 5+5=10 -> 15).",
+                            () => { let n = rand(11, 95); if (n % 10 === 0) n += 5; return {text: `${n} + _ = 100`, answer: 100-n}; },
+                            () => { let n = rand(11, 95); if (n % 10 === 0) n += 3; return {text: `100 - ${n}`, answer: 100-n}; }
+                        ),
+                        createLevel("2.18 Sumar centenas completas (hasta 900)", "Sumar grupos de 100 igual que unidades.", "300 + 400 = 700",
+                            ["300 son 3 centenas y 400 son 4 centenas.", "Sumamos las centenas: 3 + 4 = 7.", "Añadimos los dos ceros de las centenas: 700."],
+                            "Tapa los dos ceros, suma las cifras y pon '00' al final.",
+                            () => { let a = rand(1, 7), b = rand(1, 9-a); return {text: `${a*100} + ${b*100}`, answer: (a+b)*100}; },
+                            () => { let a = rand(2, 8), b = rand(3, 9); return {text: `${a*100} + ${b*100}`, answer: (a+b)*100}; }
+                        ),
+                        createLevel("2.19 Restar centenas completas (hasta 900)", "Restar grupos exactos de 100.", "800 - 500 = 300",
+                            ["Tenemos 8 centenas y quitamos 5 centenas.", "8 - 5 = 3 centenas.", "Con sus dos ceros es 300."],
+                            "Resta el primer dígito y mantén los dos ceros.",
+                            () => { let a = rand(3, 9), b = rand(1, a-1); return {text: `${a*100} - ${b*100}`, answer: (a-b)*100}; },
+                            () => { let a = rand(4, 9), b = rand(1, a-1); return {text: `${a*100} - _ = ${(a-b)*100}`, answer: b*100}; }
+                        ),
+                        createLevel("2.20 Introducción al producto (Sumandos iguales)", "Pasar de la suma repetida al sentido multiplicativo.", "3 + 3 + 3 + 3 = 12 (4 veces 3)",
+                            ["Contamos cuántas veces se repite el mismo número.", "Sumamos paso a paso: 3, 6, 9, 12.", "Decimos '4 veces 3 es igual a 12' (4 × 3 = 12)."],
+                            "Multiplicar es un atajo súper rápido para no escribir sumas larguísimas.",
+                            () => { let v = rand(2, 5), n = pick([2, 3, 4, 5, 10]); let str = Array(v).fill(n).join(' + '); return Math.random() > 0.4 ? {text: `${str}`, answer: v*n} : {text: `${v} veces ${n}`, answer: v*n}; },
+                            () => { let v = rand(3, 6), n = rand(3, 6); return {text: `${v} veces ${n} (${v} × ${n})`, answer: v*n}; }
+                        )
+                    ]
+                },
+
+                3: {
+                    name: "3º de Primaria",
+                    cycle: "Segundo Ciclo · Representación Mental y Millares",
+                    subtitle: "Consolidación aditiva y bases multiplicativas",
+                    headerClass: "from-[#8b5cf6] to-[#7c3aed] border-violet-900",
+                    levels: [
+                        createLevel("3.1 Amigos del 1.000 con centenas completas", "Parejas de centenas que completan el millar.", "300 + 700 = 1000",
+                            ["Piensa en los amigos del 10: 3 + 7 = 10.", "Como son centenas, añadimos dos ceros a cada uno.", "300 + 700 = 1000."],
+                            "Si dominas los amigos del 10, ya te sabes los amigos del 1.000.",
+                            () => { let c = rand(1, 9)*100; return Math.random() > 0.5 ? {text: `${c} + _ = 1000`, answer: 1000-c} : {text: `${c} + ${1000-c}`, answer: 1000}; },
+                            () => { let c = rand(1, 9)*100; return {text: `1000 - ${c}`, answer: 1000-c}; }
+                        ),
+                        createLevel("3.2 Amigos del 1.000 con decenas completas", "Completar el millar con números acabados en 50 o decenas.", "450 + 550 = 1000",
+                            ["Completa primero la centena siguiente: 450 + 50 = 500.", "De 500 hasta 1.000 faltan otros 500.", "Junta ambos saltos: 500 + 50 = 550."],
+                            "Las centenas deben sumar 900 y los picos de decenas deben sumar 100.",
+                            () => { let c = rand(1, 8)*100 + 50; return {text: `${c} + _ = 1000`, answer: 1000-c}; },
+                            () => { let c = rand(1, 8)*100 + rand(1, 9)*10; return {text: `${c} + _ = 1000`, answer: 1000-c}; }
+                        ),
+                        createLevel("3.3 Sumar 100 a cualquier número", "Incrementar en 1 la cifra de las centenas.", "456 + 100 = 556",
+                            ["El 100 tiene ceros en decenas y unidades.", "El 56 queda intacto.", "Sumamos 1 a las centenas: 4 + 1 = 5 -> 556."],
+                            "Cambia solo la primera cifra (las centenas) y copia el resto igual.",
+                            () => { let n = rand(105, 899); return {text: `${n} + 100`, answer: n+100}; },
+                            () => { let n = rand(901, 999); return {text: `${n} + 100`, answer: n+100}; }
+                        ),
+                        createLevel("3.4 Restar 100 a cualquier número", "Disminuir en 1 la cifra de las centenas.", "892 - 100 = 792",
+                            ["Las decenas y unidades (92) no sufren ningún cambio.", "Restamos 1 centena a las 8 centenas: 8 - 1 = 7.", "Resultado directo: 792."],
+                            "Quita 1 al jefe de las centenas y deja los demás igual.",
+                            () => { let n = rand(205, 999); return {text: `${n} - 100`, answer: n-100}; },
+                            () => { let n = rand(1005, 1199); return {text: `${n} - 100`, answer: n-100}; }
+                        ),
+                        createLevel("3.5 Sumar decenas y centenas a nº de 3 cifras", "Identificar el orden de magnitud que cambia.", "345 + 40 = 385  |  612 + 200 = 812",
+                            ["Observa si sumas decenas (un cero) o centenas (dos ceros).", "Si sumas 40, cambia la decena: 40 + 40 = 80 -> 385.", "Si sumas 200, cambia la centena: 600 + 200 = 800 -> 812."],
+                            "Cada oveja con su pareja: decenas con decenas y centenas con centenas.",
+                            () => { if (Math.random() > 0.5) { let c = rand(1, 8)*100, d = rand(1, 5)*10, u = rand(1, 9), addD = rand(1, 9 - d/10)*10; return {text: `${c+d+u} + ${addD}`, answer: c+d+u+addD}; } let c = rand(1, 6)*100, du = rand(11, 99), addC = rand(1, 9 - c/100)*100; return {text: `${c+du} + ${addC}`, answer: c+du+addC}; },
+                            () => { let n = rand(250, 790), add = pick([50, 60, 70, 300, 400]); return {text: `${n} + ${add}`, answer: n+add}; }
+                        ),
+                        createLevel("3.6 Restar decenas y centenas a nº de 3 cifras", "Detraer directamente en la posición correspondiente.", "584 - 30 = 554  |  945 - 500 = 445",
+                            ["Fíjate bien en cuántos ceros tiene el número que restas.", "En 584 - 30 restamos a las decenas: 80 - 30 = 50 -> 554.", "En 945 - 500 restamos a las centenas: 900 - 500 = 400 -> 445."],
+                            "Localiza la cifra del mismo valor posicional y réstale a ella.",
+                            () => { if (Math.random() > 0.5) { let c = rand(1, 9)*100, d = rand(4, 9)*10, u = rand(1, 9), subD = rand(1, d/10 - 1)*10; return {text: `${c+d+u} - ${subD}`, answer: c+d+u-subD}; } let c = rand(4, 9)*100, du = rand(11, 99), subC = rand(1, c/100 - 1)*100; return {text: `${c+du} - ${subC}`, answer: c+du-subC}; },
+                            () => { let n = rand(510, 950), sub = pick([40, 60, 300, 400]); return {text: `${n} - ${sub}`, answer: n-sub}; }
+                        ),
+                        createLevel("3.7 Multiplicar por 10, 100 y 1.000", "Desplazamiento posicional añadiendo ceros.", "7 × 100 = 700",
+                            ["Multiplicar por 10, 100 o 1.000 convierte el número en decenas, centenas o millares.", "Cuenta cuántos ceros acompañan al 1.", "Escribe el número y añade esos mismos ceros a su derecha."],
+                            "Un cero si es ×10, dos ceros si es ×100, tres ceros si es ×1.000.",
+                            () => { let n = rand(2, 19), f = pick([10, 100, 1000]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(12, 95), f = pick([10, 100]); return {text: `${n} × _ = ${n*f}`, answer: f}; }
+                        ),
+                        createLevel("3.8 Multiplicar decenas completas por un dígito", "Tablas extendidas a las decenas.", "30 × 4 = 120",
+                            ["Tapa el cero del 30 un momento.", "Multiplica las cifras: 3 × 4 = 12.", "Coloca de nuevo el cero al final: 120."],
+                            "Si sabes que 3 × 4 son 12, entonces 30 × 4 son 12 decenas (120).",
+                            () => { let d = rand(2, 9)*10, u = rand(2, 9); return Math.random() > 0.5 ? {text: `${d} × ${u}`, answer: d*u} : {text: `${u} × ${d}`, answer: d*u}; },
+                            () => { let d = rand(2, 9)*10, u = rand(3, 9); return {text: `${d} × _ = ${d*u}`, answer: u}; }
+                        ),
+                        createLevel("3.9 Multiplicar centenas completas por un dígito", "Tablas extendidas a las centenas.", "400 × 5 = 2000",
+                            ["Aparta los dos ceros del 400.", "Multiplica: 4 × 5 = 20.", "Añade los dos ceros que guardaste: 2000."],
+                            "¡Cuidado cuando el producto básico ya termina en cero (como 4×5=20): tendrá un cero extra!",
+                            () => { let c = rand(2, 9)*100, u = rand(2, 9); return Math.random() > 0.5 ? {text: `${c} × ${u}`, answer: c*u} : {text: `${u} × ${c}`, answer: c*u}; },
+                            () => { let c = rand(3, 9)*100, u = rand(3, 9); return {text: `${c} × _ = ${c*u}`, answer: u}; }
+                        ),
+                        createLevel("3.10 Dividir decenas completas entre un dígito", "Reparto exacto usando las tablas de multiplicar al revés.", "150 : 3 = 50",
+                            ["150 son 15 decenas.", "Divide 15 entre 3 buscando en la tabla del 3: 15 : 3 = 5.", "Como eran decenas, el resultado son 5 decenas: 50."],
+                            "Tapa un cero, divide con la tabla y pon el cero en el resultado.",
+                            () => { let d = rand(2, 9), q = rand(2, 9)*10; return {text: `${d*q} : ${d}`, answer: q}; },
+                            () => { let d = rand(3, 9), q = rand(2, 9)*100; return {text: `${d*q} : ${d}`, answer: q}; }
+                        ),
+                        createLevel("3.11 Sumas de tres cifras sin rebase", "Suma por órdenes de magnitud de izquierda a derecha.", "423 + 251 = 674",
+                            ["Centenas: 400 + 200 = 600.", "Decenas: 20 + 50 = 70.", "Unidades: 3 + 1 = 4. Total: 674."],
+                            "Ve diciendo el resultado de izquierda a derecha conforme miras cada pareja de cifras.",
+                            () => { let c1 = rand(1, 5), c2 = rand(1, 9-c1), d1 = rand(1, 5), d2 = rand(1, 9-d1), u1 = rand(1, 5), u2 = rand(1, 9-u1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} + ${n2}`, answer: n1+n2}; },
+                            () => { let c1 = rand(2, 5), c2 = rand(2, 9-c1), d1 = rand(1, 5), d2 = rand(1, 9-d1), u1 = rand(1, 5), u2 = rand(1, 9-u1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} + _ = ${n1+n2}`, answer: n2}; }
+                        ),
+                        createLevel("3.12 Restas de tres cifras sin rebase", "Resta posicional directa centena, decena y unidad.", "785 - 432 = 353",
+                            ["Centenas: 700 - 400 = 300.", "Decenas: 80 - 30 = 50.", "Unidades: 5 - 2 = 3. Total: 353."],
+                            "Como ninguna cifra de abajo supera a la de arriba, puedes restar de izquierda a derecha sin problema.",
+                            () => { let c1 = rand(4, 9), c2 = rand(1, c1-1), d1 = rand(4, 9), d2 = rand(1, d1-1), u1 = rand(4, 9), u2 = rand(1, u1-1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} - ${n2}`, answer: n1-n2}; },
+                            () => { let c1 = rand(5, 9), c2 = rand(1, c1-1), d1 = rand(4, 9), d2 = rand(1, d1-1), u1 = rand(4, 9), u2 = rand(1, u1-1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} - _ = ${n1-n2}`, answer: n2}; }
+                        ),
+                        createLevel("3.13 Dobles de 2 cifras con rebase", "Duplicar descomponiendo cuando las unidades pasan de 5.", "Doble de 36 -> 60 + 12 = 72",
+                            ["Rompemos el 36 en 30 + 6.", "Doble de 30 = 60.", "Doble de 6 = 12. Sumamos ambos: 60 + 12 = 72."],
+                            "Guarda el doble de la decena en la cabeza y súmale el doble de la unidad.",
+                            () => { let d = rand(1, 4)*10, u = rand(5, 9); return {text: `Doble de ${d+u}`, answer: (d+u)*2}; },
+                            () => { let d = rand(5, 9)*10, u = rand(5, 9); return {text: `Doble de ${d+u}`, answer: (d+u)*2}; }
+                        ),
+                        createLevel("3.14 Mitades de pares con decenas impares", "Descomponer en decena impar + unidad par.", "Mitad de 54 -> 25 + 2 = 27",
+                            ["Rompemos el 54 en 50 + 4.", "Sabemos que la mitad de 50 es 25.", "La mitad de 4 es 2. Sumamos: 25 + 2 = 27."],
+                            "Recuerda las mitades clave: de 30 es 15, de 50 es 25, de 70 es 35 y de 90 es 45.",
+                            () => { let d = pick([30, 50, 70, 90]), u = pick([2, 4, 6, 8]); return {text: `Mitad de ${d+u}`, answer: (d+u)/2}; },
+                            () => { let d = pick([110, 130, 150, 170]), u = pick([2, 4, 6, 8]); return {text: `Mitad de ${d+u}`, answer: (d+u)/2}; }
+                        ),
+                        createLevel("3.15 Dobles de centenas completas", "Duplicar centenas exactas cruzando o no el millar.", "Doble de 400 = 800",
+                            ["Multiplicamos por 2 la cifra de las centenas: doble de 4 es 8.", "Añadimos los dos ceros: 800.", "Si duplicamos 600, el doble de 6 es 12 -> 1.200."],
+                            "Es exactamente igual que el doble de un número de 1 cifra pero con dos ceros.",
+                            () => { let c = rand(1, 9)*100; return {text: `Doble de ${c}`, answer: c*2}; },
+                            () => { let c = rand(5, 9)*100 + 50; return {text: `Doble de ${c}`, answer: c*2}; }
+                        ),
+                        createLevel("3.16 Mitades de centenas completas", "Mitad de centenas pares e impares.", "Mitad de 700 = 350",
+                            ["Si la centena es par (800), su mitad es directa (400).", "Si es impar (700), la partimos en 600 + 100.", "Mitad de 600 es 300 y mitad de 100 es 50 -> 350."],
+                            "Toda centena impar tiene una mitad que termina en 50 (150, 250, 350, 450).",
+                            () => { let c = rand(1, 10)*100; return {text: `Mitad de ${c}`, answer: c/2}; },
+                            () => { let c = rand(11, 19)*100; return {text: `Mitad de ${c}`, answer: c/2}; }
+                        ),
+                        createLevel("3.17 Sumar 19, 29, 39... (Compensación)", "Sumar la decena superior completa y restar 1.", "45 + 29 -> 45 + 30 - 1 = 74",
+                            ["El 29 es casi 30 (le falta 1).", "Sumamos 30 porque es muy fácil: 45 + 30 = 75.", "Quitamos 1 para compensar: 75 - 1 = 74."],
+                            "Redondea siempre hacia arriba (+20, +30, +40) y quita 1 al final.",
+                            () => { let n = rand(21, 65), add = pick([19, 29, 39, 49]); return {text: `${n} + ${add}`, answer: n+add}; },
+                            () => { let n = rand(120, 350), add = pick([29, 39, 49, 59]); return {text: `${n} + ${add}`, answer: n+add}; }
+                        ),
+                        createLevel("3.18 Restar 19, 29, 39... (Compensación)", "Restar la decena superior completa y sumar 1.", "82 - 39 -> 82 - 40 + 1 = 43",
+                            ["En vez de quitar 39, quitamos 40 de golpe: 82 - 40 = 42.", "Como hemos quitado 1 de más, lo devolvemos sumando 1.", "42 + 1 = 43."],
+                            "Quita la decena redonda superior y acuérdate de devolver 1 (+1).",
+                            () => { let sub = pick([19, 29, 39, 49]), n = rand(sub+12, 98); return {text: `${n} - ${sub}`, answer: n-sub}; },
+                            () => { let sub = pick([29, 39, 49, 59]), n = rand(120, 250); return {text: `${n} - ${sub}`, answer: n-sub}; }
+                        ),
+                        createLevel("3.19 Sumar rebasando el millar", "Cruzar la barrera del 1.000 completando centenas.", "650 + 400 = 1050",
+                            ["De 650 para llegar a 1.000 necesitamos 350 (o piensa 600 + 400 = 1.000).", "600 + 400 son 1.000.", "Añadimos el pico de 50: 1.050."],
+                            "Suma primero las centenas aunque pasen de 10 (6+4=10 centenas = 1.000).",
+                            () => { let c1 = rand(5, 9)*100 + pick([0, 20, 50]), c2 = rand(11 - Math.floor(c1/100), 8)*100; return {text: `${c1} + ${c2}`, answer: c1+c2}; },
+                            () => { let c1 = rand(6, 9)*100 + rand(1, 9)*10, c2 = rand(3, 7)*100 + 50; return {text: `${c1} + ${c2}`, answer: c1+c2}; }
+                        ),
+                        createLevel("3.20 Multiplicar por descomposición (Distributiva)", "Descomponer el número de 2 cifras en decenas y unidades.", "15 × 3 -> (10 × 3) + (5 × 3) = 45",
+                            ["Partimos el 15 en 10 + 5.", "Multiplicamos las decenas: 10 × 3 = 30.", "Multiplicamos las unidades: 5 × 3 = 15. Sumamos: 30 + 15 = 45."],
+                            "Multiplica primero la decena, guárdala en la memoria y súmale el producto de la unidad.",
+                            () => { let n = rand(12, 26), u = rand(2, 5); if (n%10===0) n+=2; return {text: `${n} × ${u}`, answer: n*u}; },
+                            () => { let n = rand(24, 58), u = rand(3, 6); if (n%10===0) n+=3; return {text: `${n} × ${u}`, answer: n*u}; }
+                        )
+                    ]
+                },
+
+                4: {
+                    name: "4º de Primaria",
+                    cycle: "Segundo Ciclo · Flexibilidad con Grandes Números",
+                    subtitle: "Redondeo en centenas (±99, ±101), millares y operaciones combinadas",
+                    headerClass: "from-blue-500 to-blue-700 border-blue-900",
+                    levels: [
+                        createLevel("4.1 Sumar decenas completas", "Agilidad sumando decenas a cualquier número.", "26 + 70 = 96",
+                            ["Las unidades (6) se mantienen igual.", "Sumamos las decenas: 20 + 70 = 90.", "Juntamos: 90 + 6 = 96."],
+                            "Fíjate solo en la cifra de las decenas.",
+                            () => { let d1 = rand(1, 5), u = rand(1, 9), d2 = rand(2, 9-d1)*10; return {text: `${d1*10+u} + ${d2}`, answer: d1*10+u+d2}; },
+                            () => { let n = rand(112, 340), d2 = rand(3, 8)*10; return {text: `${n} + ${d2}`, answer: n+d2}; }
+                        ),
+                        createLevel("4.2 Sumar el anterior a una decena (+9, +19, +29...)", "Sumar la decena completa superior y quitar 1.", "45 + 19 -> 45 + 20 - 1 = 64",
+                            ["Redondeamos el 19 a 20.", "Sumamos: 45 + 20 = 65.", "Restamos 1: 65 - 1 = 64."],
+                            "En lugar de sumar un número acabado en 9, suma la decena siguiente y resta 1.",
+                            () => { let n = rand(25, 75), a = pick([9, 19, 29, 39]); return {text: `${n} + ${a}`, answer: n+a}; },
+                            () => { let n = rand(135, 450), a = pick([29, 39, 49, 59, 69]); return {text: `${n} + ${a}`, answer: n+a}; }
+                        ),
+                        createLevel("4.3 Restar decenas completas", "Restar decenas a números de 2 y 3 cifras.", "185 - 60 = 125",
+                            ["En 185 tenemos 18 decenas (o 8 decenas sueltas).", "80 - 60 = 20.", "Mantenemos la centena y la unidad: 125."],
+                            "Las centenas y las unidades no se tocan si no hay cambio de centena.",
+                            () => { let c = rand(1, 4)*100, d = rand(5, 9)*10, u = rand(1, 9), sub = rand(2, d/10 - 1)*10; return {text: `${c+d+u} - ${sub}`, answer: c+d+u-sub}; },
+                            () => { let c = rand(3, 8)*100, d = rand(6, 9)*10, u = rand(1, 9), sub = rand(2, d/10 - 1)*10; return {text: `${c+d+u} - _ = ${c+d+u-sub}`, answer: sub}; }
+                        ),
+                        createLevel("4.4 Restar el anterior a una decena (-9, -19, -29...)", "Restar la decena superior y sumar 1.", "73 - 29 -> 73 - 30 + 1 = 44",
+                            ["Redondeamos el 29 a 30.", "Restamos las decenas: 73 - 30 = 43.", "Como quitamos 1 de más, sumamos 1: 43 + 1 = 44."],
+                            "Al restar un número acabado en 9, la unidad del resultado siempre aumenta en 1.",
+                            () => { let a = pick([9, 19, 29, 39]), n = rand(a+15, 98); return {text: `${n} - ${a}`, answer: n-a}; },
+                            () => { let a = pick([29, 39, 49, 59]), n = rand(140, 380); return {text: `${n} - ${a}`, answer: n-a}; }
+                        ),
+                        createLevel("4.5 Agilidad en tablas de multiplicar", "Dominio instantáneo y factores ocultos.", "7 × 8 = 56",
+                            ["Identifica la pareja de factores.", "Recuerda la propiedad conmutativa: 7 × 8 es lo mismo que 8 × 7.", "Si dudas en ×8, haz el doble del doble del doble."],
+                            "7 × 8 = 56 -> ¡Recuérdalo con la escalera: 5, 6, 7, 8 (56 = 7 × 8)!",
+                            () => { let a = rand(3, 9), b = rand(3, 9); return {text: `${a} × ${b}`, answer: a*b}; },
+                            () => { let a = rand(4, 9), b = rand(4, 9); return {text: `${a} × _ = ${a*b}`, answer: b}; }
+                        ),
+                        createLevel("4.6 Sumar y restar decenas con cambio de centena", "Cruzar el límite de la centena hacia arriba o abajo.", "26 + 90 = 116  |  185 - 90 = 95",
+                            ["En 26 + 90: piensa en 26 + 100 - 10 = 116 (o 20+90=110 + 6 = 116).", "En 185 - 90: piensa en 18 decenas - 9 decenas = 9 decenas -> 95.", "Las unidades nunca cambian al sumar o restar decenas completas."],
+                            "Para +90 o -90 es rapidísimo hacer +100 - 10 o -100 + 10.",
+                            () => { if (Math.random() > 0.5) { let n = rand(32, 89), d = rand(11 - Math.floor(n/10), 9)*10; return {text: `${n} + ${d}`, answer: n+d}; } let n = rand(112, 168), d = rand(Math.floor((n-100)/10)+2, 9)*10; return {text: `${n} - ${d}`, answer: n-d}; },
+                            () => { let n = rand(230, 560), d = pick([70, 80, 90]); return Math.random() > 0.5 ? {text: `${n} + ${d}`, answer: n+d} : {text: `${n} - ${d}`, answer: n-d}; }
+                        ),
+                        createLevel("4.7 Sumar el siguiente a una decena (+11, +21, +31...)", "Sumar la decena completa y añadir 1.", "54 + 21 -> 54 + 20 + 1 = 75",
+                            ["Descomponemos 21 en 20 + 1.", "Sumamos la decena: 54 + 20 = 74.", "Sumamos la unidad: 74 + 1 = 75."],
+                            "Es muy directo: suma las decenas y añade 1 a las unidades.",
+                            () => { let n = rand(15, 68), a = pick([11, 21, 31, 41]); return {text: `${n} + ${a}`, answer: n+a}; },
+                            () => { let n = rand(125, 380), a = pick([21, 31, 41, 51, 61]); return {text: `${n} + ${a}`, answer: n+a}; }
+                        ),
+                        createLevel("4.8 Restar el siguiente a una decena (-11, -21, -31...)", "Restar la decena completa y quitar 1 más.", "86 - 41 -> 86 - 40 - 1 = 45",
+                            ["Descomponemos el 41 en 40 y 1.", "Primero quitamos 40: 86 - 40 = 46.", "Luego quitamos 1: 46 - 1 = 45."],
+                            "Quita las decenas y baja un escalón más (-1).",
+                            () => { let a = pick([11, 21, 31, 41]), n = rand(a+12, 99); return {text: `${n} - ${a}`, answer: n-a}; },
+                            () => { let a = pick([31, 41, 51, 61]), n = rand(130, 390); return {text: `${n} - ${a}`, answer: n-a}; }
+                        ),
+                        createLevel("4.9 Sumar centenas completas", "Sumar centenas a números de 3 cifras.", "350 + 400 = 750",
+                            ["El 50 de las decenas se mantiene igual.", "Sumamos las centenas: 300 + 400 = 700.", "Resultado: 750."],
+                            "Actúa solo sobre la cifra de las centenas.",
+                            () => { let c1 = rand(1, 5)*100 + rand(1, 9)*10, c2 = rand(1, 9 - Math.floor(c1/100))*100; return {text: `${c1} + ${c2}`, answer: c1+c2}; },
+                            () => { let n = rand(215, 685), c2 = rand(2, 6)*100; return {text: `${n} + ${c2}`, answer: n+c2}; }
+                        ),
+                        createLevel("4.10 Restar centenas completas", "Restar centenas a números de 3 cifras.", "920 - 600 = 320",
+                            ["El 20 final queda intacto.", "Restamos las centenas: 900 - 600 = 300.", "Resultado: 320."],
+                            "Resta las centenas y conserva las decenas y unidades.",
+                            () => { let c1 = rand(4, 9)*100 + rand(1, 9)*10, c2 = rand(1, Math.floor(c1/100)-1)*100; return {text: `${c1} - ${c2}`, answer: c1-c2}; },
+                            () => { let n = rand(512, 988), c2 = rand(2, 5)*100; return {text: `${n} - ${c2}`, answer: n-c2}; }
+                        ),
+                        createLevel("4.11 Sumar y restar centenas cruzando el millar", "Agilidad cruzando el 1.000 hacia arriba y abajo.", "850 + 300 = 1150  |  1200 - 400 = 800",
+                            ["Piensa en el número como cantidad de centenas: 1.200 son 12 centenas.", "12 centenas - 4 centenas = 8 centenas (800).", "En 850 + 300: 8 centenas + 3 centenas = 11 centenas -> 1.150."],
+                            "Leer 1.200 como '12 centenas' hace que restar centenas sea instantáneo.",
+                            () => { if (Math.random() > 0.5) { let c1 = rand(6, 9)*100 + pick([0, 50]), c2 = rand(3, 6)*100; return {text: `${c1} + ${c2}`, answer: c1+c2}; } let c1 = rand(11, 16)*100, c2 = rand(3, 8)*100; return {text: `${c1} - ${c2}`, answer: c1-c2}; },
+                            () => { let c1 = rand(11, 17)*100 + 50, c2 = rand(4, 8)*100; return {text: `${c1} - ${c2}`, answer: c1-c2}; }
+                        ),
+                        createLevel("4.12 Sumar y restar millares completos", "Operaciones con unidades de millar.", "4000 + 3000 = 7000  |  8500 - 2000 = 6500",
+                            ["Fíjate en la cifra de las unidades de millar (los miles).", "4 mil + 3 mil = 7 mil (7.000).", "En 8.500 - 2.000, el 500 se conserva y 8 - 2 = 6 -> 6.500."],
+                            "Trata los miles como si fueran unidades simples y mantén las tres últimas cifras.",
+                            () => { if (Math.random() > 0.5) { let a = rand(1, 6)*1000, b = rand(1, 9 - a/1000)*1000; return {text: `${a} + ${b}`, answer: a+b}; } let a = rand(3, 9)*1000 + pick([0, 500]), b = rand(1, Math.floor(a/1000)-1)*1000; return {text: `${a} - ${b}`, answer: a-b}; },
+                            () => { let a = rand(4, 9)*1000 + rand(1, 9)*100, b = rand(2, 6)*1000; return Math.random() > 0.5 ? {text: `${a} + ${b}`, answer: a+b} : {text: `${a+2000} - ${b}`, answer: a+2000-b}; }
+                        ),
+                        createLevel("4.13 Multiplicar por la unidad seguida de ceros", "Multiplicar cualquier número por 10, 100 o 1.000.", "45 × 100 = 4500",
+                            ["Copia el número original (45).", "Cuenta los ceros de la unidad seguida de ceros (100 tiene 2 ceros).", "Añade los 2 ceros a la derecha: 4.500."],
+                            "Cada cero multiplica por 10 el valor posicional de todas las cifras.",
+                            () => { let n = rand(12, 99), f = pick([10, 100, 1000]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(105, 450), f = pick([10, 100]); return {text: `${n} × ${f}`, answer: n*f}; }
+                        ),
+                        createLevel("4.14 Sumar el siguiente a una centena (+101, +201...)", "Descomponer en centena completa + 1 unidad.", "340 + 101 -> 340 + 100 + 1 = 441",
+                            ["Partimos el 101 en 100 + 1.", "Sumamos la centena: 340 + 100 = 440.", "Sumamos 1 unidad: 440 + 1 = 441."],
+                            "Sube la centena y añade 1 a la última cifra.",
+                            () => { let n = rand(120, 680), a = pick([101, 201, 301]); return {text: `${n} + ${a}`, answer: n+a}; },
+                            () => { let n = rand(350, 890), a = pick([201, 301, 401, 501]); return {text: `${n} + ${a}`, answer: n+a}; }
+                        ),
+                        createLevel("4.15 Restar el siguiente a una centena (-101, -201...)", "Restar la centena completa y quitar 1 más.", "680 - 201 -> 680 - 200 - 1 = 479",
+                            ["Partimos la resta de 201 en -200 y -1.", "Quitamos las centenas: 680 - 200 = 480.", "Quitamos 1 unidad: 480 - 1 = 479."],
+                            "Cuidado cuando el número acaba en 0: al quitar 1 al final (480 - 1) baja a 479.",
+                            () => { let a = pick([101, 201, 301]), n = rand(a+110, 895); return {text: `${n} - ${a}`, answer: n-a}; },
+                            () => { let a = pick([201, 301, 401]), n = rand(500, 990); return {text: `${n} - ${a}`, answer: n-a}; }
+                        ),
+                        createLevel("4.16 Sumar el anterior a una centena (+99, +199...)", "Compensación: sumar la centena completa y restar 1.", "545 + 99 -> 545 + 100 - 1 = 644",
+                            ["El 99 es 100 menos 1.", "Sumamos 100 de golpe: 545 + 100 = 645.", "Restamos 1 para compensar: 645 - 1 = 644."],
+                            "Para sumar 99: suma 1 a las centenas y quita 1 a las unidades.",
+                            () => { let n = rand(121, 789), a = pick([99, 199, 299]); return {text: `${n} + ${a}`, answer: n+a}; },
+                            () => { let n = rand(450, 1250), a = pick([99, 199, 299, 399]); return {text: `${n} + ${a}`, answer: n+a}; }
+                        ),
+                        createLevel("4.17 Restar el anterior a una centena (-99, -199...)", "Compensación: restar la centena completa y sumar 1.", "430 - 99 -> 430 - 100 + 1 = 331",
+                            ["En vez de quitar 99, quitamos 100: 430 - 100 = 330.", "Como hemos quitado 1 de más, devolvemos 1.", "330 + 1 = 331."],
+                            "Para restar 99: quita 1 a las centenas y suma 1 a las unidades.",
+                            () => { let a = pick([99, 199, 299]), n = rand(a+110, 950); return {text: `${n} - ${a}`, answer: n-a}; },
+                            () => { let a = pick([199, 299, 399]), n = rand(600, 1450); return {text: `${n} - ${a}`, answer: n-a}; }
+                        ),
+                        createLevel("4.18 Multiplicar por decenas o centenas completas", "Multiplicar cifras significativas y reunir todos los ceros.", "40 × 30 = 1200",
+                            ["Multiplicamos las cifras sin ceros: 4 × 3 = 12.", "Contamos el total de ceros entre los dos factores (un cero del 40 + un cero del 30 = 2 ceros).", "Colocamos los 2 ceros al final: 1.200."],
+                            "Suma la cantidad de ceros de ambos números y ponlos todos juntos al final.",
+                            () => { let a = rand(2, 9)*10, b = rand(2, 9)*10; return {text: `${a} × ${b}`, answer: a*b}; },
+                            () => { let a = rand(2, 9)*100, b = rand(2, 9)*10; return {text: `${a} × ${b}`, answer: a*b}; }
+                        ),
+                        createLevel("4.19 Multiplicación con millares completos", "Extensión del patrón multiplicativo a los miles.", "5 × 2000 = 10000",
+                            ["Multiplicamos los dígitos principales: 5 × 2 = 10.", "Añadimos los 3 ceros de los millares.", "10 con tres ceros es 10.000."],
+                            "Tres ceros equivalen a la palabra 'mil': 5 × 2 mil = 10 mil.",
+                            () => { let a = rand(2, 9), b = rand(2, 9)*1000; return Math.random() > 0.5 ? {text: `${a} × ${b}`, answer: a*b} : {text: `${b} × ${a}`, answer: a*b}; },
+                            () => { let a = rand(2, 9)*10, b = rand(2, 5)*1000; return {text: `${a} × ${b}`, answer: a*b}; }
+                        ),
+                        createLevel("4.20 Uso cruzado (Operaciones combinadas mentales)", "Encadenar varios procesos mentales en una misma expresión.", "25 × 10 + 50 - 99 = 201",
+                            ["Paso 1 (Producto): 25 × 10 = 250.", "Paso 2 (Suma): 250 + 50 = 300.", "Paso 3 (Compensación -99): 300 - 100 + 1 = 201."],
+                            "Resuelve primero la multiplicación y ve guardando el subtotal en tu memoria de trabajo.",
+                            () => { let a = rand(2, 9), b = pick([10, 100]), c = pick([20, 50, 100]); return {text: `${a} × ${b} + ${c}`, answer: a*b+c}; },
+                            () => { let a = rand(12, 35), c = pick([50, 100]), sub = pick([9, 19, 99]); return {text: `${a} × 10 + ${c} - ${sub}`, answer: a*10+c-sub}; }
+                        )
+                    ]
+                },
+
+                5: {
+                    name: "5º de Primaria",
+                    cycle: "Tercer Ciclo · Agilidad Lógica y Operativa",
+                    subtitle: "Estrategias avanzadas de producto, división, dobles y mitades",
+                    headerClass: "from-amber-500 to-amber-700 border-amber-900",
+                    levels: [
+                        createLevel("5.1 Sumar/restar 2 cifras a 3 cifras sin rebase", "Operar directamente sobre decenas y unidades.", "298 - 54 = 244",
+                            ["La centena (200) no cambia porque no hay rebase.", "Operamos con la parte de dos cifras: 98 - 54 = 44.", "Unimos con la centena: 244."],
+                            "Deja la centena aparcada y calcula solo con las dos últimas cifras.",
+                            () => { let c = rand(2, 8)*100, d1 = rand(5, 9), u1 = rand(5, 9), d2 = rand(1, d1-1), u2 = rand(1, u1-1); let n1 = c+d1*10+u1, n2 = d2*10+u2; return Math.random() > 0.5 ? {text: `${n1} - ${n2}`, answer: n1-n2} : {text: `${c+d2*10+u2} + ${(d1-d2)*10+(u1-u2)}`, answer: n1}; },
+                            () => { let c = rand(3, 9)*100, d1 = rand(5, 9), u1 = rand(5, 9), d2 = rand(2, d1-1), u2 = rand(2, u1-1); return {text: `${c+d1*10+u1} - _ = ${c+(d1-d2)*10+(u1-u2)}`, answer: d2*10+u2}; }
+                        ),
+                        createLevel("5.2 Sumar nº de 3 cifras con 0 unidades", "Sumar centenas y decenas manteniendo las unidades.", "634 + 250 = 884",
+                            ["El 4 de las unidades pasa directo al final.", "Sumamos centenas: 600 + 200 = 800.", "Sumamos decenas: 30 + 50 = 80. Total: 884."],
+                            "Suma 63 + 25 = 88 decenas y pon el 4 al final (884).",
+                            () => { let c1 = rand(2, 6), d1 = rand(1, 5), u1 = rand(1, 9), c2 = rand(1, 9-c1), d2 = rand(1, 9-d1); return {text: `${c1*100+d1*10+u1} + ${c2*100+d2*10}`, answer: (c1+c2)*100+(d1+d2)*10+u1}; },
+                            () => { let n1 = rand(321, 649), n2 = rand(21, 35)*10; return {text: `${n1} + ${n2}`, answer: n1+n2}; }
+                        ),
+                        createLevel("5.3 Restar nº de 3 cifras con 0 unidades", "Restar centenas y decenas conservando las unidades.", "634 - 230 = 404",
+                            ["La unidad (4) no cambia porque restamos 0 unidades.", "Centenas: 600 - 200 = 400.", "Decenas: 30 - 30 = 0. Resultado: 404."],
+                            "Resta las dos primeras cifras (63 - 23 = 40) y añade la unidad (404).",
+                            () => { let c1 = rand(4, 9), d1 = rand(3, 9), u1 = rand(1, 9), c2 = rand(1, c1-1), d2 = rand(1, d1); return {text: `${c1*100+d1*10+u1} - ${c2*100+d2*10}`, answer: (c1-c2)*100+(d1-d2)*10+u1}; },
+                            () => { let c1 = rand(5, 9), d1 = rand(4, 9), u1 = rand(1, 9), c2 = rand(1, c1-1), d2 = rand(1, d1); return {text: `${c1*100+d1*10+u1} - _ = ${(c1-c2)*100+(d1-d2)*10+u1}`, answer: c2*100+d2*10}; }
+                        ),
+                        createLevel("5.4 Sumar nº de 2 cifras con cambio en unidades", "Suma por descomposición cuando las unidades pasan de 10.", "719 + 68 = 787",
+                            ["Sumamos primero las decenas: 719 + 60 = 779.", "Ahora sumamos las 8 unidades: 779 + 8 = 787.", "La centena (700) se ha mantenido igual."],
+                            "Suma de izquierda a derecha: primero +60 y luego +8.",
+                            () => { let c = rand(2, 8)*100, d1 = rand(1, 5), u1 = rand(4, 9), d2 = rand(1, 7-d1), u2 = rand(11-u1, 9); return {text: `${c+d1*10+u1} + ${d2*10+u2}`, answer: c+(d1+d2)*10+u1+u2}; },
+                            () => { let c = rand(3, 8)*100, d1 = rand(1, 5), u1 = rand(5, 9), d2 = rand(2, 7-d1), u2 = rand(11-u1, 9); return {text: `${c+d1*10+u1} + _ = ${c+(d1+d2)*10+u1+u2}`, answer: d2*10+u2}; }
+                        ),
+                        createLevel("5.5 Sumar 2 cifras con cambio en unidades y decenas", "Suma que provoca el salto a la siguiente centena.", "586 + 52 = 638",
+                            ["Sumamos las decenas cruzando la centena: 586 + 50 = 636.", "Sumamos las unidades: 636 + 2 = 638.", "¡Hemos pasado de la centena del 500 a la del 600!"],
+                            "58 decenas + 5 decenas = 63 decenas (630), más las unidades.",
+                            () => { let c = rand(2, 8)*100, d1 = rand(6, 9), u1 = rand(2, 8), d2 = rand(10-d1, 8), u2 = rand(2, 9); return {text: `${c+d1*10+u1} + ${d2*10+u2}`, answer: c+(d1+d2)*10+u1+u2}; },
+                            () => { let n1 = rand(375, 895), n2 = rand(45, 88); return {text: `${n1} + ${n2}`, answer: n1+n2}; }
+                        ),
+                        createLevel("5.6 Calcular el doble de números de 2 cifras", "Multiplicar por 2 cualquier número de dos cifras.", "78 × 2 = 156",
+                            ["Descomponemos 78 en 70 + 8.", "Doble de 70 = 140.", "Doble de 8 = 16. Sumamos: 140 + 16 = 156."],
+                            "También puedes pensar: doble de 80 es 160, menos el doble de 2 (4) = 156.",
+                            () => { let n = rand(26, 98); return Math.random() > 0.4 ? {text: `${n} × 2`, answer: n*2} : {text: `Doble de ${n}`, answer: n*2}; },
+                            () => { let n = rand(55, 99); return {text: `_ : 2 = ${n}`, answer: n*2}; }
+                        ),
+                        createLevel("5.7 Doble de nº de 3 o 4 cifras acabados en 0", "Duplicar grandes números descomponiendo.", "3470 × 2 = 6940  |  3700 × 2 = 7400",
+                            ["En 3.700 × 2: piensa en el doble de 37 (74) y añade los dos ceros -> 7.400.", "En 3.470 × 2: doble de 3.400 (6.800) + doble de 70 (140) = 6.940."],
+                            "Ignora los ceros finales, duplica el número restante y devuelve los ceros.",
+                            () => { if (Math.random() > 0.5) { let n = rand(12, 49)*100; return {text: `${n} × 2`, answer: n*2}; } let n = rand(120, 390)*10; return {text: `${n} × 2`, answer: n*2}; },
+                            () => { let n = rand(245, 495)*10; return {text: `${n} × 2`, answer: n*2}; }
+                        ),
+                        createLevel("5.8 Multiplicar números de 3 cifras × 2", "Duplicar centenas, decenas y unidades de izquierda a derecha.", "724 × 2 = 1448",
+                            ["Doble de 700 = 1.400.", "Doble de 20 = 40.", "Doble de 4 = 8. Juntamos todo: 1.448."],
+                            "Multiplica por 2 de izquierda a derecha partiendo el número en trozos cómodos.",
+                            () => { let c = rand(2, 7)*100, d = rand(1, 4)*10, u = rand(1, 9); return {text: `${c+d+u} × 2`, answer: (c+d+u)*2}; },
+                            () => { let n = rand(351, 896); return {text: `${n} × 2`, answer: n*2}; }
+                        ),
+                        createLevel("5.9 Restar nº de 2 cifras con cambio en unidades", "Restar decenas primero y luego unidades rebasando.", "696 - 67 = 629",
+                            ["Quitamos primero las 6 decenas: 696 - 60 = 636.", "Ahora quitamos 7 unidades: 636 - 7 = 629.", "La centena (600) no ha cambiado."],
+                            "También puedes compensar: 696 - 70 + 3 = 626 + 3 = 629.",
+                            () => { let c = rand(2, 8)*100, d1 = rand(4, 9), u1 = rand(1, 6), d2 = rand(1, d1-2), u2 = rand(u1+1, 9); return {text: `${c+d1*10+u1} - ${d2*10+u2}`, answer: c+d1*10+u1-(d2*10+u2)}; },
+                            () => { let c = rand(3, 9)*100, d1 = rand(5, 9), u1 = rand(1, 5), d2 = rand(2, d1-2), u2 = rand(u1+2, 9); return {text: `${c+d1*10+u1} - _ = ${c+d1*10+u1-(d2*10+u2)}`, answer: d2*10+u2}; }
+                        ),
+                        createLevel("5.10 Restar nº de 2 cifras con cambio en decenas", "Resta que obliga a bajar a la centena anterior.", "539 - 64 = 475",
+                            ["Quitamos las decenas: 539 - 60 = 479.", "Quitamos las unidades: 479 - 4 = 475."],
+                            "53 decenas - 6 decenas = 47 decenas (470), y 9 - 4 = 5 -> 475.",
+                            () => { let c = rand(3, 9)*100, d1 = rand(1, 5), u1 = rand(4, 9), d2 = rand(d1+1, 8), u2 = rand(1, u1); return {text: `${c+d1*10+u1} - ${d2*10+u2}`, answer: c+d1*10+u1-(d2*10+u2)}; },
+                            () => { let c = rand(3, 9)*100, d1 = rand(1, 4), u1 = rand(1, 5), d2 = rand(d1+2, 8), u2 = rand(u1+1, 9); return {text: `${c+d1*10+u1} - ${d2*10+u2}`, answer: c+d1*10+u1-(d2*10+u2)}; }
+                        ),
+                        createLevel("5.11 Sumar nº de 3 cifras acabado en 0 con cambio", "Sumar centenas y decenas rebasando la centena.", "257 + 180 = 437",
+                            ["El 7 de las unidades queda igual al final.", "Sumamos centenas: 257 + 100 = 357.", "Sumamos decenas: 357 + 80 = 437."],
+                            "Suma 25 + 18 = 43 decenas y pon el 7 al final -> 437.",
+                            () => { let c1 = rand(1, 6), d1 = rand(4, 9), u1 = rand(1, 9), c2 = rand(1, 2), d2 = rand(11-d1, 9); return {text: `${c1*100+d1*10+u1} + ${c2*100+d2*10}`, answer: (c1+c2)*100+(d1+d2)*10+u1}; },
+                            () => { let n1 = rand(352, 689), n2 = rand(16, 38)*10; return {text: `${n1} + ${n2}`, answer: n1+n2}; }
+                        ),
+                        createLevel("5.12 Restar nº de 3 cifras acabado en 0 con cambio", "Restar centenas y decenas cruzando centena.", "867 - 680 = 187",
+                            ["El 7 de las unidades se mantiene intacto.", "Restamos centenas: 867 - 600 = 267.", "Restamos decenas: 267 - 80 = 187."],
+                            "O por compensación: 867 - 700 + 20 = 167 + 20 = 187.",
+                            () => { let c1 = rand(5, 9), d1 = rand(1, 6), u1 = rand(1, 9), c2 = rand(1, c1-2), d2 = rand(d1+1, 9); return {text: `${c1*100+d1*10+u1} - ${c2*100+d2*10}`, answer: (c1*100+d1*10+u1)-(c2*100+d2*10)}; },
+                            () => { let c1 = rand(6, 9), d1 = rand(1, 5), u1 = rand(1, 9), c2 = rand(2, c1-2), d2 = rand(d1+2, 9); return {text: `${c1*100+d1*10+u1} - _ = ${(c1*100+d1*10+u1)-(c2*100+d2*10)}`, answer: c2*100+d2*10}; }
+                        ),
+                        createLevel("5.13 Calcular la mitad de pares de 2 cifras", "Dividir entre 2 cualquier número par de dos cifras.", "86 : 2 = 43  |  74 : 2 = 37",
+                            ["Si la decena es par (86): mitad de 80 (40) + mitad de 6 (3) = 43.", "Si la decena es impar (74): mitad de 70 (35) + mitad de 4 (2) = 37."],
+                            "Descompón siempre en decenas + unidades y saca la mitad de cada parte.",
+                            () => { let n = rand(12, 49)*2; return {text: `${n} : 2`, answer: n/2}; },
+                            () => { let d = pick([30, 50, 70, 90]), u = pick([2, 4, 6, 8]); return {text: `${d+u} : 2`, answer: (d+u)/2}; }
+                        ),
+                        createLevel("5.14 Mitad de números de 3 cifras acabados en 0", "Dividir decenas completas grandes entre 2.", "450 : 2 = 225",
+                            ["Rompemos el 450 en 400 + 50.", "Mitad de 400 = 200.", "Mitad de 50 = 25. Total: 225."],
+                            "Divide 45 entre 2 mentalmente o separa las centenas de las decenas.",
+                            () => { let n = rand(11, 49)*20; return {text: `${n} : 2`, answer: n/2}; },
+                            () => { let n = rand(21, 99)*10; if (n%2!==0) n+=10; return {text: `${n} : 2`, answer: n/2}; }
+                        ),
+                        createLevel("5.15 Calcular la mitad de números de 3 cifras pares", "División entre 2 de cualquier número par de 3 cifras.", "648 : 2 = 324",
+                            ["Mitad de 600 = 300.", "Mitad de 40 = 20.", "Mitad de 8 = 4. Total: 324."],
+                            "Si hay alguna cifra impar (ej. 346 : 2), une centena y decena: mitad de 340 es 170 + 3 = 173.",
+                            () => { let c = pick([2, 4, 6, 8])*100, d = pick([2, 4, 6, 8])*10, u = pick([2, 4, 6, 8]); return {text: `${c+d+u} : 2`, answer: (c+d+u)/2}; },
+                            () => { let n = rand(151, 499)*2; return {text: `${n} : 2`, answer: n/2}; }
+                        ),
+                        createLevel("5.16 Multiplicar números de 2 o 3 cifras (acabados en 0) × 3", "Calcular el triple por descomposición.", "15 × 3 = 45  |  150 × 3 = 450",
+                            ["Rompemos el 15 en 10 + 5.", "10 × 3 = 30 y 5 × 3 = 15. Sumamos: 30 + 15 = 45.", "Si es 150 × 3, hacemos 15 × 3 = 45 y añadimos el cero (450)."],
+                            "Aprender de memoria 12×3=36, 15×3=45 y 25×3=75 da muchísima velocidad.",
+                            () => { let n = rand(11, 35); return Math.random() > 0.5 ? {text: `${n} × 3`, answer: n*3} : {text: `${n*10} × 3`, answer: n*30}; },
+                            () => { let n = rand(36, 85); return {text: `${n*10} × 3`, answer: n*30}; }
+                        ),
+                        createLevel("5.17 Dividir entre 3", "Descomponer el dividendo en múltiplos sencillos de 3.", "69 : 3 = 23  |  690 : 3 = 230  |  306 : 3 = 102",
+                            ["Partimos el número en partes divisibles entre 3: 69 = 60 + 9.", "60 : 3 = 20 y 9 : 3 = 3 -> 23.", "En 306 : 3 -> 300 : 3 = 100 y 6 : 3 = 2 -> 102."],
+                            "Busca múltiplos redondos de 3 dentro del número (30, 60, 90, 120, 150, 300).",
+                            () => { let q = pick([12, 13, 21, 22, 23, 31, 32, 33, 15, 25, 40, 50, 102, 103, 201, 230]); return {text: `${q*3} : 3`, answer: q}; },
+                            () => { let q = rand(14, 95); return {text: `${q*3} : 3`, answer: q}; }
+                        ),
+                        createLevel("5.18 Multiplicar números de 2 o 3 cifras × 4", "Multiplicar por 4 haciendo el doble del doble.", "15 × 4 = 60  |  150 × 4 = 600",
+                            ["Multiplicar por 4 es hacer dos veces el doble.", "Doble de 15 = 30; doble de 30 = 60.", "O por descomposición: (10 × 4) + (5 × 4) = 40 + 20 = 60."],
+                            "¡Doble y otra vez doble! Es el camino más rápido para multiplicar por 4.",
+                            () => { let n = rand(11, 35); return Math.random() > 0.5 ? {text: `${n} × 4`, answer: n*4} : {text: `${n*10} × 4`, answer: n*40}; },
+                            () => { let n = rand(36, 75); return {text: `${n} × 4`, answer: n*4}; }
+                        ),
+                        createLevel("5.19 Dividir entre 4 (mitad de la mitad)", "Dividir dos veces seguidas entre 2.", "120 : 4 -> 60 -> 30",
+                            ["Para dividir entre 4, calculamos primero la mitad.", "Mitad de 120 = 60.", "Ahora calculamos la mitad de ese resultado: mitad de 60 = 30."],
+                            "Dividir entre 4 = Mitad de la mitad.",
+                            () => { let q = rand(6, 45); return {text: `${q*4} : 4`, answer: q}; },
+                            () => { let q = rand(35, 125); return {text: `${q*4} : 4`, answer: q}; }
+                        ),
+                        createLevel("5.20 Aplicar al resto de tablas (×5, :5, ×6...)", "Descomposición y estrategias con el 5 y el 6.", "250 × 5 = 1250",
+                            ["En 250 × 5: 200 × 5 = 1.000 y 50 × 5 = 250 -> 1.250.", "También puedes multiplicar por 10 (2.500) y sacar la mitad (1.250).", "Para dividir entre 5, busca cuántos grupos de 50 o 5 hay."],
+                            "Truco estrella para ×5: multiplica por 10 y calcula la mitad.",
+                            () => { let q = rand(11, 35), f = pick([5, 6]); return Math.random() > 0.35 ? {text: `${q*10} × ${f}`, answer: q*10*f} : {text: `${q*f} : ${f}`, answer: q}; },
+                            () => { let q = rand(25, 75), f = pick([5, 6, 7, 8]); return {text: `${q} × ${f}`, answer: q*f}; }
+                        )
+                    ]
+                },
+
+                6: {
+                    name: "6º de Primaria",
+                    cycle: "Tercer Ciclo · Culminación del Sentido Numérico",
+                    subtitle: "Compensación avanzada, números decimales, porcentajes y números enteros",
+                    headerClass: "from-rose-500 to-rose-700 border-rose-900",
+                    levels: [
+                        createLevel("6.1 Suma convirtiendo un sumando en decena/centena", "Trasvasar unidades de un sumando al otro.", "39 + 57 -> 40 + 56 = 96",
+                            ["Al 39 le falta 1 para ser 40.", "Le pedimos 1 al 57 (que se queda en 56) y se lo damos al 39 (que pasa a 40).", "Ahora sumamos facilísimo: 40 + 56 = 96."],
+                            "Lo que le sumas a un sumando se lo restas al otro para que la suma no cambie.",
+                            () => { let d1 = rand(2, 6)*10 + pick([8, 9]), n2 = rand(23, 68); return {text: `${d1} + ${n2}`, answer: d1+n2}; },
+                            () => { let c1 = rand(1, 5)*100 + pick([98, 99]), n2 = rand(125, 365); return {text: `${c1} + ${n2}`, answer: c1+n2}; }
+                        ),
+                        createLevel("6.2 Restar completando decenas o centenas", "Sumar lo mismo al minuendo y al sustraendo.", "72 - 29 -> 73 - 30 = 43",
+                            ["Restar 30 es mucho más fácil que restar 29.", "Sumamos +1 a los dos números de la resta: 72 pasa a 73 y 29 pasa a 30.", "73 - 30 = 43."],
+                            "En la resta, si subes los dos números la misma cantidad, la distancia entre ellos no cambia.",
+                            () => { let sub = rand(1, 6)*10 + pick([8, 9]), n1 = rand(sub+14, 98); return {text: `${n1} - ${sub}`, answer: n1-sub}; },
+                            () => { let sub = rand(1, 4)*100 + pick([98, 99]), n1 = rand(sub+120, 890); return {text: `${n1} - ${sub}`, answer: n1-sub}; }
+                        ),
+                        createLevel("6.3 Multiplicar por la unidad seguida de ceros", "Productos de grandes números con varios ceros.", "410 × 400 = 164000",
+                            ["Multiplicamos las cifras sin los ceros finales: 41 × 4 = 164.", "Contamos todos los ceros: 1 cero (de 410) + 2 ceros (de 400) = 3 ceros.", "Añadimos los 3 ceros: 164.000."],
+                            "Descompón 41 × 4 = (40×4) + (1×4) = 164 y añade todos los ceros al final.",
+                            () => { let a = rand(11, 52)*10, b = rand(2, 6)*100; return {text: `${a} × ${b}`, answer: a*b}; },
+                            () => { let a = rand(12, 85)*100, b = rand(2, 9)*100; return {text: `${a} × ${b}`, answer: a*b}; }
+                        ),
+                        createLevel("6.4 Dividir por la unidad seguida de ceros", "Suprimir el mismo número de ceros en dividendo y divisor.", "4600 : 10 = 460",
+                            ["Dividir entre 10, 100 o 1.000 hace el número 10, 100 o 1.000 veces más pequeño.", "Tachamos tantos ceros finales como tenga el divisor.", "En 4.600 : 10 quitamos un cero -> 460."],
+                            "Cada cero del divisor elimina un cero del dividendo.",
+                            () => { let q = rand(12, 450), d = pick([10, 100, 1000]); return {text: `${q*d} : ${d}`, answer: q}; },
+                            () => { let q = rand(25, 650), d = pick([10, 100, 1000]); return {text: `${q*d} : _ = ${q}`, answer: d}; }
+                        ),
+                        createLevel("6.5 Multiplicar decimales por 10, 100 y 1.000", "Desplazar la coma decimal hacia la derecha.", "7,245 × 100 = 724,5",
+                            ["Cada cero desplaza la coma decimal un lugar hacia la derecha.", "Como 100 tiene 2 ceros, movemos la coma 2 lugares: de 7,245 a 724,5.", "Si se acaban los decimales, completamos con ceros (ej. 2,5 × 100 = 250)."],
+                            "Al multiplicar por 10, 100 o 1.000 el número se hace más grande: la coma va a la derecha.",
+                            () => { let n = rand(11, 999)/100, f = pick([10, 100, 1000]); if (n%1===0) n+=0.25; let ans = Number((n*f).toFixed(3)); return {text: `${fmtDec(n)} × ${f}`, answer: ans}; },
+                            () => { let n = rand(101, 9999)/1000, f = pick([10, 100, 1000]); let ans = Number((n*f).toFixed(3)); return {text: `${fmtDec(n)} × ${f}`, answer: ans}; }
+                        ),
+                        createLevel("6.6 Dividir decimales entre 10, 100 y 1.000", "Desplazar la coma decimal hacia la izquierda.", "42,86 : 10 = 4,286",
+                            ["Al dividir, el número se hace más pequeño: la coma viaja hacia la izquierda.", "Como 10 tiene 1 cero, movemos la coma 1 lugar a la izquierda: 4,286.", "Si falta espacio a la izquierda, ponemos '0,' (ej. 4,5 : 10 = 0,45)."],
+                            "Dividir = mover la coma a la izquierda tantos saltos como ceros haya.",
+                            () => { let n = rand(12, 950)/10, f = pick([10, 100]); let ans = Number((n/f).toFixed(3)); return {text: `${fmtDec(n)} : ${f}`, answer: ans}; },
+                            () => { let n = rand(1, 95)/10, f = pick([10, 100]); let ans = Number((n/f).toFixed(3)); return {text: `${fmtDec(n)} : ${f}`, answer: ans}; }
+                        ),
+                        createLevel("6.7 Multiplicar por decenas, centenas y millares", "Descomposición posicional con ceros intermedios.", "104 × 30 = 3120",
+                            ["Apartamos el cero del 30.", "Multiplicamos 104 × 3: (100 × 3) + (4 × 3) = 300 + 12 = 312.", "Añadimos el cero al final: 3.120."],
+                            "Multiplica por el dígito usando descomposición ABN y añade los ceros al final.",
+                            () => { let n = pick([102, 103, 104, 105, 203, 204, 302, 120, 150, 210]), f = rand(2, 5)*pick([10, 100]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(102, 325), f = rand(3, 7)*100; return {text: `${n} × ${f}`, answer: n*f}; }
+                        ),
+                        createLevel("6.8 Multiplicar por descomposición (×12, ×15...)", "Distribuir el factor de dos cifras en decena + unidad.", "23 × 12 -> (23 × 10) + (23 × 2) = 230 + 46 = 276",
+                            ["Descomponemos el 12 en 10 + 2.", "Multiplicamos por 10: 23 × 10 = 230.", "Multiplicamos por 2: 23 × 2 = 46. Sumamos: 230 + 46 = 276."],
+                            "Para multiplicar por 12, suma al número multiplicado por 10 su doble.",
+                            () => { let n = rand(12, 34), f = pick([11, 12, 15]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(21, 45), f = pick([12, 13, 14, 15, 21]); return {text: `${n} × ${f}`, answer: n*f}; }
+                        ),
+                        createLevel("6.9 Multiplicar por 9, 19, 11, 21, 99, 101...", "Redondeo del factor a decena o centena y compensación.", "24 × 9 -> (24 × 10) - 24 = 240 - 24 = 216",
+                            ["9 veces 24 es igual a 10 veces 24 menos 1 vez 24.", "24 × 10 = 240; 240 - 24 = 216.", "Si es ×11 o ×101, sumamos una vez el número: 24 × 101 = 2.400 + 24 = 2.424."],
+                            "×9 = (×10 menos el número) | ×11 = (×10 más el número) | ×99 = (×100 menos el número).",
+                            () => { let n = rand(11, 35), f = pick([9, 11, 101]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(12, 40), f = pick([19, 21, 99, 199]); return {text: `${n} × ${f}`, answer: n*f}; }
+                        ),
+                        createLevel("6.10 Multiplicar por 2, 3, 4 y ×5 (×10 : 2)", "Atajo mental para multiplicar por 5.", "87 × 2 = 174  |  64 × 5 = 320",
+                            ["Como 5 es la mitad de 10, para multiplicar por 5 primero multiplicamos por 10 y luego dividimos entre 2.", "64 × 10 = 640.", "Mitad de 640 = 320."],
+                            "Para multiplicar por 5 un número par: sácale la mitad y ponle un cero al final (mitad de 64 es 32 -> 320).",
+                            () => { if (Math.random() > 0.4) { let n = rand(12, 48)*2; return {text: `${n} × 5`, answer: n*5}; } let n = rand(25, 89), f = pick([2, 3, 4]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(25, 99); return {text: `${n} × 5`, answer: n*5}; }
+                        ),
+                        createLevel("6.11 Dividir un natural entre decenas y centenas", "Dividir primero entre el dígito y luego entre 10 o 100.", "84 : 20 = 4,2",
+                            ["Descomponemos el divisor 20 en : 2 y : 10.", "Primero dividimos entre 2: 84 : 2 = 42.", "Luego dividimos entre 10 moviendo la coma: 42 : 10 = 4,2."],
+                            "Divide entre la cifra principal y corre la coma tantos lugares como ceros tenga el divisor.",
+                            () => { let d = pick([2, 4]), q = rand(11, 49)*2; let div = d*10; let ans = Number(((q*d)/div).toFixed(2)); return {text: `${q*d} : ${div}`, answer: ans}; },
+                            () => { let n = pick([24, 36, 42, 48, 64, 84, 96, 124, 148]), div = 20; return {text: `${n} : ${div}`, answer: Number((n/div).toFixed(2))}; }
+                        ),
+                        createLevel("6.12 Dividir números con ceros entre decenas/centenas", "Simplificar ceros antes de dividir.", "1080 : 30 = 36",
+                            ["Tachamos un cero en el dividendo y un cero en el divisor: queda 108 : 3.", "Descomponemos 108 en 90 + 18.", "90 : 3 = 30 y 18 : 3 = 6 -> 30 + 6 = 36."],
+                            "Simplifica siempre el mismo número de ceros a ambos lados antes de empezar a dividir.",
+                            () => { let d = pick([2, 3, 4]), q = rand(12, 45); return {text: `${q*d*10} : ${d*10}`, answer: q}; },
+                            () => { let d = pick([2, 3, 4, 5, 6]), q = rand(15, 65); return {text: `${q*d*100} : ${d*100}`, answer: q}; }
+                        ),
+                        createLevel("6.13 Dividir entre 2, 4 (mitad y mitad) y 5 (×2 y :10)", "Atajo rápido para dividir entre 5.", "230 : 5 = 46",
+                            ["Dividir entre 5 es lo mismo que multiplicar por 2 y dividir entre 10.", "Doble de 230 = 460.", "Quitamos el cero (dividir entre 10): 46."],
+                            "Para dividir entre 5: calcula el doble del número y mueve la coma un lugar a la izquierda.",
+                            () => { if (Math.random() > 0.35) { let n = rand(11, 48)*10; return {text: `${n} : 5`, answer: n/5}; } let q = rand(12, 45); return {text: `${q*4} : 4`, answer: q}; },
+                            () => { let n = rand(15, 85)*5; return {text: `${n} : 5`, answer: n/5}; }
+                        ),
+                        createLevel("6.14 Sumar o restar decimales completando al natural", "Compensación con décimas para redondear al entero.", "3,9 + 2,5 -> 4,0 + 2,4 = 6,4",
+                            ["A 3,9 le falta 1 décima (0,1) para ser el número natural 4.", "Se la tomamos prestada al 2,5 (que se queda en 2,4).", "Sumamos sin esfuerzo: 4 + 2,4 = 6,4."],
+                            "Usa los amigos del 10 con las décimas (,9 necesita ,1; ,8 necesita ,2) para convertir en entero.",
+                            () => { let a = rand(1, 8) + 0.9, b = rand(1, 6) + rand(2, 8)/10; let ans = Number((a+b).toFixed(1)); return {text: `${fmtDec(a)} + ${fmtDec(b)}`, answer: ans}; },
+                            () => { let a = rand(4, 12) + rand(2, 6)/10, b = rand(1, 3) + 0.9; let ans = Number((a-b).toFixed(1)); return {text: `${fmtDec(a)} - ${fmtDec(b)}`, answer: ans}; }
+                        ),
+                        createLevel("6.15 Suma y resta de números enteros", "Operaciones con números positivos y negativos.", "(-32) + (+7) = -25  |  (+12) - (+15) = -3",
+                            ["Piensa en pisos de un ascensor o en 'tengo' (+) y 'debo' (-).", "Si debo 32 (-32) y pago 7 (+7), sigo debiendo 25 (-25).", "Restar un positivo es bajar: si estoy en el piso +12 y bajo 15, llego al sótano -3."],
+                            "Mismo signo: se suman y se deja el signo. Distinto signo: se restan y manda el de mayor valor absoluto.",
+                            () => { let a = rand(-25, 25), b = rand(-15, 15); if (a===0) a=5; if (b===0) b=-4; return Math.random() > 0.4 ? {text: `${fmtSigned(a)} + ${fmtSigned(b)}`, answer: a+b} : {text: `${fmtSigned(a)} - ${fmtSigned(b)}`, answer: a-b}; },
+                            () => { let a = rand(-50, 50), b = rand(-35, 35); if (a===0) a=-12; if (b===0) b=8; return Math.random() > 0.5 ? {text: `${fmtSigned(a)} + ${fmtSigned(b)}`, answer: a+b} : {text: `${fmtSigned(a)} - ${fmtSigned(b)}`, answer: a-b}; }
+                        ),
+                        createLevel("6.16 Calcular el 10% de una cantidad", "El 10% equivale a la décima parte (dividir entre 10).", "10% de 60 = 6",
+                            ["El 10% significa 10 de cada 100, es decir, dividir el total en 10 partes iguales.", "Para hallar el 10%, simplemente dividimos la cantidad entre 10.", "En 60 : 10 = 6 (si no acaba en cero, ponemos coma: 10% de 35 = 3,5)."],
+                            "10% = quitar un cero o mover la coma un lugar a la izquierda.",
+                            () => { let n = rand(2, 95)*10; return {text: `10% de ${n}`, answer: n/10}; },
+                            () => { let n = rand(15, 250); return {text: `10% de ${n}`, answer: Number((n/10).toFixed(1))}; }
+                        ),
+                        createLevel("6.17 Calcular el 20%, 30% y 40% (usando el 10%)", "Hallar primero el 10% y multiplicar por 2, 3 o 4.", "20% de 35 -> 10% es 3,5 -> 3,5 × 2 = 7",
+                            ["Paso 1: Calcula el 10% dividiendo entre 10 (10% de 35 = 3,5).", "Paso 2: Como piden el 20%, multiplica ese 10% por 2.", "3,5 × 2 = 7 (si pidieran el 30%, multiplicarías por 3)."],
+                            "El 10% es tu pieza de LEGO base: multiplícala por 2 (20%), por 3 (30%) o por 4 (40%).",
+                            () => { let p = pick([20, 30, 40]), n = rand(2, 30)*10; return {text: `${p}% de ${n}`, answer: (n/10)*(p/10)}; },
+                            () => { let p = pick([20, 30, 40, 60]), n = pick([15, 25, 35, 45, 50, 80, 120, 150, 250]); return {text: `${p}% de ${n}`, answer: Number(((n*p)/100).toFixed(1))}; }
+                        ),
+                        createLevel("6.18 Calcular el 50% de una cantidad (Mitad)", "El 50% es exactamente la mitad del total.", "50% de 400 = 200",
+                            ["50 es la mitad de 100.", "Por tanto, calcular el 50% es simplemente dividir la cantidad entre 2.", "Mitad de 400 = 200."],
+                            "50% = La mitad (: 2).",
+                            () => { let n = rand(12, 250)*2; return {text: `50% de ${n}`, answer: n/2}; },
+                            () => { let n = rand(25, 199); return {text: `50% de ${n}`, answer: Number((n/2).toFixed(1))}; }
+                        ),
+                        createLevel("6.19 Calcular el 25% y 75% de una cantidad", "Cuarta parte (:4) y tres cuartas partes.", "25% de 408 = 102",
+                            ["El 25% es la cuarta parte (la mitad del 50%, es decir, dividir entre 4).", "Mitad de 408 = 204; mitad de 204 = 102.", "Para el 75%, calcula el 25% y multiplícalo por 3 (o suma 50% + 25%)."],
+                            "25% = mitad de la mitad (: 4)  |  75% = tres veces el 25%.",
+                            () => { let q = rand(5, 110); return {text: `25% de ${q*4}`, answer: q}; },
+                            () => { let q = rand(5, 60), p = pick([25, 75]); return {text: `${p}% de ${q*4}`, answer: p===25 ? q : q*3}; }
+                        ),
+                        createLevel("6.20 Multiplicar o dividir números enteros", "Regla de los signos en producto y división.", "(-4) × (-3) = 12  |  (-10) : (-5) = 2",
+                            ["Paso 1: Opera con los números sin signo (4 × 3 = 12).", "Paso 2: Aplica la regla de los signos.", "Signos iguales dan POSITIVO (+ · + = + y - · - = +). Signos distintos dan NEGATIVO (+ · - = -)."],
+                            "El amigo de mi amigo es mi amigo (+), el enemigo de mi enemigo es mi amigo (+).",
+                            () => { if (Math.random() > 0.45) { let a = rand(-9, 9), b = rand(-9, 9); if (a===0) a=-3; if (b===0) b=4; return {text: `${fmtSigned(a)} × ${fmtSigned(b)}`, answer: a*b}; } let b = pick([-6, -5, -4, -3, -2, 2, 3, 4, 5, 6]), q = pick([-8, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 8]); return {text: `${fmtSigned(b*q)} : ${fmtSigned(b)}`, answer: q}; },
+                            () => { let a = rand(-12, 12), b = rand(-11, 11); if (a===0) a=-7; if (b===0) b=-6; return {text: `${fmtSigned(a)} × ${fmtSigned(b)}`, answer: a*b}; }
+                        )
+                    ]
+                }
+            };
+
+            // --- ELEMENTOS DEL DOM ---
+            const courseScreen = document.getElementById('course-screen');
+            const appContainer = document.getElementById('app-container');
+            const appHeader = document.getElementById('app-header');
+            const changeCourseBtn = document.getElementById('change-course-btn');
+            const courseCycleBadge = document.getElementById('course-cycle-badge');
+            const courseMainTitle = document.getElementById('course-main-title');
+            const courseMainSubtitle = document.getElementById('course-main-subtitle');
+
+            const levelSelector = document.getElementById('level-selector');
+            const prevLevelBtn = document.getElementById('prev-level-btn');
+            const nextLevelBtn = document.getElementById('next-level-btn');
+            const tabPractico = document.getElementById('tab-practico');
+            const tabReto = document.getElementById('tab-reto');
+            const contentPractico = document.getElementById('content-practico');
+            const contentReto = document.getElementById('content-reto');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+            const proBadge = document.getElementById('pro-badge');
+            const problemContainer = document.getElementById('problem-container');
+            const problemText = document.getElementById('problem-text');
+            const answerText = document.getElementById('answer-text');
+            const showAnswerBtn = document.getElementById('show-answer-btn');
+            const nextProblemBtn = document.getElementById('next-problem-btn');
+            const printLevelsContainer = document.getElementById('print-levels-container');
+            const toggleHintBtn = document.getElementById('toggle-hint-btn');
+            const quickHintBox = document.getElementById('Quick-hint-box');
+
+            // Modo Pizarra vs Teclado
+            const modeFlashcardBtn = document.getElementById('mode-flashcard-btn');
+            const modeKeypadBtn = document.getElementById('mode-keypad-btn');
+            const flashcardControls = document.getElementById('flashcard-controls');
+            const keypadControls = document.getElementById('keypad-controls');
+            const userInputValue = document.getElementById('user-input-value');
+            const userInputDisplay = document.getElementById('user-input-display');
+            const checkAnswerBtn = document.getElementById('check-answer-btn');
+            const keypadNextBtn = document.getElementById('keypad-next-btn');
+            const keypadFeedback = document.getElementById('keypad-feedback');
+            const scoreBadge = document.getElementById('score-badge');
+            const scoreCountEl = document.getElementById('score-count');
+
+            // Estado de la sesión
+            let currentGrade = 3;
+            let levels = coursesData[3].levels;
+            let currentProblems = [];
+            let currentProblemIndex = 0;
+            let isProMode = false;
+            let isKeypadMode = false;
+            let currentUserInput = '';
+            let score = 0;
+            let problemSolved = false;
+
+            // --- SELECCIÓN DE CURSO ---
+            function selectCourse(grade) {
+                currentGrade = grade;
+                const course = coursesData[grade];
+                levels = course.levels;
+
+                // Actualizar cabecera y estilos del curso
+                appHeader.className = `text-center p-5 md:p-8 bg-gradient-to-b ${course.headerClass} text-white relative border-b-8 shadow-sm z-20 transition-colors`;
+                courseCycleBadge.textContent = course.cycle;
+                courseMainTitle.textContent = `⚡ Cálculo Mental: ${course.name}`;
+                courseMainSubtitle.textContent = course.subtitle;
+
+                // Actualizar título por defecto del modal de impresión
+                document.getElementById('print-modal-title').innerHTML = `🖨️ Generador de Pruebas en PDF (${grade}º EP)`;
+                document.getElementById('print-custom-title').value = `CÁLCULO MENTAL - ${grade}º PRIMARIA`;
+
+                // Poblar selector de niveles y checkboxes del generador PDF
+                levelSelector.innerHTML = '';
+                printLevelsContainer.innerHTML = '';
+
+                levels.forEach((level, index) => {
+                    const opt = document.createElement('option');
+                    opt.value = index;
+                    opt.textContent = level.title;
+                    levelSelector.appendChild(opt);
+
+                    const cbWrap = document.createElement('label');
+                    cbWrap.className = 'flex items-center cursor-pointer p-2.5 hover:bg-violet-50 rounded-xl transition-colors border-2 border-slate-100 hover:border-violet-200';
+                    cbWrap.innerHTML = `
+                        <input type="checkbox" value="${index}" class="print-level-cb h-5 w-5 text-violet-600 rounded focus:ring-violet-500 cursor-pointer">
+                        <span class="ml-3 text-slate-700 font-bold text-sm md:text-base truncate" title="${level.title}">${level.title}</span>
+                    `;
+                    printLevelsContainer.appendChild(cbWrap);
+                });
+
+                courseScreen.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+
+                loadLevel(0);
+                showPractico();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // --- INICIALIZACIÓN DE EVENTOS ---
+            function init() {
+                // Tarjetas de curso
+                document.querySelectorAll('.course-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const grade = parseInt(card.dataset.grade, 10);
+                        selectCourse(grade);
+                    });
+                });
+
+                // Botón volver a selección de curso
+                changeCourseBtn.addEventListener('click', () => {
+                    appContainer.classList.add('hidden');
+                    courseScreen.classList.remove('hidden');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+
+                // Listeners de nivel
+                levelSelector.addEventListener('change', () => loadLevel(parseInt(levelSelector.value)));
+                prevLevelBtn.addEventListener('click', () => {
+                    let idx = parseInt(levelSelector.value);
+                    if (idx > 0) {
+                        levelSelector.value = idx - 1;
+                        loadLevel(idx - 1);
+                    }
+                });
+                nextLevelBtn.addEventListener('click', () => {
+                    let idx = parseInt(levelSelector.value);
+                    if (idx < levels.length - 1) {
+                        levelSelector.value = idx + 1;
+                        loadLevel(idx + 1);
+                    }
+                });
+
+                // Botón de Sonido
+                const soundBtn = document.getElementById('sound-toggle-btn');
+                soundBtn.addEventListener('click', () => {
+                    soundEnabled = !soundEnabled;
+                    soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+                });
+
+                // Pestañas
+                tabPractico.addEventListener('click', showPractico);
+                tabReto.addEventListener('click', showReto);
+
+                // Pista rápida
+                toggleHintBtn.addEventListener('click', () => {
+                    quickHintBox.classList.toggle('hidden');
+                });
+
+                // Controles Modo Pizarra
+                showAnswerBtn.addEventListener('click', showAnswer);
+                nextProblemBtn.addEventListener('click', nextProblem);
+                
+                // Controles Modo Práctica (Teclado)
+                modeFlashcardBtn.addEventListener('click', () => switchGameMode(false));
+                modeKeypadBtn.addEventListener('click', () => switchGameMode(true));
+
+                document.querySelectorAll('.num-key').forEach(btn => {
+                    btn.addEventListener('click', () => handleNumKey(btn.dataset.key));
+                });
+                checkAnswerBtn.addEventListener('click', checkUserAnswer);
+                keypadNextBtn.addEventListener('click', nextProblem);
+
+                // Reiniciar / Modo PRO
+                document.getElementById('new-challenge-btn').addEventListener('click', () => startNewChallenge(false));
+                document.getElementById('pro-challenge-btn').addEventListener('click', () => startNewChallenge(true));
+
+                // Soporte de teclado físico
+                document.addEventListener('keydown', (e) => {
+                    const isCourseScreenVisible = !courseScreen.classList.contains('hidden');
+                    const isModalOpen = !document.getElementById('print-modal').classList.contains('hidden');
+                    const isPrintViewOpen = !document.getElementById('print-view-wrapper').classList.contains('hidden');
+                    const isRetoVisible = !contentReto.classList.contains('hidden');
+                    if (isCourseScreenVisible || isModalOpen || isPrintViewOpen || !isRetoVisible) return;
+
+                    if (!isKeypadMode) {
+                        if (e.code === 'Space' || e.code === 'Enter' || e.code === 'ArrowRight') {
+                            e.preventDefault();
+                            if (!showAnswerBtn.classList.contains('hidden')) showAnswer();
+                            else if (!nextProblemBtn.classList.contains('hidden')) nextProblem();
+                        }
+                    } else {
+                        if (e.key >= '0' && e.key <= '9') {
+                            handleNumKey(e.key);
+                        } else if (e.key === ',' || e.key === '.') {
+                            handleNumKey(',');
+                        } else if (e.key === '-') {
+                            handleNumKey('-');
+                        } else if (e.key === 'Backspace') {
+                            handleNumKey('DEL');
+                        } else if (e.key === 'Escape') {
+                            handleNumKey('CLR');
+                        } else if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (!problemSolved) checkUserAnswer();
+                            else nextProblem();
+                        }
+                    }
+                });
+
+                // Eventos Modal de Impresión
+                document.getElementById('open-print-modal-btn').addEventListener('click', openPrintModal);
+                document.getElementById('cancel-print-btn').addEventListener('click', closePrintModal);
+                document.getElementById('close-modal-x').addEventListener('click', closePrintModal);
+                
+                document.getElementById('select-current-level-btn').addEventListener('click', () => {
+                    const cur = levelSelector.value;
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = (cb.value === cur));
+                });
+                document.getElementById('select-all-levels-btn').addEventListener('click', () => {
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = true);
+                });
+                document.getElementById('deselect-all-levels-btn').addEventListener('click', () => {
+                    document.querySelectorAll('.print-level-cb').forEach(cb => cb.checked = false);
+                });
+
+                document.getElementById('generate-print-btn').addEventListener('click', generatePrintPreview);
+
+                // Eventos Visor de Impresión
+                document.getElementById('trigger-print-btn').addEventListener('click', () => window.print());
+                document.getElementById('regenerate-sheets-btn').addEventListener('click', generatePrintPreview);
+                document.getElementById('back-to-config-btn').addEventListener('click', () => {
+                    document.getElementById('print-view-wrapper').classList.add('hidden');
+                    document.getElementById('print-modal').classList.remove('hidden');
+                });
+                document.getElementById('close-print-view-btn').addEventListener('click', () => {
+                    document.getElementById('print-view-wrapper').classList.add('hidden');
+                });
+            }
+
+            // --- LÓGICA DEL JUEGO ---
+            function switchGameMode(useKeypad) {
+                isKeypadMode = useKeypad;
+                if (isKeypadMode) {
+                    modeKeypadBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white text-violet-700 shadow-sm';
+                    modeFlashcardBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900';
+                    flashcardControls.classList.add('hidden');
+                    keypadControls.classList.remove('hidden');
+                    keypadControls.classList.add('flex');
+                    scoreBadge.classList.remove('hidden');
+                } else {
+                    modeFlashcardBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white text-violet-700 shadow-sm';
+                    modeKeypadBtn.className = 'px-3 py-1.5 rounded-xl font-bold text-sm md:text-base transition-all text-slate-600 hover:text-slate-900';
+                    keypadControls.classList.add('hidden');
+                    keypadControls.classList.remove('flex');
+                    flashcardControls.classList.remove('hidden');
+                    scoreBadge.classList.add('hidden');
+                }
+                displayProblem();
+            }
+
+            function loadLevel(idx) {
+                contentPractico.innerHTML = levels[idx].practicoHTML;
+                quickHintBox.textContent = levels[idx].tip;
+                quickHintBox.classList.add('hidden');
+                startNewChallenge(false);
+                showPractico();
+            }
+
+            function startNewChallenge(isPro) {
+                isProMode = isPro;
+                const idx = parseInt(levelSelector.value);
+                currentProblems = isPro ? levels[idx].genPro() : levels[idx].gen();
+                currentProblemIndex = 0;
+                score = 0;
+                scoreCountEl.textContent = '0';
+
+                if (isPro) {
+                    proBadge.classList.remove('hidden');
+                    problemContainer.classList.replace('border-slate-200', 'border-rose-300');
+                } else {
+                    proBadge.classList.add('hidden');
+                    problemContainer.classList.replace('border-rose-300', 'border-slate-200');
+                }
+
+                displayProblem();
+                showReto();
+            }
+
+            function formatAnswerString(ans) {
+                return String(ans).replace('.', ',');
+            }
+
+            function displayProblem() {
+                problemSolved = false;
+                currentUserInput = '';
+                updateUserInputDisplay();
+                keypadFeedback.textContent = '';
+                userInputDisplay.className = 'flex-1 bg-white border-4 border-violet-400 rounded-2xl py-3 px-6 text-4xl font-bold text-violet-900 min-h-[68px] flex items-center justify-center shadow-inner';
+                checkAnswerBtn.classList.remove('hidden');
+                keypadNextBtn.classList.add('hidden');
+
+                if (currentProblemIndex < currentProblems.length) {
+                    const p = currentProblems[currentProblemIndex];
+                    const ansStr = formatAnswerString(p.answer);
+
+                    if (p.text.includes('_')) {
+                        problemText.innerHTML = p.text.replace('_', '<span class="text-violet-500 border-b-4 border-dashed border-violet-400 px-3">?</span>');
+                    } else {
+                        problemText.textContent = p.text;
+                    }
+                    
+                    progressText.textContent = `${currentProblemIndex + 1} de ${currentProblems.length}`;
+                    progressBar.style.width = `${((currentProblemIndex + 1) / currentProblems.length) * 100}%`;
+                    
+                    answerText.classList.remove('answer-reveal');
+                    answerText.classList.add('opacity-0');
+                    answerText.textContent = p.text.includes('_') ? `${ansStr}` : `= ${ansStr}`;
+                    
+                    showAnswerBtn.classList.remove('hidden');
+                    nextProblemBtn.classList.add('hidden');
+                } else {
+                    problemText.innerHTML = '¡Misión Cumplida! 🏆';
+                    progressText.textContent = '¡Completado!';
+                    answerText.classList.remove('opacity-0');
+                    answerText.textContent = isKeypadMode ? `Aciertos: ${score} de ${currentProblems.length}` : '¡Gran trabajo!';
+                    showAnswerBtn.classList.add('hidden');
+                    nextProblemBtn.classList.add('hidden');
+                    checkAnswerBtn.classList.add('hidden');
+                    keypadNextBtn.classList.add('hidden');
+                    playSuccessSound();
+                }
+            }
+            
+            function showAnswer() {
+                if (currentProblemIndex >= currentProblems.length) return;
+                const p = currentProblems[currentProblemIndex];
+                const ansStr = formatAnswerString(p.answer);
+                if (p.text.includes('_')) {
+                    problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${ansStr}</span>`);
+                }
+                answerText.classList.remove('opacity-0');
+                answerText.classList.add('answer-reveal');
+                playSuccessSound();
+                showAnswerBtn.classList.add('hidden');
+                nextProblemBtn.classList.remove('hidden');
+            }
+
+            function handleNumKey(key) {
+                if (problemSolved || currentProblemIndex >= currentProblems.length) return;
+                if (key === 'DEL') {
+                    currentUserInput = currentUserInput.slice(0, -1);
+                } else if (key === 'CLR') {
+                    currentUserInput = '';
+                } else if (key === '-') {
+                    if (currentUserInput.startsWith('-')) {
+                        currentUserInput = currentUserInput.slice(1);
+                    } else {
+                        currentUserInput = '-' + currentUserInput;
+                    }
+                } else if (key === ',') {
+                    if (!currentUserInput.includes(',')) {
+                        currentUserInput = (currentUserInput === '' || currentUserInput === '-') ? currentUserInput + '0,' : currentUserInput + ',';
+                    }
+                } else if (currentUserInput.length < 8) {
+                    currentUserInput += key;
+                }
+                updateUserInputDisplay();
+            }
+
+            function updateUserInputDisplay() {
+                if (currentUserInput === '') {
+                    userInputValue.textContent = '?';
+                    userInputValue.className = 'text-slate-300';
+                } else {
+                    userInputValue.textContent = currentUserInput;
+                    userInputValue.className = 'text-violet-950';
+                }
+            }
+
+            function checkUserAnswer() {
+                if (currentProblemIndex >= currentProblems.length || currentUserInput === '' || currentUserInput === '-') return;
+                const p = currentProblems[currentProblemIndex];
+                const userVal = parseFloat(currentUserInput.replace(',', '.'));
+                const targetVal = Number(p.answer);
+
+                if (Math.abs(userVal - targetVal) < 0.0001) {
+                    problemSolved = true;
+                    score++;
+                    scoreCountEl.textContent = score;
+                    playSuccessSound();
+                    keypadFeedback.textContent = '¡Correcto! ¡Excelente cálculo! 🎉';
+                    keypadFeedback.className = 'h-7 font-bold text-lg mb-2 text-emerald-600';
+                    userInputDisplay.className = 'flex-1 bg-emerald-50 border-4 border-emerald-500 rounded-2xl py-3 px-6 text-4xl font-bold text-emerald-800 min-h-[68px] flex items-center justify-center';
+                    if (p.text.includes('_')) {
+                        problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${formatAnswerString(p.answer)}</span>`);
+                    }
+                    checkAnswerBtn.classList.add('hidden');
+                    keypadNextBtn.classList.remove('hidden');
+                } else {
+                    playErrorSound();
+                    keypadFeedback.textContent = '¡Casi! Revisa la estrategia e inténtalo de nuevo 💪';
+                    keypadFeedback.className = 'h-7 font-bold text-lg mb-2 text-rose-600';
+                    userInputDisplay.classList.remove('shake-anim');
+                    void userInputDisplay.offsetWidth;
+                    userInputDisplay.classList.add('shake-anim', 'border-rose-400');
+                    currentUserInput = '';
+                    setTimeout(updateUserInputDisplay, 350);
+                }
+            }
+
+            function nextProblem() {
+                currentProblemIndex++;
+                displayProblem();
+            }
+
+            function showPractico() {
+                contentPractico.classList.remove('hidden');
+                contentReto.classList.add('hidden');
+                contentReto.classList.remove('flex');
+                tabPractico.classList.add('tab-active');
+                tabPractico.classList.remove('tab-inactive');
+                tabReto.classList.add('tab-inactive');
+                tabReto.classList.remove('tab-active');
+            }
+
+            function showReto() {
+                contentReto.classList.remove('hidden');
+                contentReto.classList.add('flex');
+                contentPractico.classList.add('hidden');
+                tabReto.classList.add('tab-active');
+                tabReto.classList.remove('tab-inactive');
+                tabPractico.classList.add('tab-inactive');
+                tabPractico.classList.remove('tab-active');
+            }
+
+            // --- GENERADOR DE FICHAS IMPRIMIBLES / PDF ---
+            function openPrintModal() {
+                document.getElementById('print-error-msg').classList.add('hidden');
+                const checkedCount = document.querySelectorAll('.print-level-cb:checked').length;
+                if (checkedCount === 0) {
+                    const cur = levelSelector.value;
+                    document.querySelectorAll('.print-level-cb').forEach(cb => {
+                        if (cb.value === cur) cb.checked = true;
+                    });
+                }
+                document.getElementById('print-modal').classList.remove('hidden');
+            }
+
+            function closePrintModal() {
+                document.getElementById('print-modal').classList.add('hidden');
+            }
+
+            function formatProblemForWorksheet(p) {
+                if (p.text.includes('_')) {
+                    const parts = p.text.split('_');
+                    return `
+                        <span class="font-bold text-slate-800">${parts[0]}</span>
+                        <span class="inline-block w-16 border-b-2 border-slate-500 mx-1"></span>
+                        <span class="font-bold text-slate-800">${parts[1]}</span>
+                    `;
+                } else {
+                    return `
+                        <span class="font-bold text-slate-800">${p.text} =</span>
+                        <span class="inline-block w-20 border-b-2 border-slate-500 ml-2"></span>
+                    `;
+                }
+            }
+
+            function formatSolutionItem(p) {
+                const ansStr = formatAnswerString(p.answer);
+                if (p.text.includes('_')) {
+                    const solved = p.text.replace('_', `<strong class="text-emerald-700 underline">${ansStr}</strong>`);
+                    return `<span class="text-slate-700">${solved}</span>`;
+                } else {
+                    return `<span class="text-slate-700">${p.text} = <strong class="text-emerald-700">${ansStr}</strong></span>`;
+                }
+            }
+
+            function generatePrintPreview() {
+                const checks = document.querySelectorAll('.print-level-cb:checked');
+                const err = document.getElementById('print-error-msg');
+                
+                if (checks.length === 0) {
+                    err.classList.remove('hidden');
+                    return;
+                }
+                err.classList.add('hidden');
+
+                const isPro = document.getElementById('print-pro-cb').checked;
+                const includeSolutions = document.getElementById('print-solutions-cb').checked;
+                const numVersions = parseInt(document.getElementById('print-versions').value);
+                const customTitle = document.getElementById('print-custom-title').value.trim() || `CÁLCULO MENTAL - ${currentGrade}º PRIMARIA`;
+                
+                const selectedIndices = Array.from(checks).map(cb => parseInt(cb.value));
+                const titles = selectedIndices.map(idx => levels[idx].title);
+                const modelLetters = ['A', 'B', 'C', 'D'];
+
+                let sheetsHTML = '';
+                let allVersionsSolutionsHTML = '';
+
+                for (let v = 0; v < numVersions; v++) {
+                    const modelLabel = numVersions > 1 ? `Modelo ${modelLetters[v]}` : 'Ficha de Cálculo';
+                    
+                    let pools = selectedIndices.map(idx => {
+                        const lvl = levels[idx];
+                        const problems = isPro ? lvl.genPro() : lvl.gen();
+                        return problems.sort(() => Math.random() - 0.5);
+                    });
+
+                    let worksheetProblems = [];
+                    let seenInSheet = new Set();
+                    let pIdx = 0;
+                    let safety = 0;
+
+                    while (worksheetProblems.length < 20 && safety < 250) {
+                        safety++;
+                        let curPool = pools[pIdx % pools.length];
+                        if (curPool.length > 0) {
+                            let candidate = curPool.pop();
+                            if (!seenInSheet.has(candidate.text) || safety > 90) {
+                                worksheetProblems.push(candidate);
+                                seenInSheet.add(candidate.text);
+                            }
+                        }
+                        pIdx++;
+                    }
+
+                    if (selectedIndices.length > 1) {
+                        worksheetProblems.sort(() => Math.random() - 0.5);
+                    }
+
+                    let leftColHTML = '';
+                    let rightColHTML = '';
+
+                    worksheetProblems.forEach((p, i) => {
+                        const rowHTML = `
+                            <div class="flex items-baseline py-2.5 border-b border-slate-100">
+                                <span class="w-8 font-bold text-slate-400 text-base shrink-0">${i + 1}.</span>
+                                <div class="flex-1 text-lg flex items-baseline justify-between pr-2">
+                                    ${formatProblemForWorksheet(p)}
+                                </div>
+                            </div>
+                        `;
+                        if (i < 10) leftColHTML += rowHTML;
+                        else rightColHTML += rowHTML;
+                    });
+
+                    const summaryTitles = titles.length > 5
+                        ? `${titles.slice(0, 5).join(' · ')} y ${titles.length - 5} más`
+                        : titles.join(' · ');
+
+                    sheetsHTML += `
+                        <div class="a4-sheet">
+                            <div>
+                                <!-- Encabezado de la ficha -->
+                                <div class="border-b-4 border-violet-600 pb-3 mb-5 flex justify-between items-start gap-4">
+                                    <div>
+                                        <h1 class="text-2xl font-bold text-violet-950 uppercase tracking-tight">${customTitle}</h1>
+                                        <p class="text-xs text-slate-600 font-semibold mt-1 max-w-xl leading-snug">
+                                            <strong>Estrategias:</strong> ${summaryTitles} ${isPro ? ' (🔥 Nivel PRO)' : ''}
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0 bg-violet-100 text-violet-900 font-bold px-3.5 py-1.5 rounded-xl border-2 border-violet-300 text-sm">
+                                        ${modelLabel}
+                                    </div>
+                                </div>
+
+                                <!-- Datos del alumno -->
+                                <div class="grid grid-cols-12 gap-4 mb-6 text-base font-bold text-slate-800 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                    <div class="col-span-7 flex items-end">
+                                        <span class="mr-2">Nombre:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5"></div>
+                                    </div>
+                                    <div class="col-span-3 flex items-end">
+                                        <span class="mr-2">Fecha:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5"></div>
+                                    </div>
+                                    <div class="col-span-2 flex items-end">
+                                        <span class="mr-2">Aciertos:</span>
+                                        <div class="flex-1 border-b-2 border-slate-400 h-5 text-right text-slate-400 text-xs">/ 20</div>
+                                    </div>
+                                </div>
+
+                                <!-- Cuerpo de 20 operaciones en 2 columnas -->
+                                <div class="grid grid-cols-2 gap-x-10 mt-2">
+                                    <div class="space-y-1">${leftColHTML}</div>
+                                    <div class="space-y-1">${rightColHTML}</div>
+                                </div>
+                            </div>
+
+                            <!-- Pie de ficha -->
+                            <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-500 font-semibold">
+                                <span>💡 Recuerda descomponer y usar las estrategias ABN antes de escribir.</span>
+                                <span>${currentGrade}º Educación Primaria · ${modelLabel}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    let solItemsHTML = '';
+                    worksheetProblems.forEach((p, i) => {
+                        solItemsHTML += `
+                            <div class="flex items-baseline py-1 text-sm border-b border-slate-200/60">
+                                <span class="w-6 text-slate-400 font-bold shrink-0">${i + 1}.</span>
+                                <div class="flex-1">${formatSolutionItem(p)}</div>
+                            </div>
+                        `;
+                    });
+
+                    allVersionsSolutionsHTML += `
+                        <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                            <h3 class="font-bold text-base mb-2.5 pb-1.5 border-b-2 border-emerald-500 text-emerald-950 flex justify-between">
+                                <span>Soluciones - ${modelLabel}</span>
+                                <span class="text-xs text-emerald-700 font-semibold">${isPro ? '🔥 PRO' : 'Estándar'}</span>
+                            </h3>
+                            <div class="grid grid-cols-2 gap-x-6 gap-y-0.5">
+                                ${solItemsHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (includeSolutions) {
+                    sheetsHTML += `
+                        <div class="a4-sheet">
+                            <div>
+                                <div class="border-b-4 border-emerald-600 pb-3 mb-5 flex justify-between items-end">
+                                    <div>
+                                        <h1 class="text-2xl font-bold text-emerald-900 uppercase">✅ SOLUCIONARIO DOCENTE</h1>
+                                        <p class="text-xs text-slate-600 font-semibold mt-1">
+                                            ${customTitle} · ${currentGrade}º Educación Primaria
+                                        </p>
+                                    </div>
+                                    <span class="bg-emerald-100 text-emerald-900 font-bold px-3 py-1 rounded-lg text-xs border border-emerald-300">
+                                        Hoja de control
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-1 ${numVersions > 1 ? 'md:grid-cols-2 print:grid-cols-2' : ''} gap-5">
+                                    ${allVersionsSolutionsHTML}
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-400 font-semibold">
+                                <span>Documento de corrección para el docente</span>
+                                <span>${currentGrade}º Educación Primaria</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('print-sheets-container').innerHTML = sheetsHTML;
+                closePrintModal();
+                document.getElementById('print-view-wrapper').classList.remove('hidden');
+                document.getElementById('print-view-wrapper').scrollTop = 0;
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
