@@ -27,7 +27,7 @@
       -webkit-tap-highlight-color: transparent;
     }
     .btn-touch {
-      min-height: 54px;
+      min-height: 52px;
       transition: all 0.15s ease;
     }
     .btn-touch:active {
@@ -55,11 +55,50 @@
       background: #94a3b8;
     }
 
+    /* Fondos del Canvas de Pizarra Digital */
+    .canvas-bg-grid {
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .canvas-bg-blank {
+      background-color: #ffffff;
+    }
+    .canvas-bg-bars {
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(to bottom, transparent 48%, #cbd5e1 49%, #cbd5e1 51%, transparent 52%);
+      background-size: 100% 90px;
+    }
+
+    /* Variables dinámicas para autoajustar la altura según el nº de problemas por A4 */
+    :root {
+      --print-box-height: 68px;
+      --print-card-mb: 8px;
+      --print-card-pad: 8px 12px;
+    }
+
+    .work-box {
+      border: 1px dashed #94a3b8;
+      border-radius: 6px;
+      height: var(--print-box-height);
+      margin-top: 4px;
+    }
+
+    .problem-card-print {
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      padding: var(--print-card-pad);
+      margin-bottom: var(--print-card-mb);
+    }
+
     /* ESTILOS DE IMPRESIÓN A4 EXACTOS */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 10mm;
+        margin: 9mm;
       }
       body {
         background: white !important;
@@ -78,8 +117,10 @@
         break-after: page;
         width: 100%;
         box-sizing: border-box;
-        padding: 0;
-        margin: 0;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
       }
       .print-page:last-child {
         page-break-after: auto;
@@ -88,16 +129,6 @@
       .problem-card-print {
         page-break-inside: avoid;
         break-inside: avoid;
-        border: 1.5px solid #334155;
-        border-radius: 8px;
-        padding: 8px 12px;
-        margin-bottom: 8px;
-      }
-      .work-box {
-        border: 1px dashed #94a3b8;
-        border-radius: 6px;
-        height: 68px;
-        margin-top: 4px;
       }
     }
   </style>
@@ -219,7 +250,7 @@
         <span>📘</span> <span>1. ¿Cómo lo resuelvo? (Teoría)</span>
       </button>
       <button onclick="switchTab('practica')" id="tab-practica" class="btn-touch rounded-2xl font-extrabold text-base md:text-lg py-3.5 px-4 flex items-center justify-center gap-2.5 text-slate-600 hover:bg-slate-100">
-        <span>🎯</span> <span>2. Práctica Interactiva (MDI)</span>
+        <span>🎯</span> <span>2. Práctica Interactiva + Pizarra</span>
       </button>
       <button onclick="switchTab('pdf')" id="tab-pdf" class="btn-touch rounded-2xl font-extrabold text-base md:text-lg py-3.5 px-4 flex items-center justify-center gap-2.5 text-slate-600 hover:bg-slate-100">
         <span>🖨️</span> <span>3. Generar Fichas A4 (A-B-C-D)</span>
@@ -296,7 +327,7 @@
     </div>
 
     <!-- =======================================================================
-         MÓDULO 2: PARTE PRÁCTICA INTERACTIVA (MDI / TABLET) - FULL WIDTH
+         MÓDULO 2: PARTE PRÁCTICA INTERACTIVA + PIZARRA DIGITAL (MDI) - FULL WIDTH
          ======================================================================= -->
     <div id="panel-practica" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
@@ -314,31 +345,85 @@
         </div>
       </div>
 
-      <!-- Tarjeta de Enunciado Gigante para Pizarra Digital (MDI) -->
-      <div class="bg-gradient-to-br from-sky-50 to-indigo-50 border-2 border-indigo-200 rounded-3xl p-6 md:p-10 shadow-inner">
-        <p id="practice-statement" class="text-2xl md:text-3xl font-bold text-slate-800 leading-relaxed mb-6"></p>
-        <div class="bg-white/95 border-l-8 border-indigo-600 p-5 rounded-2xl shadow-sm">
-          <p id="practice-question" class="text-2xl md:text-3xl font-extrabold text-indigo-900"></p>
-        </div>
-      </div>
+      <!-- Estructura a 2 columnas en pantallas grandes: Enunciado/Comprobación + Pizarra de Esquemas -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
 
-      <!-- Pista Pedagógica Interactiva y Comprobador -->
-      <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-3.5 max-w-3xl">
-          <span class="text-3xl">💡</span>
-          <div>
-            <div class="text-xs font-extrabold uppercase text-amber-800 tracking-wider">Pista para pensar la relación entre los datos:</div>
-            <p id="practice-thinking-prompt" class="text-base md:text-lg font-bold text-slate-800"></p>
+        <!-- Columna Izquierda (5 cols): Enunciado, Pista y Respuesta -->
+        <div class="xl:col-span-5 flex flex-col justify-between gap-4">
+          <div class="bg-gradient-to-br from-sky-50 to-indigo-50 border-2 border-indigo-200 rounded-3xl p-6 md:p-7 shadow-inner flex-1 flex flex-col justify-center">
+            <p id="practice-statement" class="text-xl md:text-2xl font-bold text-slate-800 leading-relaxed mb-5"></p>
+            <div class="bg-white/95 border-l-8 border-indigo-600 p-4 rounded-2xl shadow-sm">
+              <p id="practice-question" class="text-xl md:text-2xl font-extrabold text-indigo-900"></p>
+            </div>
+          </div>
+
+          <!-- Pista Pedagógica Interactiva y Comprobador -->
+          <div class="bg-amber-50 border-2 border-amber-200 rounded-3xl p-5 space-y-4">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">💡</span>
+              <div>
+                <div class="text-xs font-extrabold uppercase text-amber-800 tracking-wider">Pista para pensar la relación:</div>
+                <p id="practice-thinking-prompt" class="text-sm md:text-base font-bold text-slate-800 mt-0.5"></p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 pt-1">
+              <input type="text" id="user-answer-input" placeholder="Resultado numérico..." class="flex-1 min-w-[160px] px-4 py-3 rounded-2xl border-2 border-amber-300 font-extrabold text-lg focus:outline-none focus:border-indigo-600 bg-white">
+              <button onclick="checkUserAnswer()" class="btn-touch bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold px-6 py-3 rounded-2xl text-base shadow">
+                Comprobar
+              </button>
+            </div>
+          </div>
+          <div id="user-feedback-box" class="hidden rounded-2xl p-4 font-extrabold text-center text-base"></div>
+        </div>
+
+        <!-- Columna Derecha (7 cols): PIZARRA DIGITAL INTERACTIVA DE DIBUJO Y ESQUEMAS -->
+        <div class="xl:col-span-7 bg-slate-800 rounded-3xl p-4 shadow-lg flex flex-col gap-3 border-2 border-slate-700">
+          <!-- Barra de Herramientas Táctil de la Pizarra -->
+          <div class="flex flex-wrap items-center justify-between gap-2 text-white">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">✏️</span>
+              <span class="font-extrabold text-sm md:text-base">Pizarra de Esquemas, Barras y Operaciones</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5">
+              <!-- Colores -->
+              <button onclick="setPenColor('#1e40af', this)" class="pen-color-btn w-9 h-9 rounded-full bg-blue-700 border-2 border-white ring-2 ring-amber-400 transition" title="Azul (Datos / Barras)"></button>
+              <button onclick="setPenColor('#dc2626', this)" class="pen-color-btn w-9 h-9 rounded-full bg-red-600 border-2 border-white/60 transition" title="Rojo (Incógnita / Destacar)"></button>
+              <button onclick="setPenColor('#059669', this)" class="pen-color-btn w-9 h-9 rounded-full bg-emerald-600 border-2 border-white/60 transition" title="Verde (Operación / Solución)"></button>
+              <button onclick="setPenColor('#0f172a', this)" class="pen-color-btn w-9 h-9 rounded-full bg-slate-900 border-2 border-white/60 transition" title="Negro"></button>
+
+              <span class="text-slate-500 mx-1">|</span>
+
+              <!-- Grosor -->
+              <button onclick="setPenWidth(4, this)" id="btn-w-thin" class="px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-extrabold border border-white/20">Fino</button>
+              <button onclick="setPenWidth(8, this)" id="btn-w-thick" class="px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-extrabold border border-white/10">Grueso</button>
+
+              <!-- Goma -->
+              <button onclick="setEraser(this)" id="btn-eraser" class="px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-extrabold border border-white/15 flex items-center gap-1">
+                <span>🧽</span> <span>Goma</span>
+              </button>
+
+              <!-- Tipo de Fondo -->
+              <select id="canvas-bg-select" onchange="changeCanvasBg()" class="px-2.5 py-1.5 rounded-xl bg-slate-700 text-white text-xs font-extrabold border border-white/20 focus:outline-none">
+                <option value="grid">Fondo: Cuadrícula</option>
+                <option value="blank">Fondo: Blanco</option>
+                <option value="bars">Fondo: Líneas Guía</option>
+              </select>
+
+              <!-- Borrar Todo -->
+              <button onclick="clearWhiteboard(true)" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold flex items-center gap-1 shadow">
+                <span>🗑️</span> <span>Borrar Todo</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Contenedor del Lienzo (Canvas) -->
+          <div id="canvas-wrapper" class="relative w-full h-[320px] md:h-[360px] rounded-2xl overflow-hidden canvas-bg-grid border-2 border-slate-300 shadow-inner">
+            <canvas id="whiteboard-canvas" class="w-full h-full cursor-crosshair touch-none block"></canvas>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <input type="text" id="user-answer-input" placeholder="Resultado numérico..." class="px-4 py-3 rounded-2xl border-2 border-amber-300 font-extrabold text-lg w-52 focus:outline-none focus:border-indigo-600">
-          <button onclick="checkUserAnswer()" class="btn-touch bg-amber-400 hover:bg-amber-500 text-slate-900 font-extrabold px-6 py-3 rounded-2xl text-base shadow">
-            Comprobar
-          </button>
-        </div>
+
       </div>
-      <div id="user-feedback-box" class="hidden rounded-2xl p-4 font-extrabold text-center text-lg"></div>
 
       <!-- Desglose de la Solución -->
       <div id="practice-solution-panel" class="hidden space-y-4 pt-4 border-t-2 border-dashed border-slate-200">
@@ -369,14 +454,14 @@
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
         <div>
           <h3 class="text-xl font-extrabold text-slate-800">Generador de Fichas Imprimibles A4 (Multiversión Anti-Copia)</h3>
-          <p class="text-sm text-slate-500 font-medium">Genera de 1 a 4 versiones distintas (Modelos A, B, C y D) con 5 problemas cada una manteniendo exactamente la misma dificultad.</p>
+          <p class="text-sm text-slate-500 font-medium">Elige cuántas versiones (A, B, C, D) y cuántos problemas por página A4 deseas incluir. El espacio de trabajo se ajusta automáticamente.</p>
         </div>
       </div>
 
-      <!-- Controles de Configuración de la Ficha -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-5 rounded-3xl border border-slate-200">
+      <!-- Controles de Configuración de la Ficha (4 selectores ahora) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-50 p-5 rounded-3xl border border-slate-200">
         <div>
-          <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">Número de Versiones (Modelos)</label>
+          <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">1. Número de Versiones (Modelos)</label>
           <select id="pdf-num-versions" onchange="generatePrintableSheets()" class="w-full px-4 py-3 rounded-xl border border-slate-300 font-bold text-sm bg-white">
             <option value="1">1 Versión (Solo Modelo A)</option>
             <option value="2">2 Versiones (Modelos A y B)</option>
@@ -386,15 +471,26 @@
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">Modo de Selección de los 5 Problemas</label>
-          <select id="pdf-selection-mode" onchange="generatePrintableSheets()" class="w-full px-4 py-3 rounded-xl border border-slate-300 font-bold text-sm bg-white">
-            <option value="current">5 problemas del Nivel Activo seleccionado</option>
-            <option value="mixed">Mezcla variada de 5 niveles de este Curso</option>
+          <label class="block text-xs font-extrabold uppercase text-indigo-700 mb-1.5">2. Problemas por cada Hoja A4</label>
+          <select id="pdf-num-problems" onchange="generatePrintableSheets()" class="w-full px-4 py-3 rounded-xl border-2 border-indigo-300 font-extrabold text-sm bg-indigo-50/50 text-indigo-950">
+            <option value="2">2 Problemas (Espacio gigante para dibujo)</option>
+            <option value="3">3 Problemas (Espacio amplio)</option>
+            <option value="4">4 Problemas (Espacio medio)</option>
+            <option value="5" selected>5 Problemas (Estándar A4)</option>
+            <option value="6">6 Problemas (Compacto)</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">Vista Previa / Qué Imprimir</label>
+          <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">3. Modo de Selección de Problemas</label>
+          <select id="pdf-selection-mode" onchange="generatePrintableSheets()" class="w-full px-4 py-3 rounded-xl border border-slate-300 font-bold text-sm bg-white">
+            <option value="current">Todos del Nivel Activo seleccionado</option>
+            <option value="mixed">Mezcla variada de niveles de este Curso</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">4. Vista Previa / Qué Imprimir</label>
           <select id="pdf-print-target" onchange="updatePrintViewMode()" class="w-full px-4 py-3 rounded-xl border border-slate-300 font-bold text-sm bg-white">
             <option value="both">Fichas Alumnado + Solucionario Docente</option>
             <option value="student">Solo Fichas del Alumnado (para rellenar)</option>
@@ -425,7 +521,7 @@
       <!-- Vista Previa en Pantalla -->
       <div class="border-t border-slate-200 pt-4">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-extrabold uppercase text-slate-500">Vista previa de las páginas A4 generadas (1 página por modelo)</span>
+          <span class="text-xs font-extrabold uppercase text-slate-500">Vista previa de las páginas A4 generadas (1 página exacta por modelo)</span>
           <span id="pdf-pages-summary" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full"></span>
         </div>
         <div id="pdf-screen-preview" class="grid grid-cols-1 xl:grid-cols-2 gap-6 max-h-[680px] overflow-y-auto custom-scroll p-4 bg-slate-100 rounded-3xl border border-slate-300">
@@ -882,7 +978,7 @@
                 ctx: "Comedor escolar",
                 stmt: `En la mesa hay ${g} platos con ${c} fresas en cada uno.`,
                 q: `¿Cuántas fresas hay en total?`,
-                prompt: "Dibuja los platos y cuenta cuántas fresas reúnen entre todos.",
+                prompt: "Dibuja los platos en la pizarra y cuenta cuántas fresas reúnen entre todos.",
                 datos: `${g} platos | ${c} fresas en cada plato`,
                 op: `${sumStr} = ${g * c}`,
                 ans: `Hay ${g * c} fresas en total.`,
@@ -3454,8 +3550,9 @@
     let generatedSheetsData = [];
 
     function initApp() {
+      initWhiteboard();
       renderGradeButtons();
-      selectGrade("3", false); // Carga 3.º de Primaria mostrando el menú en cuadrícula inicial
+      selectGrade("3", false);
     }
 
     function openMenuScreen() {
@@ -3471,6 +3568,7 @@
       playSound('click');
       document.getElementById('fullscreen-menu').classList.add('hidden');
       document.getElementById('fullscreen-workspace').classList.remove('hidden');
+      setTimeout(resizeWhiteboardCanvas, 60);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -3601,6 +3699,9 @@
           panel.classList.add('hidden');
         }
       });
+      if (tabName === 'practica') {
+        setTimeout(resizeWhiteboardCanvas, 50);
+      }
     }
 
     /*************************************************************************
@@ -3672,8 +3773,142 @@
     }
 
     /*************************************************************************
-     * 6. MÓDULO 2: PRÁCTICA INTERACTIVA EN MDI
+     * 6. MÓDULO 2: PRÁCTICA INTERACTIVA + PIZARRA DIGITAL (CANVAS)
      *************************************************************************/
+    let wbCanvas, wbCtx;
+    let isDrawing = false;
+    let penColor = '#1e40af';
+    let penWidth = 4;
+    let isEraser = false;
+
+    function initWhiteboard() {
+      wbCanvas = document.getElementById('whiteboard-canvas');
+      wbCtx = wbCanvas.getContext('2d');
+
+      wbCanvas.addEventListener('pointerdown', startDraw);
+      wbCanvas.addEventListener('pointermove', moveDraw);
+      wbCanvas.addEventListener('pointerup', endDraw);
+      wbCanvas.addEventListener('pointerCancel', endDraw);
+      wbCanvas.addEventListener('pointerleave', endDraw);
+
+      window.addEventListener('resize', resizeWhiteboardCanvas);
+    }
+
+    function resizeWhiteboardCanvas() {
+      if (!wbCanvas) return;
+      const wrapper = document.getElementById('canvas-wrapper');
+      if (!wrapper || wrapper.clientWidth === 0) return;
+
+      // Guardar contenido actual antes de redimensionar
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = wbCanvas.width;
+      tempCanvas.height = wbCanvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      if (wbCanvas.width > 0 && wbCanvas.height > 0) {
+        tempCtx.drawImage(wbCanvas, 0, 0);
+      }
+
+      wbCanvas.width = wrapper.clientWidth;
+      wbCanvas.height = wrapper.clientHeight;
+
+      if (tempCanvas.width > 0 && tempCanvas.height > 0) {
+        wbCtx.drawImage(tempCanvas, 0, 0);
+      }
+    }
+
+    function getPointerPos(e) {
+      const rect = wbCanvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    function startDraw(e) {
+      e.preventDefault();
+      if (wbCanvas.width === 0) resizeWhiteboardCanvas();
+      isDrawing = true;
+      const pos = getPointerPos(e);
+      wbCtx.beginPath();
+      wbCtx.moveTo(pos.x, pos.y);
+    }
+
+    function moveDraw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getPointerPos(e);
+      wbCtx.lineCap = 'round';
+      wbCtx.lineJoin = 'round';
+
+      if (isEraser) {
+        wbCtx.globalCompositeOperation = 'destination-out';
+        wbCtx.lineWidth = 28;
+      } else {
+        wbCtx.globalCompositeOperation = 'source-over';
+        wbCtx.strokeStyle = penColor;
+        wbCtx.lineWidth = penWidth;
+      }
+
+      wbCtx.lineTo(pos.x, pos.y);
+      wbCtx.stroke();
+    }
+
+    function endDraw(e) {
+      if (!isDrawing) return;
+      isDrawing = false;
+      wbCtx.closePath();
+    }
+
+    function setPenColor(color, btnEl) {
+      playSound('click');
+      isEraser = false;
+      penColor = color;
+      document.getElementById('btn-eraser').classList.remove('bg-amber-400', 'text-slate-900');
+      document.getElementById('btn-eraser').classList.add('bg-slate-700', 'text-white');
+
+      document.querySelectorAll('.pen-color-btn').forEach(b => {
+        b.classList.remove('ring-2', 'ring-amber-400');
+      });
+      if (btnEl) btnEl.classList.add('ring-2', 'ring-amber-400');
+    }
+
+    function setPenWidth(w) {
+      playSound('click');
+      isEraser = false;
+      penWidth = w;
+      const thinBtn = document.getElementById('btn-w-thin');
+      const thickBtn = document.getElementById('btn-w-thick');
+      if (w === 4) {
+        thinBtn.className = 'px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-extrabold border border-white/20';
+        thickBtn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-extrabold border border-white/10';
+      } else {
+        thickBtn.className = 'px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-extrabold border border-white/20';
+        thinBtn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-extrabold border border-white/10';
+      }
+    }
+
+    function setEraser(btnEl) {
+      playSound('click');
+      isEraser = true;
+      document.querySelectorAll('.pen-color-btn').forEach(b => b.classList.remove('ring-2', 'ring-amber-400'));
+      btnEl.classList.remove('bg-slate-700', 'text-white');
+      btnEl.classList.add('bg-amber-400', 'text-slate-900');
+    }
+
+    function changeCanvasBg() {
+      playSound('click');
+      const mode = document.getElementById('canvas-bg-select').value;
+      const wrapper = document.getElementById('canvas-wrapper');
+      wrapper.classList.remove('canvas-bg-grid', 'canvas-bg-blank', 'canvas-bg-bars');
+      wrapper.classList.add('canvas-bg-' + mode);
+    }
+
+    function clearWhiteboard(withSound = false) {
+      if (withSound) playSound('click');
+      if (!wbCanvas || !wbCtx) return;
+      wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+    }
+
     function generateNewInteractiveProblem() {
       if (!currentLevelObj) return;
       currentInteractiveProblem = currentLevelObj.gen();
@@ -3692,6 +3927,8 @@
       document.getElementById('btn-sol-text').textContent = 'Mostrar Solución';
       document.getElementById('user-answer-input').value = '';
       document.getElementById('user-feedback-box').classList.add('hidden');
+
+      clearWhiteboard(false);
     }
 
     function toggleSolution() {
@@ -3731,21 +3968,38 @@
     }
 
     /*************************************************************************
-     * 7. MÓDULO 3: GENERADOR MULTIVERSIÓN A4 (MODELOS A, B, C, D) Y SOLUCIONARIO
+     * 7. MÓDULO 3: GENERADOR MULTIVERSIÓN A4 CON Nº DE PROBLEMAS CONFIGURABLE
      *************************************************************************/
+    function adjustPrintBoxHeights(problemsPerPage) {
+      const root = document.documentElement;
+      const configs = {
+        2: { h: '215px', mb: '14px', pad: '12px 14px' },
+        3: { h: '135px', mb: '12px', pad: '10px 14px' },
+        4: { h: '92px',  mb: '10px', pad: '9px 12px' },
+        5: { h: '66px',  mb: '8px',  pad: '7px 11px' },
+        6: { h: '48px',  mb: '6px',  pad: '5px 10px' }
+      };
+      const cfg = configs[problemsPerPage] || configs[5];
+      root.style.setProperty('--print-box-height', cfg.h);
+      root.style.setProperty('--print-card-mb', cfg.mb);
+      root.style.setProperty('--print-card-pad', cfg.pad);
+    }
+
     function generatePrintableSheets() {
       const numVersions = parseInt(document.getElementById('pdf-num-versions').value, 10) || 4;
+      const numProblems = parseInt(document.getElementById('pdf-num-problems').value, 10) || 5;
       const mode = document.getElementById('pdf-selection-mode').value;
       const gradeData = CURRICULUM_DB[currentGradeKey];
       const modelLetters = ['A', 'B', 'C', 'D'];
 
+      adjustPrintBoxHeights(numProblems);
       generatedSheetsData = [];
 
       for (let v = 0; v < numVersions; v++) {
         const letter = modelLetters[v];
         const problems = [];
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < numProblems; i++) {
           let chosenLevel = currentLevelObj;
           if (mode === 'mixed') {
             chosenLevel = gradeData.levels[(i + v * 2) % gradeData.levels.length];
@@ -3760,6 +4014,7 @@
 
         generatedSheetsData.push({
           model: letter,
+          numProblems,
           courseTitle: gradeData.title,
           levelTitle: mode === 'current' ? currentLevelObj.name : 'Práctica Variada del Curso',
           problems
@@ -3781,11 +4036,11 @@
       generatedSheetsData.forEach(sheet => {
         const probsHTML = sheet.problems.map(p => `
           <div class="problem-card-print bg-white">
-            <div class="flex items-baseline justify-between gap-2 mb-1">
+            <div class="flex items-baseline justify-between gap-2 mb-0.5">
               <span class="font-extrabold text-xs uppercase text-slate-700">Problema ${p.num} <span class="font-semibold text-slate-400">(${p.levelName})</span></span>
             </div>
             <p class="text-sm font-semibold text-slate-900 leading-snug">${p.stmt} <strong class="text-indigo-950 underline decoration-indigo-400">${p.q}</strong></p>
-            <div class="grid grid-cols-12 gap-2 mt-1.5 text-[11px] font-bold text-slate-600">
+            <div class="grid grid-cols-12 gap-2 mt-1 text-[11px] font-bold text-slate-600">
               <div class="col-span-4">
                 <span>1. Datos / Esquema:</span>
                 <div class="work-box"></div>
@@ -3804,7 +4059,7 @@
 
         studentPagesHTML += `
           <div class="print-page bg-white p-4 rounded-2xl border border-slate-300 shadow-sm">
-            <div class="border-b-2 border-slate-800 pb-2 mb-3 flex items-center justify-between">
+            <div class="border-b-2 border-slate-800 pb-1.5 mb-2.5 flex items-center justify-between">
               <div>
                 <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Taller de Resolución de Problemas Matemáticos</div>
                 <h2 class="text-base font-extrabold text-slate-900">${sheet.courseTitle} — ${sheet.levelTitle}</h2>
@@ -3813,7 +4068,7 @@
                 MODELO ${sheet.model}
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-4 text-xs font-bold text-slate-700 mb-3">
+            <div class="grid grid-cols-3 gap-4 text-xs font-bold text-slate-700 mb-2.5">
               <div class="col-span-2 border-b border-slate-400 pb-1">Nombre y Apellidos: _____________________________________________</div>
               <div class="border-b border-slate-400 pb-1">Fecha: ____ / ____ / 202__</div>
             </div>
@@ -3842,7 +4097,7 @@
 
         teacherPagesHTML += `
           <div class="print-page bg-white p-4 rounded-2xl border-2 border-emerald-600 shadow-sm">
-            <div class="border-b-2 border-emerald-800 pb-2 mb-3 flex items-center justify-between">
+            <div class="border-b-2 border-emerald-800 pb-1.5 mb-2.5 flex items-center justify-between">
               <div>
                 <div class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">SOLUCIONARIO DEL DOCENTE • RESPUESTAS Y ESTRATEGIAS</div>
                 <h2 class="text-base font-extrabold text-slate-900">${sheet.courseTitle} — ${sheet.levelTitle}</h2>
@@ -3865,8 +4120,9 @@
       printArea.innerHTML = finalHTML;
 
       const totalPages = (target === 'both') ? generatedSheetsData.length * 2 : generatedSheetsData.length;
+      const probsCount = generatedSheetsData[0] ? generatedSheetsData[0].numProblems : 5;
       document.getElementById('pdf-pages-summary').textContent =
-        `${generatedSheetsData.length} modelos (${generatedSheetsData.map(s => s.model).join(', ')}) • ${totalPages} páginas A4 listas`;
+        `${generatedSheetsData.length} modelos (${generatedSheetsData.map(s => s.model).join(', ')}) × ${probsCount} problemas • ${totalPages} páginas A4 listas`;
     }
 
     function updatePrintViewMode() {
