@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Misión Galáctica: La Tierra se Mueve - 3º Primaria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-space: #0b0f29;
+      --bg-panel: rgba(22, 30, 70, 0.88);
+      --bg-card: rgba(34, 46, 102, 0.92);
+      --accent-cyan: #00f2fe;
+      --accent-blue: #4facfe;
+      --accent-gold: #ffd166;
+      --accent-purple: #b565f7;
+      --accent-green: #06d6a0;
+      --accent-red: #ef476f;
+      --accent-orange: #ff9f1c;
+      --text-light: #f8f9fa;
+      --text-muted: #b8c5e6;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 20% 20%, #1b245c 0%, #090c22 65%, #050614 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fondo estrellado animado con CSS */
+    .stars-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background-image: 
+        radial-gradient(2px 2px at 40px 60px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 200px 150px, #ffd166, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 350px 80px, #00f2fe, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 500px 260px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2.5px 2.5px at 720px 120px, #b565f7, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 880px 320px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 150px 420px, #ffd166, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 640px 480px, #00f2fe, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 950px 550px;
+      animation: twinkle 18s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes twinkle {
+      0% { transform: translateY(0px); }
+      50% { opacity: 0.9; }
+      100% { transform: translateY(-550px); }
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 16px 22px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Cabecera Principal */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-panel);
+      border: 2px solid rgba(0, 242, 254, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 12px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      font-size: 2.5rem;
+      filter: drop-shadow(0 0 10px var(--accent-cyan));
+      animation: floatPlanet 4s ease-in-out infinite;
+    }
+
+    @keyframes floatPlanet {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(6deg); }
+    }
+
+    .brand h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #00f2fe, #ffd166);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .brand p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-top {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      padding: 10px 16px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-top:hover {
+      background: rgba(0, 242, 254, 0.2);
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    /* Pantallas */
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* PANTALLA 1: CONFIGURACIÓN */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 22px;
+      flex: 1;
+    }
+
+    .panel-box {
+      background: var(--bg-panel);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .panel-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+
+    .config-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .config-group label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .selector-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill-btn {
+      flex: 1;
+      min-width: 70px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-light);
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill-btn.selected {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.45);
+      transform: scale(1.03);
+    }
+
+    .teams-config-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .team-input-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team-avatar-btn {
+      font-size: 1.9rem;
+      background: rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .team-input-card input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 4px 2px;
+      outline: none;
+    }
+
+    .team-input-card input:focus {
+      border-bottom-color: var(--accent-cyan);
+    }
+
+    .btn-launch {
+      margin-top: auto;
+      padding: 18px 28px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      font-family: inherit;
+      color: #090c22;
+      background: linear-gradient(90deg, var(--accent-gold), var(--accent-orange));
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(255, 209, 102, 0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-launch:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 32px rgba(255, 209, 102, 0.65);
+    }
+
+    /* PANTALLA 2: TABLERO DE JUEGO */
+    .game-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    /* Marcador Global de 6 Equipos */
+    .scoreboard-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 12px;
+    }
+
+    .team-card {
+      background: var(--bg-panel);
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 10px 14px;
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .team-card.active-turn {
+      border-color: var(--accent-gold);
+      background: linear-gradient(180deg, rgba(255, 209, 102, 0.22) 0%, rgba(22, 30, 70, 0.95) 100%);
+      box-shadow: 0 0 22px rgba(255, 209, 102, 0.45);
+      transform: translateY(-4px);
+    }
+
+    .team-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .team-identity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .team-avatar {
+      font-size: 1.5rem;
+    }
+
+    .streak-pill {
+      background: rgba(255, 159, 28, 0.25);
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-gold);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .team-score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .team-pts {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
+
+    .manual-pts-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .btn-mini-score {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-mini-score:hover {
+      background: var(--accent-blue);
+    }
+
+    .team-badges-row {
+      display: flex;
+      gap: 4px;
+      min-height: 26px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 3px 6px;
+      border-radius: 8px;
+    }
+
+    .badge-mini {
+      font-size: 1.05rem;
+      cursor: help;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+
+    /* Zona Central de Misión / Pregunta */
+    .mission-arena {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 18px;
+      flex: 1;
+    }
+
+    /* Panel Lateral del Turno */
+    .turn-sidebar {
+      background: var(--bg-panel);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .round-indicator {
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 14px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .round-indicator span {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .round-indicator strong {
+      font-size: 1.45rem;
+      color: var(--accent-cyan);
+    }
+
+    .current-team-spotlight {
+      text-align: center;
+      padding: 14px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 2px dashed rgba(255, 209, 102, 0.4);
+    }
+
+    .current-team-spotlight .big-avatar {
+      font-size: 3.4rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .current-team-spotlight h3 {
+      font-size: 1.35rem;
+      color: var(--accent-gold);
+    }
+
+    .current-team-spotlight p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Temporizador circular / barra */
+    .timer-box {
+      text-align: center;
+    }
+
+    .timer-number {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--text-light);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .timer-number.warning {
+      color: var(--accent-red);
+      animation: pulseWarn 0.6s infinite alternate;
+    }
+
+    @keyframes pulseWarn {
+      from { transform: scale(1); }
+      to { transform: scale(1.12); }
+    }
+
+    .timer-bar-bg {
+      width: 100%;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+      transition: width 1s linear, background 0.3s;
+    }
+
+    /* Comodines de Nave */
+    .powerups-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .powerups-box h4 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-powerup {
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s;
+    }
+
+    .btn-powerup:hover:not(:disabled) {
+      background: rgba(181, 101, 247, 0.28);
+      border-color: var(--accent-purple);
+      transform: translateY(-2px);
+    }
+
+    .btn-powerup:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    /* Tarjeta de Pregunta */
+    .question-stage {
+      background: var(--bg-card);
+      border: 2px solid rgba(0, 242, 254, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 26px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.5);
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-type {
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .type-vf { background: rgba(6, 214, 160, 0.2); border: 2px solid var(--accent-green); color: #5ef3ca; }
+    .type-mc { background: rgba(79, 172, 254, 0.2); border: 2px solid var(--accent-blue); color: #8ec5fc; }
+    .type-intruder { background: rgba(181, 101, 247, 0.22); border: 2px solid var(--accent-purple); color: #e0b3ff; }
+
+    .badge-topic {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      background: rgba(255, 209, 102, 0.14);
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 209, 102, 0.4);
+    }
+
+    .question-prompt-box {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .question-text {
+      font-size: 1.85rem;
+      font-weight: 800;
+      line-height: 1.32;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+
+    .question-subhint {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    /* Grid de Opciones Táctiles (MDI) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .options-grid.vf-grid {
+      grid-template-columns: 1fr 1fr;
+      max-width: 760px;
+      margin: 0 auto 16px auto;
+      width: 100%;
+    }
+
+    .option-btn {
+      min-height: 84px;
+      padding: 18px 22px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 3px solid rgba(255, 255, 255, 0.22);
+      color: var(--text-light);
+      font-family: inherit;
+      font-size: 1.35rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: rgba(0, 242, 254, 0.18);
+      border-color: var(--accent-cyan);
+      transform: translateY(-3px);
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .option-letter {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--accent-gold);
+    }
+
+    .option-btn.correct-reveal {
+      background: rgba(6, 214, 160, 0.32) !important;
+      border-color: var(--accent-green) !important;
+      box-shadow: 0 0 25px rgba(6, 214, 160, 0.6);
+      transform: scale(1.02);
+    }
+
+    .option-btn.wrong-reveal {
+      background: rgba(239, 71, 111, 0.32) !important;
+      border-color: var(--accent-red) !important;
+      opacity: 0.85;
+    }
+
+    .option-btn.discarded-5050 {
+      opacity: 0.2;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
+
+    /* Caja de Feedback y Rebote */
+    .feedback-bar {
+      min-height: 78px;
+      background: rgba(9, 12, 34, 0.78);
+      border-radius: 16px;
+      padding: 14px 20px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .feedback-message {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn-action {
+      padding: 12px 22px;
+      border-radius: 14px;
+      border: none;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action:hover {
+      transform: scale(1.04);
+    }
+
+    .btn-rebound {
+      background: linear-gradient(135deg, var(--accent-purple), #7b2cbf);
+      color: #fff;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: #090c22;
+    }
+
+    /* Selector de qué equipo acierta el rebote */
+    .rebound-team-picker {
+      display: none;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .rebound-team-picker.show {
+      display: flex;
+    }
+
+    .btn-pick-rebound-team {
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255, 209, 102, 0.2);
+      border: 2px solid var(--accent-gold);
+      color: #fff;
+      font-family: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    /* PANTALLA 3: PODIO FINAL */
+    .podium-container {
+      text-align: center;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .podium-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .podium-card {
+      background: var(--bg-panel);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .podium-card.rank-1 {
+      border-color: var(--accent-gold);
+      background: linear-gradient(180deg, rgba(255, 209, 102, 0.25), rgba(22, 30, 70, 0.95));
+      transform: scale(1.04);
+    }
+
+    /* Modales (Reglas e Insignias) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 6, 20, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #141c46;
+      border: 3px solid var(--accent-cyan);
+      border-radius: 24px;
+      max-width: 920px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid rgba(255,255,255,0.15);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+
+    .btn-close-modal {
+      background: var(--accent-red);
+      color: #fff;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .badges-catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .badge-catalog-item {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-catalog-item .b-icon {
+      font-size: 2.2rem;
+    }
+
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 1.05rem;
+      line-height: 1.45;
+    }
+
+    .rules-list li {
+      background: rgba(255,255,255,0.05);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border-left: 4px solid var(--accent-gold);
+      list-style: none;
+    }
+
+    /* Notificación Flotante de Insignia */
+    .badge-toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: linear-gradient(135deg, #1f2b6e, #3b1d6e);
+      border: 3px solid var(--accent-gold);
+      border-radius: 20px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.65);
+      z-index: 200;
+      transform: translateY(150%);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .badge-toast.show {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .setup-grid, .mission-arena {
+        grid-template-columns: 1fr;
+      }
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars-bg"></div>
+
+  <div class="app-container">
+    <!-- CABECERA -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🪐</div>
+        <div>
+          <h1>MISIÓN GALÁCTICA: LA TIERRA SE MUEVE</h1>
+          <p>Ciencias Sociales 3.º Primaria • Sistema Solar, Representación y Orientación</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="btn-top" onclick="openModal('rulesModal')">📜 Reglas y Gamificación</button>
+        <button class="btn-top" onclick="openModal('badgesModal')">🏅 Insignias (8)</button>
+        <button class="btn-top" id="soundToggleBtn" onclick="toggleSound()">🔊 Sonido: ON</button>
+        <button class="btn-top" onclick="resetToSetup()">⚙️ Configurar</button>
+      </div>
+    </header>
+
+    <!-- PANTALLA 1: CONFIGURACIÓN DE LA PARTIDA -->
+    <section id="setupScreen" class="screen active">
+      <div class="setup-grid">
+        <!-- Ajustes de Misión -->
+        <div class="panel-box">
+          <div class="panel-title">⚙️ Configuración del Centro de Control</div>
+
+          <div class="config-group">
+            <label>🚀 Número de Equipos (Tripulaciones):</label>
+            <div class="selector-pills" id="teamCountPills">
+              <button class="pill-btn" onclick="setTeamCount(2)">2</button>
+              <button class="pill-btn" onclick="setTeamCount(3)">3</button>
+              <button class="pill-btn" onclick="setTeamCount(4)">4</button>
+              <button class="pill-btn" onclick="setTeamCount(5)">5</button>
+              <button class="pill-btn selected" onclick="setTeamCount(6)">6 Equipos</button>
+            </div>
+          </div>
+
+          <div class="config-group">
+            <label>🔄 Número de Rondas (1 pregunta por equipo en cada ronda):</label>
+            <div class="selector-pills" id="roundsPills">
+              <button class="pill-btn" onclick="setRounds(3)">3 Rondas</button>
+              <button class="pill-btn selected" onclick="setRounds(5)">5 Rondas</button>
+              <button class="pill-btn" onclick="setRounds(7)">7 Rondas</button>
+              <button class="pill-btn" onclick="setRounds(9)">9 Rondas</button>
+            </div>
+          </div>
+
+          <div class="config-group">
+            <label>⏱️ Tiempo por Pregunta:</label>
+            <div class="selector-pills" id="timerPills">
+              <button class="pill-btn" onclick="setTimerSeconds(20)">20 s (Rápido)</button>
+              <button class="pill-btn selected" onclick="setTimerSeconds(30)">30 s (Estándar)</button>
+              <button class="pill-btn" onclick="setTimerSeconds(45)">45 s (Debate)</button>
+              <button class="pill-btn" onclick="setTimerSeconds(0)">∞ Sin tiempo</button>
+            </div>
+          </div>
+
+          <div class="config-group">
+            <label>📚 Bloques de la Unidad 1 a incluir (Banco de 60 preguntas):</label>
+            <div class="selector-pills">
+              <button class="pill-btn selected" id="topicBtn1" onclick="toggleTopic(1)">🌍 1. Tierra y Sistema Solar</button>
+              <button class="pill-btn selected" id="topicBtn2" onclick="toggleTopic(2)">🗺️ 2. Mapas y Planos</button>
+              <button class="pill-btn selected" id="topicBtn3" onclick="toggleTopic(3)">🧭 3. Orientación</button>
+            </div>
+          </div>
+
+          <button class="btn-launch" onclick="startGame()">
+            🚀 ¡INICIAR DESPEGUE DE LA MISIÓN!
+          </button>
+        </div>
+
+        <!-- Personalización de los 6 Equipos -->
+        <div class="panel-box">
+          <div class="panel-title">👨‍🚀 Nombres y Emblemas de las 6 Tripulaciones</div>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">
+            Pulsa en el icono de cada nave para cambiar su emblema o edita el nombre de cada equipo:
+          </p>
+          <div class="teams-config-list" id="teamsInputsContainer"></div>
+
+          <div style="margin-top: auto; background: rgba(0,242,254,0.08); border: 1px solid rgba(0,242,254,0.3); padding: 14px; border-radius: 14px;">
+            <strong style="color: var(--accent-gold);">💡 Consejo de Gamificación en Aula:</strong>
+            <p style="font-size: 0.93rem; color: var(--text-light); margin-top: 4px;">
+              Cada equipo empieza con un <strong>🛡️ Escudo 50/50</strong> y un <strong>⭐ Propulsor Doble (x2)</strong>. Si un equipo falla, ¡cualquier otro equipo atento puede pulsar <strong>"Rebote Intergaláctico"</strong> y robar 75 puntos!
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2: ARENA DE JUEGO -->
+    <section id="gameScreen" class="screen">
+      <div class="game-layout">
+        <!-- Marcador Global Superior -->
+        <div class="scoreboard-strip" id="scoreboardStrip"></div>
+
+        <!-- Zona Central -->
+        <div class="mission-arena">
+          <!-- Columna Izquierda: Estado del Turno -->
+          <aside class="turn-sidebar">
+            <div class="round-indicator">
+              <span>Ronda Espacial</span>
+              <strong id="roundDisplay">1 / 5</strong>
+            </div>
+
+            <div class="current-team-spotlight">
+              <span class="big-avatar" id="activeTeamAvatar">🚀</span>
+              <h3 id="activeTeamName">Tripulación Apolo</h3>
+              <p id="activeTeamStreakText">Sin racha activa</p>
+            </div>
+
+            <div class="timer-box">
+              <div class="timer-number" id="timerDisplay">30s</div>
+              <div class="timer-bar-bg">
+                <div class="timer-bar-fill" id="timerBar"></div>
+              </div>
+            </div>
+
+            <div class="powerups-box">
+              <h4>⚡ Comodines de Nave (1 por partida)</h4>
+              <button class="btn-powerup" id="btnPower5050" onclick="usePower5050()">
+                <span>🛡️ Escudo 50/50</span>
+                <small>Quita 2 falsas</small>
+              </button>
+              <button class="btn-powerup" id="btnPowerDouble" onclick="usePowerDouble()">
+                <span>⭐ Propulsor x2</span>
+                <small>Dobla puntos</small>
+              </button>
+            </div>
+          </aside>
+
+          <!-- Columna Derecha: Tarjeta de Pregunta -->
+          <main class="question-stage">
+            <div class="question-meta">
+              <span class="badge-type type-mc" id="qTypeBadge">🪐 ELECCIÓN MÚLTIPLE</span>
+              <span class="badge-topic" id="qTopicBadge">Bloque 1: La Tierra y el Sistema Solar</span>
+            </div>
+
+            <div class="question-prompt-box">
+              <h2 class="question-text" id="questionText">Cargando transmisión intergaláctica...</h2>
+              <p class="question-subhint" id="questionSubhint"></p>
+            </div>
+
+            <div class="options-grid" id="optionsContainer"></div>
+
+            <div>
+              <div class="feedback-bar">
+                <div class="feedback-message" id="feedbackMessage">
+                  👨‍🚀 Debate con tu tripulación y selecciona la respuesta correcta.
+                </div>
+                <div class="feedback-actions">
+                  <button class="btn-action btn-rebound" id="btnRebound" style="display:none;" onclick="activateReboundMode()">
+                    🔄 Activar Rebote (+75 pts)
+                  </button>
+                  <button class="btn-action btn-next" id="btnNextTurn" style="display:none;" onclick="nextTurn()">
+                    Siguiente Turno ➡️
+                  </button>
+                </div>
+              </div>
+              <!-- Selector rápido de equipo cuando aciertan por rebote -->
+              <div class="rebound-team-picker" id="reboundPicker"></div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 3: CLASIFICACIÓN FINAL Y MEDALLERO -->
+    <section id="endScreen" class="screen">
+      <div class="panel-box podium-container">
+        <div style="font-size: 4rem;">🏆🪐✨</div>
+        <h2 style="font-size: 2.3rem; color: var(--accent-gold);">¡MISIÓN GALÁCTICA COMPLETADA!</h2>
+        <p style="font-size: 1.15rem; color: var(--text-muted);">
+          Clasificación final e insignias conquistadas por las tripulaciones de 3.º de Primaria:
+        </p>
+
+        <div class="podium-cards" id="podiumContainer"></div>
+
+        <div style="display:flex; gap: 16px; margin-top: 14px;">
+          <button class="btn-launch" onclick="startGame()">🔄 Jugar Otra Misión (Nuevas Preguntas)</button>
+          <button class="btn-top" style="font-size:1.1rem; padding: 16px 24px;" onclick="resetToSetup()">⚙️ Cambiar Configuración</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL: REGLAS DEL JUEGO -->
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 style="color: var(--accent-gold);">📜 Reglas Oficiales de la Agencia Espacial</h2>
+        <button class="btn-close-modal" onclick="closeModal('rulesModal')">✕</button>
+      </div>
+      <ul class="rules-list">
+        <li><strong>1. Tres Tipos de Retos Espaciales:</strong> En cada turno saldrá al azar una pregunta de <strong>✅ Verdadero o Falso</strong>, <strong>🪐 Elección Múltiple</strong> o <strong>🕵️‍♂️ Caza la Palabra Falsa (El Intruso)</strong> donde hay 3 palabras verdaderas de un grupo y 1 infiltrada falsa.</li>
+        <li><strong>2. Consenso de Tripulación:</strong> El equipo dispone de su tiempo para hablar bajito antes de que el portavoz pulse la pantalla. ¡Prohibido chivar desde otros planetas!</li>
+        <li><strong>3. Puntuación y Velocidad Warp:</strong> Acertar suma <strong>+100 puntos</strong> (+30 pts extra si respondes antes de gastar la mitad del tiempo). Si encadenas 2 o más aciertos seguidos, ganas <strong>+50 pts de Bono de Racha</strong>.</li>
+        <li><strong>4. ¡Rebote Intergaláctico! (Atención Total):</strong> Si el equipo en turno falla o se acaba el tiempo, la respuesta correcta queda oculta y aparece el botón <strong>"🔄 Activar Rebote"</strong>. El primer equipo rival que levante la mano en silencio puede responder y ganar <strong>+75 puntos</strong>.</li>
+        <li><strong>5. Comodines Tácticos:</strong> Cada equipo tiene 1 uso por partida del <strong>🛡️ Escudo 50/50</strong> (descarta dos opciones incorrectas) y del <strong>⭐ Propulsor x2</strong> (duplica los puntos si estás muy seguro).</li>
+        <li><strong>6. Control Docente en Vivo:</strong> Cada tarjeta de equipo tiene botones <strong>[+]</strong> y <strong>[-]</strong> para premiar el trabajo cooperativo (+25 pts) o penalizar el ruido (-25 pts).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MODAL: CATÁLOGO DE INSIGNIAS -->
+  <div class="modal-overlay" id="badgesModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 style="color: var(--accent-cyan);">🏅 Sistema de Insignias Galácticas</h2>
+        <button class="btn-close-modal" onclick="closeModal('badgesModal')">✕</button>
+      </div>
+      <div class="badges-catalog-grid" id="badgesCatalogContainer"></div>
+    </div>
+  </div>
+
+  <!-- TOAST DE INSIGNIA DESBLOQUEADA -->
+  <div class="badge-toast" id="badgeToast">
+    <div style="font-size: 2.8rem;" id="toastIcon">🏅</div>
+    <div>
+      <div style="font-size: 0.85rem; color: var(--accent-gold); font-weight: 800; text-transform: uppercase;">¡Insignia Desbloqueada!</div>
+      <div style="font-size: 1.2rem; font-weight: 800;" id="toastTitle">Nombre Insignia</div>
+      <div style="font-size: 0.9rem; color: var(--text-muted);" id="toastTeam">Equipo</div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. SINTETIZADOR DE AUDIO (WEB AUDIO API - CERO ARCHIVOS EXTERNOS)
+       ========================================================================= */
+    let soundEnabled = true;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+
+      if (type === 'success') {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.08);
+          gain.gain.setValueAtTime(0.18, now + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.08);
+          osc.stop(now + i * 0.08 + 0.25);
+        });
+      } else if (type === 'error') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.linearRampToValueAtTime(130, now + 0.35);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.38);
+      } else if (type === 'badge') {
+        const notes = [587.33, 880, 1174.66];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.1);
+          gain.gain.setValueAtTime(0.2, now + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.1);
+          osc.stop(now + i * 0.1 + 0.35);
+        });
+      } else if (type === 'tick') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊 Sonido: ON' : '🔇 Sonido: OFF';
+    }
+
+    /* =========================================================================
+       2. SISTEMA DE INSIGNIAS GALÁCTICAS
+       ========================================================================= */
+    const BADGES_CATALOG = [
+      { id: 'first_hit', icon: '🚀', name: 'Primer Despegue', desc: 'Acertar la primera pregunta de la misión.' },
+      { id: 'streak_3', icon: '🔥', name: 'Velocidad de la Luz', desc: 'Lograr una racha de 3 aciertos seguidos.' },
+      { id: 'fast_answer', icon: '⚡', name: 'Rayo Cósmico', desc: 'Responder correctamente en menos de 6 segundos.' },
+      { id: 'rebound_hunter', icon: '🛰️', name: 'Cazador de Rebotes', desc: 'Robar puntos acertando un rebote de otro equipo.' },
+      { id: 'master_b1', icon: '🌍', name: 'Astrónomo Terrestre', desc: 'Acertar 3 preguntas del Bloque 1 (Tierra y Sistema Solar).' },
+      { id: 'master_b2', icon: '🗺️', name: 'Cartógrafo Estelar', desc: 'Acertar 3 preguntas del Bloque 2 (Mapas y Planos).' },
+      { id: 'master_b3', icon: '🧭', name: 'Navegante Polar', desc: 'Acertar 3 preguntas del Bloque 3 (Orientación).' },
+      { id: 'legend_600', icon: '👑', name: 'Leyenda Galáctica', desc: 'Alcanzar o superar los 600 puntos.' }
+    ];
+
+    /* =========================================================================
+       3. BASE DE DATOS DE 60 PREGUNTAS (UNIDAD 1: LA TIERRA SE MUEVE - 3º PRIMARIA)
+       Tipos: 'vf' (Verdadero/Falso), 'mc' (Elección Múltiple), 'intruder' (Palabra Falsa)
+       ========================================================================= */
+    const QUESTION_BANK = [
+      // --- BLOQUE 1: MOVIMIENTOS DE LA TIERRA, SISTEMA SOLAR Y LA LUNA (24 preguntas) ---
+      { topic: 1, type: 'vf', q: 'El Sol es una estrella gigante que emite luz y calor propios.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Exacto! El Sol es la estrella central de nuestro Sistema Solar.' },
+      { topic: 1, type: 'vf', q: 'En el movimiento de ROTACIÓN, la Tierra gira alrededor del Sol y tarda 365 días.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! Girar alrededor del Sol durante 365 días es el movimiento de TRASLACIÓN.' },
+      { topic: 1, type: 'vf', q: 'El movimiento de rotación de la Tierra dura 24 horas (1 día) y origina el día y la noche.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Correcto! Al girar sobre su propio eje, una mitad recibe luz solar (día) y la otra queda a oscuras (noche).' },
+      { topic: 1, type: 'vf', q: 'La Luna es un planeta que tiene luz propia por las noches.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! La Luna es el satélite natural de la Tierra y no tiene luz propia: refleja la luz del Sol.' },
+      { topic: 1, type: 'vf', q: 'Las cuatro estaciones del año se producen gracias al movimiento de traslación y a la inclinación de la Tierra.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Muy bien! La traslación alrededor del Sol da lugar a la primavera, el verano, el otoño y el invierno.' },
+      { topic: 1, type: 'vf', q: 'La mayor parte de la superficie del planeta Tierra está cubierta por agua.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Verdadero! Por eso llamamos a la Tierra el "Planeta Azul" (más del 70% de su superficie es agua).' },
+      { topic: 1, type: 'vf', q: 'Un año bisiesto tiene 366 días y ocurre cada cuatro años para compensar las 6 horas extra de traslación.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Correcto! Esas 6 horas de más cada año suman 24 horas (1 día extra en febrero) cada 4 años.' },
+      { topic: 1, type: 'vf', q: 'Mercurio es el planeta más grande de todo el Sistema Solar.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! Mercurio es el más pequeño y cercano al Sol. El planeta más grande es Júpiter.' },
+
+      { topic: 1, type: 'mc', q: '¿Qué lugar ocupa el planeta Tierra ordenando los planetas desde el más cercano al Sol?', options: ['1.º (El primero)', '3.º (El tercero)', '5.º (El quinto)', '8.º (El último)'], a: 1, exp: '¡Tercer lugar! Después de Mercurio (1.º) y Venus (2.º), está la Tierra (3.º).' },
+      { topic: 1, type: 'mc', q: '¿Cómo se llama el satélite natural que gira alrededor de la Tierra en unos 28 días?', options: ['Marte', 'El Sol', 'La Luna', 'Estrella Polar'], a: 2, exp: '¡La Luna! Es nuestro único satélite natural y tarda unos 28 días en completar sus fases.' },
+      { topic: 1, type: 'mc', q: '¿Qué movimiento realiza la Tierra cuando gira sobre sí misma como una peonza?', options: ['Movimiento de rotación', 'Movimiento de traslación', 'Movimiento lunar', 'Movimiento de marea'], a: 0, exp: '¡Rotación! La Tierra rota sobre su eje imaginario en 24 horas.' },
+      { topic: 1, type: 'mc', q: '¿En qué estación del año los días son más cortos, las noches más largas y hace más frío?', options: ['Verano', 'Primavera', 'Invierno', 'Otoño'], a: 2, exp: '¡En invierno! Los rayos del Sol llegan más inclinados a nuestro hemisferio.' },
+      { topic: 1, type: 'mc', q: '¿En qué estación se caen las hojas de los árboles caducos y empieza a refrescar?', options: ['Otoño', 'Primavera', 'Verano', 'Enero'], a: 0, exp: '¡En otoño! Comienza hacia el 21 de septiembre en el hemisferio norte.' },
+      { topic: 1, type: 'mc', q: '¿Cómo se llama la capa de aire y gases que rodea la Tierra y nos permite respirar?', options: ['Hidrosfera', 'Atmósfera', 'Geosfera', 'Corteza'], a: 1, exp: '¡La atmósfera! Nos proporciona oxígeno y nos protege de los rayos dañinos del Sol.' },
+      { topic: 1, type: 'mc', q: '¿Cuál es el conjunto de toda el agua de la Tierra (océanos, mares, ríos, hielo y nubes)?', options: ['La geosfera', 'La atmósfera', 'La hidrosfera', 'La estratosfera'], a: 2, exp: '¡La hidrosfera! Incluye toda el agua salada y dulce del planeta.' },
+      { topic: 1, type: 'mc', q: '¿En qué fase de la Luna vemos su cara totalmente iluminada como un círculo brillante en el cielo?', options: ['Luna nueva', 'Luna llena', 'Cuarto menguante', 'Cuarto creciente'], a: 1, exp: '¡Luna llena! La Tierra está entre el Sol y la Luna y vemos toda su mitad iluminada.' },
+
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son PLANETAS del Sistema Solar y uno es un intruso:', options: ['Tierra', 'Júpiter', 'La Luna', 'Saturno'], a: 2, exp: '¡La Luna es la palabra falsa! La Luna es un satélite, no un planeta.' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son FASES DE LA LUNA y una es falsa:', options: ['Luna llena', 'Luna nueva', 'Cuarto creciente', 'Luna cuadrada'], a: 3, exp: '¡"Luna cuadrada" es falsa! Las 4 fases son: Luna nueva, cuarto creciente, luna llena y cuarto menguante.' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son CONTINENTES de la Tierra y uno es un océano:', options: ['Europa', 'África', 'Atlántico', 'América'], a: 2, exp: '¡Atlántico es el intruso! El Atlántico es un océano, no un continente.' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son OCÉANOS de la Tierra y uno es un continente:', options: ['Océano Pacífico', 'Océano Índico', 'Asia', 'Océano Glacial Ártico'], a: 2, exp: '¡Asia es el intruso! Asia es el continente más grande del planeta, no un océano.' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres están relacionados con el movimiento de TRASLACIÓN y uno es falso:', options: ['Dura 365 días y 6 horas', 'Origina las 4 estaciones', 'Gira alrededor del Sol', 'Dura solo 24 horas'], a: 3, exp: '¡"Dura solo 24 horas" es falso! Eso corresponde al movimiento de rotación.' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son CAPAS DE LA TIERRA y una es inventada:', options: ['Atmósfera (aire)', 'Hidrosfera (agua)', 'Geosfera (rocas)', 'Chocosfera (chocolate)'], a: 3, exp: '¡Chocosfera es la falsa! Las tres capas son atmósfera, hidrosfera y geosfera.' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son planetas ROCOSOS cercanos al Sol y uno es una estrella:', options: ['Mercurio', 'Venus', 'El Sol', 'Marte'], a: 2, exp: '¡El Sol es el intruso porque es una estrella, no un planeta rocoso!' },
+      { topic: 1, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son ESTACIONES DEL AÑO y una es un mes:', options: ['Primavera', 'Octubre', 'Otoño', 'Verano'], a: 1, exp: '¡Octubre es el intruso! Octubre es un mes del calendario, no una estación.' },
+
+      // --- BLOQUE 2: REPRESENTACIÓN DEL ESPACIO (GLOBO, MAPAS, PLANOS Y ESCALAS) (18 preguntas) ---
+      { topic: 2, type: 'vf', q: 'El globo terráqueo es la forma más exacta de representar la Tierra porque tiene forma esférica como ella.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Verdadero! Al ser una esfera casi perfecta, no deforma los continentes ni los océanos.' },
+      { topic: 2, type: 'vf', q: 'En un globo terráqueo podemos ver todos los países de la Tierra al mismo tiempo de un solo vistazo.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! Como es una esfera, solo vemos una mitad y tenemos que girarlo. Para ver todo a la vez usamos el planisferio.' },
+      { topic: 2, type: 'vf', q: 'Un planisferio o mapamundi es una representación plana de toda la superficie de la Tierra.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Correcto! Permite ver todos los continentes y océanos de una sola vez sobre un papel o pantalla.' },
+      { topic: 2, type: 'vf', q: 'Un PLANO sirve para representar con mucho detalle espacios pequeños como una habitación, el colegio o un barrio.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Verdadero! Los planos muestran calles, edificios o muebles vistos desde arriba.' },
+      { topic: 2, type: 'vf', q: 'La línea imaginaria que divide la Tierra en dos mitades iguales (Hemisferio Norte y Hemisferio Sur) se llama Ecuador.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Muy bien! El Ecuador divide el planeta en Hemisferio Norte y Hemisferio Sur.' },
+      { topic: 2, type: 'vf', q: 'Un mapa FÍSICO sirve para ver las fronteras de los países y sus capitales pintadas de colores.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! Las fronteras y países salen en el mapa POLÍTICO. El mapa FÍSICO muestra montañas, ríos y relieve.' },
+
+      { topic: 2, type: 'mc', q: 'Si queremos ver los ríos, las cordilleras, los valles y la altura del terreno, ¿qué tipo de mapa usamos?', options: ['Mapa político', 'Mapa físico', 'Plano del dormitorio', 'Mapa de carreteras'], a: 1, exp: '¡El mapa físico! Usa colores (verde, amarillo, marrón y azul) para mostrar el relieve y las aguas.' },
+      { topic: 2, type: 'mc', q: '¿Qué elemento de un mapa explica el significado de los símbolos, iconos y colores utilizados?', options: ['La leyenda', 'El marco', 'El telescopio', 'La rotación'], a: 0, exp: '¡La leyenda! Es el cuadro informativo donde consultamos qué significa cada símbolo o color del mapa.' },
+      { topic: 2, type: 'mc', q: '¿Para qué sirve la ESCALA de un mapa o de un plano?', options: ['Para saber el peso del mapa', 'Para saber cuántas veces se ha reducido la realidad', 'Para saber si va a llover', 'Para pintar los océanos'], a: 1, exp: '¡Exacto! La escala indica la relación entre el tamaño en el papel y la distancia real en el terreno.' },
+      { topic: 2, type: 'mc', q: 'Si viene un alumno nuevo al colegio y quiere encontrar el comedor, la biblioteca y su clase de 3.º, ¿qué necesita?', options: ['Un globo terráqueo', 'Un planisferio mundial', 'Un plano del colegio', 'Un telescopio espacial'], a: 2, exp: '¡Un plano del colegio! Es la representación a gran escala ideal para espacios pequeños.' },
+      { topic: 2, type: 'mc', q: '¿En qué hemisferio de la Tierra se encuentran España y la Región de Murcia?', options: ['En el Hemisferio Norte', 'En el Hemisferio Sur', 'En la Luna', 'En la Antártida'], a: 0, exp: '¡En el Hemisferio Norte! Estamos situados al norte de la línea del Ecuador.' },
+      { topic: 2, type: 'mc', q: 'En un mapa físico, ¿qué suele representar el color marrón oscuro?', options: ['Océanos profundos', 'Llanuras bajas junto al mar', 'Montañas y cordilleras altas', 'Fronteras entre países'], a: 2, exp: '¡Las montañas altas! El verde indica zonas bajas, el marrón montañas y el azul mares y ríos.' },
+
+      { topic: 2, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son ELEMENTOS DE UN MAPA y uno es un intruso:', options: ['La leyenda', 'La escala', 'La rosa de los vientos', 'El microondas'], a: 3, exp: '¡El microondas es la palabra falsa! Leyenda, escala y rosa de los vientos son partes fundamentales de los mapas.' },
+      { topic: 2, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son formas de REPRESENTAR EL ESPACIO y una es falsa:', options: ['Globo terráqueo', 'Planisferio', 'Plano de una localidad', 'Termómetro clínico'], a: 3, exp: '¡El termómetro clínico es falso! Sirve para medir la fiebre, no para representar la Tierra.' },
+      { topic: 2, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres aparecen en un MAPA FÍSICO y uno pertenece al mapa político:', options: ['Ríos', 'Cordilleras y montañas', 'Fronteras entre comunidades', 'Golfos y cabos'], a: 2, exp: '¡Las fronteras políticas pertenecen al mapa político, no al mapa físico!' },
+      { topic: 2, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres se representan mejor en un PLANO y uno requiere un MAPAMUNDI:', options: ['Tu habitación', 'El aula de 3.º de Primaria', 'Un barrio de tu municipio', 'Todos los océanos del mundo'], a: 3, exp: '¡Todos los océanos del mundo necesitan un planisferio o globo terráqueo, no un plano local!' },
+      { topic: 2, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son puntos o líneas imaginarias de la Tierra y uno es falso:', options: ['El Ecuador', 'El Polo Norte', 'El Polo Sur', 'La autopista del Mediterráneo'], a: 3, exp: '¡La autopista es real de asfalto! El Ecuador y los Polos son referencias geográficas del globo.' },
+      { topic: 2, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son TIPOS DE MAPAS reales y uno es inventado:', options: ['Mapa físico', 'Mapa político', 'Mapa temático (del tiempo)', 'Mapa musical con sabor a fresa'], a: 3, exp: '¡"Mapa musical con sabor a fresa" es la palabra falsa!' },
+
+      // --- BLOQUE 3: TÉCNICAS DE ORIENTACIÓN (PUNTOS CARDINALES, SOL, ESTRELLA POLAR, BRÚJULA Y GPS) (18 preguntas) ---
+      { topic: 3, type: 'vf', q: 'Los cuatro puntos cardinales principales son Norte (N), Sur (S), Este (E) y Oeste (O).', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Verdadero! Son las cuatro direcciones universales que usamos para orientarnos.' },
+      { topic: 3, type: 'vf', q: 'Cada mañana al amanecer, el Sol sale siempre por el OESTE.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! El Sol sale al amanecer por el ESTE (Oriente) y se oculta al atardecer por el OESTE (Occidente).' },
+      { topic: 3, type: 'vf', q: 'Por la noche en el Hemisferio Norte, la Estrella Polar nos indica siempre dónde está el NORTE.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Verdadero! La Estrella Polar permanece casi fija sobre el eje norte de la Tierra.' },
+      { topic: 3, type: 'vf', q: 'La aguja imantada de una brújula apunta siempre hacia el Norte.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Correcto! La Tierra funciona como un gran imán y atrae la aguja de la brújula hacia el Norte.' },
+      { topic: 3, type: 'vf', q: 'El sistema GPS de los móviles y coches funciona gracias a satélites artificiales que orbitan en el espacio.', options: ['Verdadero', 'Falso'], a: 0, exp: '¡Verdadero! Los satélites artificiales envían señales para localizar nuestra posición exacta en cualquier lugar.' },
+      { topic: 3, type: 'vf', q: 'En los troncos de los árboles y rocas del Hemisferio Norte, el musgo suele crecer más en la cara SUR porque es la más soleada y seca.', options: ['Verdadero', 'Falso'], a: 1, exp: '¡Falso! El musgo necesita humedad y sombra, por eso crece más en la cara NORTE, donde da menos el Sol.' },
+
+      { topic: 3, type: 'mc', q: '¿Por qué punto cardinal se esconde o se pone el Sol todos los días al atardecer?', options: ['Por el Norte', 'Por el Sur', 'Por el Este', 'Por el Oeste'], a: 3, exp: '¡Por el Oeste! Sale por el Este al amanecer y se pone por el Oeste al atardecer.' },
+      { topic: 3, type: 'mc', q: 'Si abres los brazos en cruz apuntando con la mano derecha al ESTE (por donde sale el Sol), ¿qué tienes frente a tu cara?', options: ['El Norte', 'El Sur', 'El Oeste', 'El centro de la Tierra'], a: 0, exp: '¡El Norte! Con el Este a tu derecha y el Oeste a tu izquierda, frente a ti queda el Norte y a tu espalda el Sur.' },
+      { topic: 3, type: 'mc', q: '¿Cómo se llama el dibujo en forma de estrella que aparece en los mapas y brújulas marcando los puntos cardinales?', options: ['Rosa de los vientos', 'Margarita del espacio', 'Rueda lunar', 'Estrella fugaz'], a: 0, exp: '¡La Rosa de los vientos! Señala el Norte, Sur, Este, Oeste y los rumbos intermedios (NE, NO, SE, SO).' },
+      { topic: 3, type: 'mc', q: '¿Qué instrumento antiguo tiene una aguja imantada que gira libremente para señalar el Norte magnético?', options: ['El termómetro', 'La brújula', 'El pluviómetro', 'La báscula'], a: 1, exp: '¡La brújula! Ha guiado a navegantes y exploradores durante siglos.' },
+      { topic: 3, type: 'mc', q: 'Cuando viajamos en coche o autobús y una pantalla nos guía calle a calle en tiempo real, ¿qué tecnología digital usamos?', options: ['Un globo terráqueo de cartón', 'El navegador GPS', 'Una veleta de viento', 'Un reloj de arena'], a: 1, exp: '¡El GPS (Sistema de Posicionamiento Global)! Usa satélites para guiarnos en tiempo real.' },
+      { topic: 3, type: 'mc', q: 'Al mediodía en España, el Sol está en lo alto hacia el Sur. ¿Hacia dónde apunta entonces nuestra sombra en el suelo?', options: ['Hacia el Norte', 'Hacia el Sur', 'Desaparece bajo tierra', 'Hacia la Luna'], a: 0, exp: '¡Hacia el Norte! Como la luz del Sol viene desde el Sur al mediodía, nuestra sombra se proyecta al lado opuesto (Norte).' },
+
+      { topic: 3, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son PUNTOS CARDINALES y uno es un intruso:', options: ['Norte', 'Este', 'Diagonal', 'Oeste'], a: 2, exp: '¡"Diagonal" es la palabra falsa! Los cuatro puntos cardinales son Norte, Sur, Este y Oeste.' },
+      { topic: 3, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres nos ayudan a ORIENTARNOS en la naturaleza o en viajes y uno es falso:', options: ['La brújula', 'La Estrella Polar', 'El navegador GPS', 'La batidora eléctrica'], a: 3, exp: '¡La batidora eléctrica no sirve para orientarse en el espacio!' },
+      { topic: 3, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son pistas NATURALES para orientarse en el campo y una es un aparato digital:', options: ['La posición del Sol', 'La Estrella Polar de noche', 'El musgo en la cara norte de los árboles', 'Un teléfono móvil con GPS'], a: 3, exp: '¡El móvil con GPS es un recurso tecnológico digital, no un elemento natural del paisaje!' },
+      { topic: 3, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres son RUMBOS INTERMEDIOS de la Rosa de los Vientos y uno es inventado:', options: ['Noreste (NE)', 'Suroeste (SO)', 'Noroeste (NO)', 'Norsur (NS)'], a: 3, exp: '¡"Norsur" no existe porque Norte y Sur son opuestos!' },
+      { topic: 3, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres afirmaciones sobre el SOL son verdaderas y una es falsa:', options: ['Sale por el Este', 'Se esconde por el Oeste', 'Nos ayuda a orientarnos de día', 'Sale únicamente de noche'], a: 3, exp: '¡"Sale únicamente de noche" es falso! Cuando es de noche no vemos el Sol desde nuestra mitad de la Tierra.' },
+      { topic: 3, type: 'intruder', q: '🕵️‍♂️ CAZA LA PALABRA FALSA: Tres usan SATÉLITES ARTIFICIALES y uno no los necesita:', options: ['El GPS del coche', 'Los mapas digitales del móvil', 'Las fotos meteorológicas desde el espacio', 'Una brújula magnética de bolsillo'], a: 3, exp: '¡La brújula magnética funciona con el magnetismo natural de la Tierra, sin satélites ni batería!' }
+    ];
+
+    /* =========================================================================
+       4. ESTADO Y CONFIGURACIÓN DEL JUEGO
+       ========================================================================= */
+    const AVATARS = ['🚀', '🛸', '👩‍🚀', '🛰️', '🪐', '☄️', '🌕', '👽', '🌟', '🔭'];
+    const DEFAULT_TEAM_NAMES = [
+      'Nave Apolo',
+      'Misión Orión',
+      'Exploradores Vega',
+      'Cometas Halley',
+      'Guardianes Saturno',
+      'Comando Andrómeda'
+    ];
+
+    let config = {
+      teamCount: 6,
+      totalRounds: 5,
+      timerSeconds: 30,
+      topics: { 1: true, 2: true, 3: true }
+    };
+
+    let teams = [];
+    let activeQuestions = [];
+    let currentRound = 1;
+    let currentTeamIndex = 0;
+    let currentQuestion = null;
+    let timerInterval = null;
+    let timeRemaining = 30;
+    let questionStartTime = 0;
+    let isQuestionResolved = false;
+    let isDoubleActive = false;
+
+    // Inicializar configuración de equipos al cargar
+    function initSetupUI() {
+      teams = [];
+      for (let i = 0; i < 6; i++) {
+        teams.push({
+          id: i,
+          name: DEFAULT_TEAM_NAMES[i],
+          avatar: AVATARS[i],
+          score: 0,
+          streak: 0,
+          badges: [],
+          topicHits: { 1: 0, 2: 0, 3: 0 },
+          used5050: false,
+          usedDouble: false
+        });
+      }
+      renderTeamInputs();
+      renderBadgesCatalog();
+    }
+
+    function renderTeamInputs() {
+      const container = document.getElementById('teamsInputsContainer');
+      container.innerHTML = '';
+      for (let i = 0; i < config.teamCount; i++) {
+        const t = teams[i];
+        const div = document.createElement('div');
+        div.className = 'team-input-card';
+        div.innerHTML = `
+          <button class="team-avatar-btn" onclick="cycleAvatar(${i})" title="Cambiar icono">${t.avatar}</button>
+          <div style="flex:1;">
+            <small style="color:var(--accent-cyan); font-weight:700;">EQUIPO ${i + 1}</small>
+            <input type="text" value="${t.name}" maxlength="20" oninput="updateTeamName(${i}, this.value)">
+          </div>
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    function cycleAvatar(idx) {
+      const currentPos = AVATARS.indexOf(teams[idx].avatar);
+      teams[idx].avatar = AVATARS[(currentPos + 1) % AVATARS.length];
+      playSound('tick');
+      renderTeamInputs();
+    }
+
+    function updateTeamName(idx, val) {
+      teams[idx].name = val.trim() || `Equipo ${idx + 1}`;
+    }
+
+    function setTeamCount(n) {
+      config.teamCount = n;
+      updatePills('teamCountPills', [2, 3, 4, 5, 6].indexOf(n));
+      renderTeamInputs();
+    }
+
+    function setRounds(r) {
+      config.totalRounds = r;
+      updatePills('roundsPills', [3, 5, 7, 9].indexOf(r));
+    }
+
+    function setTimerSeconds(s) {
+      config.timerSeconds = s;
+      updatePills('timerPills', [20, 30, 45, 0].indexOf(s));
+    }
+
+    function updatePills(containerId, activeIdx) {
+      const btns = document.getElementById(containerId).querySelectorAll('.pill-btn');
+      btns.forEach((b, i) => b.classList.toggle('selected', i === activeIdx));
+      playSound('tick');
+    }
+
+    function toggleTopic(topicNum) {
+      const activeCount = Object.values(config.topics).filter(Boolean).length;
+      if (config.topics[topicNum] && activeCount === 1) return; // Al menos 1 bloque activo
+      config.topics[topicNum] = !config.topics[topicNum];
+      document.getElementById(`topicBtn${topicNum}`).classList.toggle('selected', config.topics[topicNum]);
+      playSound('tick');
+    }
+
+    /* =========================================================================
+       5. LÓGICA PRINCIPAL DE LA PARTIDA
+       ========================================================================= */
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startGame() {
+      // Reiniciar estadísticas de los equipos activos
+      for (let i = 0; i < config.teamCount; i++) {
+        teams[i].score = 0;
+        teams[i].streak = 0;
+        teams[i].badges = [];
+        teams[i].topicHits = { 1: 0, 2: 0, 3: 0 };
+        teams[i].used5050 = false;
+        teams[i].usedDouble = false;
+      }
+
+      // Filtrar y barajar el banco de preguntas
+      const filtered = QUESTION_BANK.filter(q => config.topics[q.topic]);
+      activeQuestions = shuffleArray(filtered);
+
+      currentRound = 1;
+      currentTeamIndex = 0;
+
+      switchScreen('gameScreen');
+      playSound('badge');
+      loadTurn();
+    }
+
+    function renderScoreboard() {
+      const strip = document.getElementById('scoreboardStrip');
+      strip.innerHTML = '';
+
+      for (let i = 0; i < config.teamCount; i++) {
+        const t = teams[i];
+        const isTurn = (i === currentTeamIndex);
+        const card = document.createElement('div');
+        card.className = `team-card ${isTurn ? 'active-turn' : ''}`;
+
+        const badgesHtml = t.badges.length > 0
+          ? t.badges.map(bId => {
+              const bObj = BADGES_CATALOG.find(b => b.id === bId);
+              return `<span class="badge-mini" title="${bObj.name}: ${bObj.desc}">${bObj.icon}</span>`;
+            }).join('')
+          : `<span style="font-size:0.75rem; color:var(--text-muted);">Sin insignias aún</span>`;
+
+        card.innerHTML = `
+          <div class="team-card-header">
+            <div class="team-identity">
+              <span class="team-avatar">${t.avatar}</span>
+              <span>${t.name}</span>
+            </div>
+            ${t.streak >= 2 ? `<span class="streak-pill">🔥 x${t.streak}</span>` : ''}
+          </div>
+          <div class="team-score-row">
+            <span class="team-pts">${t.score} <small style="font-size:0.75rem;">pts</small></span>
+            <div class="manual-pts-btns">
+              <button class="btn-mini-score" onclick="adjustScore(${i}, -25)" title="Restar 25 pts">-</button>
+              <button class="btn-mini-score" onclick="adjustScore(${i}, 25)" title="Sumar 25 pts">+</button>
+            </div>
+          </div>
+          <div class="team-badges-row">${badgesHtml}</div>
+        `;
+        strip.appendChild(card);
+      }
+    }
+
+    function adjustScore(teamIdx, delta) {
+      teams[teamIdx].score = Math.max(0, teams[teamIdx].score + delta);
+      checkScoreBadges(teams[teamIdx]);
+      playSound('tick');
+      renderScoreboard();
+    }
+
+    function loadTurn() {
+      clearInterval(timerInterval);
+      isQuestionResolved = false;
+      isDoubleActive = false;
+
+      // Si se agotan las preguntas del mazo, re-barajar
+      if (activeQuestions.length === 0) {
+        activeQuestions = shuffleArray(QUESTION_BANK.filter(q => config.topics[q.topic]));
+      }
+      currentQuestion = activeQuestions.pop();
+
+      const activeTeam = teams[currentTeamIndex];
+
+      // Actualizar panel lateral
+      document.getElementById('roundDisplay').textContent = `${currentRound} / ${config.totalRounds}`;
+      document.getElementById('activeTeamAvatar').textContent = activeTeam.avatar;
+      document.getElementById('activeTeamName').textContent = activeTeam.name;
+      document.getElementById('activeTeamStreakText').textContent =
+        activeTeam.streak > 0 ? `🔥 Racha actual: ${activeTeam.streak} aciertos seguidos` : '🎯 Lista para despegar';
+
+      // Estado de comodines del equipo actual
+      document.getElementById('btnPower5050').disabled = activeTeam.used5050 || currentQuestion.type === 'vf';
+      document.getElementById('btnPowerDouble').disabled = activeTeam.usedDouble;
+
+      // Configurar cabeceras de la pregunta
+      const typeBadge = document.getElementById('qTypeBadge');
+      const subhint = document.getElementById('questionSubhint');
+
+      if (currentQuestion.type === 'vf') {
+        typeBadge.className = 'badge-type type-vf';
+        typeBadge.innerHTML = '✅ VERDADERO O FALSO';
+        subhint.textContent = 'Decide con tu equipo si la afirmación espacial es verdadera o falsa.';
+      } else if (currentQuestion.type === 'mc') {
+        typeBadge.className = 'badge-type type-mc';
+        typeBadge.innerHTML = '🪐 ELECCIÓN MÚLTIPLE';
+        subhint.textContent = 'Solo una de las cuatro transmisiones es la correcta.';
+      } else {
+        typeBadge.className = 'badge-type type-intruder';
+        typeBadge.innerHTML = '🕵️‍♂️ CAZA LA PALABRA FALSA (EL INTRUSO)';
+        subhint.textContent = '¡Cuidado! Tres opciones son verdaderas y UNA es la palabra infiltrada falsa.';
+      }
+
+      const topicNames = {
+        1: '🌍 Bloque 1: La Tierra y el Sistema Solar',
+        2: '🗺️ Bloque 2: Representación del Espacio',
+        3: '🧭 Bloque 3: Técnicas de Orientación'
+      };
+      document.getElementById('qTopicBadge').textContent = topicNames[currentQuestion.topic];
+      document.getElementById('questionText').textContent = currentQuestion.q;
+
+      // Renderizar botones de opción
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      optionsContainer.className = `options-grid ${currentQuestion.type === 'vf' ? 'vf-grid' : ''}`;
+
+      const letters = ['A', 'B', 'C', 'D'];
+      currentQuestion.options.forEach((optText, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.id = `optBtn_${idx}`;
+        btn.onclick = () => selectAnswer(idx);
+        btn.innerHTML = `
+          <span class="option-letter">${currentQuestion.type === 'vf' ? (idx === 0 ? 'V' : 'F') : letters[idx]}</span>
+          <span>${optText}</span>
+        `;
+        optionsContainer.appendChild(btn);
+      });
+
+      // Resetear barra inferior de feedback
+      document.getElementById('feedbackMessage').innerHTML =
+        `👨‍🚀 Turno de <strong>${activeTeam.name}</strong>. ¡Debatid en equipo antes de pulsar!`;
+      document.getElementById('btnRebound').style.display = 'none';
+      document.getElementById('btnNextTurn').style.display = 'none';
+      document.getElementById('reboundPicker').classList.remove('show');
+
+      renderScoreboard();
+      startQuestionTimer();
+    }
+
+    function startQuestionTimer() {
+      questionStartTime = Date.now();
+      const timerDisplay = document.getElementById('timerDisplay');
+      const timerBar = document.getElementById('timerBar');
+      timerDisplay.classList.remove('warning');
+
+      if (config.timerSeconds === 0) {
+        timerDisplay.textContent = '∞';
+        timerBar.style.width = '100%';
+        return;
+      }
+
+      timeRemaining = config.timerSeconds;
+      timerDisplay.textContent = `${timeRemaining}s`;
+      timerBar.style.width = '100%';
+
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        timerDisplay.textContent = `${timeRemaining}s`;
+        const pct = Math.max(0, (timeRemaining / config.timerSeconds) * 100);
+        timerBar.style.width = `${pct}%`;
+
+        if (timeRemaining <= 7) {
+          timerDisplay.classList.add('warning');
+          playSound('tick');
+        }
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
+    }
+
+    function handleTimeOut() {
+      playSound('error');
+      const activeTeam = teams[currentTeamIndex];
+      activeTeam.streak = 0;
+
+      // Bloquear botones temporalmente o permitir rebote sin desvelar aún la correcta
+      document.getElementById('feedbackMessage').innerHTML =
+        `⏰ <strong>¡Tiempo agotado para ${activeTeam.name}!</strong> ¿Alguna otra tripulación sabe la respuesta para activar el Rebote?`;
+      document.getElementById('btnRebound').style.display = 'inline-flex';
+      document.getElementById('btnNextTurn').style.display = 'inline-flex';
+      renderScoreboard();
+    }
+
+    function selectAnswer(selectedIdx) {
+      if (isQuestionResolved) return;
+      clearInterval(timerInterval);
+
+      const activeTeam = teams[currentTeamIndex];
+      const elapsedSeconds = (Date.now() - questionStartTime) / 1000;
+      const isCorrect = (selectedIdx === currentQuestion.a);
+
+      const clickedBtn = document.getElementById(`optBtn_${selectedIdx}`);
+
+      if (isCorrect) {
+        isQuestionResolved = true;
+        clickedBtn.classList.add('correct-reveal');
+        disableAllOptions();
+        playSound('success');
+
+        // Cálculo de puntos gamificados
+        let earned = 100;
+        let bonusNotes = [];
+
+        if (config.timerSeconds > 0 && timeRemaining >= config.timerSeconds / 2) {
+          earned += 30;
+          bonusNotes.push('+30 Velocidad');
+        }
+
+        activeTeam.streak++;
+        if (activeTeam.streak >= 2) {
+          earned += 50;
+          bonusNotes.push(`+50 Racha x${activeTeam.streak}`);
+        }
+
+        if (isDoubleActive) {
+          earned *= 2;
+          bonusNotes.push('⭐ ¡Puntos Dobles x2!');
+        }
+
+        activeTeam.score += earned;
+        activeTeam.topicHits[currentQuestion.topic]++;
+
+        // Comprobar insignias desbloqueadas
+        checkBadgesOnCorrect(activeTeam, elapsedSeconds, false);
+
+        const bonusText = bonusNotes.length ? ` (${bonusNotes.join(' • ')})` : '';
+        document.getElementById('feedbackMessage').innerHTML =
+          `🎉 <strong>¡CORRECTO! +${earned} pts${bonusText}.</strong> ${currentQuestion.exp}`;
+        document.getElementById('btnRebound').style.display = 'none';
+        document.getElementById('btnNextTurn').style.display = 'inline-flex';
+        renderScoreboard();
+      } else {
+        // Fallo del equipo en turno: no revelamos la correcta todavía por si quieren hacer Rebote
+        clickedBtn.classList.add('wrong-reveal');
+        clickedBtn.disabled = true;
+        playSound('error');
+        activeTeam.streak = 0;
+
+        document.getElementById('feedbackMessage').innerHTML =
+          `💥 <strong>¡Respuesta incorrecta!</strong> Pulsa <em>"Activar Rebote"</em> si otro equipo quiere robar +75 pts, o pasa al siguiente turno.`;
+        document.getElementById('btnRebound').style.display = 'inline-flex';
+        document.getElementById('btnNextTurn').style.display = 'inline-flex';
+        renderScoreboard();
+      }
+    }
+
+    function activateReboundMode() {
+      document.getElementById('btnRebound').style.display = 'none';
+      const picker = document.getElementById('reboundPicker');
+      picker.innerHTML = `<span style="font-weight:800; color:var(--accent-gold); align-self:center;">🛸 ¿Qué equipo ha acertado el rebote? (+75 pts):</span>`;
+
+      for (let i = 0; i < config.teamCount; i++) {
+        if (i === currentTeamIndex) continue;
+        const t = teams[i];
+        const btn = document.createElement('button');
+        btn.className = 'btn-pick-rebound-team';
+        btn.textContent = `${t.avatar} ${t.name}`;
+        btn.onclick = () => awardReboundToTeam(i);
+        picker.appendChild(btn);
+      }
+
+      const btnReveal = document.createElement('button');
+      btnReveal.className = 'btn-pick-rebound-team';
+      btnReveal.style.borderColor = 'var(--accent-cyan)';
+      btnReveal.textContent = '👀 Solo revelar respuesta';
+      btnReveal.onclick = () => revealCorrectAnswerOnly();
+      picker.appendChild(btnReveal);
+
+      picker.classList.add('show');
+    }
+
+    function awardReboundToTeam(teamIdx) {
+      isQuestionResolved = true;
+      const rebTeam = teams[teamIdx];
+      rebTeam.score += 75;
+      rebTeam.topicHits[currentQuestion.topic]++;
+
+      revealCorrectVisual();
+      playSound('success');
+      checkBadgesOnCorrect(rebTeam, 10, true);
+
+      document.getElementById('reboundPicker').classList.remove('show');
+      document.getElementById('feedbackMessage').innerHTML =
+        `🛰️ <strong>¡Rebote conquistado por ${rebTeam.name} (+75 pts)!</strong> ${currentQuestion.exp}`;
+      renderScoreboard();
+    }
+
+    function revealCorrectAnswerOnly() {
+      isQuestionResolved = true;
+      revealCorrectVisual();
+      document.getElementById('reboundPicker').classList.remove('show');
+      document.getElementById('feedbackMessage').innerHTML =
+        `💡 <strong>Respuesta correcta:</strong> ${currentQuestion.exp}`;
+    }
+
+    function revealCorrectVisual() {
+      disableAllOptions();
+      const correctBtn = document.getElementById(`optBtn_${currentQuestion.a}`);
+      if (correctBtn) correctBtn.classList.add('correct-reveal');
+    }
+
+    function disableAllOptions() {
+      const btns = document.getElementById('optionsContainer').querySelectorAll('.option-btn');
+      btns.forEach(b => b.disabled = true);
+    }
+
+    /* =========================================================================
+       6. COMODINES DE NAVE (50/50 Y PROPULSOR x2)
+       ========================================================================= */
+    function usePower5050() {
+      const activeTeam = teams[currentTeamIndex];
+      if (activeTeam.used5050 || currentQuestion.type === 'vf' || isQuestionResolved) return;
+
+      activeTeam.used5050 = true;
+      document.getElementById('btnPower5050').disabled = true;
+      playSound('badge');
+
+      const wrongIndices = [0, 1, 2, 3].filter(i => i !== currentQuestion.a);
+      const toDiscard = shuffleArray(wrongIndices).slice(0, 2);
+      toDiscard.forEach(idx => {
+        const btn = document.getElementById(`optBtn_${idx}`);
+        if (btn) btn.classList.add('discarded-5050');
+      });
+    }
+
+    function usePowerDouble() {
+      const activeTeam = teams[currentTeamIndex];
+      if (activeTeam.usedDouble || isQuestionResolved) return;
+
+      activeTeam.usedDouble = true;
+      isDoubleActive = true;
+      document.getElementById('btnPowerDouble').disabled = true;
+      playSound('badge');
+      document.getElementById('feedbackMessage').innerHTML =
+        `⭐ <strong>¡PROPULSOR x2 ACTIVADO!</strong> Si ${activeTeam.name} acierta esta pregunta, ganará el DOBLE de puntos.`;
+    }
+
+    /* =========================================================================
+       7. GESTIÓN DE TURNOS Y VERIFICACIÓN DE INSIGNIAS
+       ========================================================================= */
+    function nextTurn() {
+      if (!isQuestionResolved) {
+        revealCorrectVisual();
+      }
+      currentTeamIndex++;
+      if (currentTeamIndex >= config.teamCount) {
+        currentTeamIndex = 0;
+        currentRound++;
+      }
+
+      if (currentRound > config.totalRounds) {
+        showEndScreen();
+      } else {
+        loadTurn();
+      }
+    }
+
+    function unlockBadge(team, badgeId) {
+      if (team.badges.includes(badgeId)) return;
+      team.badges.push(badgeId);
+      const badgeObj = BADGES_CATALOG.find(b => b.id === badgeId);
+      if (!badgeObj) return;
+
+      playSound('badge');
+      const toast = document.getElementById('badgeToast');
+      document.getElementById('toastIcon').textContent = badgeObj.icon;
+      document.getElementById('toastTitle').textContent = badgeObj.name;
+      document.getElementById('toastTeam').textContent = `${team.avatar} ${team.name}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3600);
+    }
+
+    function checkBadgesOnCorrect(team, elapsedSeconds, isRebound) {
+      unlockBadge(team, 'first_hit');
+      if (team.streak >= 3) unlockBadge(team, 'streak_3');
+      if (elapsedSeconds <= 6 && !isRebound) unlockBadge(team, 'fast_answer');
+      if (isRebound) unlockBadge(team, 'rebound_hunter');
+      if (team.topicHits[1] >= 3) unlockBadge(team, 'master_b1');
+      if (team.topicHits[2] >= 3) unlockBadge(team, 'master_b2');
+      if (team.topicHits[3] >= 3) unlockBadge(team, 'master_b3');
+      checkScoreBadges(team);
+    }
+
+    function checkScoreBadges(team) {
+      if (team.score >= 600) unlockBadge(team, 'legend_600');
+    }
+
+    /* =========================================================================
+       8. PANTALLA FINAL Y MODALES
+       ========================================================================= */
+    function showEndScreen() {
+      clearInterval(timerInterval);
+      switchScreen('endScreen');
+      playSound('badge');
+
+      const activeTeams = teams.slice(0, config.teamCount).sort((a, b) => b.score - a.score);
+      const podium = document.getElementById('podiumContainer');
+      podium.innerHTML = '';
+
+      const medals = ['🥇 1.º PUESTO', '🥈 2.º PUESTO', '🥉 3.º PUESTO', '🏅 4.º PUESTO', '🏅 5.º PUESTO', '🏅 6.º PUESTO'];
+
+      activeTeams.forEach((t, idx) => {
+        const badgesIcons = t.badges.map(bId => {
+          const b = BADGES_CATALOG.find(item => item.id === bId);
+          return `<span title="${b.name}" style="font-size:1.5rem;">${b.icon}</span>`;
+        }).join(' ');
+
+        const card = document.createElement('div');
+        card.className = `podium-card ${idx === 0 ? 'rank-1' : ''}`;
+        card.innerHTML = `
+          <div style="font-weight:800; color:var(--accent-gold);">${medals[idx]}</div>
+          <div style="font-size:3rem;">${t.avatar}</div>
+          <h3 style="font-size:1.35rem;">${t.name}</h3>
+          <div style="font-size:2rem; font-weight:800; color:var(--accent-cyan);">${t.score} pts</div>
+          <div style="margin-top:6px; min-height:32px;">${badgesIcons || '<small style="color:var(--text-muted);">Sin insignias</small>'}</div>
+        `;
+        podium.appendChild(card);
+      });
+    }
+
+    function renderBadgesCatalog() {
+      const container = document.getElementById('badgesCatalogContainer');
+      container.innerHTML = BADGES_CATALOG.map(b => `
+        <div class="badge-catalog-item">
+          <div class="b-icon">${b.icon}</div>
+          <div>
+            <strong style="color:var(--accent-gold); display:block;">${b.name}</strong>
+            <span style="font-size:0.88rem; color:var(--text-muted);">${b.desc}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function resetToSetup() {
+      clearInterval(timerInterval);
+      switchScreen('setupScreen');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    window.onload = initSetupUI;
+  </script>
+</body>
+</html>
