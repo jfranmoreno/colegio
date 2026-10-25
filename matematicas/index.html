@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matemáticas 3º Primaria - Rincón de Recursos</title>
+  <title>Matemáticas 3.º Primaria - Portal Interactivo y Modo Docente</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Paleta en tonos rojos armónicos y pastel escolar */
       --bg-body: #fff5f5;
       --bg-surface: #ffffff;
       --bg-soft-red: #ffe3e3;
@@ -20,7 +19,8 @@
       --red-dark: #c92a2a;
       --red-deep: #7d1a1a;
       --red-wine: #4a1010;
-      --accent-amber: #f59f00;
+      --green-ok: #2b8a3e;
+      --amber-warn: #e67700;
       --text-main: #3b1111;
       --text-muted: #7a3e3e;
       --border-color: #ffc9c9;
@@ -54,7 +54,7 @@
     header {
       background: linear-gradient(135deg, var(--red-deep) 0%, var(--red-primary) 60%, var(--red-medium) 100%);
       color: #ffffff;
-      padding: 1.5rem 2rem;
+      padding: 1.3rem 2rem;
       box-shadow: 0 6px 20px rgba(125, 26, 26, 0.25);
       position: relative;
       z-index: 20;
@@ -67,7 +67,7 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 1.2rem;
+      gap: 1rem;
     }
 
     .brand {
@@ -77,52 +77,51 @@
     }
 
     .brand-icon {
-      width: 68px;
-      height: 68px;
+      width: 66px;
+      height: 66px;
       background: rgba(255, 255, 255, 0.2);
       border: 3px solid rgba(255, 255, 255, 0.45);
       border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .brand-text h1 {
-      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
       font-weight: 800;
-      letter-spacing: -0.5px;
       line-height: 1.15;
     }
 
     .brand-text p {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 600;
       opacity: 0.92;
-      margin-top: 0.2rem;
     }
 
     .header-actions {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.7rem;
     }
 
     .btn-header {
       min-height: 60px;
-      padding: 0 1.3rem;
+      padding: 0 1.2rem;
       border-radius: var(--radius-md);
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.45);
       background: rgba(255, 255, 255, 0.15);
       color: #ffffff;
       font-family: inherit;
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
       transition: all 0.2s ease;
     }
 
@@ -131,15 +130,84 @@
       transform: translateY(-2px);
     }
 
-    .btn-header:active {
-      transform: scale(0.96);
+    .btn-header.teacher-active {
+      background: #ffd43b;
+      color: var(--red-wine);
+      border-color: #ffffff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     }
 
-    /* ================= PANEL DE BÚSQUEDA Y FILTROS ================= */
+    /* ================= BARRA DE MODO DOCENTE ================= */
+    .teacher-toolbar {
+      display: none;
+      background: linear-gradient(90deg, #4a1010, #7d1a1a);
+      color: #ffffff;
+      padding: 0.95rem 2rem;
+      border-bottom: 3px solid #ffd43b;
+    }
+
+    .teacher-toolbar.visible {
+      display: block;
+    }
+
+    .teacher-toolbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .teacher-status {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #ffd43b;
+    }
+
+    .teacher-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .btn-teacher-tool {
+      min-height: 52px;
+      padding: 0 1.1rem;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.96rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-teacher-tool.primary {
+      background: #ffd43b;
+      color: #4a1010;
+      border-color: #ffd43b;
+    }
+
+    .btn-teacher-tool:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    /* ================= CONTROLES DE BÚSQUEDA Y FILTRO ================= */
     .controls-section {
       background: var(--bg-surface);
       border-bottom: 3px solid var(--border-color);
-      padding: 1.3rem 2rem;
+      padding: 1.2rem 2rem;
       position: sticky;
       top: 0;
       z-index: 15;
@@ -151,10 +219,9 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 1.1rem;
+      gap: 1rem;
     }
 
-    /* Fila superior: Buscador y selector de formato */
     .search-row {
       display: flex;
       flex-wrap: wrap;
@@ -163,7 +230,7 @@
     }
 
     .search-box {
-      flex: 1 1 340px;
+      flex: 1 1 320px;
       position: relative;
       display: flex;
       align-items: center;
@@ -172,29 +239,23 @@
     .search-icon {
       position: absolute;
       left: 1.2rem;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       color: var(--red-primary);
       pointer-events: none;
     }
 
     .search-input {
       width: 100%;
-      min-height: 62px;
-      padding: 0.8rem 3.8rem 0.8rem 3.6rem;
+      min-height: 60px;
+      padding: 0.7rem 3.5rem 0.7rem 3.4rem;
       font-family: inherit;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--text-main);
       background: var(--bg-body);
       border: 3px solid var(--border-color);
       border-radius: var(--radius-md);
       outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .search-input::placeholder {
-      color: #b57c7c;
-      font-weight: 600;
     }
 
     .search-input:focus {
@@ -218,105 +279,75 @@
       display: none;
       align-items: center;
       justify-content: center;
-      transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .clear-search-btn.visible {
-      display: flex;
-    }
+    .clear-search-btn.visible { display: flex; }
 
-    .clear-search-btn:hover {
-      background: var(--red-light);
-    }
-
-    /* Filtro de formatos (Web / PDF / Imagen) */
     .type-filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.6rem;
+      gap: 0.55rem;
     }
 
     .type-btn {
-      min-height: 62px;
-      padding: 0 1.15rem;
+      min-height: 60px;
+      padding: 0 1.1rem;
       border-radius: var(--radius-md);
       border: 2px solid var(--border-color);
       background: var(--bg-tag-inactive);
       color: var(--text-main);
       font-family: inherit;
-      font-size: 1.02rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
       transition: all 0.2s ease;
-    }
-
-    .type-btn:hover {
-      border-color: var(--red-medium);
-      background: var(--bg-soft-red);
     }
 
     .type-btn.active {
       background: var(--red-deep);
       color: #ffffff;
       border-color: var(--red-deep);
-      box-shadow: 0 4px 12px rgba(125, 26, 26, 0.25);
     }
 
-    .type-btn:active {
-      transform: scale(0.96);
-    }
-
-    /* Fila de etiquetas (Numeración, Cálculo, Problemas, Medida, Geometría, Sit. Aprendizaje) */
     .tags-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.65rem;
-      align-items: center;
+      gap: 0.6rem;
     }
 
     .tag-filter-btn {
       min-height: 60px;
-      padding: 0.6rem 1.25rem;
+      padding: 0.5rem 1.15rem;
       border-radius: 999px;
       border: 3px solid var(--border-color);
       background: #ffffff;
       color: var(--red-deep);
       font-family: inherit;
-      font-size: 1.08rem;
+      font-size: 1.04rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.55rem;
-      transition: all 0.2s ease;
-      flex: 1 1 auto;
       justify-content: center;
-    }
-
-    .tag-filter-btn:hover {
-      background: var(--bg-soft-red);
-      border-color: var(--red-medium);
-      transform: translateY(-2px);
+      gap: 0.5rem;
+      flex: 1 1 auto;
+      transition: all 0.2s ease;
     }
 
     .tag-filter-btn.active {
       background: linear-gradient(135deg, var(--red-primary), var(--red-dark));
       color: #ffffff;
       border-color: var(--red-dark);
-      box-shadow: 0 6px 14px rgba(224, 49, 49, 0.32);
+      box-shadow: 0 5px 14px rgba(224, 49, 49, 0.3);
     }
 
-    .tag-filter-btn:active {
-      transform: scale(0.96);
-    }
-
-    /* Barra de estado y navegación rápida de Unidades */
+    /* ================= BARRA DE ESTADO ================= */
     .status-bar {
       max-width: 1440px;
-      margin: 1.2rem auto 0;
+      margin: 1.1rem auto 0;
       padding: 0 2rem;
       display: flex;
       flex-wrap: wrap;
@@ -326,11 +357,11 @@
     }
 
     .results-counter {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: var(--red-deep);
       background: var(--bg-soft-red);
-      padding: 0.55rem 1.2rem;
+      padding: 0.5rem 1.1rem;
       border-radius: 999px;
       border: 2px solid var(--border-color);
     }
@@ -338,32 +369,29 @@
     .unit-pills {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
+      gap: 0.45rem;
     }
 
     .unit-pill {
       min-height: 48px;
-      padding: 0.4rem 1rem;
+      padding: 0.4rem 0.95rem;
       border-radius: var(--radius-sm);
       border: 2px solid var(--border-color);
       background: #ffffff;
       color: var(--red-dark);
       font-family: inherit;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
-    .unit-pill:hover,
-    .unit-pill.active {
+    .unit-pill.active, .unit-pill:hover {
       background: var(--red-primary);
       color: #ffffff;
       border-color: var(--red-primary);
     }
 
-    /* ================= CANVAS PRINCIPAL (6 UNIDADES) ================= */
+    /* ================= CANVAS DE 6 UNIDADES ================= */
     main {
       max-width: 1440px;
       width: 100%;
@@ -371,7 +399,7 @@
       padding: 0 2rem;
       display: flex;
       flex-direction: column;
-      gap: 2.2rem;
+      gap: 2rem;
       flex: 1;
     }
 
@@ -381,24 +409,20 @@
       border: 3px solid var(--border-color);
       box-shadow: var(--shadow-soft);
       overflow: hidden;
-      transition: all 0.25s ease;
     }
 
-    .unit-section.hidden {
-      display: none;
-    }
+    .unit-section.hidden { display: none; }
 
     .unit-header {
       background: linear-gradient(90deg, var(--red-dark) 0%, var(--red-primary) 65%, var(--red-medium) 100%);
       color: #ffffff;
-      padding: 1.25rem 1.8rem;
+      padding: 1.15rem 1.6rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
       cursor: pointer;
-      user-select: none;
     }
 
     .unit-title-group {
@@ -410,21 +434,20 @@
     .unit-badge {
       background: #ffffff;
       color: var(--red-dark);
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 800;
-      padding: 0.5rem 1rem;
+      padding: 0.45rem 0.95rem;
       border-radius: 14px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
       white-space: nowrap;
     }
 
     .unit-header h2 {
-      font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+      font-size: clamp(1.25rem, 2.1vw, 1.6rem);
       font-weight: 800;
     }
 
     .unit-subtitle {
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       opacity: 0.92;
       font-weight: 600;
     }
@@ -432,44 +455,25 @@
     .unit-meta {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.7rem;
     }
 
     .unit-count-badge {
       background: rgba(255, 255, 255, 0.22);
       border: 2px solid rgba(255, 255, 255, 0.45);
-      padding: 0.45rem 0.95rem;
+      padding: 0.4rem 0.9rem;
       border-radius: 999px;
       font-weight: 700;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
     }
 
-    .unit-toggle-icon {
-      font-size: 1.4rem;
-      transition: transform 0.25s ease;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.18);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .unit-section.collapsed .resources-grid { display: none; }
 
-    .unit-section.collapsed .unit-toggle-icon {
-      transform: rotate(-90deg);
-    }
-
-    .unit-section.collapsed .resources-grid {
-      display: none;
-    }
-
-    /* Grid de tarjetas de recursos */
     .resources-grid {
-      padding: 1.6rem;
+      padding: 1.5rem;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 1.4rem;
+      grid-template-columns: repeat(auto-fill, minmax(315px, 1fr));
+      gap: 1.3rem;
       background: linear-gradient(180deg, #fffafa 0%, #ffffff 100%);
     }
 
@@ -477,15 +481,15 @@
       background: #ffffff;
       border: 2.5px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 1.3rem;
+      padding: 1.25rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       gap: 1rem;
       box-shadow: 0 4px 12px rgba(201, 42, 42, 0.06);
       transition: all 0.2s ease;
-      position: relative;
       cursor: pointer;
+      position: relative;
     }
 
     .resource-card:hover {
@@ -494,63 +498,36 @@
       box-shadow: var(--shadow-hover);
     }
 
-    .resource-card:active {
-      transform: scale(0.98);
-    }
-
-    .resource-card.hidden {
-      display: none;
-    }
+    .resource-card.hidden { display: none; }
 
     .card-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.6rem;
+      gap: 0.5rem;
       flex-wrap: wrap;
     }
 
-    /* Distintivo de Tipo: Web, PDF, Imagen */
     .format-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.4rem 0.85rem;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    .format-web {
-      background: #ffe3e3;
-      color: #c92a2a;
-      border: 1.5px solid #ffa8a8;
-    }
-
-    .format-pdf {
-      background: #fff0f6;
-      color: #a61e4d;
-      border: 1.5px solid #fcc2d7;
-    }
-
-    .format-img {
-      background: #fff4e6;
-      color: #d9480f;
-      border: 1.5px solid #ffd8a8;
-    }
-
-    /* Distintivo de Etiqueta Curricular */
-    .category-badge {
-      display: inline-flex;
-      align-items: center;
       gap: 0.35rem;
-      padding: 0.38rem 0.85rem;
-      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      border-radius: 10px;
       font-size: 0.88rem;
       font-weight: 800;
+    }
+
+    .format-web { background: #ffe3e3; color: #c92a2a; border: 1.5px solid #ffa8a8; }
+    .format-pdf { background: #fff0f6; color: #a61e4d; border: 1.5px solid #fcc2d7; }
+    .format-img { background: #fff4e6; color: #d9480f; border: 1.5px solid #ffd8a8; }
+
+    .category-badge {
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
       text-transform: capitalize;
-      background: var(--red-primary);
       color: #ffffff;
     }
 
@@ -563,44 +540,44 @@
 
     .card-body {
       display: flex;
-      gap: 1rem;
+      gap: 0.95rem;
       align-items: flex-start;
+      margin-top: 0.7rem;
     }
 
     .card-icon {
-      width: 58px;
-      height: 58px;
-      min-width: 58px;
-      border-radius: 16px;
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      border-radius: 15px;
       background: var(--bg-soft-red);
       border: 2px solid var(--red-light);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.85rem;
+      font-size: 1.8rem;
     }
 
     .card-info h3 {
-      font-size: 1.22rem;
+      font-size: 1.18rem;
       font-weight: 800;
       color: var(--red-wine);
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.25rem;
       line-height: 1.25;
     }
 
     .card-info p {
-      font-size: 0.98rem;
+      font-size: 0.96rem;
       color: var(--text-muted);
       font-weight: 600;
     }
 
     .card-footer {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 0.8rem;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding-top: 0.75rem;
       border-top: 2px dashed var(--bg-soft-red);
-      gap: 0.6rem;
     }
 
     .btn-open-resource {
@@ -611,7 +588,7 @@
       background: var(--bg-soft-red);
       color: var(--red-dark);
       font-family: inherit;
-      font-size: 1.02rem;
+      font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
@@ -626,48 +603,49 @@
       color: #ffffff;
     }
 
-    /* Estado sin resultados */
-    .empty-state {
+    /* Botones de edición en tarjeta (solo visibles en Modo Docente) */
+    .card-teacher-controls {
       display: none;
-      background: #ffffff;
-      border: 3px dashed var(--red-light);
-      border-radius: var(--radius-lg);
-      padding: 3.5rem 2rem;
-      text-align: center;
-      margin: 1rem 0;
+      gap: 0.5rem;
     }
 
-    .empty-state.visible {
-      display: block;
+    body.teacher-mode .card-teacher-controls {
+      display: flex;
     }
 
-    .empty-state-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
+    .btn-card-edit, .btn-card-delete {
+      flex: 1;
+      min-height: 46px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 2px solid transparent;
     }
 
-    .empty-state h3 {
-      font-size: 1.6rem;
-      color: var(--red-dark);
-      margin-bottom: 0.5rem;
+    .btn-card-edit {
+      background: #fff9db;
+      color: #b45309;
+      border-color: #fde68a;
     }
 
-    .empty-state p {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
+    .btn-card-delete {
+      background: #ffe3e3;
+      color: #c92a2a;
+      border-color: #ffa8a8;
     }
 
-    /* ================= MODAL VISOR DE RECURSOS (PDI / MDI) ================= */
+    /* ================= MODALES ================= */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(74, 16, 16, 0.72);
+      background: rgba(74, 16, 16, 0.75);
       backdrop-filter: blur(5px);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1.2rem;
       z-index: 100;
     }
 
@@ -684,11 +662,11 @@
     .modal-card {
       background: #ffffff;
       width: 100%;
-      max-width: 960px;
-      max-height: 90vh;
+      max-width: 1020px;
+      max-height: 92vh;
       border-radius: var(--radius-lg);
       border: 4px solid var(--red-primary);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.38);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -697,7 +675,7 @@
     .modal-header {
       background: linear-gradient(135deg, var(--red-dark), var(--red-primary));
       color: #ffffff;
-      padding: 1.2rem 1.8rem;
+      padding: 1.1rem 1.6rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -707,11 +685,11 @@
     .modal-title-wrap {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
+      gap: 0.85rem;
     }
 
     .modal-title-wrap span.icon {
-      font-size: 2rem;
+      font-size: 1.9rem;
       background: rgba(255,255,255,0.2);
       width: 52px;
       height: 52px;
@@ -721,168 +699,371 @@
       justify-content: center;
     }
 
-    .modal-header h3 {
-      font-size: 1.45rem;
-      font-weight: 800;
-    }
-
     .btn-close-modal {
-      width: 56px;
-      height: 56px;
+      width: 54px;
+      height: 54px;
       border-radius: 14px;
       border: 2px solid rgba(255,255,255,0.5);
       background: rgba(255,255,255,0.2);
       color: #ffffff;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-close-modal:hover {
-      background: rgba(255,255,255,0.35);
     }
 
     .modal-content {
-      padding: 1.8rem;
+      padding: 1.5rem;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 1.4rem;
+      gap: 1.2rem;
     }
 
     .preview-canvas {
       background: var(--bg-body);
       border: 3px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 1.8rem;
-      min-height: 290px;
+      padding: 1.4rem;
+      min-height: 360px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      gap: 1.2rem;
     }
 
-    /* Mini actividad interactiva dentro del modal */
-    .interactive-box {
-      background: #ffffff;
-      border: 2px solid var(--red-light);
-      border-radius: var(--radius-md);
-      padding: 1.4rem;
+    /* ================= ESTILOS DE LOS 6 MINIJUEGOS INTEGRADOS ================= */
+    .minigame-container {
       width: 100%;
-      max-width: 680px;
+      max-width: 860px;
+      background: #ffffff;
+      border: 2.5px solid var(--red-light);
+      border-radius: var(--radius-md);
+      padding: 1.3rem;
       box-shadow: var(--shadow-soft);
     }
 
-    .quiz-options {
+    .game-top-bar {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
       gap: 0.8rem;
-      justify-content: center;
-      margin-top: 1.2rem;
+      padding-bottom: 0.9rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px dashed var(--border-color);
     }
 
-    .quiz-btn {
-      min-height: 60px;
-      min-width: 130px;
-      padding: 0.7rem 1.4rem;
-      font-family: inherit;
+    .game-badge {
+      background: var(--bg-soft-red);
+      color: var(--red-dark);
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .game-feedback {
+      min-height: 2.2rem;
       font-size: 1.2rem;
       font-weight: 800;
+      margin-top: 0.9rem;
+    }
+
+    .btn-game {
+      min-height: 60px;
+      padding: 0.6rem 1.3rem;
       border-radius: 14px;
       border: 3px solid var(--border-color);
       background: var(--bg-tag-inactive);
       color: var(--red-deep);
+      font-family: inherit;
+      font-size: 1.15rem;
+      font-weight: 800;
       cursor: pointer;
       transition: all 0.15s ease;
     }
 
-    .quiz-btn:hover {
+    .btn-game:hover {
       background: var(--bg-soft-red);
       border-color: var(--red-primary);
     }
 
-    .quiz-btn.correct {
-      background: #2b8a3e;
+    .btn-game.primary {
+      background: var(--red-primary);
       color: #ffffff;
-      border-color: #2b8a3e;
+      border-color: var(--red-dark);
     }
 
-    .quiz-btn.wrong {
-      background: #e03131;
+    /* 1. Ábaco Digital */
+    .abacus-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .abacus-col {
+      background: var(--bg-body);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.75rem 0.4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .abacus-label {
+      font-weight: 800;
+      font-size: 1.1rem;
       color: #ffffff;
-      border-color: #c92a2a;
+      padding: 0.25rem 0.7rem;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    .beads-stack {
+      height: 125px;
+      width: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 3px;
+      padding: 4px 0;
+      background: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      border: 1px dashed var(--red-light);
+    }
+
+    .bead {
+      width: 72%;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .abacus-digit {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--red-wine);
+    }
+
+    .abacus-controls {
+      display: flex;
+      gap: 0.4rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-abacus-step {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: #ffffff;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--red-dark);
+      cursor: pointer;
+    }
+
+    /* 3. Calculadora de Problemas */
+    .problem-statement {
+      background: #fff9db;
+      border: 2px solid #ffd43b;
+      border-radius: 14px;
+      padding: 1.1rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #3b1111;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .calc-pad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+      max-width: 420px;
+      margin: 0.8rem auto;
+    }
+
+    .calc-screen {
+      grid-column: span 4;
+      background: #2b0b0b;
+      color: #ffd43b;
+      font-size: 1.8rem;
+      font-weight: 800;
+      padding: 0.8rem 1rem;
+      border-radius: 12px;
+      text-align: right;
+      min-height: 64px;
+      letter-spacing: 1px;
+    }
+
+    /* 5. Cajero de Euros */
+    .wallet-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .money-btn {
+      min-height: 64px;
+      padding: 0.6rem 1.1rem;
+      border-radius: 14px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.15s ease;
+    }
+
+    .money-btn:active { transform: scale(0.94); }
+    .money-bill { background: #ebfbee; border: 3px solid #2b8a3e; color: #1b5e20; }
+    .money-coin-euro { background: #fff9db; border: 3px solid #f59f00; color: #7c2d12; border-radius: 999px; min-width: 76px; }
+    .money-coin-cent { background: #fff4e6; border: 3px solid #d9480f; color: #7c2d12; border-radius: 999px; min-width: 76px; }
+
+    /* 6. Geoplano / Cuadrícula de Perímetro y Área */
+    .grid-board {
+      display: grid;
+      grid-template-columns: repeat(8, 52px);
+      grid-template-rows: repeat(6, 52px);
+      gap: 4px;
+      justify-content: center;
+      margin: 1rem auto;
+      user-select: none;
+    }
+
+    .grid-cell {
+      width: 52px;
+      height: 52px;
+      background: #ffffff;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.12s ease, transform 0.1s ease;
+    }
+
+    .grid-cell.filled {
+      background: var(--red-primary);
+      border-color: var(--red-deep);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.35);
+    }
+
+    /* ================= FORMULARIO DOCENTE ================= */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      text-align: left;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-weight: 800;
+      color: var(--red-deep);
+      font-size: 0.98rem;
+    }
+
+    .form-control {
+      min-height: 54px;
+      padding: 0.65rem 0.9rem;
+      border-radius: 12px;
+      border: 2.5px solid var(--border-color);
+      font-family: inherit;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--bg-body);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--red-primary);
+      background: #ffffff;
     }
 
     .modal-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 0.8rem;
       justify-content: flex-end;
       padding-top: 0.8rem;
       border-top: 2px solid var(--bg-soft-red);
     }
 
     .btn-primary-red {
-      min-height: 60px;
-      padding: 0 1.6rem;
+      min-height: 58px;
+      padding: 0 1.5rem;
       border-radius: 14px;
       border: none;
       background: linear-gradient(135deg, var(--red-primary), var(--red-dark));
       color: #ffffff;
       font-family: inherit;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
-      box-shadow: 0 6px 15px rgba(201, 42, 42, 0.3);
+      gap: 0.5rem;
     }
 
     .btn-secondary-red {
-      min-height: 60px;
-      padding: 0 1.4rem;
+      min-height: 58px;
+      padding: 0 1.3rem;
       border-radius: 14px;
       border: 2px solid var(--red-primary);
       background: #ffffff;
       color: var(--red-dark);
       font-family: inherit;
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
     }
 
     footer {
       background: var(--red-wine);
       color: #ffd8d8;
       text-align: center;
-      padding: 1.4rem;
+      padding: 1.3rem;
       font-weight: 600;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       margin-top: auto;
     }
 
     @media (max-width: 768px) {
-      header, .controls-section, main, .status-bar {
+      header, .controls-section, main, .status-bar, .teacher-toolbar {
         padding-left: 1rem;
         padding-right: 1rem;
       }
-      .unit-header {
-        padding: 1rem 1.2rem;
+      .abacus-grid { gap: 0.35rem; }
+      .grid-board {
+        grid-template-columns: repeat(8, 38px);
+        grid-template-rows: repeat(6, 38px);
       }
-      .resources-grid {
-        padding: 1rem;
-        grid-template-columns: 1fr;
-      }
+      .grid-cell { width: 38px; height: 38px; }
     }
   </style>
 </head>
@@ -895,25 +1076,41 @@
         <div class="brand-icon" aria-hidden="true">🧮</div>
         <div class="brand-text">
           <h1>Matemáticas 3.º de Primaria</h1>
-          <p>Banco de Recursos Interactivos, Fichas PDF, Imágenes y Situaciones de Aprendizaje</p>
+          <p>Minijuegos MDI Integrados, Fichas PDF, Infografías y Modo Docente</p>
         </div>
       </div>
       <div class="header-actions">
-        <button class="btn-header" id="btnToggleAllUnits" title="Expandir o contraer todas las unidades">
+        <button class="btn-header" id="btnToggleAllUnits">
           <span>📂</span> <span id="toggleUnitsText">Contraer unidades</span>
         </button>
-        <button class="btn-header" id="btnSoundToggle" title="Activar o silenciar efectos de sonido">
+        <button class="btn-header" id="btnSoundToggle">
           <span id="soundIcon">🔊</span> <span id="soundText">Sonido ON</span>
+        </button>
+        <button class="btn-header" id="btnTeacherMode">
+          <span id="teacherIcon">🔒</span> <span id="teacherText">Modo Docente</span>
         </button>
       </div>
     </div>
   </header>
 
+  <!-- ================= BARRA DE HERRAMIENTAS DEL MODO DOCENTE ================= -->
+  <div class="teacher-toolbar" id="teacherToolbar">
+    <div class="teacher-toolbar-inner">
+      <div class="teacher-status">
+        <span>🔓 MODO DOCENTE ACTIVO</span>
+        <span style="font-size:0.9rem; color:#ffe3e3; font-weight:600;">(Los cambios se guardan automáticamente en este navegador)</span>
+      </div>
+      <div class="teacher-actions">
+        <button class="btn-teacher-tool primary" id="btnAddNewResource">➕ Añadir Nuevo Recurso</button>
+        <button class="btn-teacher-tool" id="btnExportJson">📤 Exportar Copia JSON</button>
+        <button class="btn-teacher-tool" id="btnRestoreDefaults">🔄 Restaurar de Fábrica</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= BUSCADOR Y FILTROS ================= -->
   <section class="controls-section" aria-label="Filtros y buscador de actividades">
     <div class="controls-wrapper">
-      
-      <!-- Buscador y filtro por tipo de archivo -->
       <div class="search-row">
         <div class="search-box">
           <span class="search-icon" aria-hidden="true">🔍</span>
@@ -921,13 +1118,12 @@
             type="text" 
             id="searchInput" 
             class="search-input" 
-            placeholder="Buscar actividad, contenido, tabla, reloj, polígonos, PDF..."
-            aria-label="Buscar actividades de matemáticas"
+            placeholder="Buscar actividad, ábaco, reloj, tablas, problemas, PDF..."
           >
-          <button class="clear-search-btn" id="clearSearchBtn" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">✕</button>
+          <button class="clear-search-btn" id="clearSearchBtn" title="Limpiar búsqueda">✕</button>
         </div>
 
-        <div class="type-filters" role="group" aria-label="Filtrar por formato de recurso">
+        <div class="type-filters" role="group" aria-label="Filtrar por formato">
           <button class="type-btn active" data-type="todos">📦 Todos</button>
           <button class="type-btn" data-type="web">🌐 Recursos Web</button>
           <button class="type-btn" data-type="pdf">📄 Documentos PDF</button>
@@ -935,9 +1131,8 @@
         </div>
       </div>
 
-      <!-- Filtro por Etiquetas Curriculares -->
-      <div class="tags-row" role="group" aria-label="Filtrar por etiqueta de bloque matemático">
-        <button class="tag-filter-btn active" data-tag="todas">✨ Todas las etiquetas</button>
+      <div class="tags-row" role="group" aria-label="Filtrar por etiqueta curricular">
+        <button class="tag-filter-btn active" data-tag="todas">✨ Todas</button>
         <button class="tag-filter-btn" data-tag="numeración">🔢 Numeración</button>
         <button class="tag-filter-btn" data-tag="cálculo">➕ Cálculo</button>
         <button class="tag-filter-btn" data-tag="problemas">🧩 Problemas</button>
@@ -945,14 +1140,13 @@
         <button class="tag-filter-btn" data-tag="geometría">📐 Geometría</button>
         <button class="tag-filter-btn" data-tag="sit. aprendizaje">🚀 Sit. Aprendizaje</button>
       </div>
-
     </div>
   </section>
 
-  <!-- ================= BARRA DE ESTADO Y SALTO A UNIDADES ================= -->
+  <!-- ================= BARRA DE ESTADO ================= -->
   <div class="status-bar">
     <div class="results-counter" id="resultsCounter">Mostrando 36 recursos en 6 unidades</div>
-    <div class="unit-pills" role="group" aria-label="Filtrar por unidad didáctica">
+    <div class="unit-pills">
       <button class="unit-pill active" data-unit="all">Todas las Unidades</button>
       <button class="unit-pill" data-unit="1">Unidad 1</button>
       <button class="unit-pill" data-unit="2">Unidad 2</button>
@@ -963,63 +1157,167 @@
     </div>
   </div>
 
-  <!-- ================= CANVAS PRINCIPAL: 6 UNIDADES ================= -->
-  <main id="unitsCanvas">
-    <!-- Se genera dinámicamente desde el array de datos para facilitar la edición docente -->
-  </main>
+  <!-- ================= CANVAS DE LAS 6 UNIDADES ================= -->
+  <main id="unitsCanvas"></main>
 
-  <div class=" status-bar" style="justify-content:center;">
-    <div class="empty-state" id="emptyState">
-      <div class="empty-state-icon">🕵️‍♂️</div>
-      <h3>No hemos encontrado recursos con ese filtro</h3>
-      <p>Prueba a escribir otra palabra clave o pulsa el botón para mostrar todas las actividades.</p>
-      <button class="btn-primary-red" id="btnResetFilters">🔄 Mostrar todos los recursos</button>
-    </div>
-  </div>
-
-  <!-- ================= MODAL INTERACTIVO DE VISTA PREVIA ================= -->
-  <div class="modal-overlay" id="resourceModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <!-- ================= MODAL VISOR DE RECURSOS Y MINIJUEGOS ================= -->
+  <div class="modal-overlay" id="resourceModal" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
           <span class="icon" id="modalIcon">🧮</span>
           <div>
             <h3 id="modalTitle">Título del Recurso</h3>
-            <small id="modalSubtitle" style="font-weight:700; opacity:0.9;"></small>
+            <small id="modalSubtitle" style="font-weight:700; opacity:0.92;"></small>
           </div>
         </div>
-        <button class="btn-close-modal" id="btnCloseModal" aria-label="Cerrar ventana">✕</button>
+        <button class="btn-close-modal" id="btnCloseModal" aria-label="Cerrar">✕</button>
       </div>
       <div class="modal-content">
-        <p id="modalDescription" style="font-size:1.12rem; font-weight:600; color:var(--text-main);"></p>
-        
-        <!-- Zona dinámica: Juego rápido, vista previa de ficha PDF o Póster SVG -->
+        <p id="modalDescription" style="font-size:1.1rem; font-weight:700; color:var(--text-main);"></p>
         <div class="preview-canvas" id="modalPreviewArea"></div>
-
         <div class="modal-actions">
-          <button class="btn-secondary-red" id="btnPrintResource">🖨️ Imprimir / Guardar Vista</button>
-          <a href="#" target="_blank" rel="noopener" class="btn-primary-red" id="modalExternalLink">🚀 Abrir Recurso Completo</a>
+          <button class="btn-secondary-red" id="btnPrintResource">🖨️ Imprimir Vista</button>
+          <a href="#" target="_blank" rel="noopener" class="btn-primary-red" id="modalExternalLink">🔗 Abrir Enlace Externo</a>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ================= MODAL DE ACCESO DOCENTE (CONTRASEÑA) ================= -->
+  <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="icon">🔐</span>
+          <h3>Acceso Modo Docente</h3>
+        </div>
+        <button class="btn-close-modal" id="btnCloseLogin">✕</button>
+      </div>
+      <div class="modal-content">
+        <p style="font-weight:700;">Introduce la clave docente para añadir, editar o eliminar recursos del portal.</p>
+        <p style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">💡 Clave por defecto: <code>1234</code> (o <code>profe</code>)</p>
+        <div class="form-group">
+          <label for="teacherPassInput">Contraseña:</label>
+          <input type="password" id="teacherPassInput" class="form-control" placeholder="Escribe 1234...">
+        </div>
+        <p id="loginErrorMsg" style="color:var(--red-primary); font-weight:800; display:none;">❌ Contraseña incorrecta. Prueba con 1234.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary-red" id="btnCancelLogin">Cancelar</button>
+          <button class="btn-primary-red" id="btnConfirmLogin">🔓 Desbloquear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL EDITOR DE RECURSOS (AÑADIR / EDITAR) ================= -->
+  <div class="modal-overlay" id="editorModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width: 720px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="icon">✏️</span>
+          <h3 id="editorModalTitle">Añadir Nuevo Recurso</h3>
+        </div>
+        <button class="btn-close-modal" id="btnCloseEditor">✕</button>
+      </div>
+      <div class="modal-content">
+        <form id="resourceForm" class="form-grid">
+          <input type="hidden" id="editResId">
+
+          <div class="form-group">
+            <label for="formUnit">Unidad Didáctica:</label>
+            <select id="formUnit" class="form-control" required>
+              <option value="1">Unidad 1: Números de 4 Cifras</option>
+              <option value="2">Unidad 2: Números de 5 Cifras y Resta</option>
+              <option value="3">Unidad 3: Multiplicación y Euros</option>
+              <option value="4">Unidad 4: Multiplicar llevando y Reloj</option>
+              <option value="5">Unidad 5: La División, Peso y Capacidad</option>
+              <option value="6">Unidad 6: Perímetros, Geometría y Gráficos</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formTag">Etiqueta Curricular:</label>
+            <select id="formTag" class="form-control" required>
+              <option value="numeración">🔢 Numeración</option>
+              <option value="cálculo">➕ Cálculo</option>
+              <option value="problemas">🧩 Problemas</option>
+              <option value="medida">📏 Medida</option>
+              <option value="geometría">📐 Geometría</option>
+              <option value="sit. aprendizaje">🚀 Sit. Aprendizaje</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formType">Formato del Recurso:</label>
+            <select id="formType" class="form-control" required>
+              <option value="web">🌐 Recurso Web (Minijuego / App)</option>
+              <option value="pdf">📄 Documento PDF</option>
+              <option value="imagen">🖼️ Imagen / Infografía</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formIcon">Emoji / Icono:</label>
+            <input type="text" id="formIcon" class="form-control" value="🎲" maxlength="4" required>
+          </div>
+
+          <div class="form-group full">
+            <label for="formTitle">Título del Recurso:</label>
+            <input type="text" id="formTitle" class="form-control" placeholder="Ej: El Reloj Loco de 3.º" required>
+          </div>
+
+          <div class="form-group full">
+            <label for="formDesc">Descripción Didáctica:</label>
+            <input type="text" id="formDesc" class="form-control" placeholder="Explica brevemente en qué consiste la actividad..." required>
+          </div>
+
+          <div class="form-group" id="groupMinigame">
+            <label for="formMinigame">Minijuego Integrado en Pantalla:</label>
+            <select id="formMinigame" class="form-control">
+              <option value="abaco">🧮 Ábaco y Descomposición (DM a U)</option>
+              <option value="calculo">⚡ Entrenador de Cálculo Mental y Tablas</option>
+              <option value="problemas">🧩 Calculadora Guiada de Problemas</option>
+              <option value="reloj">⏰ Reloj de Agujas Arrastrables</option>
+              <option value="monedas">💶 Cajero de Euros y Céntimos</option>
+              <option value="geometria">📐 Laboratorio de Perímetro y Área</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formUrl">Enlace Externo o Ruta de Archivo (Opcional):</label>
+            <input type="text" id="formUrl" class="form-control" placeholder="https://... o recursos/ficha.pdf">
+          </div>
+
+          <div class="form-group full" id="groupExtraContent">
+            <label for="formExtra">Texto del Póster o Puntos Clave del PDF (separados por punto y coma ";"):</label>
+            <input type="text" id="formExtra" class="form-control" placeholder="Punto 1; Punto 2; Punto 3">
+          </div>
+
+          <div class="modal-actions full" style="grid-column: 1 / -1;">
+            <button type="button" class="btn-secondary-red" id="btnCancelEditor">Cancelar</button>
+            <button type="submit" class="btn-primary-red">💾 Guardar Recurso</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    Portal de Matemáticas · 3.º de Educación Primaria · Diseñado para Pizarra Digital (MDI) y Tablets
+    Portal de Matemáticas · 3.º de Educación Primaria · Minijuegos MDI Integrados y Gestión con LocalStorage
   </footer>
 
   <script>
     /* =========================================================================
-       1. SINTETIZADOR DE AUDIO (WEB AUDIO API - CERO ARCHIVOS EXTERNOS)
+       1. SINTETIZADOR DE SONIDO (WEB AUDIO API)
        ========================================================================= */
     let soundEnabled = true;
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioContextClass();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioCtx();
 
     function playSound(type) {
       if (!soundEnabled) return;
       if (audioCtx.state === 'suspended') audioCtx.resume();
-
       const now = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -1028,48 +1326,42 @@
 
       if (type === 'click') {
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(520, now);
-        osc.frequency.exponentialRampToValueAtTime(680, now + 0.06);
-        gain.gain.setValueAtTime(0.12, now);
+        osc.frequency.setValueAtTime(540, now);
+        osc.frequency.exponentialRampToValueAtTime(700, now + 0.06);
+        gain.gain.setValueAtTime(0.11, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-        osc.start(now);
-        osc.stop(now + 0.07);
+        osc.start(now); osc.stop(now + 0.07);
       } else if (type === 'open') {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(440, now);
         osc.frequency.exponentialRampToValueAtTime(880, now + 0.14);
-        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.setValueAtTime(0.14, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-        osc.start(now);
-        osc.stop(now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
       } else if (type === 'success') {
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now); // C5
-        osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
-        osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.08);
+        osc.frequency.setValueAtTime(783.99, now + 0.16);
         gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
-        osc.start(now);
-        osc.stop(now + 0.32);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+        osc.start(now); osc.stop(now + 0.34);
       } else if (type === 'error') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.linearRampToValueAtTime(160, now + 0.18);
+        osc.frequency.setValueAtTime(210, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.18);
         gain.gain.setValueAtTime(0.12, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-        osc.start(now);
-        osc.stop(now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
       }
     }
 
     /* =========================================================================
-       2. BASE DE DATOS DE RECURSOS (EDITABLE POR EL DOCENTE)
-       - 6 Unidades Didácticas.
-       - Cada unidad incluye recursos tipo: 'web', 'pdf', 'imagen'.
-       - Etiquetas válidas: 'numeración', 'cálculo', 'problemas', 'medida', 'geometría', 'sit. aprendizaje'
-       - Puedes cambiar el campo "url" por el enlace a tu archivo PDF, imagen o app de GitHub Pages.
+       2. DATOS INICIALES DE LAS 6 UNIDADES + PERSISTENCIA EN LOCALSTORAGE
        ========================================================================= */
-    const UNIDADES_MATEMATICAS = [
+    const STORAGE_KEY = "mates_3primaria_recursos_v2";
+
+    const DEFAULT_UNITS = [
       {
         numero: 1,
         titulo: "Unidad 1: Exploradores de Números de 4 Cifras",
@@ -1077,70 +1369,68 @@
         recursos: [
           {
             id: "u1-r1",
-            titulo: "Ábaco Digital hasta el 9.999",
-            descripcion: "Actividad web interactiva para descomponer números en UM, C, D y U y escribir cómo se leen.",
+            titulo: "Ábaco Digital Interactivo (Hasta 99.999)",
+            descripcion: "Manipula las bolas del ábaco en DM, UM, C, D y U, observa la descomposición y supera los retos numéricos.",
             tipo: "web",
             etiqueta: "numeración",
-            icono: "🔢",
-            url: "#abaco-3primaria",
-            reto: { pregunta: "¿Qué número forman 4 UM + 3 C + 0 D + 8 U?", opciones: ["4.380", "4.308", "4.038"], correcta: 1 }
+            icono: "🧮",
+            minijuego: "abaco",
+            url: "#abaco"
           },
           {
             id: "u1-r2",
-            titulo: "Cálculo Mental: Sumas y Amigos del 100",
-            descripcion: "Juego rápido de cálculo mental para completar decenas y centenas exactas en el MDI.",
+            titulo: "Entrenador de Cálculo Mental Rápido",
+            descripcion: "Juego interactivo de sumas, amigos del 100 y series rápidas con marcador de rachas en pizarra.",
             tipo: "web",
             etiqueta: "cálculo",
             icono: "⚡",
-            url: "#calculo-u1",
-            reto: { pregunta: "¿Cuánto le falta a 65 para llegar a 100?", opciones: ["25", "35", "45"], correcta: 1 }
+            minijuego: "calculo",
+            url: "#calculo"
           },
           {
             id: "u1-r3",
-            titulo: "Ficha de Problemas: La Excursión al Monte",
-            descripcion: "Documento PDF imprimible con 6 problemas de suma y resta con plantilla Datos - Operación - Solución.",
+            titulo: "Ficha PDF: Problemas en la Excursión al Monte",
+            descripcion: "Documento imprimible con 6 problemas de suma y resta con plantilla Datos - Operación - Solución.",
             tipo: "pdf",
             etiqueta: "problemas",
             icono: "🎒",
             url: "recursos/u1-problemas-excursion.pdf",
             puntosPdf: [
-              "Lectura comprensiva y subrayado de datos en rojo y pregunta en azul.",
-              "4 problemas de una operación (juntar, añadir, quitar y comparar).",
-              "2 problemas reto con números de cuatro cifras."
+              "Subrayado de datos en rojo y pregunta en azul.",
+              "4 problemas de una operación y 2 problemas reto de 4 cifras."
             ]
           },
           {
             id: "u1-r4",
             titulo: "Infografía: El Metro y el Centímetro",
-            descripcion: "Lámina visual con equivalencias entre el metro (m) y el centímetro (cm) usando objetos del aula.",
+            descripcion: "Lámina visual con equivalencias entre el metro (m), el decímetro (dm) y el centímetro (cm).",
             tipo: "imagen",
             etiqueta: "medida",
             icono: "📏",
-            url: "recursos/u1-infografia-metro.png",
-            textoPoster: "1 metro (m) = 100 centímetros (cm) · 1 decímetro (dm) = 10 cm"
+            url: "recursos/u1-metro.png",
+            textoPoster: "1 metro (m) = 10 decímetros (dm) = 100 centímetros (cm)"
           },
           {
             id: "u1-r5",
             titulo: "Póster: Tipos de Líneas y Rectas",
-            descripcion: "Imagen mural de alta resolución: rectas paralelas, secantes y perpendiculares con ejemplos cotidianos.",
+            descripcion: "Imagen mural de alta resolución: rectas paralelas, secantes y perpendiculares.",
             tipo: "imagen",
             etiqueta: "geometría",
             icono: "📐",
-            url: "recursos/u1-lineas-rectas.png",
-            textoPoster: "Paralelas (nunca se cortan) · Secantes (se cortan en un punto) · Perpendiculares (forman 4 ángulos rectos)"
+            url: "recursos/u1-rectas.png",
+            textoPoster: "Paralelas (no se cortan) · Secantes (se cortan) · Perpendiculares (forman 4 ángulos rectos)"
           },
           {
             id: "u1-r6",
             titulo: "SA 1: Organizamos la Biblioteca del Aula",
-            descripcion: "Guía PDF de la Situación de Aprendizaje: codificación e inventario de cuentos mediante códigos de 4 cifras.",
+            descripcion: "Guía PDF de la Situación de Aprendizaje: codificación de cuentos mediante números de 4 cifras.",
             tipo: "pdf",
             etiqueta: "sit. aprendizaje",
             icono: "📚",
             url: "recursos/u1-sa-biblioteca.pdf",
             puntosPdf: [
-              "Reto final: Catalogar 150 libros por temática y número de páginas.",
-              "Trabajo cooperativo en equipos base de 4 alumnos.",
-              "Rúbrica de autoevaluación de numeración y registro de medidas."
+              "Catalogar los libros del aula con códigos de 4 cifras.",
+              "Trabajo cooperativo y registro en tabla de datos."
             ]
           }
         ]
@@ -1148,220 +1438,215 @@
       {
         numero: 2,
         titulo: "Unidad 2: Números de 5 Cifras y el Arte de Restar",
-        subtitulo: "Decenas de millar, aproximaciones, prueba de la resta y ángulos en el entorno",
+        subtitulo: "Decenas de millar, aproximaciones, prueba de la resta y ángulos",
         recursos: [
           {
             id: "u2-r1",
-            titulo: "Aproximación a la Centena y al Millar",
-            descripcion: "Simulador web de la montaña numérica para redondear números de 4 y 5 cifras de forma visual.",
+            titulo: "Laboratorio de Decenas de Millar en el Ábaco",
+            descripcion: "Construye números de 5 cifras y descubre su descomposición en unidades y valor posicional.",
             tipo: "web",
             etiqueta: "numeración",
             icono: "⛰️",
-            url: "#redondeo-3primaria",
-            reto: { pregunta: "¿A qué millar se aproxima más el número 6.780?", opciones: ["6.000", "7.000", "6.500"], correcta: 1 }
+            minijuego: "abaco",
+            url: "#abaco-dm"
           },
           {
             id: "u2-r2",
-            titulo: "Cuadernillo PDF: Restas con Llevadas y su Prueba",
-            descripcion: "Ficha descargable con restas paso a paso y comprobación mediante Sustraendo + Diferencia = Minuendo.",
+            titulo: "Ficha PDF: Restas con Llevadas y su Prueba",
+            descripcion: "Cuadernillo descargable con restas y comprobación mediante Sustraendo + Diferencia = Minuendo.",
             tipo: "pdf",
             etiqueta: "cálculo",
             icono: "➖",
-            url: "recursos/u2-ficha-restas-prueba.pdf",
+            url: "recursos/u2-restas-prueba.pdf",
             puntosPdf: [
-              "10 restas con llevadas hasta la decena de millar.",
-              "Casillas guiadas para comprobar cada resta con una suma.",
-              "Reto final de descubrir los números ocultos en la resta."
+              "10 restas con llevadas hasta el 99.999.",
+              "Casillas guiadas para hacer la prueba de la resta."
             ]
           },
           {
             id: "u2-r3",
-            titulo: "Detectives de Problemas de 2 Operaciones",
-            descripcion: "Juego interactivo donde el alumnado elige qué dos operaciones resuelven cada misterio.",
+            titulo: "Calculadora Guiada de Problemas Paso a Paso",
+            descripcion: "Lee el problema, elige la operación correcta, usa la calculadora táctil y comprueba tu resultado.",
             tipo: "web",
             etiqueta: "problemas",
             icono: "🕵️",
-            url: "#detectives-problemas-u2",
-            reto: { pregunta: "Tengo 50 €, compro un balón de 18 € y una gorra de 12 €. ¿Cuánto me sobra?", opciones: ["30 €", "20 €", "22 €"], correcta: 1 }
+            minijuego: "problemas",
+            url: "#calculadora-problemas"
           },
           {
             id: "u2-r4",
             titulo: "Esquema Visual: El Kilómetro y las Rutas",
-            descripcion: "Imagen comparativa de distancias en kilómetros (km) y metros (m) entre localidades cercanas.",
+            descripcion: "Imagen comparativa de distancias en kilómetros (km) y metros (m).",
             tipo: "imagen",
             etiqueta: "medida",
             icono: "🛣️",
-            url: "recursos/u2-kilometro-esquema.png",
+            url: "recursos/u2-kilometro.png",
             textoPoster: "1 Kilómetro (km) = 1.000 metros (m) · Medio kilómetro = 500 m"
           },
           {
             id: "u2-r5",
             titulo: "Infografía: Ángulos Agudos, Rectos y Obtusos",
-            descripcion: "Lámina visual con el transportador y escuadra mostrando vértice, lados y abertura de cada ángulo.",
+            descripcion: "Lámina visual mostrando vértice, lados y abertura de cada tipo de ángulo.",
             tipo: "imagen",
             etiqueta: "geometría",
             icono: "🍕",
-            url: "recursos/u2-tipos-angulos.png",
-            textoPoster: "Recto (= 90°) · Agudo (< 90°, más cerrado) · Obtuso (> 90°, más abierto)"
+            url: "recursos/u2-angulos.png",
+            textoPoster: "Recto (= 90°) · Agudo (menor de 90°) · Obtuso (mayor de 90°)"
           },
           {
             id: "u2-r6",
             titulo: "SA 2: Planificamos nuestra Ruta Senderista",
-            descripcion: "Dossier PDF con plano de senderos, cálculo de distancias en metros y desniveles de subida y bajada.",
+            descripcion: "Dossier PDF con plano de senderos, cálculo de distancias en metros y desniveles.",
             tipo: "pdf",
             etiqueta: "sit. aprendizaje",
             icono: "🥾",
             url: "recursos/u2-sa-senderismo.pdf",
             puntosPdf: [
-              "Comparación de 3 rutas naturales según su longitud en metros y kilómetros.",
-              "Cálculo de etapas e hitos intermedios mediante sumas y restas.",
-              "Identificación de giros en ángulo recto, agudo y obtuso en el mapa."
+              "Comparación de rutas según su longitud en metros y kilómetros.",
+              "Cálculo de etapas mediante sumas y restas con llevadas."
             ]
           }
         ]
       },
       {
         numero: 3,
-        titulo: "Unidad 3: El Poder de la Multiplicación",
-        subtitulo: "Tablas de multiplicar, doble y triple, monedas de euro y polígonos",
+        titulo: "Unidad 3: El Poder de la Multiplicación y el Euro",
+        subtitulo: "Tablas de multiplicar, doble y triple, monedas y billetes, polígonos",
         recursos: [
           {
             id: "u3-r1",
             titulo: "Póster: Números Ordinales hasta el 30.º",
-            descripcion: "Imagen mural con la escritura y lectura de los números ordinales del 1.º al 30.º para el aula.",
+            descripcion: "Imagen mural con la escritura y lectura de los números ordinales del 1.º al 30.º.",
             tipo: "imagen",
             etiqueta: "numeración",
             icono: "🏅",
-            url: "recursos/u3-numeros-ordinales.png",
+            url: "recursos/u3-ordinales.png",
             textoPoster: "10.º Décimo · 11.º Undécimo · 12.º Duodécimo · 20.º Vigésimo · 30.º Trigésimo"
           },
           {
             id: "u3-r2",
-            titulo: "Reto Interactivo: Tablas de Multiplicar (2 al 9)",
-            descripcion: "Aplicación web por rondas con feedback sonoro para entrenar las tablas de multiplicar en la PDI.",
+            titulo: "Torneo Interactivo: Tablas de Multiplicar",
+            descripcion: "Minijuego de cálculo para practicar las tablas del 2 al 9, sumas, restas y divisiones.",
             tipo: "web",
             etiqueta: "cálculo",
             icono: "✖️",
-            url: "#tablas-multiplicar",
-            reto: { pregunta: "¿Cuánto es 7 × 8?", opciones: ["54", "56", "64"], correcta: 1 }
+            minijuego: "calculo",
+            url: "#torneo-tablas"
           },
           {
             id: "u3-r3",
-            titulo: "Ficha PDF: Problemas de Filas, Cajas y Paquetes",
-            descripcion: "Colección de problemas visuales de suma de sumandos iguales y multiplicación por una cifra.",
+            titulo: "Ficha PDF: Problemas de Cajas, Filas y Paquetes",
+            descripcion: "Colección de problemas visuales de suma de sumandos iguales y multiplicación.",
             tipo: "pdf",
             etiqueta: "problemas",
             icono: "📦",
             url: "recursos/u3-problemas-multiplicar.pdf",
             puntosPdf: [
-              "Representación en cuadrículas de filas y columnas.",
-              "Problemas de cálculo del doble y del triple.",
-              "Problemas combinados de multiplicar y sumar."
+              "Problemas de filas y columnas con apoyo visual.",
+              "Cálculo del doble (×2) y del triple (×3)."
             ]
           },
           {
             id: "u3-r4",
             titulo: "Cajero Interactivo: Monedas y Billetes de Euro",
-            descripcion: "Simulador web para pagar compras exactas y calcular el cambio usando billetes y monedas de euro y céntimo.",
+            descripcion: "Simulador de tienda para pagar compras exactas combinando billetes y monedas de euro y céntimo.",
             tipo: "web",
             etiqueta: "medida",
             icono: "💶",
-            url: "#monedas-euros",
-            reto: { pregunta: "¿Cuántos céntimos son 2 monedas de 50 cént. y 3 monedas de 20 cént.?", opciones: ["1 € y 60 cént.", "1 € y 50 cént.", "1 € y 80 cént."], correcta: 0 }
+            minijuego: "monedas",
+            url: "#cajero-euros"
           },
           {
             id: "u3-r5",
             titulo: "Lámina: Los Polígonos según sus Lados",
-            descripcion: "Imagen con triángulos, cuadriláteros, pentágonos y hexágonos señalando lados, vértices y ángulos.",
+            descripcion: "Imagen con triángulos, cuadriláteros, pentágonos y hexágonos señalando sus elementos.",
             tipo: "imagen",
             etiqueta: "geometría",
             icono: "🛑",
-            url: "recursos/u3-poligonos-clasificacion.png",
+            url: "recursos/u3-poligonos.png",
             textoPoster: "Triángulo (3 lados) · Cuadrilátero (4) · Pentágono (5) · Hexágono (6)"
           },
           {
             id: "u3-r6",
             titulo: "SA 3: El Mercadillo Solidario del Cole",
-            descripcion: "Proyecto interactivo y guía de precios, tickets de compra y cálculo de recaudación con multiplicaciones.",
+            descripcion: "Simulador interactivo de compras, precios y tickets del mercadillo escolar.",
             tipo: "web",
             etiqueta: "sit. aprendizaje",
             icono: "🏪",
-            url: "#sa-mercadillo",
-            reto: { pregunta: "Si vendemos 8 lotes de cuentos a 6 € cada lote, ¿cuánto recaudamos?", opciones: ["42 €", "48 €", "54 €"], correcta: 1 }
+            minijuego: "monedas",
+            url: "#sa-mercadillo"
           }
         ]
       },
       {
         numero: 4,
         titulo: "Unidad 4: Multiplicaciones en Acción y el Reloj",
-        subtitulo: "Multiplicar por 10, 100 y 1.000, multiplicación llevando, las horas y los triángulos",
+        subtitulo: "Multiplicar por 10, 100 y 1.000, las horas en reloj analógico y digital y los triángulos",
         recursos: [
           {
             id: "u4-r1",
-            titulo: "Generador de Series y Patrones Numéricos",
-            descripcion: "Herramienta web para descubrir la regla secreta en series ascendentes y descendentes.",
+            titulo: "Retos de Valor Posicional y Series",
+            descripcion: "Practica la composición de números de hasta 5 cifras con el ábaco digital del aula.",
             tipo: "web",
             etiqueta: "numeración",
             icono: "🔗",
-            url: "#series-numericas",
-            reto: { pregunta: "Continúa la serie: 1.250 - 1.350 - 1.450 - ...", opciones: ["1.500", "1.550", "1.650"], correcta: 1 }
+            minijuego: "abaco",
+            url: "#series-abaco"
           },
           {
             id: "u4-r2",
-            titulo: "Ficha PDF: Multiplicar llevando y por la Unidad seguida de Ceros",
-            descripcion: "Actividades graduadas de multiplicación de números de 3 y 4 cifras por una cifra y trucos del ×10, ×100.",
+            titulo: "Ficha PDF: Multiplicar Llevando y por 10, 100, 1.000",
+            descripcion: "Actividades graduadas de multiplicación vertical y trucos de la unidad seguida de ceros.",
             tipo: "pdf",
             etiqueta: "cálculo",
             icono: "🚀",
-            url: "recursos/u4-multiplicacion-llevando.pdf",
+            url: "recursos/u4-multiplicar.pdf",
             puntosPdf: [
-              "Cálculo rápido: multiplicar por 10, 100 y 1.000 añadiendo ceros.",
-              "12 multiplicaciones verticales con llevadas paso a paso.",
-              "Propiedad conmutativa y asociativa explicadas con dibujos."
+              "Multiplicar por 10, 100 y 1.000 añadiendo ceros.",
+              "12 multiplicaciones llevando paso a paso."
             ]
           },
           {
             id: "u4-r3",
             titulo: "Infografía: Los 4 Pasos para Resolver un Problema",
-            descripcion: "Póster de aula con el método en 4 fases: 1. Leo y comprendo, 2. Busco datos, 3. Calculo, 4. Reviso la respuesta.",
+            descripcion: "Póster de aula con el método: 1. Leo, 2. Rodeo datos, 3. Calculo, 4. Reviso la solución.",
             tipo: "imagen",
             etiqueta: "problemas",
             icono: "💡",
             url: "recursos/u4-pasos-problemas.png",
-            textoPoster: "1.º Leo despacio · 2.º Rodeo datos y pregunta · 3.º Elijo la operación · 4.º Escribo la solución completa"
+            textoPoster: "1.º Leo despacio · 2.º Rodeo datos · 3.º Elijo la operación · 4.º Escribo la solución"
           },
           {
             id: "u4-r4",
-            titulo: "Reloj Analógico y Digital Interactivo",
-            descripcion: "Aplicación web con agujas móviles para practicar en punto, y cuarto, y media y menos cuarto.",
+            titulo: "Reloj Interactivo de Agujas Arrastrables",
+            descripcion: "Arrastra las agujas con el dedo en la pizarra digital para colocar en punto, y cuarto, y media y menos cuarto.",
             tipo: "web",
             etiqueta: "medida",
             icono: "⏰",
-            url: "#reloj-interactivo",
-            reto: { pregunta: "Si son las 4 menos cuarto de la tarde, ¿qué marca el reloj digital?", opciones: ["16:45", "15:45", "16:15"], correcta: 1 }
+            minijuego: "reloj",
+            url: "#reloj-agujas"
           },
           {
             id: "u4-r5",
             titulo: "Póster: Clasificación de Triángulos y Cuadriláteros",
-            descripcion: "Imagen con triángulos equiláteros, isósceles y escalenos, y paralelogramos (cuadrado, rectángulo, rombo).",
+            descripcion: "Imagen con triángulos equiláteros, isósceles y escalenos, y paralelogramos.",
             tipo: "imagen",
             etiqueta: "geometría",
             icono: "🔺",
-            url: "recursos/u4-triangulos-cuadrilateros.png",
-            textoPoster: "Equilátero (3 lados iguales) · Isósceles (2 lados iguales) · Escaleno (3 lados distintos)"
+            url: "recursos/u4-triangulos.png",
+            textoPoster: "Equilátero (3 lados iguales) · Isósceles (2 iguales) · Escaleno (3 distintos)"
           },
           {
             id: "u4-r6",
             titulo: "SA 4: Nuestro Festival de Música y Horarios",
-            descripcion: "Documento PDF para organizar la parrilla de actuaciones del colegio, duración en minutos y aforo de sillas.",
+            descripcion: "Documento PDF para organizar el horario de actuaciones del colegio y el aforo del patio.",
             tipo: "pdf",
             etiqueta: "sit. aprendizaje",
             icono: "🎵",
             url: "recursos/u4-sa-festival.pdf",
             puntosPdf: [
-              "Elaboración del horario de actuaciones con relojes analógicos y digitales.",
-              "Cálculo de sillas del patio en filas iguales mediante multiplicaciones.",
-              "Diseño del cartel geométrico usando triángulos y cuadriláteros."
+              "Elaboración del horario con relojes analógicos y digitales.",
+              "Cálculo de sillas en filas iguales mediante multiplicaciones."
             ]
           }
         ]
@@ -1374,55 +1659,54 @@
           {
             id: "u5-r1",
             titulo: "Póster Visual: Mitad, Tercio y Cuarto",
-            descripcion: "Infografía ilustrada con pizzas y tabletas de chocolate para comprender las partes iguales y el reparto.",
+            descripcion: "Infografía ilustrada para comprender cómo hallar la mitad (÷2), el tercio (÷3) y el cuarto (÷4).",
             tipo: "imagen",
             etiqueta: "numeración",
             icono: "🍕",
-            url: "recursos/u5-mitad-tercio-cuarto.png",
+            url: "recursos/u5-mitad-tercio.png",
             textoPoster: "Mitad = dividir entre 2 (÷2) · Tercio = dividir entre 3 (÷3) · Cuarto = dividir entre 4 (÷4)"
           },
           {
             id: "u5-r2",
-            titulo: "Laboratorio de Divisiones: Reparto Equitativo",
-            descripcion: "Actividad web para repartir objetos en cestas iguales e identificar Dividendo, divisor, cociente y resto.",
+            titulo: "Desafío de Divisiones Exactas y Repartos",
+            descripcion: "Entrena las divisiones como operación inversa de las tablas de multiplicar en la PDI.",
             tipo: "web",
             etiqueta: "cálculo",
             icono: "➗",
-            url: "#laboratorio-division",
-            reto: { pregunta: "Si repartimos 24 pinturas en 4 botes iguales, ¿cuántas van en cada bote?", opciones: ["5 pinturas", "6 pinturas", "8 pinturas"], correcta: 1 }
+            minijuego: "calculo",
+            url: "#divisiones-web"
           },
           {
             id: "u5-r3",
-            titulo: "Ficha PDF: Problemas de Repartir y Agrupar",
-            descripcion: "Colección de 8 problemas contextualizados de división exacta y entera con apoyo de dibujos.",
+            titulo: "Ficha PDF: Problemas de Repartir en Partes Iguales",
+            descripcion: "Colección de 8 problemas contextualizados de división exacta y entera.",
             tipo: "pdf",
             etiqueta: "problemas",
             icono: "🧺",
             url: "recursos/u5-problemas-reparto.pdf",
             puntosPdf: [
-              "Diferenciar entre divisiones exactas (resto = 0) y enteras (resto distinto de 0).",
-              "Comprobación de problemas usando la relación entre multiplicación y división.",
-              "Reto cooperativo: ¿Cuántos autobuses necesitamos para la excursión?"
+              "Diferenciar entre divisiones exactas e inexactas.",
+              "Relación entre Dividendo, divisor, cociente y resto."
             ]
           },
           {
             id: "u5-r4",
-            titulo: "Balanza y Probeta Virtual: Kilogramo y Litro",
-            descripcion: "Simulador interactivo con medios kilos (500 g), cuartos de kilo (250 g), litros y medios litros.",
+            titulo: "Problemas de Peso, Capacidad y Reparto con Calculadora",
+            descripcion: "Resuelve situaciones reales con kilos, medios kilos, litros y repartos usando la pizarra guiada.",
             tipo: "web",
             etiqueta: "medida",
             icono: "⚖️",
-            url: "#peso-capacidad",
-            reto: { pregunta: "¿Cuántos cuartos de litro necesitamos para llenar una botella de 2 litros?", opciones: ["4 cuartos", "6 cuartos", "8 cuartos"], correcta: 2 }
+            minijuego: "problemas",
+            url: "#peso-capacidad"
           },
           {
             id: "u5-r5",
             titulo: "Lámina: Circunferencia, Círculo, Radio y Diámetro",
-            descripcion: "Imagen explicativa de los elementos de la circunferencia y el uso del compás en el cuaderno.",
+            descripcion: "Imagen explicativa de los elementos de la circunferencia y el uso del compás.",
             tipo: "imagen",
             etiqueta: "geometría",
             icono: "⭕",
-            url: "recursos/u5-circunferencia-circulo.png",
+            url: "recursos/u5-circulo.png",
             textoPoster: "Circunferencia (borde) · Círculo (interior) · El Diámetro mide el doble que el Radio"
           },
           {
@@ -1434,9 +1718,8 @@
             icono: "🥞",
             url: "recursos/u5-sa-recetario.pdf",
             puntosPdf: [
-              "Adaptación de cantidades para 4, 8 y 24 comensales (multiplicar y dividir).",
-              "Medición con vasos medidores (litros/mililitros) y balanza de cocina (gramos).",
-              "Reparto equitativo de tortitas de avena y plátano en bandejas."
+              "Adaptación de cantidades para 4, 8 y 24 personas.",
+              "Medición con balanza (gramos) y vasos medidores (mililitros)."
             ]
           }
         ]
@@ -1448,57 +1731,56 @@
         recursos: [
           {
             id: "u6-r1",
-            titulo: "Escape Room: El Gran Repaso de los Números",
-            descripcion: "Juego web con candados digitales sobre lectura, descomposición y comparación de números hasta el 99.999.",
+            titulo: "Gran Reto Final de Numeración con Ábaco",
+            descripcion: "Supera los desafíos de lectura, descomposición y comparación de números de 5 cifras.",
             tipo: "web",
             etiqueta: "numeración",
             icono: "🔐",
-            url: "#escape-numeracion",
-            reto: { pregunta: "¿Cuál de estos números es el mayor: 89.450, 89.540 o 89.099?", opciones: ["89.450", "89.540", "89.099"], correcta: 1 }
+            minijuego: "abaco",
+            url: "#reto-final-numeracion"
           },
           {
             id: "u6-r2",
-            titulo: "Ficha PDF:Las 4 Operaciones y Prueba de la División",
-            descripcion: "Cuadernillo final de entrenamiento con sumas, restas, multiplicaciones y divisiones con su prueba.",
+            titulo: "Ficha PDF: Las 4 Operaciones y Prueba de la División",
+            descripcion: "Cuadernillo final de entrenamiento con sumas, restas, multiplicaciones y divisiones.",
             tipo: "pdf",
             etiqueta: "cálculo",
             icono: "🏆",
-            url: "recursos/u6-repaso-cuatro-operaciones.pdf",
+            url: "recursos/u6-cuatro-operaciones.pdf",
             puntosPdf: [
-              "Fórmula mágica: Dividendo = divisor × cociente + resto.",
-              "Crucigrama matemático con las cuatro operaciones básicas.",
-              "Autocorrección mediante código secreto de colores."
+              "Fórmula: Dividendo = divisor × cociente + resto.",
+              "Crucigrama numérico con las cuatro operaciones."
             ]
           },
           {
             id: "u6-r3",
-            titulo: "Gráficos de Barras y Pictogramas Interactivos",
-            descripcion: "Aplicación web para interpretar tablas de datos y resolver problemas estadísticos de la vida real.",
+            titulo: "Pizarra de Problemas de Dos Operaciones",
+            descripcion: "Analiza los datos, selecciona la operación y comprueba tus cálculos con la calculadora paso a paso.",
             tipo: "web",
             etiqueta: "problemas",
             icono: "📊",
-            url: "#graficos-estadistica",
-            reto: { pregunta: "En el gráfico, 14 niños eligen fútbol, 10 baloncesto y 6 tenis. ¿Cuántos niños han votado en total?", opciones: ["28 niños", "30 niños", "32 niños"], correcta: 1 }
+            minijuego: "problemas",
+            url: "#problemas-final"
           },
           {
             id: "u6-r4",
             titulo: "Infografía: Perímetro y Área con Cuadrículas",
-            descripcion: "Imagen paso a paso para calcular el perímetro sumando los lados y medir la superficie contando cuadrados.",
+            descripcion: "Imagen paso a paso para calcular el perímetro sumando los lados y medir la superficie.",
             tipo: "imagen",
             etiqueta: "medida",
             icono: "🟩",
-            url: "recursos/u6-perimetro-area.png",
-            textoPoster: "Perímetro = suma de todos los lados del borde · Área = cuadrados que caben dentro"
+            url: "recursos/u6-perimetro.png",
+            textoPoster: "Perímetro = suma de los lados exteriores · Área = cuadrados que caben en su interior"
           },
           {
             id: "u6-r5",
-            titulo: "Póster 3D: Prismas, Pirámides y Cuerpos Redondos",
-            descripcion: "Lámina visual con caras, vértices y aristas de prismas, pirámides, cilindro, cono y esfera.",
-            tipo: "imagen",
+            titulo: "Laboratorio Táctil de Perímetro y Área en Cuadrícula",
+            descripcion: "Dibuja polígonos tocando los cuadrados del tablero y observa cómo cambian su Área y su Perímetro.",
+            tipo: "web",
             etiqueta: "geometría",
             icono: "🧊",
-            url: "recursos/u6-cuerpos-geometricos.png",
-            textoPoster: "Poliedros (caras planas: cubo, prisma, pirámide) · Cuerpos redondos (cilindro, cono, esfera)"
+            minijuego: "geometria",
+            url: "#laboratorio-geometria"
           },
           {
             id: "u6-r6",
@@ -1507,35 +1789,56 @@
             tipo: "pdf",
             etiqueta: "sit. aprendizaje",
             icono: "🌱",
-            url: "recursos/u6-sa-huerto-escolar.pdf",
+            url: "recursos/u6-sa-huerto.pdf",
             puntosPdf: [
-              "Cálculo de los metros de valla necesarios hallando el perímetro de los bancales.",
-              "Construcción de maquetas con cuerpos geométricos reciclados.",
-              "Gráfico de barras con las verduras y plantas más votadas por la clase."
+              "Cálculo de los metros de valla hallando el perímetro de los bancales.",
+              "Construcción de maquetas con cuerpos geométricos."
             ]
           }
         ]
       }
     ];
 
+    let unidadesData = [];
+
+    function loadDataFromStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          unidadesData = JSON.parse(saved);
+        } else {
+          unidadesData = JSON.parse(JSON.stringify(DEFAULT_UNITS));
+        }
+      } catch (e) {
+        unidadesData = JSON.parse(JSON.stringify(DEFAULT_UNITS));
+      }
+    }
+
+    function saveDataToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(unidadesData));
+      } catch (e) {
+        console.warn("No se pudo guardar en localStorage:", e);
+      }
+    }
+
     /* =========================================================================
-       3. ESTADO DE LOS FILTROS Y REFERENCIAS AL DOM
+       3. RENDERIZADO DEL CANVAS Y FILTROS
        ========================================================================= */
     let currentSearch = "";
     let currentTag = "todas";
     let currentType = "todos";
     let currentUnit = "all";
     let allCollapsed = false;
+    let isTeacherMode = false;
 
     const unitsCanvas = document.getElementById("unitsCanvas");
     const searchInput = document.getElementById("searchInput");
     const clearSearchBtn = document.getElementById("clearSearchBtn");
     const resultsCounter = document.getElementById("resultsCounter");
-    const emptyState = document.getElementById("emptyState");
 
-    /* Helpers de formato */
     function getFormatInfo(tipo) {
-      if (tipo === "web") return { label: "🌐 Recurso Web", css: "format-web" };
+      if (tipo === "web") return { label: "🌐 Minijuego Web", css: "format-web" };
       if (tipo === "pdf") return { label: "📄 Documento PDF", css: "format-pdf" };
       return { label: "🖼️ Imagen", css: "format-img" };
     }
@@ -1552,13 +1855,10 @@
       return map[etiqueta] || "cat-numeracion";
     }
 
-    /* =========================================================================
-       4. RENDERIZADO INICIAL DEL CANVAS DE 6 UNIDADES
-       ========================================================================= */
     function renderUnits() {
       unitsCanvas.innerHTML = "";
 
-      UNIDADES_MATEMATICAS.forEach(unidad => {
+      unidadesData.forEach(unidad => {
         const section = document.createElement("section");
         section.className = "unit-section";
         section.dataset.unitNumber = unidad.numero;
@@ -1566,6 +1866,7 @@
         const cardsHtml = unidad.recursos.map(rec => {
           const fmt = getFormatInfo(rec.tipo);
           const catCss = getCategoryCss(rec.etiqueta);
+          const btnLabel = rec.tipo === "web" ? "🎮 Jugar en Pizarra" : "✨ Abrir en Pizarra";
           return `
             <article 
               class="resource-card" 
@@ -1574,16 +1875,13 @@
               data-type="${rec.tipo}"
               data-tag="${rec.etiqueta}"
               data-search="${(rec.titulo + ' ' + rec.descripcion + ' ' + rec.etiqueta + ' ' + rec.tipo).toLowerCase()}"
-              tabindex="0"
-              role="button"
-              aria-label="${rec.titulo}, ${fmt.label}, etiqueta ${rec.etiqueta}"
             >
               <div>
                 <div class="card-top">
                   <span class="format-badge ${fmt.css}">${fmt.label}</span>
                   <span class="category-badge ${catCss}">${rec.etiqueta}</span>
                 </div>
-                <div class="card-body" style="margin-top: 0.9rem;">
+                <div class="card-body">
                   <div class="card-icon" aria-hidden="true">${rec.icono}</div>
                   <div class="card-info">
                     <h3>${rec.titulo}</h3>
@@ -1592,16 +1890,20 @@
                 </div>
               </div>
               <div class="card-footer">
-                <button class="btn-open-resource" type="button">
-                  <span>✨ Abrir en Pizarra</span>
+                <button class="btn-open-resource" type="button" data-open-id="${rec.id}">
+                  <span>${btnLabel}</span>
                 </button>
+                <div class="card-teacher-controls">
+                  <button type="button" class="btn-card-edit" data-edit-id="${rec.id}">✏️ Editar</button>
+                  <button type="button" class="btn-card-delete" data-delete-id="${rec.id}">🗑️ Borrar</button>
+                </div>
               </div>
             </article>
           `;
         }).join("");
 
         section.innerHTML = `
-          <div class="unit-header" role="button" tabindex="0" aria-expanded="true">
+          <div class="unit-header">
             <div class="unit-title-group">
               <span class="unit-badge">UNIDAD ${unidad.numero}</span>
               <div>
@@ -1611,7 +1913,7 @@
             </div>
             <div class="unit-meta">
               <span class="unit-count-badge" id="count-unit-${unidad.numero}">${unidad.recursos.length} recursos</span>
-              <span class="unit-toggle-icon" aria-hidden="true">▼</span>
+              <span style="font-size:1.2rem;">▼</span>
             </div>
           </div>
           <div class="resources-grid">
@@ -1619,35 +1921,40 @@
           </div>
         `;
 
-        // Evento para plegar/desplegar la unidad al pulsar su cabecera
-        const header = section.querySelector(".unit-header");
-        header.addEventListener("click", () => {
+        section.querySelector(".unit-header").addEventListener("click", () => {
           playSound("click");
           section.classList.toggle("collapsed");
-          const isCollapsed = section.classList.contains("collapsed");
-          header.setAttribute("aria-expanded", !isCollapsed);
         });
 
         unitsCanvas.appendChild(section);
       });
 
-      // Eventos en cada tarjeta de recurso
+      // Abrir recurso al tocar la tarjeta (salvo si se pulsa Editar/Borrar)
       document.querySelectorAll(".resource-card").forEach(card => {
-        card.addEventListener("click", () => {
+        card.addEventListener("click", (e) => {
+          if (e.target.closest(".btn-card-edit") || e.target.closest(".btn-card-delete")) return;
           openResourceModal(card.dataset.id);
         });
-        card.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openResourceModal(card.dataset.id);
-          }
+      });
+
+      // Botones de Editar / Borrar del Modo Docente
+      document.querySelectorAll(".btn-card-edit").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openEditorForEdit(btn.dataset.editId);
         });
       });
+
+      document.querySelectorAll(".btn-card-delete").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          deleteResourceById(btn.dataset.deleteId);
+        });
+      });
+
+      applyFilters();
     }
 
-    /* =========================================================================
-       5. LÓGICA DE FILTRADO EN TIEMPO REAL
-       ========================================================================= */
     function applyFilters() {
       const query = currentSearch.trim().toLowerCase();
       let totalVisibleResources = 0;
@@ -1658,18 +1965,16 @@
       document.querySelectorAll(".unit-section").forEach(unitSection => {
         const unitNum = unitSection.dataset.unitNumber;
         const unitMatchesFilter = (currentUnit === "all" || currentUnit === unitNum);
+        let visibleInUnit = 0;
 
-        let visibleInThisUnit = 0;
-        const cards = unitSection.querySelectorAll(".resource-card");
-
-        cards.forEach(card => {
+        unitSection.querySelectorAll(".resource-card").forEach(card => {
           const matchesSearch = query === "" || card.dataset.search.includes(query);
           const matchesTag = currentTag === "todas" || card.dataset.tag === currentTag;
           const matchesType = currentType === "todos" || card.dataset.type === currentType;
 
           if (unitMatchesFilter && matchesSearch && matchesTag && matchesType) {
             card.classList.remove("hidden");
-            visibleInThisUnit++;
+            visibleInUnit++;
             totalVisibleResources++;
           } else {
             card.classList.add("hidden");
@@ -1677,27 +1982,696 @@
         });
 
         const badge = document.getElementById(`count-unit-${unitNum}`);
-        if (badge) {
-          badge.textContent = `${visibleInThisUnit} ${visibleInThisUnit === 1 ? 'recurso' : 'recursos'}`;
-        }
+        if (badge) badge.textContent = `${visibleInUnit} ${visibleInUnit === 1 ? 'recurso' : 'recursos'}`;
 
-        if (visibleInThisUnit > 0) {
+        if (visibleInUnit > 0) {
           unitSection.classList.remove("hidden");
-          if (query !== "" || currentTag !== "todas" || currentType !== "todos") {
-            unitSection.classList.remove("collapsed");
-          }
           totalVisibleUnits++;
         } else {
           unitSection.classList.add("hidden");
         }
       });
 
-      resultsCounter.textContent = `Mostrando ${totalVisibleResources} ${totalVisibleResources === 1 ? 'recurso' : 'recursos'} en ${totalVisibleUnits} ${totalVisibleUnits === 1 ? 'unidad' : 'unidades'}`;
-      emptyState.classList.toggle("visible", totalVisibleResources === 0);
+      resultsCounter.textContent = `Mostrando ${totalVisibleResources} recursos en ${totalVisibleUnits} unidades`;
     }
 
     /* =========================================================================
-       6. VISOR MODAL PARA PIZARRA DIGITAL (WEB, PDF E IMAGEN SVG)
+       4. LOS 6 MINIJUEGOS COMPLETOS INTEGRADOS
+       ========================================================================= */
+
+    /* ---- MINIJUEGO 1: ÁBACO DIGITAL HASTA 99.999 ---- */
+    function mountAbacoGame(container) {
+      let digits = [0, 2, 4, 0, 5]; // DM, UM, C, D, U
+      let targetNumber = null;
+      const orders = [
+        { label: "DM", color: "#9c36b5", mult: 10000 },
+        { label: "UM", color: "#e03131", mult: 1000 },
+        { label: "C",  color: "#2b8a3e", mult: 100 },
+        { label: "D",  color: "#1971c2", mult: 10 },
+        { label: "U",  color: "#f08c00", mult: 1 }
+      ];
+
+      function getCurrentValue() {
+        return digits.reduce((acc, d, i) => acc + d * orders[i].mult, 0);
+      }
+
+      function renderAbaco() {
+        const val = getCurrentValue();
+        const descomp = orders
+          .map((o, i) => digits[i] > 0 ? `${digits[i]} ${o.label}` : null)
+          .filter(Boolean).join(" + ") || "0 U";
+        const sumaVal = orders
+          .map((o, i) => digits[i] > 0 ? (digits[i] * o.mult).toLocaleString("es-ES") : null)
+          .filter(Boolean).join(" + ") || "0";
+
+        const colsHtml = orders.map((o, idx) => {
+          let beads = "";
+          for (let b = 0; b < digits[idx]; b++) {
+            beads += `<div class="bead" style="background:${o.color};"></div>`;
+          }
+          return `
+            <div class="abacus-col">
+              <div class="abacus-label" style="background:${o.color};">${o.label}</div>
+              <div class="beads-stack">${beads}</div>
+              <div class="abacus-digit">${digits[idx]}</div>
+              <div class="abacus-controls">
+                <button class="btn-abacus-step" data-idx="${idx}" data-delta="-1">−</button>
+                <button class="btn-abacus-step" data-idx="${idx}" data-delta="1">+</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">🧮 Ábaco de Valor Posicional</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn-game" id="btnAbacoZero">🧹 Poner a 0</button>
+                <button class="btn-game primary" id="btnAbacoChallenge">🎯 Nuevo Reto</button>
+              </div>
+            </div>
+            <div id="abacoTargetBanner" style="margin-bottom:0.8rem; font-size:1.25rem; font-weight:800; color:var(--red-dark);">
+              ${targetNumber !== null ? `🎯 RETO: Forma en el ábaco el número <u style="font-size:1.5rem;">${targetNumber.toLocaleString("es-ES")}</u>` : "Explora libremente o pulsa «Nuevo Reto»"}
+            </div>
+            <div class="abacus-grid">${colsHtml}</div>
+            <div style="background:var(--bg-body); padding:0.9rem; border-radius:12px; border:2px solid var(--border-color);">
+              <div style="font-size:2.1rem; font-weight:800; color:var(--red-wine);">${val.toLocaleString("es-ES")}</div>
+              <div style="font-size:1.05rem; font-weight:700; color:var(--text-muted);">${descomp} = ${sumaVal}</div>
+            </div>
+            <div class="game-feedback" id="abacoFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".btn-abacus-step").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const idx = parseInt(btn.dataset.idx, 10);
+            const delta = parseInt(btn.dataset.delta, 10);
+            digits[idx] = Math.max(0, Math.min(9, digits[idx] + delta));
+            playSound("click");
+            renderAbaco();
+            if (targetNumber !== null && getCurrentValue() === targetNumber) {
+              playSound("success");
+              document.getElementById("abacoFeedback").style.color = "var(--green-ok)";
+              document.getElementById("abacoFeedback").textContent = "🎉 ¡Reto conseguido! Has formado el número exacto.";
+            }
+          });
+        });
+
+        document.getElementById("btnAbacoZero").addEventListener("click", () => {
+          playSound("click");
+          digits = [0, 0, 0, 0, 0];
+          renderAbaco();
+        });
+
+        document.getElementById("btnAbacoChallenge").addEventListener("click", () => {
+          playSound("open");
+          targetNumber = Math.floor(Math.random() * 90000) + 1020;
+          digits = [0, 0, 0, 0, 0];
+          renderAbaco();
+        });
+      }
+
+      renderAbaco();
+    }
+
+    /* ---- MINIJUEGO 2: ENTRENADOR DE CÁLCULO MENTAL Y TABLAS ---- */
+    function mountCalculoGame(container) {
+      let mode = "mult"; // 'sum', 'sub', 'mult', 'div'
+      let score = 0;
+      let streak = 0;
+      let currentQ = null;
+
+      function generateQuestion() {
+        let a, b, answer, symbol;
+        if (mode === "sum") {
+          a = Math.floor(Math.random() * 450) + 50;
+          b = Math.floor(Math.random() * 350) + 20;
+          answer = a + b;
+          symbol = "+";
+        } else if (mode === "sub") {
+          a = Math.floor(Math.random() * 500) + 200;
+          b = Math.floor(Math.random() * 190) + 15;
+          answer = a - b;
+          symbol = "−";
+        } else if (mode === "mult") {
+          a = Math.floor(Math.random() * 8) + 2;
+          b = Math.floor(Math.random() * 9) + 2;
+          answer = a * b;
+          symbol = "×";
+        } else {
+          b = Math.floor(Math.random() * 8) + 2;
+          answer = Math.floor(Math.random() * 9) + 2;
+          a = b * answer;
+          symbol = "÷";
+        }
+
+        const opts = new Set([answer]);
+        while (opts.size < 4) {
+          const offset = (Math.floor(Math.random() * 7) - 3) || 2;
+          const candidate = answer + (mode === "sum" || mode === "sub" ? offset * 10 : offset);
+          if (candidate >= 0) opts.add(candidate);
+        }
+        const options = Array.from(opts).sort(() => Math.random() - 0.5);
+        currentQ = { text: `${a} ${symbol} ${b} = ?`, answer, options };
+      }
+
+      function renderCalculo() {
+        if (!currentQ) generateQuestion();
+        const optsHtml = currentQ.options.map(op => `
+          <button class="btn-game calc-opt-btn" data-val="${op}" style="min-width:130px; font-size:1.5rem;">${op}</button>
+        `).join("");
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button class="btn-game ${mode==='sum'?'primary':''}" data-mode="sum">➕ Sumas</button>
+                <button class="btn-game ${mode==='sub'?'primary':''}" data-mode="sub">➖ Restas</button>
+                <button class="btn-game ${mode==='mult'?'primary':''}" data-mode="mult">✖️ Tablas</button>
+                <button class="btn-game ${mode==='div'?'primary':''}" data-mode="div">➗ División</button>
+              </div>
+              <span class="game-badge">⭐ Puntos: ${score} · 🔥 Racha: ${streak}</span>
+            </div>
+            <div style="font-size:2.8rem; font-weight:800; color:var(--red-wine); margin:1.3rem 0;">
+              ${currentQ.text}
+            </div>
+            <div style="display:flex; gap:0.9rem; justify-content:center; flex-wrap:wrap;">
+              ${optsHtml}
+            </div>
+            <div class="game-feedback" id="calcFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll("[data-mode]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            playSound("click");
+            mode = btn.dataset.mode;
+            currentQ = null;
+            renderCalculo();
+          });
+        });
+
+        container.querySelectorAll(".calc-opt-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const val = parseInt(btn.dataset.val, 10);
+            const fb = document.getElementById("calcFeedback");
+            if (val === currentQ.answer) {
+              score += 10;
+              streak++;
+              playSound("success");
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = "🎉 ¡Correcto! Preparando siguiente operación...";
+              setTimeout(() => {
+                currentQ = null;
+                renderCalculo();
+              }, 750);
+            } else {
+              streak = 0;
+              playSound("error");
+              btn.style.background = "#ffe3e3";
+              fb.style.color = "var(--red-primary)";
+              fb.textContent = "🤔 Ups, prueba con otro resultado.";
+            }
+          });
+        });
+      }
+
+      renderCalculo();
+    }
+
+    /* ---- MINIJUEGO 3: CALCULADORA GUIADA DE PROBLEMAS ---- */
+    function mountProblemasGame(container) {
+      const problemasList = [
+        {
+          enunciado: "En el colegio El Romeral hay 245 alumnos en Infantil y 380 alumnos en Primaria. ¿Cuántos alumnos hay en total en el colegio?",
+          opCorrecta: "+",
+          resultado: 625,
+          unidad: "alumnos"
+        },
+        {
+          enunciado: "Para la excursión a Sierra Espuña llevamos 8 cajas con 24 botellas de agua en cada caja. ¿Cuántas botellas llevamos en total?",
+          opCorrecta: "×",
+          resultado: 192,
+          unidad: "botellas"
+        },
+        {
+          enunciado: "Un depósito tiene 1.500 litros de agua. Si regamos el huerto escolar con 650 litros, ¿cuántos litros quedan en el depósito?",
+          opCorrecta: "−",
+          resultado: 850,
+          unidad: "litros"
+        },
+        {
+          enunciado: "Queremos repartir 54 cuentos en partes iguales entre 6 estanterías de la clase de 3.º. ¿Cuántos cuentos pondremos en cada estantería?",
+          opCorrecta: "÷",
+          resultado: 9,
+          unidad: "cuentos"
+        }
+      ];
+
+      let pIndex = 0;
+      let selectedOp = null;
+      let screenExpr = "";
+
+      function evaluateExpression(expr) {
+        const clean = expr.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-");
+        if (!/^[0-9+\-*/. ()]+$/.test(clean)) return null;
+        try {
+          return Function('"use strict";return (' + clean + ')')();
+        } catch {
+          return null;
+        }
+      }
+
+      function renderProblema() {
+        const prob = problemasList[pIndex];
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">🧩 Problema ${pIndex + 1} de ${problemasList.length}</span>
+              <button class="btn-game primary" id="btnNextProblem">➡️ Siguiente Problema</button>
+            </div>
+            <div class="problem-statement">
+              📖 ${prob.enunciado}
+            </div>
+            <div style="margin-bottom:0.8rem;">
+              <strong style="color:var(--red-deep);">Paso 1: ¿Qué operación necesitamos?</strong>
+              <div style="display:flex; gap:0.6rem; justify-content:center; margin-top:0.5rem;">
+                ${["+", "−", "×", "÷"].map(op => `
+                  <button class="btn-game op-choice ${selectedOp===op?'primary':''}" data-op="${op}" style="min-width:74px; font-size:1.4rem;">${op}</button>
+                `).join("")}
+              </div>
+            </div>
+            <div>
+              <strong style="color:var(--red-deep);">Paso 2: Haz la cuenta en la calculadora y comprueba</strong>
+              <div class="calc-pad">
+                <div class="calc-screen" id="probCalcScreen">${screenExpr || "0"}</div>
+                ${["7","8","9","+", "4","5","6","−", "1","2","3","×", "C","0","=","÷"].map(k => `
+                  <button class="btn-game calc-key" data-key="${k}" style="min-height:54px; font-size:1.25rem;">${k}</button>
+                `).join("")}
+              </div>
+            </div>
+            <button class="btn-primary-red" id="btnVerifyProb" style="margin-top:0.6rem;">✅ Comprobar Solución (${prob.unidad})</button>
+            <div class="game-feedback" id="probFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".op-choice").forEach(btn => {
+          btn.addEventListener("click", () => {
+            playSound("click");
+            selectedOp = btn.dataset.op;
+            renderProblema();
+          });
+        });
+
+        container.querySelectorAll(".calc-key").forEach(btn => {
+          btn.addEventListener("click", () => {
+            playSound("click");
+            const k = btn.dataset.key;
+            if (k === "C") {
+              screenExpr = "";
+            } else if (k === "=") {
+              const res = evaluateExpression(screenExpr);
+              if (res !== null && isFinite(res)) screenExpr = String(res);
+            } else {
+              screenExpr += k;
+            }
+            document.getElementById("probCalcScreen").textContent = screenExpr || "0";
+          });
+        });
+
+        document.getElementById("btnVerifyProb").addEventListener("click", () => {
+          const fb = document.getElementById("probFeedback");
+          const val = evaluateExpression(screenExpr);
+          if (selectedOp !== prob.opCorrecta) {
+            playSound("error");
+            fb.style.color = "var(--red-primary)";
+            fb.textContent = "⚠️ Revisa el Paso 1: piensa bien qué operación resuelve la pregunta.";
+            return;
+          }
+          if (val === prob.resultado) {
+            playSound("success");
+            fb.style.color = "var(--green-ok)";
+            fb.textContent = `🎉 ¡Exacto! Solución: ${prob.resultado} ${prob.unidad}.`;
+          } else {
+            playSound("error");
+            fb.style.color = "var(--red-primary)";
+            fb.textContent = "🤔 La operación elegida es buena, pero revisa los números en la calculadora.";
+          }
+        });
+
+        document.getElementById("btnNextProblem").addEventListener("click", () => {
+          playSound("open");
+          pIndex = (pIndex + 1) % problemasList.length;
+          selectedOp = null;
+          screenExpr = "";
+          renderProblema();
+        });
+      }
+
+      renderProblema();
+    }
+
+    /* ---- MINIJUEGO 4: RELOJ DE AGUJAS ARRASTRABLES (TOUCH & MOUSE) ---- */
+    function mountRelojGame(container) {
+      let hours = 3;
+      let minutes = 15; // Saltos de 5 minutos
+      let draggingHand = null; // 'hour' | 'minute'
+      let targetTime = null;
+
+      function formatTextTime(h, m) {
+        const names = ["doce", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce"];
+        const nextH = (h % 12) + 1;
+        if (m === 0) return `Las ${names[h]} en punto`;
+        if (m === 15) return `Las ${names[h]} y cuarto`;
+        if (m === 30) return `Las ${names[h]} y media`;
+        if (m === 45) return `Las ${names[nextH]} menos cuarto`;
+        if (m < 30) return `Las ${names[h]} y ${m} minutos`;
+        return `Las ${names[nextH]} menos ${60 - m} minutos`;
+      }
+
+      function renderClock() {
+        const minAngle = minutes * 6;
+        const hourAngle = ((hours % 12) * 30) + (minutes * 0.5);
+        const digitalStr = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+
+        let numbersSvg = "";
+        for (let n = 1; n <= 12; n++) {
+          const rad = ((n * 30) - 90) * (Math.PI / 180);
+          const x = 140 + Math.cos(rad) * 102;
+          const y = 140 + Math.sin(rad) * 102 + 7;
+          numbersSvg += `<text x="${x}" y="${y}" text-anchor="middle" font-size="20" font-weight="800" fill="#4a1010">${n}</text>`;
+        }
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">⏰ Arrastra las agujas o usa los botones</span>
+              <button class="btn-game primary" id="btnClockChallenge">🎯 Reto de Hora</button>
+            </div>
+            <div style="font-size:1.25rem; font-weight:800; color:var(--red-dark); margin-bottom:0.6rem;">
+              ${targetTime ? `🎯 RETO: Coloca en el reloj <u>${formatTextTime(targetTime.h, targetTime.m)}</u>` : "Mueve la aguja azul (minutos) o la roja (horas) con el dedo"}
+            </div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:2rem;">
+              <svg id="interactiveClockSvg" width="280" height="280" viewBox="0 0 280 280" style="touch-action:none; cursor:grab;">
+                <circle cx="140" cy="140" r="128" fill="#fff5f5" stroke="#c92a2a" stroke-width="8"/>
+                ${numbersSvg}
+                <!-- Aguja de Horas (Roja, corta) -->
+                <g id="hourHandGroup" transform="rotate(${hourAngle} 140 140)" style="cursor:pointer;">
+                  <line x1="140" y1="140" x2="140" y2="74" stroke="#e03131" stroke-width="10" stroke-linecap="round"/>
+                  <circle cx="140" cy="74" r="14" fill="rgba(224,49,49,0.2)"/>
+                </g>
+                <!-- Aguja de Minutos (Azul, larga) -->
+                <g id="minuteHandGroup" transform="rotate(${minAngle} 140 140)" style="cursor:pointer;">
+                  <line x1="140" y1="140" x2="140" y2="46" stroke="#1971c2" stroke-width="7" stroke-linecap="round"/>
+                  <circle cx="140" cy="46" r="16" fill="rgba(25,113,194,0.2)"/>
+                </g>
+                <circle cx="140" cy="140" r="9" fill="#4a1010"/>
+              </svg>
+
+              <div style="display:flex; flex-direction:column; gap:0.8rem; min-width:250px;">
+                <div style="background:#2b0b0b; color:#ffd43b; font-size:2.4rem; font-weight:800; padding:0.6rem 1.2rem; border-radius:14px;">
+                  ${digitalStr}
+                </div>
+                <div style="font-size:1.25rem; font-weight:800; color:var(--red-wine);">
+                  «${formatTextTime(hours, minutes)}»
+                </div>
+                <div style="display:flex; gap:0.5rem; justify-content:center;">
+                  <button class="btn-game" id="btnAddHour">+1 Hora</button>
+                  <button class="btn-game" id="btnAdd15Min">+15 Min</button>
+                  <button class="btn-game" id="btnAdd5Min">+5 Min</button>
+                </div>
+              </div>
+            </div>
+            <div class="game-feedback" id="clockFeedback"></div>
+          </div>
+        `;
+
+        const svg = document.getElementById("interactiveClockSvg");
+        const hourG = document.getElementById("hourHandGroup");
+        const minG = document.getElementById("minuteHandGroup");
+
+        function getAngleFromEvent(e) {
+          const rect = svg.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          const dx = clientX - (rect.left + rect.width / 2);
+          const dy = clientY - (rect.top + rect.height / 2);
+          let deg = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+          if (deg < 0) deg += 360;
+          return deg;
+        }
+
+        function checkClockChallenge() {
+          if (targetTime && hours === targetTime.h && minutes === targetTime.m) {
+            playSound("success");
+            const fb = document.getElementById("clockFeedback");
+            if (fb) {
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = "🎉 ¡Bravo! Has colocado la hora exacta en el reloj.";
+            }
+          }
+        }
+
+        hourG.addEventListener("pointerdown", (e) => { e.stopPropagation(); draggingHand = "hour"; });
+        minG.addEventListener("pointerdown", (e) => { e.stopPropagation(); draggingHand = "minute"; });
+
+        svg.addEventListener("pointermove", (e) => {
+          if (!draggingHand) return;
+          const deg = getAngleFromEvent(e);
+          if (draggingHand === "minute") {
+            minutes = (Math.round(deg / 30) * 5) % 60;
+          } else {
+            let h = Math.round(deg / 30) % 12;
+            if (h === 0) h = 12;
+            hours = h;
+          }
+          renderClock();
+          checkClockChallenge();
+        });
+
+        window.addEventListener("pointerup", () => { draggingHand = null; }, { once: true });
+
+        document.getElementById("btnAddHour").addEventListener("click", () => {
+          playSound("click");
+          hours = (hours % 12) + 1;
+          renderClock();
+          checkClockChallenge();
+        });
+
+        document.getElementById("btnAdd15Min").addEventListener("click", () => {
+          playSound("click");
+          minutes = (minutes + 15) % 60;
+          renderClock();
+          checkClockChallenge();
+        });
+
+        document.getElementById("btnAdd5Min").addEventListener("click", () => {
+          playSound("click");
+          minutes = (minutes + 5) % 60;
+          renderClock();
+          checkClockChallenge();
+        });
+
+        document.getElementById("btnClockChallenge").addEventListener("click", () => {
+          playSound("open");
+          const possibleMins = [0, 15, 30, 45];
+          targetTime = {
+            h: Math.floor(Math.random() * 12) + 1,
+            m: possibleMins[Math.floor(Math.random() * possibleMins.length)]
+          };
+          renderClock();
+        });
+      }
+
+      renderClock();
+    }
+
+    /* ---- MINIJUEGO 5: CAJERO DE MONEDAS Y BILLETES DE EURO ---- */
+    function mountMonedasGame(container) {
+      const itemsTienda = [
+        { nombre: "⚽ Balón de reglamento", precioCents: 1450 },
+        { nombre: "📚 Lote de cuentos de aventuras", precioCents: 1870 },
+        { nombre: "🎨 Estuche de pinturas y acuarelas", precioCents: 840 },
+        { nombre: "🦖 Juego de mesa cooperativo", precioCents: 2360 },
+        { nombre: "🎒 Mochila de excursión", precioCents: 1680 }
+      ];
+
+      let itemIdx = 0;
+      let paidCents = 0;
+
+      function formatEuro(cents) {
+        const eur = Math.floor(cents / 100);
+        const cnt = cents % 100;
+        if (cnt === 0) return `${eur} €`;
+        return `${eur},${String(cnt).padStart(2, "0")} €`;
+      }
+
+      function renderMonedas() {
+        const item = itemsTienda[itemIdx];
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">💶 Cajero Escolar de Euros</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn-game" id="btnResetTray">🧹 Vaciar Bandeja</button>
+                <button class="btn-game primary" id="btnNextItem">🛒 Otro Artículo</button>
+              </div>
+            </div>
+            <div style="background:#fff9db; border:2px solid #f59f00; border-radius:14px; padding:1rem; margin-bottom:1rem;">
+              <div style="font-size:1.35rem; font-weight:800; color:var(--red-wine);">${item.nombre}</div>
+              <div style="font-size:1.9rem; font-weight:800; color:#b45309;">Precio exacto: ${formatEuro(item.precioCents)}</div>
+            </div>
+            <p style="font-weight:700; color:var(--text-muted);">Toca los billetes y monedas para añadirlos a la bandeja de pago:</p>
+            <div class="wallet-grid">
+              <button class="money-btn money-bill" data-cents="2000">💵 20 €</button>
+              <button class="money-btn money-bill" data-cents="1000">💵 10 €</button>
+              <button class="money-btn money-bill" data-cents="500">💵 5 €</button>
+              <button class="money-btn money-coin-euro" data-cents="200">🪙 2 €</button>
+              <button class="money-btn money-coin-euro" data-cents="100">🪙 1 €</button>
+              <button class="money-btn money-coin-cent" data-cents="50">50 cént.</button>
+              <button class="money-btn money-coin-cent" data-cents="20">20 cént.</button>
+              <button class="money-btn money-coin-cent" data-cents="10">10 cént.</button>
+            </div>
+            <div style="background:var(--bg-body); padding:0.9rem; border-radius:12px; border:2px solid var(--border-color); font-size:1.5rem; font-weight:800;">
+              Bandeja actual: <span style="color:var(--red-primary);">${formatEuro(paidCents)}</span>
+            </div>
+            <div class="game-feedback" id="euroFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".money-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            paidCents += parseInt(btn.dataset.cents, 10);
+            playSound("click");
+            renderMonedas();
+            const fb = document.getElementById("euroFeedback");
+            if (paidCents === item.precioCents) {
+              playSound("success");
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = "🎉 ¡Pago exacto! Has combinado muy bien los euros y céntimos.";
+            } else if (paidCents > item.precioCents) {
+              playSound("error");
+              fb.style.color = "var(--red-primary)";
+              fb.textContent = `⚠️ Te has pasado por ${formatEuro(paidCents - item.precioCents)}. Pulsa «Vaciar Bandeja».`;
+            }
+          });
+        });
+
+        document.getElementById("btnResetTray").addEventListener("click", () => {
+          playSound("click");
+          paidCents = 0;
+          renderMonedas();
+        });
+
+        document.getElementById("btnNextItem").addEventListener("click", () => {
+          playSound("open");
+          itemIdx = (itemIdx + 1) % itemsTienda.length;
+          paidCents = 0;
+          renderMonedas();
+        });
+      }
+
+      renderMonedas();
+    }
+
+    /* ---- MINIJUEGO 6: LABORATORIO DE PERÍMETRO Y ÁREA EN CUADRÍCULA ---- */
+    function mountGeometriaGame(container) {
+      const ROWS = 6;
+      const COLS = 8;
+      let grid = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+      // Dibujar un rectángulo inicial 3x2
+      grid[2][2] = true; grid[2][3] = true; grid[2][4] = true;
+      grid[3][2] = true; grid[3][3] = true; grid[3][4] = true;
+      let targetArea = null;
+
+      function calcStats() {
+        let area = 0;
+        let perimeter = 0;
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            if (grid[r][c]) {
+              area++;
+              if (r === 0 || !grid[r - 1][c]) perimeter++;
+              if (r === ROWS - 1 || !grid[r + 1][c]) perimeter++;
+              if (c === 0 || !grid[r][c - 1]) perimeter++;
+              if (c === COLS - 1 || !grid[r][c + 1]) perimeter++;
+            }
+          }
+        }
+        return { area, perimeter };
+      }
+
+      function renderGrid() {
+        const { area, perimeter } = calcStats();
+        let cellsHtml = "";
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            cellsHtml += `<div class="grid-cell ${grid[r][c] ? 'filled' : ''}" data-r="${r}" data-c="${c}"></div>`;
+          }
+        }
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">📐 Toca los cuadrados para pintar tu polígono</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn-game" id="btnClearGeo">🧹 Limpiar</button>
+                <button class="btn-game primary" id="btnGeoChallenge">🎯 Reto de Superficie</button>
+              </div>
+            </div>
+            <div style="font-size:1.2rem; font-weight:800; color:var(--red-dark);">
+              ${targetArea ? `🎯 RETO: Dibuja una figura con un <u>Área exacta de ${targetArea} cuadrados</u>` : "Compara cómo cambian el Área (interior) y el Perímetro (borde)"}
+            </div>
+            <div class="grid-board">${cellsHtml}</div>
+            <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap;">
+              <div style="background:var(--bg-soft-red); padding:0.75rem 1.4rem; border-radius:12px; font-size:1.3rem; font-weight:800; color:var(--red-dark);">
+                🟥 Área: ${area} cuadrados
+              </div>
+              <div style="background:#fff9db; padding:0.75rem 1.4rem; border-radius:12px; font-size:1.3rem; font-weight:800; color:#b45309; border:2px solid #ffd43b;">
+                📏 Perímetro: ${perimeter} lados
+              </div>
+            </div>
+            <div class="game-feedback" id="geoFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".grid-cell").forEach(cell => {
+          cell.addEventListener("click", () => {
+            const r = parseInt(cell.dataset.r, 10);
+            const c = parseInt(cell.dataset.c, 10);
+            grid[r][c] = !grid[r][c];
+            playSound("click");
+            renderGrid();
+            const stats = calcStats();
+            if (targetArea && stats.area === targetArea) {
+              playSound("success");
+              const fb = document.getElementById("geoFeedback");
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = `🎉 ¡Reto superado! Tu figura tiene ${stats.area} cuadrados de área y ${stats.perimeter} lados de perímetro.`;
+            }
+          });
+        });
+
+        document.getElementById("btnClearGeo").addEventListener("click", () => {
+          playSound("click");
+          grid = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+          renderGrid();
+        });
+
+        document.getElementById("btnGeoChallenge").addEventListener("click", () => {
+          playSound("open");
+          targetArea = Math.floor(Math.random() * 12) + 4;
+          grid = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+          renderGrid();
+        });
+      }
+
+      renderGrid();
+    }
+
+    /* =========================================================================
+       5. APERTURA DEL MODAL DE RECURSO (CONECTA CON MINIJUEGO, PDF O IMAGEN)
        ========================================================================= */
     const resourceModal = document.getElementById("resourceModal");
     const modalIcon = document.getElementById("modalIcon");
@@ -1708,7 +2682,7 @@
     const modalExternalLink = document.getElementById("modalExternalLink");
 
     function findResourceById(id) {
-      for (const u of UNIDADES_MATEMATICAS) {
+      for (const u of unidadesData) {
         const found = u.recursos.find(r => r.id === id);
         if (found) return { recurso: found, unidad: u };
       }
@@ -1727,77 +2701,48 @@
       modalTitle.textContent = recurso.titulo;
       modalSubtitle.textContent = `Unidad ${unidad.numero} · ${fmt.label} · Etiqueta: ${recurso.etiqueta.toUpperCase()}`;
       modalDescription.textContent = recurso.descripcion;
-      modalExternalLink.href = recurso.url;
+      modalExternalLink.href = recurso.url || "#";
 
-      // Renderizar vista previa según sea Recurso Web, PDF o Imagen
-      if (recurso.tipo === "web" && recurso.reto) {
-        const btnsHtml = recurso.reto.opciones.map((op, idx) => `
-          <button class="quiz-btn" data-idx="${idx}" data-correct="${recurso.reto.correcta}">${op}</button>
-        `).join("");
+      modalPreviewArea.innerHTML = "";
 
-        modalPreviewArea.innerHTML = `
-          <div class="interactive-box">
-            <span style="background:var(--bg-soft-red); color:var(--red-dark); padding:0.35rem 0.9rem; border-radius:999px; font-weight:800; font-size:0.9rem;">
-              🎯 MINI-RETO INTERACTIVO DE PIZARRA
-            </span>
-            <h4 style="font-size:1.4rem; margin-top:0.9rem; color:var(--red-wine);">${recurso.reto.pregunta}</h4>
-            <div class="quiz-options">${btnsHtml}</div>
-            <p id="quizFeedback" style="margin-top:1rem; font-weight:800; min-height:1.6rem;"></p>
-          </div>
-        `;
-
-        modalPreviewArea.querySelectorAll(".quiz-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const selected = parseInt(btn.dataset.idx, 10);
-            const correct = parseInt(btn.dataset.correct, 10);
-            const feedback = document.getElementById("quizFeedback");
-
-            modalPreviewArea.querySelectorAll(".quiz-btn").forEach(b => b.classList.remove("correct", "wrong"));
-
-            if (selected === correct) {
-              btn.classList.add("correct");
-              feedback.style.color = "#2b8a3e";
-              feedback.textContent = "🎉 ¡Excelente! Respuesta correcta.";
-              playSound("success");
-            } else {
-              btn.classList.add("wrong");
-              feedback.style.color = "#c92a2a";
-              feedback.textContent = "🤔 ¡Casi! Inténtalo con otra opción.";
-              playSound("error");
-            }
-          });
-        });
-
+      if (recurso.tipo === "web") {
+        const gameType = recurso.minijuego || "calculo";
+        if (gameType === "abaco") mountAbacoGame(modalPreviewArea);
+        else if (gameType === "problemas") mountProblemasGame(modalPreviewArea);
+        else if (gameType === "reloj") mountRelojGame(modalPreviewArea);
+        else if (gameType === "monedas") mountMonedasGame(modalPreviewArea);
+        else if (gameType === "geometria") mountGeometriaGame(modalPreviewArea);
+        else mountCalculoGame(modalPreviewArea);
       } else if (recurso.tipo === "pdf") {
-        const listItems = (recurso.puntosPdf || []).map(item => `<li style="margin-bottom:0.5rem;">✅ ${item}</li>`).join("");
+        const puntos = (recurso.puntosPdf && recurso.puntosPdf.length > 0)
+          ? recurso.puntosPdf
+          : ["Actividad paso a paso adaptada a 3.º de Primaria.", "Lista para proyectar en pizarra o imprimir en formato A4."];
+        const listItems = puntos.map(item => `<li style="margin-bottom:0.55rem;">✅ ${item}</li>`).join("");
+
         modalPreviewArea.innerHTML = `
-          <div class="interactive-box" style="text-align:left;">
-            <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid var(--border-color); padding-bottom:0.8rem; margin-bottom:1rem;">
-              <strong style="color:var(--red-dark); font-size:1.15rem;">📄 Vista Previa de Ficha Imprimible (PDF)</strong>
-              <span style="background:#fff0f6; color:#a61e4d; padding:0.25rem 0.7rem; border-radius:8px; font-weight:800; font-size:0.85rem;">Formato A4</span>
+          <div class="minigame-container" style="text-align:left;">
+            <div style="display:flex; justify-content:space-between; border-bottom:2px solid var(--border-color); padding-bottom:0.7rem; margin-bottom:1rem;">
+              <strong style="color:var(--red-dark); font-size:1.2rem;">📄 Vista Previa del Documento PDF</strong>
+              <span class="format-badge format-pdf">Imprimible A4</span>
             </div>
-            <ul style="list-style:none; font-size:1.08rem; font-weight:700; color:var(--text-main);">
-              ${listItems}
-            </ul>
-            <div style="margin-top:1rem; padding:0.8rem; background:var(--bg-body); border-radius:10px; font-size:0.95rem; color:var(--text-muted); font-weight:600;">
-              💡 Ruta configurada: <code>${recurso.url}</code>
+            <ul style="list-style:none; font-size:1.12rem; font-weight:700;">${listItems}</ul>
+            <div style="margin-top:1rem; padding:0.8rem; background:var(--bg-body); border-radius:10px; font-weight:600; color:var(--text-muted);">
+              📁 Archivo vinculado: <code>${recurso.url || "Sin ruta externa"}</code>
             </div>
           </div>
         `;
-
       } else {
-        // Recurso tipo IMAGEN -> Póster SVG vectorial de alta nitidez para proyectar en el MDI
         modalPreviewArea.innerHTML = `
-          <div class="interactive-box" style="padding:1rem;">
-            <svg viewBox="0 0 700 220" width="100%" height="auto" style="border-radius:12px; background:linear-gradient(135deg, #fff5f5, #ffe3e3); border:2px solid #ffa8a8;">
-              <rect x="16" y="16" width="668" height="188" rx="14" fill="#ffffff" stroke="#e03131" stroke-width="3" stroke-dasharray="8 6"/>
-              <text x="350" y="68" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="36" font-weight="800" fill="#c92a2a">
+          <div class="minigame-container">
+            <svg viewBox="0 0 740 230" width="100%" height="auto" style="border-radius:14px; background:linear-gradient(135deg, #fff5f5, #ffe3e3); border:2px solid #ffa8a8;">
+              <rect x="16" y="16" width="708" height="198" rx="14" fill="#ffffff" stroke="#e03131" stroke-width="3" stroke-dasharray="8 6"/>
+              <text x="370" y="72" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="34" font-weight="800" fill="#c92a2a">
                 ${recurso.icono} ${recurso.titulo}
               </text>
-              <text x="350" y="130" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="20" font-weight="700" fill="#3b1111">
+              <text x="370" y="135" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="20" font-weight="700" fill="#3b1111">
                 ${recurso.textoPoster || recurso.descripcion}
               </text>
-              <text x="350" y="178" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="15" font-weight="700" fill="#7a3e3e">
+              <text x="370" y="188" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="15" font-weight="700" fill="#7a3e3e">
                 Lámina Visual de Aula · 3.º de Primaria · Etiqueta: ${recurso.etiqueta.toUpperCase()}
               </text>
             </svg>
@@ -1808,13 +2753,193 @@
       resourceModal.classList.add("active");
     }
 
-    function closeModal() {
-      playSound("click");
-      resourceModal.classList.remove("active");
+    /* =========================================================================
+       6. MODO DOCENTE (CONTRASEÑA, AÑADIR, EDITAR, BORRAR Y LOCALSTORAGE)
+       ========================================================================= */
+    const btnTeacherMode = document.getElementById("btnTeacherMode");
+    const teacherToolbar = document.getElementById("teacherToolbar");
+    const loginModal = document.getElementById("loginModal");
+    const teacherPassInput = document.getElementById("teacherPassInput");
+    const loginErrorMsg = document.getElementById("loginErrorMsg");
+    const editorModal = document.getElementById("editorModal");
+    const resourceForm = document.getElementById("resourceForm");
+
+    function setTeacherMode(active) {
+      isTeacherMode = active;
+      document.body.classList.toggle("teacher-mode", active);
+      teacherToolbar.classList.toggle("visible", active);
+      btnTeacherMode.classList.toggle("teacher-active", active);
+      document.getElementById("teacherIcon").textContent = active ? "🔓" : "🔒";
+      document.getElementById("teacherText").textContent = active ? "Salir Modo Docente" : "Modo Docente";
     }
 
+    btnTeacherMode.addEventListener("click", () => {
+      playSound("click");
+      if (isTeacherMode) {
+        setTeacherMode(false);
+      } else {
+        teacherPassInput.value = "";
+        loginErrorMsg.style.display = "none";
+        loginModal.classList.add("active");
+        setTimeout(() => teacherPassInput.focus(), 80);
+      }
+    });
+
+    function verifyTeacherPassword() {
+      const val = teacherPassInput.value.trim().toLowerCase();
+      if (val === "1234" || val === "profe") {
+        playSound("success");
+        loginModal.classList.remove("active");
+        setTeacherMode(true);
+      } else {
+        playSound("error");
+        loginErrorMsg.style.display = "block";
+      }
+    }
+
+    document.getElementById("btnConfirmLogin").addEventListener("click", verifyTeacherPassword);
+    teacherPassInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") verifyTeacherPassword();
+    });
+    document.getElementById("btnCloseLogin").addEventListener("click", () => loginModal.classList.remove("active"));
+    document.getElementById("btnCancelLogin").addEventListener("click", () => loginModal.classList.remove("active"));
+
+    // Mostrar/Ocultar selector de minijuego según el formato elegido
+    const formType = document.getElementById("formType");
+    const groupMinigame = document.getElementById("groupMinigame");
+    formType.addEventListener("change", () => {
+      groupMinigame.style.display = formType.value === "web" ? "flex" : "none";
+    });
+
+    // Abrir modal para añadir nuevo recurso
+    document.getElementById("btnAddNewResource").addEventListener("click", () => {
+      playSound("open");
+      document.getElementById("editorModalTitle").textContent = "➕ Añadir Nuevo Recurso";
+      document.getElementById("editResId").value = "";
+      document.getElementById("formUnit").value = currentUnit === "all" ? "1" : currentUnit;
+      document.getElementById("formTag").value = currentTag === "todas" ? "numeración" : currentTag;
+      document.getElementById("formType").value = "web";
+      document.getElementById("formIcon").value = "🎲";
+      document.getElementById("formTitle").value = "";
+      document.getElementById("formDesc").value = "";
+      document.getElementById("formMinigame").value = "calculo";
+      document.getElementById("formUrl").value = "";
+      document.getElementById("formExtra").value = "";
+      groupMinigame.style.display = "flex";
+      editorModal.classList.add("active");
+    });
+
+    // Abrir modal para editar un recurso existente
+    function openEditorForEdit(id) {
+      const data = findResourceById(id);
+      if (!data) return;
+      playSound("open");
+      const { recurso, unidad } = data;
+
+      document.getElementById("editorModalTitle").textContent = "✏️ Editar Recurso";
+      document.getElementById("editResId").value = recurso.id;
+      document.getElementById("formUnit").value = String(unidad.numero);
+      document.getElementById("formTag").value = recurso.etiqueta;
+      document.getElementById("formType").value = recurso.tipo;
+      document.getElementById("formIcon").value = recurso.icono;
+      document.getElementById("formTitle").value = recurso.titulo;
+      document.getElementById("formDesc").value = recurso.descripcion;
+      document.getElementById("formMinigame").value = recurso.minijuego || "calculo";
+      document.getElementById("formUrl").value = recurso.url || "";
+
+      if (recurso.tipo === "pdf" && recurso.puntosPdf) {
+        document.getElementById("formExtra").value = recurso.puntosPdf.join("; ");
+      } else if (recurso.tipo === "imagen" && recurso.textoPoster) {
+        document.getElementById("formExtra").value = recurso.textoPoster;
+      } else {
+        document.getElementById("formExtra").value = "";
+      }
+
+      groupMinigame.style.display = recurso.tipo === "web" ? "flex" : "none";
+      editorModal.classList.add("active");
+    }
+
+    // Guardar nuevo o editado en localStorage
+    resourceForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const editId = document.getElementById("editResId").value;
+      const targetUnitNum = parseInt(document.getElementById("formUnit").value, 10);
+      const tipo = document.getElementById("formType").value;
+      const extraRaw = document.getElementById("formExtra").value.trim();
+
+      const newObj = {
+        id: editId || ("custom-" + Date.now()),
+        titulo: document.getElementById("formTitle").value.trim(),
+        descripcion: document.getElementById("formDesc").value.trim(),
+        tipo: tipo,
+        etiqueta: document.getElementById("formTag").value,
+        icono: document.getElementById("formIcon").value.trim() || "📌",
+        url: document.getElementById("formUrl").value.trim() || "#"
+      };
+
+      if (tipo === "web") {
+        newObj.minijuego = document.getElementById("formMinigame").value;
+      } else if (tipo === "pdf") {
+        newObj.puntosPdf = extraRaw ? extraRaw.split(";").map(s => s.trim()).filter(Boolean) : [newObj.descripcion];
+      } else if (tipo === "imagen") {
+        newObj.textoPoster = extraRaw || newObj.descripcion;
+      }
+
+      // Si estamos editando, primero lo quitamos de donde estuviera
+      if (editId) {
+        unidadesData.forEach(u => {
+          u.recursos = u.recursos.filter(r => r.id !== editId);
+        });
+      }
+
+      const unitTarget = unidadesData.find(u => u.numero === targetUnitNum);
+      if (unitTarget) {
+        unitTarget.recursos.push(newObj);
+      }
+
+      saveDataToStorage();
+      renderUnits();
+      playSound("success");
+      editorModal.classList.remove("active");
+    });
+
+    function deleteResourceById(id) {
+      const data = findResourceById(id);
+      if (!data) return;
+      if (!confirm(`¿Seguro que deseas eliminar «${data.recurso.titulo}»?`)) return;
+      unidadesData.forEach(u => {
+        u.recursos = u.recursos.filter(r => r.id !== id);
+      });
+      saveDataToStorage();
+      renderUnits();
+      playSound("click");
+    }
+
+    document.getElementById("btnCloseEditor").addEventListener("click", () => editorModal.classList.remove("active"));
+    document.getElementById("btnCancelEditor").addEventListener("click", () => editorModal.classList.remove("active"));
+
+    // Exportar JSON y Restaurar de Fábrica
+    document.getElementById("btnExportJson").addEventListener("click", () => {
+      playSound("click");
+      const blob = new Blob([JSON.stringify(unidadesData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recursos-matematicas-3primaria.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
+      if (!confirm("¿Restaurar los 36 recursos originales de fábrica? Se borrarán los cambios guardados en este navegador.")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      loadDataFromStorage();
+      renderUnits();
+      playSound("open");
+    });
+
     /* =========================================================================
-       7. EVENTOS DE INTERFAZ Y CONTROLES TÁCTILES
+       7. EVENTOS GENERALES DE FILTROS Y NAVEGACIÓN
        ========================================================================= */
     searchInput.addEventListener("input", (e) => {
       currentSearch = e.target.value;
@@ -1826,10 +2951,8 @@
       searchInput.value = "";
       currentSearch = "";
       applyFilters();
-      searchInput.focus();
     });
 
-    // Botones de Etiquetas Curriculares
     document.querySelectorAll(".tag-filter-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         playSound("click");
@@ -1840,7 +2963,6 @@
       });
     });
 
-    // Botones de Tipo de Recurso (Web / PDF / Imagen)
     document.querySelectorAll(".type-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         playSound("click");
@@ -1851,7 +2973,6 @@
       });
     });
 
-    // Botones de filtro por Unidad (1 a 6)
     document.querySelectorAll(".unit-pill").forEach(pill => {
       pill.addEventListener("click", () => {
         playSound("click");
@@ -1862,33 +2983,13 @@
       });
     });
 
-    // Resetear todos los filtros
-    document.getElementById("btnResetFilters").addEventListener("click", () => {
-      playSound("open");
-      searchInput.value = "";
-      currentSearch = "";
-      currentTag = "todas";
-      currentType = "todos";
-      currentUnit = "all";
-
-      document.querySelectorAll(".tag-filter-btn").forEach(b => b.classList.toggle("active", b.dataset.tag === "todas"));
-      document.querySelectorAll(".type-btn").forEach(b => b.classList.toggle("active", b.dataset.type === "todos"));
-      document.querySelectorAll(".unit-pill").forEach(p => p.classList.toggle("active", p.dataset.unit === "all"));
-
-      applyFilters();
-    });
-
-    // Contraer / Expandir todas las unidades
     document.getElementById("btnToggleAllUnits").addEventListener("click", () => {
       playSound("click");
       allCollapsed = !allCollapsed;
-      document.querySelectorAll(".unit-section").forEach(sec => {
-        sec.classList.toggle("collapsed", allCollapsed);
-      });
+      document.querySelectorAll(".unit-section").forEach(sec => sec.classList.toggle("collapsed", allCollapsed));
       document.getElementById("toggleUnitsText").textContent = allCollapsed ? "Expandir unidades" : "Contraer unidades";
     });
 
-    // Activar / Silenciar sonido
     document.getElementById("btnSoundToggle").addEventListener("click", () => {
       soundEnabled = !soundEnabled;
       document.getElementById("soundIcon").textContent = soundEnabled ? "🔊" : "🔇";
@@ -1896,22 +2997,20 @@
       if (soundEnabled) playSound("click");
     });
 
-    // Cerrar modal e imprimir
-    document.getElementById("btnCloseModal").addEventListener("click", closeModal);
-    resourceModal.addEventListener("click", (e) => {
-      if (e.target === resourceModal) closeModal();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && resourceModal.classList.contains("active")) closeModal();
-    });
-    document.getElementById("btnPrintResource").addEventListener("click", () => {
+    document.getElementById("btnCloseModal").addEventListener("click", () => {
       playSound("click");
-      window.print();
+      resourceModal.classList.remove("active");
     });
 
-    // Inicializar aplicación al cargar
+    resourceModal.addEventListener("click", (e) => {
+      if (e.target === resourceModal) resourceModal.classList.remove("active");
+    });
+
+    document.getElementById("btnPrintResource").addEventListener("click", () => window.print());
+
+    // Inicializar
+    loadDataFromStorage();
     renderUnits();
-    applyFilters();
   </script>
 </body>
 </html>
