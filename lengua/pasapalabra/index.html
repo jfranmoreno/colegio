@@ -1170,7 +1170,7 @@
       const source = customArray || DEFAULT_ROSCO_DATA;
       gameData = source.map(item => ({
         letra: String(item.letra).toUpperCase().trim(),
-        tipo: (item.tipo && item.tipo.toLowerCase() === 'contiene') ? '',
+        tipo: (item.tipo && item.tipo.toLowerCase() === 'contiene') ? 'contiene' : 'empieza',
         palabra: String(item.palabra).toUpperCase().trim(),
         definicion: String(item.definicion).trim(),
         pista: item.pista ? String(item.pista).trim() : '',
