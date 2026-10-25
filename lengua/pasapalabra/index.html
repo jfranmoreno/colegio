@@ -12,7 +12,7 @@
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #ede9fe 50%, #fef3c7 100%);
-      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-bg: rgba(255, 255, 255, 0.96);
       --primary: #2563eb;
       --primary-light: #60a5fa;
       --success: #16a34a;
@@ -23,7 +23,7 @@
       --text-muted: #64748b;
       --font-scale: 1;
       --ui-scale: 1;
-      --rosco-radius: 265px;
+      --rosco-radius: 270px;
       --letter-size: 46px;
     }
 
@@ -53,19 +53,21 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 24px;
-      background: rgba(255, 255, 255, 0.85);
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       z-index: 20;
       flex-shrink: 0;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 1.5rem;
+      gap: 10px;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--primary);
     }
@@ -73,28 +75,28 @@
     .brand span.badge {
       background: var(--purple);
       color: white;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       padding: 4px 10px;
       border-radius: 999px;
     }
 
     .stats-bar {
       display: flex;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
     }
 
     .stat-pill {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
+      gap: 6px;
+      padding: 7px 14px;
       border-radius: 999px;
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       color: white;
       box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-      min-width: 90px;
+      min-width: 82px;
       justify-content: center;
       transition: transform 0.2s;
     }
@@ -102,30 +104,31 @@
     .stat-pill.pending { background: var(--primary); }
     .stat-pill.correct { background: var(--success); }
     .stat-pill.wrong   { background: var(--danger); }
-    .stat-pill.timer   { background: var(--purple); min-width: 110px; }
+    .stat-pill.timer   { background: var(--purple); min-width: 100px; }
 
     .header-actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .icon-btn {
-      min-width: 52px;
-      min-height: 52px;
-      padding: 0 16px;
-      border-radius: 16px;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 14px;
       border: 2px solid #e2e8f0;
       background: white;
       color: var(--text-main);
       font-family: inherit;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+      gap: 6px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.04);
       transition: all 0.15s ease;
     }
 
@@ -136,6 +139,12 @@
     .icon-btn:hover {
       border-color: var(--primary-light);
       background: #f8fafc;
+    }
+
+    .icon-btn.pdf-btn {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #1d4ed8;
     }
 
     /* ================= ÁREA PRINCIPAL Y ROSCO ================= */
@@ -212,7 +221,7 @@
       }
     }
 
-    /* ================= TARJETA CENTRAL DEL ROSCO ================= */
+    /* ================= TARJETA CENTRAL DEL ROSCO (ALINEACIÓN CORREGIDA) ================= */
     .center-board {
       width: calc(var(--rosco-radius) * 1.48);
       height: calc(var(--rosco-radius) * 1.48);
@@ -223,16 +232,21 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 28px 34px;
+      /* Mayor padding inferior para elevar el cuadro de escritura hacia la parte ancha del círculo */
+      padding: 32px 36px 54px 36px;
       text-align: center;
       z-index: 4;
       position: relative;
+      overflow: hidden;
     }
 
     .letter-header {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
+      width: 82%;
+      flex-shrink: 0;
     }
 
     .condition-badge {
@@ -243,16 +257,18 @@
       padding: 6px 18px;
       border-radius: 999px;
       border: 2px solid #93c5fd;
+      white-space: nowrap;
     }
 
     .btn-tts {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
       border-radius: 50%;
       border: none;
       background: var(--primary);
       color: white;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -270,12 +286,12 @@
       align-items: center;
       justify-content: center;
       overflow-y: auto;
-      width: 100%;
-      padding: 4px 8px;
+      width: 92%;
+      padding: 6px 4px;
     }
 
     .definition-text {
-      font-size: calc(1.22rem * var(--font-scale));
+      font-size: calc(1.18rem * var(--font-scale));
       font-weight: 700;
       line-height: 1.35;
       color: var(--text-main);
@@ -283,10 +299,10 @@
 
     .hint-box {
       margin-top: 8px;
-      font-size: calc(0.95rem * var(--font-scale));
+      font-size: calc(0.9rem * var(--font-scale));
       color: #b45309;
       background: #fef3c7;
-      padding: 5px 14px;
+      padding: 5px 12px;
       border-radius: 12px;
       font-weight: 700;
       border: 1px solid #fde68a;
@@ -294,7 +310,7 @@
     }
 
     .feedback-banner {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 800;
       padding: 4px 14px;
       border-radius: 999px;
@@ -302,29 +318,35 @@
       display: none;
     }
 
-    /* Input y controles dentro del círculo */
+    /* Zona de escritura perfectamente encajada en la geometría circular */
     .answer-zone {
-      width: 92%;
+      width: 78%;
+      max-width: 310px;
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
       align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     .input-row {
       display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       gap: 6px;
     }
 
     #answer-input {
       flex: 1;
-      height: 50px;
+      min-width: 0; /* Evita que el input desborde el contenedor flex */
+      height: 46px;
       border-radius: 14px;
       border: 3px solid #cbd5e1;
-      padding: 0 14px;
+      padding: 0 10px;
       font-family: inherit;
-      font-size: calc(1.25rem * var(--font-scale));
+      font-size: calc(1.05rem * var(--font-scale));
       font-weight: 800;
       text-align: center;
       text-transform: uppercase;
@@ -336,23 +358,31 @@
       -webkit-user-select: text;
     }
 
+    #answer-input::placeholder {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
     #answer-input:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
     }
 
     .mini-btn {
-      min-width: 50px;
-      height: 50px;
-      border-radius: 14px;
+      width: 44px;
+      height: 46px;
+      flex-shrink: 0;
+      border-radius: 13px;
       border: 2px solid #cbd5e1;
       background: #f8fafc;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
+      color: var(--text-main);
     }
 
     .mini-btn:active { transform: scale(0.94); }
@@ -373,12 +403,12 @@
     }
 
     .mdi-btn {
-      min-height: 56px;
-      padding: 0 22px;
+      min-height: 54px;
+      padding: 0 20px;
       border-radius: 16px;
       border: none;
       font-family: inherit;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: white;
       cursor: pointer;
@@ -396,15 +426,15 @@
     }
 
     .btn-nav      { background: #64748b; min-width: 60px; }
-    .btn-validate { background: var(--success); min-width: 175px; font-size: 1.2rem; }
-    .btn-pasa     { background: var(--warning); color: #1e293b; min-width: 175px; font-size: 1.2rem; }
+    .btn-validate { background: var(--success); min-width: 170px; font-size: 1.15rem; }
+    .btn-pasa     { background: var(--warning); color: #1e293b; min-width: 170px; font-size: 1.15rem; }
     .btn-fail     { background: var(--danger); }
     .btn-correct-oral { background: #0d9488; }
 
     /* ================= TECLADO VIRTUAL TÁCTIL FLOTANTE ================= */
     #virtual-keyboard {
       position: fixed;
-      bottom: 82px;
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(255, 255, 255, 0.97);
@@ -427,13 +457,13 @@
 
     .kb-key {
       flex: 1;
-      min-width: 48px;
-      height: 52px;
+      min-width: 46px;
+      height: 50px;
       border-radius: 12px;
       border: 2px solid #cbd5e1;
       background: #f8fafc;
       font-family: inherit;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 800;
       color: var(--text-main);
       cursor: pointer;
@@ -467,15 +497,15 @@
 
     .modal-card {
       background: white;
-      width: min(95vw, 720px);
+      width: min(95vw, 740px);
       max-height: 90vh;
       border-radius: 28px;
-      padding: 28px 32px;
+      padding: 26px 30px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.25);
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
     }
 
     .modal-header {
@@ -483,11 +513,13 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 2px solid #f1f5f9;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .modal-header h2 {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
       color: var(--primary);
       display: flex;
       align-items: center;
@@ -497,22 +529,22 @@
     .config-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      gap: 14px;
     }
 
     .config-box {
       background: #f8fafc;
       border: 2px solid #e2e8f0;
-      padding: 16px;
+      padding: 14px;
       border-radius: 18px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .config-box label {
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: var(--text-main);
       display: flex;
       align-items: center;
@@ -520,12 +552,12 @@
     }
 
     .select-input, .file-btn {
-      height: 48px;
+      height: 46px;
       border-radius: 12px;
       border: 2px solid #cbd5e1;
       padding: 0 12px;
       font-family: inherit;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       background: white;
       cursor: pointer;
@@ -548,8 +580,8 @@
     .switch {
       position: relative;
       display: inline-block;
-      width: 58px;
-      height: 32px;
+      width: 56px;
+      height: 30px;
     }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
@@ -563,8 +595,8 @@
     .slider:before {
       position: absolute;
       content: "";
-      height: 24px;
-      width: 24px;
+      height: 22px;
+      width: 22px;
       left: 4px;
       bottom: 4px;
       background-color: white;
@@ -578,7 +610,7 @@
       display: flex;
       justify-content: flex-end;
       gap: 12px;
-      padding-top: 10px;
+      padding-top: 8px;
       border-top: 2px solid #f1f5f9;
     }
 
@@ -590,12 +622,142 @@
       z-index: 90;
     }
 
+    /* ================= FICHA IMPRIMIBLE DIN A4 VERTICAL (SOLO IMPRESIÓN / PDF) ================= */
+    #printable-worksheet {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm 10mm;
+      }
+
+      body {
+        background: white !important;
+        height: auto !important;
+        width: 100% !important;
+        overflow: visible !important;
+        display: block !important;
+        color: #0f172a !important;
+      }
+
+      header, main, footer, #virtual-keyboard, .modal-overlay, #confetti-canvas {
+        display: none !important;
+      }
+
+      #printable-worksheet {
+        display: block !important;
+        width: 100%;
+        font-family: 'Quicksand', sans-serif;
+      }
+
+      .ws-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #1e40af;
+        padding-bottom: 5px;
+        margin-bottom: 6px;
+      }
+
+      .ws-title h1 {
+        font-size: 14pt;
+        font-weight: 800;
+        color: #1e40af;
+        margin: 0;
+      }
+
+      .ws-title p {
+        font-size: 8.5pt;
+        color: #475569;
+        margin: 1px 0 0 0;
+        font-weight: 700;
+      }
+
+      .ws-student-info {
+        display: flex;
+        gap: 12px;
+        font-size: 9pt;
+        font-weight: 700;
+      }
+
+      .ws-field {
+        border-bottom: 1px dotted #475569;
+        min-width: 150px;
+        display: inline-block;
+      }
+
+      .ws-field.short {
+        min-width: 65px;
+      }
+
+      .ws-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      .ws-table th {
+        background-color: #dbeafe !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color: #1e3a8a;
+        font-size: 8.5pt;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: 1px solid #94a3b8;
+        padding: 3px 5px;
+        text-align: left;
+      }
+
+      .ws-table td {
+        border: 1px solid #cbd5e1;
+        height: 8.4mm; /* Calibrado para que las 27 filas encajen en 1 hoja A4 vertical */
+        padding: 1px 5px;
+        vertical-align: middle;
+        font-size: 8.5pt;
+      }
+
+      .ws-table tr:nth-child(even) td {
+        background-color: #f8fafc !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .ws-letter-badge {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #2563eb !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 9pt;
+        margin: 0 auto;
+      }
+
+      .ws-type-cell {
+        font-size: 7.5pt;
+        color: #475569;
+        font-weight: 700;
+        text-align: center;
+        white-space: nowrap;
+      }
+    }
+
     @media (max-height: 760px) {
       :root {
         --rosco-radius: 225px;
         --letter-size: 40px;
       }
-      .center-board { padding: 18px 24px; }
+      .center-board {
+        padding: 20px 26px 42px 26px;
+      }
     }
   </style>
 </head>
@@ -627,6 +789,12 @@
     </div>
 
     <div class="header-actions">
+      <button class="icon-btn pdf-btn" id="btn-download-pdf" title="Descargar plantilla en PDF (DIN A4 Vertical) para alumnos">
+        📄 Ficha PDF
+      </button>
+      <button class="icon-btn" id="btn-fullscreen" title="Activar o salir de Pantalla Completa">
+        ⛶ Pantalla Completa
+      </button>
       <button class="icon-btn" id="btn-toggle-kb" title="Mostrar/Ocultar Teclado en Pantalla">
         ⌨️ Teclado
       </button>
@@ -662,7 +830,7 @@
         <div class="answer-zone">
           <div class="input-row">
             <button class="mini-btn" id="btn-hint" title="Ver pista didáctica">💡</button>
-            <input type="text" id="answer-input" placeholder="Escribe la respuesta..." autocomplete="off" spellcheck="false">
+            <input type="text" id="answer-input" placeholder="Respuesta..." autocomplete="off" spellcheck="false">
             <button class="mini-btn" id="btn-clear-input" title="Borrar texto">⌫</button>
           </div>
         </div>
@@ -719,7 +887,7 @@
             <option value="manual">Manual (Sin límite de tiempo)</option>
             <option value="auto">Automático (Con cuenta atrás)</option>
           </select>
-          <label for="cfg-time" style="margin-top:4px; font-size:0.95rem;">Tiempo por definición (si es automático):</label>
+          <label for="cfg-time" style="margin-top:4px; font-size:0.92rem;">Tiempo por definición (si es automático):</label>
           <select id="cfg-time" class="select-input">
             <option value="10">10 segundos</option>
             <option value="15">15 segundos</option>
@@ -735,8 +903,8 @@
           <label for="cfg-fontsize">🔤 Tamaño de letra de definiciones</label>
           <select id="cfg-fontsize" class="select-input">
             <option value="1">Normal</option>
-            <option value="1.18" selected>Grande (Recomendado MDI)</option>
-            <option value="1.35">Extra Grande</option>
+            <option value="1.15" selected>Grande (Recomendado MDI)</option>
+            <option value="1.3">Extra Grande</option>
           </select>
 
           <label for="cfg-uiscale" style="margin-top:4px;">🖥️ Escala del Rosco en pantalla</label>
@@ -756,32 +924,35 @@
               <span class="slider"></span>
             </label>
           </label>
-          <p style="font-size:0.88rem; color:var(--text-muted);">Lee cada definición en español automáticamente al cambiar de letra.</p>
+          <p style="font-size:0.85rem; color:var(--text-muted);">Lee cada definición en español automáticamente al cambiar de letra.</p>
 
-          <label style="margin-top:8px;">
+          <label style="margin-top:6px;">
             <span>🎵 Gamificación (Sonidos y Marcador)</span>
             <label class="switch">
               <input type="checkbox" id="cfg-gamification" checked>
               <span class="slider"></span>
             </label>
           </label>
-          <p style="font-size:0.88rem; color:var(--text-muted);">Activa efectos de sonido Web Audio, contadores y confeti final.</p>
+          <p style="font-size:0.85rem; color:var(--text-muted);">Activa efectos de sonido Web Audio, contadores y confeti final.</p>
         </div>
 
-        <!-- 4. Importar / Exportar JSON -->
+        <!-- 4. Importar / Exportar JSON y Plantilla PDF -->
         <div class="config-box">
-          <label>📂 Gestión de Bancos de Palabras (JSON)</label>
+          <label>📂 Bancos de Palabras y Ficha PDF</label>
           <input type="file" id="json-file-input" accept=".json" style="display:none;">
           <button class="file-btn" id="btn-import-json">⬆️ Importar definiciones (.json)</button>
           <button class="file-btn" id="btn-export-json" style="background:#f0fdf4; color:#15803d; border-color:#86efac;">
             ⬇️ Exportar plantilla JSON
+          </button>
+          <button class="file-btn" id="btn-modal-pdf" style="background:#faf5ff; color:#6d28d9; border-color:#d8b4fe;">
+            📄 Descargar Ficha PDF Alumnos (DIN A4)
           </button>
           <p id="json-status-msg" style="font-size:0.85rem; color:var(--success); font-weight:700;"></p>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="mdi-btn btn-validate" id="btn-start-game" style="width:100%; font-size:1.3rem;">
+        <button class="mdi-btn btn-validate" id="btn-start-game" style="width:100%; font-size:1.25rem;">
           🚀 ¡JUGAR AL PASAPALABRA!
         </button>
       </div>
@@ -809,10 +980,38 @@
     </div>
   </div>
 
+  <!-- PLANTILLA IMPRIMIBLE DIN A4 VERTICAL PARA EL ALUMNADO -->
+  <section id="printable-worksheet">
+    <div class="ws-header">
+      <div class="ws-title">
+        <h1>🎯 CREA TU PROPIO PASAPALABRA</h1>
+        <p>Escribe una palabra por cada letra del abecedario y redacta su definición.</p>
+      </div>
+      <div class="ws-student-info">
+        <div>Nombre: <span class="ws-field"></span></div>
+        <div>Curso: <span class="ws-field short"></span></div>
+        <div>Fecha: <span class="ws-field short"></span></div>
+      </div>
+    </div>
+
+    <table class="ws-table">
+      <thead>
+        <tr>
+          <th style="width: 9%; text-align: center;">Letra</th>
+          <th style="width: 17%; text-align: center;">Condición</th>
+          <th style="width: 24%;">Palabra</th>
+          <th style="width: 50%;">Definición</th>
+        </tr>
+      </thead>
+      <tbody id="ws-table-body">
+        <!-- Se genera dinámicamente con las 27 letras del abecedario -->
+      </tbody>
+    </table>
+  </section>
+
   <script>
     /********************************************************************
      * 1. BANCO DE PALABRAS POR DEFECTO (27 LETRAS - 3.º PRIMARIA)
-     * Puedes editar este listado o cargar cualquier archivo .json
      ********************************************************************/
     const DEFAULT_ROSCO_DATA = [
       { letra: "A", tipo: "empieza", palabra: "ADJETIVO", definicion: "Palabra que acompaña al sustantivo para expresar cómo es o cómo está una persona, animal o cosa.", pista: "Por ejemplo: grande, simpático o azul." },
@@ -832,7 +1031,7 @@
       { letra: "Ñ", tipo: "contiene", palabra: "MONTAÑA", definicion: "Gran elevación natural del terreno que tiene tres partes: pie, ladera y cima o cumbre.", pista: "Muchas juntas forman una sierra." },
       { letra: "O", tipo: "empieza", palabra: "OXÍGENO", definicion: "Gas invisible que se encuentra en el aire y que todos los seres vivos necesitamos respirar.", pista: "Lo producen las plantas y árboles." },
       { letra: "P", tipo: "empieza", palabra: "POLÍGONO", definicion: "Figura geométrica plana y cerrada formada por líneas rectas, como el triángulo o el cuadrado.", pista: "Sus elementos son lados, vértices y ángulos." },
-      { letra: "Q", tipo: "empieza", palabra: "esqueleto", palabra: "QUILO", definicion: "Prefijo o forma coloquial corta que significa mil unidades de algo, muy usada al comprar fruta.", pista: "Empieza por Q: medio ... de manzanas." },
+      { letra: "Q", tipo: "empieza", palabra: "QUILO", definicion: "Prefijo o forma coloquial corta que significa mil unidades de algo, muy usada al comprar fruta.", pista: "Empieza por Q: medio ... de manzanas." },
       { letra: "R", tipo: "empieza", palabra: "RECTÁNGULO", definicion: "Paralelogramo que tiene cuatro ángulos rectos y sus lados iguales dos a dos.", pista: "Tiene la forma de una pizarra o una puerta." },
       { letra: "S", tipo: "empieza", palabra: "SINÓNIMO", definicion: "Palabra que tiene el mismo significado o uno muy parecido que otra palabra diferente.", pista: "Por ejemplo: contento y alegre." },
       { letra: "T", tipo: "empieza", palabra: "TERMÓMETRO", definicion: "Instrumento que sirve para medir la temperatura del aire o la fiebre de nuestro cuerpo.", pista: "Mide en grados centígrados." },
@@ -853,16 +1052,16 @@
     let remainingTime = 30;
 
     const config = {
-      mode: 'manual',        // 'manual' | 'auto'
-      turnTime: 30,          // segundos
-      fontScale: 1.18,
+      mode: 'manual',
+      turnTime: 30,
+      fontScale: 1.15,
       uiScale: 1,
       ttsEnabled: false,
       gamification: true
     };
 
     /********************************************************************
-     * 3. SINTETIZADOR DE SONIDOS (WEB AUDIO API - SIN ARCHIVOS EXTERNOS)
+     * 3. SINTETIZADOR DE SONIDOS (WEB AUDIO API)
      ********************************************************************/
     let audioCtx = null;
     function playSound(type) {
@@ -873,7 +1072,6 @@
 
         const now = audioCtx.currentTime;
         if (type === 'correct') {
-          // Acorde alegre ascendente
           [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -887,7 +1085,6 @@
             osc.stop(now + idx * 0.07 + 0.26);
           });
         } else if (type === 'wrong') {
-          // Doble tono grave suave
           [240, 180].forEach((freq, idx) => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -901,7 +1098,6 @@
             osc.stop(now + idx * 0.16 + 0.26);
           });
         } else if (type === 'pasa') {
-          // Burbuja suave de salto
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sine';
@@ -914,7 +1110,6 @@
           osc.start(now);
           osc.stop(now + 0.17);
         } else if (type === 'win') {
-          // Fanfarria de victoria
           [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5].forEach((freq, idx) => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -955,14 +1150,13 @@
     }
 
     /********************************************************************
-     * 5. NORMALIZACIÓN DE TEXTO (PARA IGNORAR TILDES Y MAYÚSCULAS)
+     * 5. NORMALIZACIÓN DE TEXTO
      ********************************************************************/
     function normalizeWord(str) {
       if (!str) return "";
       return str
         .trim()
         .toUpperCase()
-        // Conservamos la Ñ protegiéndola antes de quitar diacríticos
         .replace(/Ñ/g, '__ENYE__')
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -970,7 +1164,7 @@
     }
 
     /********************************************************************
-     * 6. CONSTRUCCIÓN Y RENDERIZADO DEL ROSCO
+     * 6. CONSTRUCCIÓN DEL ROSCO Y DE LA FICHA PDF A4
      ********************************************************************/
     function initGame(customArray = null) {
       const source = customArray || DEFAULT_ROSCO_DATA;
@@ -980,11 +1174,12 @@
         palabra: String(item.palabra).toUpperCase().trim(),
         definicion: String(item.definicion).trim(),
         pista: item.pista ? String(item.pista).trim() : '',
-        status: 'pending' // 'pending' | 'correct' | 'wrong'
+        status: 'pending'
       }));
 
       currentIndex = 0;
       renderRoscoCircles();
+      buildPrintableWorksheet();
       selectLetter(0);
       updateStatsUI();
       document.getElementById('end-modal').style.display = 'none';
@@ -992,14 +1187,12 @@
 
     function renderRoscoCircles() {
       const wrapper = document.getElementById('rosco-wrapper');
-      // Eliminar letras previas conservando el panel central
       wrapper.querySelectorAll('.rosco-letter').forEach(el => el.remove());
 
       const total = gameData.length;
-      const radius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rosco-radius')) || 265;
+      const radius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--rosco-radius')) || 270;
 
       gameData.forEach((item, index) => {
-        // Ángulo comenzando arriba (-90 grados) en sentido horario
         const angleDeg = (index * (360 / total)) - 90;
         const angleRad = angleDeg * (Math.PI / 180);
         const x = Math.cos(angleRad) * radius;
@@ -1021,6 +1214,27 @@
       });
     }
 
+    function buildPrintableWorksheet() {
+      const tbody = document.getElementById('ws-table-body');
+      tbody.innerHTML = '';
+      const letters = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+      letters.forEach(letra => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><div class="ws-letter-badge">${letra}</div></td>
+          <td class="ws-type-cell">☐ Empieza &nbsp; ☐ Contiene</td>
+          <td></td>
+          <td></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function downloadStudentWorksheetPDF() {
+      // Dispara el diálogo nativo de impresión/Guardar como PDF en formato DIN A4 Vertical
+      window.print();
+    }
+
     function updateRoscoVisuals() {
       const balls = document.querySelectorAll('.rosco-letter');
       balls.forEach((ball, idx) => {
@@ -1030,20 +1244,41 @@
     }
 
     /********************************************************************
-     * 7. NAVEGACIÓN Y LÓGICA DEL JUEGO
+     * 7. PANTALLA COMPLETA (FULLSCREEN API)
+     ********************************************************************/
+    function toggleFullScreen() {
+      const btn = document.getElementById('btn-fullscreen');
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn(`No se pudo activar pantalla completa: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      const btn = document.getElementById('btn-fullscreen');
+      if (document.fullscreenElement) {
+        btn.innerHTML = '🗗 Salir Pantalla Completa';
+      } else {
+        btn.innerHTML = '⛶ Pantalla Completa';
+      }
+    });
+
+    /********************************************************************
+     * 8. NAVEGACIÓN Y LÓGICA DEL JUEGO
      ********************************************************************/
     function selectLetter(index) {
       if (index < 0 || index >= gameData.length) return;
       currentIndex = index;
       const item = gameData[currentIndex];
 
-      // Actualizar cabecera de condición
       const condEl = document.getElementById('letter-condition');
       condEl.textContent = item.tipo === 'contiene'
         ? `Contiene la ${item.letra}`
         : `Empieza por la ${item.letra}`;
 
-      // Actualizar definición y ocultar pista/banner
       document.getElementById('definition-text').textContent = item.definicion;
       const hintBox = document.getElementById('hint-box');
       hintBox.style.display = 'none';
@@ -1064,7 +1299,6 @@
         banner.style.display = 'none';
       }
 
-      // Limpiar input
       const input = document.getElementById('answer-input');
       input.value = '';
       if (window.innerWidth > 900) input.focus();
@@ -1082,7 +1316,7 @@
           return candidate;
         }
       }
-      return -1; // No quedan pendientes
+      return -1;
     }
 
     function checkAnswer() {
@@ -1091,7 +1325,6 @@
 
       const userRaw = document.getElementById('answer-input').value;
       if (!userRaw.trim()) {
-        // Si está vacío, equivale a Pasapalabra
         pasapalabra();
         return;
       }
@@ -1111,7 +1344,6 @@
       item.status = newStatus;
       playSound(newStatus === 'correct' ? 'correct' : 'wrong');
 
-      // Mostrar feedback breve antes de avanzar
       const banner = document.getElementById('feedback-banner');
       banner.style.display = 'inline-block';
       if (newStatus === 'correct') {
@@ -1155,7 +1387,7 @@
     }
 
     /********************************************************************
-     * 8. TEMPORIZADOR AUTOMÁTICO POR TURNO
+     * 9. TEMPORIZADOR AUTOMÁTICO POR TURNO
      ********************************************************************/
     function resetTurnTimer() {
       stopTurnTimer();
@@ -1188,7 +1420,7 @@
     }
 
     /********************************************************************
-     * 9. FINAL DE PARTIDA Y CONFETI EN CANVAS
+     * 10. FINAL DE PARTIDA Y CONFETI EN CANVAS
      ********************************************************************/
     function finishGame() {
       stopTurnTimer();
@@ -1242,7 +1474,7 @@
     }
 
     /********************************************************************
-     * 10. IMPORTAR Y EXPORTAR ARCHIVOS JSON
+     * 11. IMPORTAR Y EXPORTAR ARCHIVOS JSON
      ********************************************************************/
     function exportTemplateJSON() {
       const dataStr = JSON.stringify(DEFAULT_ROSCO_DATA, null, 2);
@@ -1266,7 +1498,6 @@
           if (!Array.isArray(parsed) || parsed.length === 0) {
             throw new Error("El archivo debe contener un array JSON de preguntas.");
           }
-          // Validar campos mínimos
           const valid = parsed.every(it => it.letra && it.palabra && it.definicion);
           if (!valid) {
             throw new Error("Cada elemento debe incluir 'letra', 'palabra' y 'definicion'.");
@@ -1286,10 +1517,9 @@
     }
 
     /********************************************************************
-     * 11. EVENTOS DE INTERFAZ Y TECLADO VIRTUAL
+     * 12. EVENTOS DE INTERFAZ Y TECLADO VIRTUAL
      ********************************************************************/
     document.addEventListener('DOMContentLoaded', () => {
-      // Inicializar el rosco al cargar
       initGame();
 
       // Controles principales del juego
@@ -1306,6 +1536,11 @@
         const next = (currentIndex + 1) % gameData.length;
         selectLetter(next);
       });
+
+      // Pantalla completa y Ficha PDF
+      document.getElementById('btn-fullscreen').addEventListener('click', toggleFullScreen);
+      document.getElementById('btn-download-pdf').addEventListener('click', downloadStudentWorksheetPDF);
+      document.getElementById('btn-modal-pdf').addEventListener('click', downloadStudentWorksheetPDF);
 
       // Botón Pista, TTS y Borrar input
       document.getElementById('btn-hint').addEventListener('click', () => {
@@ -1386,11 +1621,13 @@
       document.getElementById('btn-import-json').addEventListener('click', () => {
         document.getElementById('json-file-input').click();
       });
+      document.getElementById('btn-file-input')?.addEventListener('change', (e) => {
+        importCustomJSON(e.target.files[0]);
+      });
       document.getElementById('json-file-input').addEventListener('change', (e) => {
         importCustomJSON(e.target.files[0]);
       });
 
-      // Recalcular geometría del rosco si cambia el tamaño de ventana
       window.addEventListener('resize', () => {
         renderRoscoCircles();
       });
