@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🛒 Supermercado Matemático: Aprendemos con el Euro (3.º Primaria)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-app: #eef2f6;
+      --primary: #1d4ed8;
+      --primary-dark: #1e3a8a;
+      --secondary: #10b981;
+      --secondary-dark: #047857;
+      --danger: #e11d48;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Quicksand', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ================= CABECERA GLOBAL ================= */
+    .app-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-md);
+      z-index: 20;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title h1 {
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      font-weight: 800;
+    }
+
+    .score-badge {
+      background: rgba(250, 204, 21, 0.2);
+      border: 2px solid #facc15;
+      color: #fef08a;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .switcher-group {
+      display: flex;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 4px;
+      border-radius: 14px;
+      gap: 4px;
+    }
+
+    .btn-mode {
+      min-height: 50px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: #cbd5e1;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-mode.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-mode.active-playmode {
+      background: #fde047;
+      color: #422006;
+    }
+
+    .btn-icon {
+      min-width: 50px;
+      min-height: 50px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-icon:active, .btn-mode:active, .btn-action:active {
+      transform: scale(0.96);
+    }
+
+    /* ================= BARRA DE ESTADO Y RETO ================= */
+    .mission-bar {
+      background: #fffbeb;
+      border-bottom: 3px solid #fcd34d;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .mission-bar.free-mode-bar {
+      background: #ecfeff;
+      border-bottom-color: #67e8f9;
+    }
+
+    .mission-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #78350f;
+    }
+
+    .mission-bar.free-mode-bar .mission-info {
+      color: #155e75;
+    }
+
+    .mission-tag {
+      background: #d97706;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .mission-bar.free-mode-bar .mission-tag {
+      background: #0891b2;
+    }
+
+    .btn-random {
+      min-height: 52px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #92400e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ================= LAYOUT DE 3 ZONAS DIFERENCIADAS ================= */
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 18px;
+      padding: 16px 20px;
+      max-width: 1640px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1100px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* --- ZONA 1: ESTANTERIA DE SUPERMERCADO (Amarillo/Madera) --- */
+    .zone-shelf {
+      background: #fffbeb;
+      border: 4px solid #d97706;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .zone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 2px dashed rgba(0, 0, 0, 0.12);
+    }
+
+    .zone-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+    }
+
+    .badge-shelf {
+      background: #fef3c7;
+      color: #92400e;
+      border: 2px solid #f59e0b;
+    }
+
+    .badge-basket {
+      background: #ffe4e6;
+      color: #9f1239;
+      border: 2px solid #f43f5e;
+    }
+
+    .badge-wallet {
+      background: #ede9fe;
+      color: #5b21b6;
+      border: 2px solid #8b5cf6;
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cat-btn {
+      min-height: 44px;
+      padding: 6px 14px;
+      border-radius: 10px;
+      border: 2px solid #fde68a;
+      background: #ffffff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: #92400e;
+      cursor: pointer;
+    }
+
+    .cat-btn.active {
+      background: #d97706;
+      border-color: #92400e;
+      color: #ffffff;
+    }
+
+    /* Estantería con baldas de madera */
+    .shelf-rack {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+      gap: 14px 10px;
+      max-height: 310px;
+      overflow-y: auto;
+      padding: 12px;
+      background: #fef3c7;
+      border-radius: 14px;
+      border: 3px solid #b45309;
+      box-shadow: inset 0 4px 10px rgba(180, 83, 9, 0.15);
+    }
+
+    .shelf-item {
+      background: #ffffff;
+      border: 2px solid #fcd34d;
+      border-bottom: 10px solid #92400e; /* Balda de madera inferior */
+      border-radius: 14px 14px 6px 6px;
+      padding: 10px 6px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 124px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+    }
+
+    .shelf-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(146, 64, 14, 0.25);
+      border-color: #d97706;
+    }
+
+    .shelf-item:active {
+      transform: scale(0.95);
+    }
+
+    .shelf-emoji {
+      font-size: 2.5rem;
+      line-height: 1;
+      filter: drop-shadow(0 3px 3px rgba(0,0,0,0.12));
+    }
+
+    .shelf-name {
+      font-weight: 800;
+      font-size: 0.88rem;
+      text-align: center;
+      color: #1e293b;
+      line-height: 1.15;
+      margin: 4px 0;
+    }
+
+    .price-tag {
+      background: #fef08a;
+      color: #713f12;
+      border: 2px solid #eab308;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 2px 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+    }
+
+    /* --- ZONA 2: MI CESTA DE LA COMPRA / TICKET (Rojo/Coral Cesta Comercial) --- */
+    .zone-basket {
+      background: #fff1f2;
+      border: 4px solid #e11d48;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .basket-interior {
+      background-color: #ffffff;
+      background-image: radial-gradient(#fecdd3 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+      border: 3px dashed #f43f5e;
+      border-radius: 14px;
+      padding: 10px;
+      min-height: 115px;
+      max-height: 190px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Fila agrupada en la cesta (distinta a la tarjeta de la estantería) */
+    .basket-row {
+      background: #ffffff;
+      border: 2px solid #fda4af;
+      border-left: 6px solid #e11d48;
+      border-radius: 10px;
+      padding: 6px 12px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 2px 4px rgba(225, 29, 72, 0.08);
+    }
+
+    .basket-row-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .basket-qty-badge {
+      background: #e11d48;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .basket-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-qty {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 2px solid #fda4af;
+      background: #fff1f2;
+      color: #9f1239;
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .basket-total-bar {
+      background: #be123c;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    /* --- ZONA 3: MONEDERO / CAJA REGISTRADORA Y BANDEJA DE PAGO (Púrpura y Esmeralda) --- */
+    .zone-wallet {
+      background: #f5f3ff;
+      border: 4px solid #7c3aed;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .wallet-pouch {
+      background: #ede9fe;
+      border: 3px solid #a78bfa;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 3px 8px rgba(91, 33, 182, 0.12);
+    }
+
+    /* Billetes y Monedas */
+    .money-item {
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .money-item:hover {
+      transform: translateY(-3px) scale(1.04);
+    }
+
+    .money-item:active {
+      transform: scale(0.94);
+    }
+
+    .bill {
+      min-width: 102px;
+      min-height: 54px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    .bill::before {
+      content: "€ EURO";
+      font-size: 0.6rem;
+      letter-spacing: 1px;
+      opacity: 0.9;
+      align-self: flex-start;
+    }
+
+    .bill-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      align-self: flex-end;
+    }
+
+    .bill-5   { background: linear-gradient(135deg, #64748b, #0d9488); }
+    .bill-10  { background: linear-gradient(135deg, #e11d48, #be123c); }
+    .bill-20  { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .bill-50  { background: linear-gradient(135deg, #ea580c, #c2410c); }
+    .bill-100 { background: linear-gradient(135deg, #16a34a, #15803d); }
+    .bill-200 { background: linear-gradient(135deg, #ca8a04, #a16207); }
+
+    .coin {
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .coin-200 {
+      width: 64px; height: 64px;
+      background: radial-gradient(circle, #facc15 48%, #cbd5e1 51%, #94a3b8 100%);
+      border: 3px solid #64748b; color: #1e293b; font-size: 1.2rem;
+    }
+    .coin-100 {
+      width: 58px; height: 58px;
+      background: radial-gradient(circle, #e2e8f0 48%, #facc15 51%, #ca8a04 100%);
+      border: 3px solid #a16207; color: #1e293b; font-size: 1.1rem;
+    }
+    .coin-50 {
+      width: 56px; height: 56px;
+      background: radial-gradient(circle, #fde047 0%, #eab308 75%, #ca8a04 100%);
+      border: 3px dashed #a16207; color: #422006; font-size: 0.95rem;
+    }
+    .coin-20 {
+      width: 52px; height: 52px;
+      background: radial-gradient(circle, #fef08a 0%, #eab308 80%, #a16207 100%);
+      border: 3px solid #a16207; color: #422006; font-size: 0.88rem;
+    }
+    .coin-10 {
+      width: 50px; height: 50px;
+      background: radial-gradient(circle, #fef08a 0%, #ca8a04 100%);
+      border: 2px dotted #854d0e; color: #422006; font-size: 0.85rem;
+    }
+
+    /* Tapete de Pago / Bandeja de Entrega */
+    .tray-container {
+      background: #ecfdf5;
+      border: 3px solid #10b981;
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .tray-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #a7f3d0;
+      padding-bottom: 8px;
+    }
+
+    .tray-total-badge {
+      background: #047857;
+      color: #ffffff;
+      padding: 4px 14px;
+      border-radius: 10px;
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .tray-zone {
+      min-height: 135px;
+      background: #ffffff;
+      border: 3px dashed #34d399;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .tray-empty-msg {
+      color: #047857;
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    /* Panel de Cálculos del Cajero */
+    .cashier-summary-box {
+      background: #eff6ff;
+      border: 3px solid #3b82f6;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cashier-calc-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+
+    .calc-box {
+      background: #ffffff;
+      border: 2px solid #93c5fd;
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    .calc-box span {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .calc-box strong {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    /* Botones de Acción y Feedback */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .btn-action {
+      flex: 1;
+      min-height: 56px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-pay {
+      background: var(--secondary);
+      color: #ffffff;
+      box-shadow: 0 4px 0 var(--secondary-dark);
+    }
+
+    .btn-clear {
+      background: #ffffff;
+      color: #475569;
+      border: 2px solid #cbd5e1;
+      flex: 0.42;
+    }
+
+    .feedback-banner {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feedback-banner.success {
+      display: flex;
+      background: #dcfce7;
+      border: 2px solid #22c55e;
+      color: #14532d;
+    }
+
+    .feedback-banner.error {
+      display: flex;
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+      color: #7f1d1d;
+    }
+
+    /* ================= MODALES Y POP-UP DE SITUACION ALEATORIA ================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 22px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+      animation: modalPop 0.22s ease-out;
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 12px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .btn-close {
+      min-width: 48px;
+      min-height: 48px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Estilos específicos del Pop-up de Reto Aleatorio */
+    .challenge-popup-card {
+      border: 5px solid #f59e0b;
+      background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
+    }
+
+    .challenge-story-box {
+      background: #ffffff;
+      border: 2px solid #fcd34d;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .challenge-items-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      padding: 10px;
+      background: #fef3c7;
+      border-radius: 12px;
+    }
+
+    .challenge-pill {
+      background: #ffffff;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Configuración */
+    .config-section {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .decimal-toggle-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-decimal-opt {
+      min-height: 54px;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      background: #ffffff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 10px;
+      transition: all 0.15s;
+    }
+
+    .btn-decimal-opt.active {
+      background: #dbeafe;
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    .denom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+      gap: 10px;
+    }
+
+    .denom-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 50px;
+    }
+
+    .denom-check input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input-text, .select-box {
+      flex: 1;
+      min-height: 48px;
+      padding: 8px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    /* ================= VISTA DE IMPRESION A4 VERTICAL ================= */
+    #printArea {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+
+      .app-header,
+      .mission-bar,
+      .workspace,
+      .modal-overlay {
+        display: none !important;
+      }
+
+      #printArea {
+        display: block !important;
+        width: 100%;
+      }
+
+      .print-sheet {
+        width: 100%;
+        border: 2px solid #000;
+        padding: 14px;
+        border-radius: 8px;
+      }
+
+      .print-header {
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .student-fields {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+        font-size: 11pt;
+        font-weight: 700;
+      }
+
+      .field-line {
+        flex: 1;
+        border-bottom: 1px solid #000;
+        padding-bottom: 3px;
+      }
+
+      .print-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .print-table th,
+      .print-table td {
+        border: 1.5px solid #000;
+        padding: 10px;
+        vertical-align: top;
+        text-align: left;
+        font-size: 10.5pt;
+      }
+
+      .draw-space {
+        height: 145px;
+        border: 1px dashed #666;
+        border-radius: 6px;
+        margin-top: 6px;
+      }
+
+      .calc-grid-print {
+        height: 110px;
+        border: 1px dotted #444;
+        margin-top: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 1. CABECERA GLOBAL ================= -->
+  <header class="app-header">
+    <div class="brand-title">
+      <span style="font-size: 2rem;">🛒</span>
+      <h1>Supermercado Matemático</h1>
+      <div class="score-badge">
+        ⭐ <span id="scoreCounter">0</span> aciertos
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- Selector Modo Reto vs Modo Libre -->
+      <div class="switcher-group" title="Elige entre Retos guiados o Compra/Venta Libre">
+        <button id="btnPlayChallenge" class="btn-mode active-playmode" onclick="setPlayMode('challenge')">
+          🎯 Modo Reto
+        </button>
+        <button id="btnPlayFree" class="btn-mode" onclick="setPlayMode('free')">
+          ✨ Modo Libre
+        </button>
+      </div>
+
+      <!-- Selector Rol: Comprador vs Dependiente -->
+      <div class="switcher-group">
+        <button id="btnRoleBuyer" class="btn-mode active" onclick="switchRole('buyer')">
+          🛍️ Comprador
+        </button>
+        <button id="btnRoleCashier" class="btn-mode" onclick="switchRole('cashier')">
+          🧑‍💼 Dependiente
+        </button>
+      </div>
+
+      <button class="btn-icon" onclick="openPrintModal()">🖨️ Ficha A4</button>
+      <button class="btn-icon" onclick="openConfigModal()">⚙️ Ajustes</button>
+      <button class="btn-icon" onclick="toggleFullScreen()">⛶</button>
+    </div>
+  </header>
+
+  <!-- ================= 2. BARRA SUPERIOR DE ACTIVIDAD ================= -->
+  <section class="mission-bar" id="missionBar">
+    <div class="mission-info">
+      <span class="mission-tag" id="missionBadge">🎯 Reto Activo</span>
+      <span id="missionText">Observa tu encargo o pulsa en Nueva Situación Aleatoria.</span>
+    </div>
+    <button class="btn-random" id="btnNewRandom" onclick="openRandomSituationPopup()">
+      🎲 Nueva Situación Aleatoria
+    </button>
+  </section>
+
+  <!-- ================= 3. AREA PRINCIPAL CON 3 ZONAS DIFERENCIADAS ================= -->
+  <main class="workspace">
+
+    <!-- COLUMNA IZQUIERDA: ZONA 1 (ESTANTERIA) + ZONA 2 (MI CESTA / TICKET) -->
+    <div class="left-column">
+
+      <!-- ZONA 1: ESTANTERIA DE PRODUCTOS (Aspecto madera y etiquetas amarillas) -->
+      <section class="zone-shelf" id="shelfSection">
+        <div class="zone-header">
+          <span class="zone-badge badge-shelf">🏪 1. Estantería del Supermercado</span>
+          <span id="shelfHelperText" style="font-size: 0.9rem; font-weight: 800; color: #92400e;">
+            Toca un producto para meterlo en la cesta
+          </span>
+        </div>
+
+        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="shelf-rack" id="productsGrid"></div>
+      </section>
+
+      <!-- ZONA 2: MI CESTA DE LA COMPRA / TICKET DEL CLIENTE (Aspecto Cesta Roja) -->
+      <section class="zone-basket">
+        <div class="zone-header">
+          <span class="zone-badge badge-basket" id="basketZoneTitle">🧺 2. Mi Cesta de la Compra</span>
+          <button id="btnClearCart" onclick="clearCart()" style="border: 2px solid #f43f5e; background: #fff; color: #be123c; padding: 6px 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-family: inherit;">
+            🗑️ Vaciar cesta
+          </button>
+        </div>
+
+        <!-- Interior de la cesta con filas agrupadas -->
+        <div class="basket-interior" id="basketInterior"></div>
+
+        <!-- Barra de Total de la Cesta -->
+        <div class="basket-total-bar">
+          <span id="basketTotalLabel">TOTAL DE LA COMPRA:</span>
+          <span id="basketTotalAmount">0,00 €</span>
+        </div>
+
+        <!-- Bloque extra solo para Dependiente/Cajero: Pago del cliente y cálculo de vueltas -->
+        <div id="cashierExtraBox" class="cashier-summary-box" style="display: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+            <strong style="color: #1e3a8a; font-size: 1rem;">
+              💶 Billetes con los que paga el cliente:
+            </strong>
+            <div id="freeCashierBillSelector" style="display: none; gap: 6px; flex-wrap: wrap;">
+              <small style="font-weight: 800; color: #1d4ed8; align-self: center;">(Modo Libre: toca para cambiar pago del cliente)</small>
+              <button onclick="addCustomerPaymentBill(500)" class="cat-btn" style="min-height:34px; padding:4px 8px;">+5€</button>
+              <button onclick="addCustomerPaymentBill(1000)" class="cat-btn" style="min-height:34px; padding:4px 8px;">+10€</button>
+              <button onclick="addCustomerPaymentBill(2000)" class="cat-btn" style="min-height:34px; padding:4px 8px;">+20€</button>
+              <button onclick="addCustomerPaymentBill(5000)" class="cat-btn" style="min-height:34px; padding:4px 8px;">+50€</button>
+              <button onclick="clearCustomerPaymentBills()" class="cat-btn" style="min-height:34px; padding:4px 8px; color:#dc2626;">Reiniciar</button>
+            </div>
+          </div>
+
+          <div id="customerPaymentVisual" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-height: 58px; padding: 8px; background: #fff; border-radius: 10px; border: 2px solid #bfdbfe;"></div>
+
+          <div class="cashier-calc-grid">
+            <div class="calc-box">
+              <span>1. Coste compra</span>
+              <strong id="cashierCostDisplay">0,00 €</strong>
+            </div>
+            <div class="calc-box">
+              <span>2. Cliente entrega</span>
+              <strong id="cashierPaidDisplay">0,00 €</strong>
+            </div>
+            <div class="calc-box" style="background: #fefce8; border-color: #fde047;">
+              <span>3. Cambio a devolver</span>
+              <strong id="cashierChangeHint" style="color: #a16207;">¿? €</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: ZONA 3 (MONEDERO / CAJA REGISTRADORA Y BANDEJA DE PAGO) -->
+    <section class="zone-wallet">
+      <div class="zone-header">
+        <span class="zone-badge badge-wallet" id="walletZoneTitle">👛 3. Mi Monedero Disponible</span>
+        <span style="font-size: 0.9rem; font-weight: 800; color: #5b21b6;">
+          Toca o arrastra billetes y monedas
+        </span>
+      </div>
+
+      <!-- Cartera / Caja con los billetes y monedas activos -->
+      <div class="wallet-pouch" id="activeMoneyBank"></div>
+
+      <!-- Tapete Verde de Pago / Devolución de Cambio -->
+      <div class="tray-container">
+        <div class="tray-header">
+          <strong id="trayTitleText" style="font-size: 1.1rem; color: #065f46;">
+            📥 Bandeja de Pago (Toca un billete o moneda para retirarlo)
+          </strong>
+          <div class="tray-total-badge" id="trayTotalDisplay">0,00 €</div>
+        </div>
+
+        <div class="tray-zone" id="paymentTray"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event)">
+          <div class="tray-empty-msg">
+            👆 Toca los billetes y monedas de arriba para colocarlos en esta bandeja.
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Retroalimentación -->
+      <div id="feedbackBanner" class="feedback-banner" role="alert"></div>
+
+      <!-- Botones de Comprobación -->
+      <div class="action-row">
+        <button class="btn-action btn-clear" onclick="clearTray()">
+          🗑️ Vaciar Bandeja
+        </button>
+        <button class="btn-action btn-pay" id="btnValidateAction" onclick="validateTransaction()">
+          ✅ Pagar y Comprobar
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= 4. POP-UP DE NUEVA SITUACION ALEATORIA ================= -->
+  <div class="modal-overlay" id="situationPopupModal">
+    <div class="modal-card challenge-popup-card">
+      <div class="modal-header" style="border-bottom-color: #fde68a;">
+        <h2 style="color: #92400e;">🎲 ¡Nueva Situación en el Supermercado!</h2>
+        <button class="btn-close" onclick="closeSituationPopupAndApply()">✕</button>
+      </div>
+
+      <div class="challenge-story-box">
+        <div id="popupRoleBadge" style="align-self: flex-start; background: #f59e0b; color: #fff; padding: 4px 12px; border-radius: 8px; font-weight: 800;">
+          🛍️ Reto de Comprador
+        </div>
+
+        <p id="popupStoryText" style="font-size: 1.2rem; font-weight: 800; color: #1e293b; line-height: 1.4;"></p>
+
+        <div style="font-weight: 800; color: #92400e; font-size: 0.95rem;">
+          📋 Artículos de la situación:
+        </div>
+        <div class="challenge-items-preview" id="popupItemsList"></div>
+
+        <div id="popupPaymentPreviewBox" style="display: none; flex-direction: column; gap: 8px; align-items: center; background: #eff6ff; padding: 12px; border-radius: 12px; border: 2px solid #93c5fd;">
+          <strong style="color: #1e3a8a;">💶 El cliente entrega en caja:</strong>
+          <div id="popupPaymentBills" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;"></div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-action" style="background: #f1f5f9; color: #334155; border: 2px solid #cbd5e1; flex: 0.45;" onclick="generatePendingSituation(); renderSituationPopupContent();">
+          🔄 Otra diferente
+        </button>
+        <button class="btn-action" style="background: #d97706; color: #ffffff; box-shadow: 0 4px 0 #92400e;" onclick="closeSituationPopupAndApply()">
+          🚀 ¡Aceptar reto e ir a la pantalla!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 5. MODAL DE CONFIGURACION Y JSON ================= -->
+  <div class="modal-overlay" id="configModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>⚙️ Configuración Docente</h2>
+        <button class="btn-close" onclick="closeConfigModal()">✕</button>
+      </div>
+
+      <!-- 1. Selector de Decimales SÍ / NO -->
+      <div class="config-section">
+        <h3>🔢 ¿Los precios de los productos llevan decimales?</h3>
+        <div class="decimal-toggle-group">
+          <button id="btnDecNo" class="btn-decimal-opt" onclick="setUseDecimals(false)">
+            🚫 SIN DECIMALES<br>
+            <small style="font-weight:600; color:var(--text-muted);">Solo precios exactos en Euros (1 €, 2 €, 5 €...)</small>
+          </button>
+          <button id="btnDecYes" class="btn-decimal-opt active" onclick="setUseDecimals(true)">
+            ✅ CON DECIMALES<br>
+            <small style="font-weight:600; color:var(--text-muted);">Precios con céntimos (1,50 €, 2,50 €...)</small>
+          </button>
+        </div>
+
+        <div id="decimalPrecisionRow" class="form-row" style="margin-top: 6px;">
+          <label style="font-weight:700;">Tipo de decimales:</label>
+          <select id="selectDecimalPrecision" class="select-box" onchange="changeDecimalPrecision()">
+            <option value="half">Múltiplos de 0,50 € (Recomendado 3.º Primaria)</option>
+            <option value="cents">Con monedas de 0,20 € y 0,10 € (Ampliación)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <h3>💶 Billetes y Monedas Activos</h3>
+        <div class="denom-grid" id="denomCheckboxes"></div>
+      </div>
+
+      <div class="config-section">
+        <h3>🏫 Nombre del Centro (para Fichas A4) y Gestión JSON</h3>
+        <div class="form-row">
+          <input type="text" id="inputSchoolName" class="input-text" value="CEIP El Romeral" onchange="updateSchoolName()">
+        </div>
+        <div class="form-row" style="margin-top: 6px;">
+          <button class="btn-action" style="background:var(--primary); color:#fff; min-height:46px; font-size:0.95rem;" onclick="exportDataJSON()">
+            ⬇️ Exportar JSON
+          </button>
+          <label class="btn-action" style="background:#0f766e; color:#fff; min-height:46px; font-size:0.95rem; cursor:pointer;">
+            ⬆️ Importar JSON
+            <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="importDataJSON(event)">
+          </label>
+        </div>
+        <div id="jsonStatusMsg" style="font-size:0.9rem; font-weight:700; color:#047857;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 6. MODAL IMPRESION FICHAS A4 ================= -->
+  <div class="modal-overlay" id="printModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🖨️ Exportar Ficha Imprimible A4</h2>
+        <button class="btn-close" onclick="closePrintModal()">✕</button>
+      </div>
+      <p style="font-weight:700; color:var(--text-muted);">
+        Las fichas se adaptan automáticamente a tu configuración actual (<strong>con o sin decimales</strong>):
+      </p>
+      <div class="form-row" style="gap: 16px;">
+        <button class="btn-action" style="background:#1d4ed8; color:#fff; flex-direction:column; padding:18px;" onclick="printWorksheet('buyer')">
+          <span style="font-size:2rem;">🛍️</span>
+          <span>Plantilla A: Ficha del Comprador</span>
+        </button>
+        <button class="btn-action" style="background:#047857; color:#fff; flex-direction:column; padding:18px;" onclick="printWorksheet('cashier')">
+          <span style="font-size:2rem;">🧑‍💼</span>
+          <span>Plantilla B: Ficha del Cajero/Vendedor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR OCULTO IMPRESION -->
+  <div id="printArea"></div>
+
+  <script>
+    /* =========================================================================
+       CONFIGURACION GLOBAL Y ESTADO (Cálculos en CENTIMOS ENTEROS)
+       ========================================================================= */
+    let CONFIG = {
+      schoolName: "CEIP El Romeral",
+      useDecimals: true,         // true = con decimales, false = sin decimales (euros enteros)
+      decimalPrecision: "half",  // 'half' (0,50€) | 'cents' (0,10€ y 0,20€)
+      playMode: "challenge",     // 'challenge' (Modo Reto) | 'free' (Modo Libre)
+      currentRole: "buyer",      // 'buyer' | 'cashier'
+      score: 0
+    };
+
+    const ALL_DENOMINATIONS = [
+      { id: "b200", cents: 20000, label: "200 €", type: "bill", css: "bill bill-200", active: true },
+      { id: "b100", cents: 10000, label: "100 €", type: "bill", css: "bill bill-100", active: true },
+      { id: "b50",  cents: 5000,  label: "50 €",  type: "bill", css: "bill bill-50",  active: true },
+      { id: "b20",  cents: 2000,  label: "20 €",  type: "bill", css: "bill bill-20",  active: true },
+      { id: "b10",  cents: 1000,  label: "10 €",  type: "bill", css: "bill bill-10",  active: true },
+      { id: "b5",   cents: 500,   label: "5 €",   type: "bill", css: "bill bill-5",   active: true },
+      { id: "c2",   cents: 200,   label: "2 €",   type: "coin", css: "coin coin-200", active: true },
+      { id: "c1",   cents: 100,   label: "1 €",   type: "coin", css: "coin coin-100", active: true },
+      { id: "c50",  cents: 50,    label: "0,50 €",type: "coin", css: "coin coin-50",  active: true },
+      { id: "c20",  cents: 20,    label: "0,20 €",type: "coin", css: "coin coin-20",  active: false },
+      { id: "c10",  cents: 10,    label: "0,10 €",type: "coin", css: "coin coin-10",  active: false }
+    ];
+
+    let PRODUCTS_CATALOG = [
+      { id: "p1",  name: "Manzanas",        emoji: "🍎", category: "Frutería",  baseCents: 220 },
+      { id: "p2",  name: "Plátanos",        emoji: "🍌", category: "Frutería",  baseCents: 150 },
+      { id: "p3",  name: "Sandía",          emoji: "🍉", category: "Frutería",  baseCents: 450 },
+      { id: "p4",  name: "Fresas",          emoji: "🍓", category: "Frutería",  baseCents: 310 },
+      { id: "p5",  name: "Barra de pan",    emoji: "🥖", category: "Panadería", baseCents: 100 },
+      { id: "p6",  name: "Cruasán",         emoji: "🥐", category: "Panadería", baseCents: 150 },
+      { id: "p7",  name: "Tarta cumple",    emoji: "🎂", category: "Panadería", baseCents: 1250 },
+      { id: "p8",  name: "Leche entera",    emoji: "🥛", category: "Lácteos",   baseCents: 150 },
+      { id: "p9",  name: "Queso fresco",    emoji: "🧀", category: "Lácteos",   baseCents: 550 },
+      { id: "p10", name: "Pack Yogures",    emoji: "🍨", category: "Lácteos",   baseCents: 240 },
+      { id: "p11", name: "Cuaderno",        emoji: "📓", category: "Papelería", baseCents: 350 },
+      { id: "p12", name: "Caja pinturas",   emoji: "🖍️", category: "Papelería", baseCents: 600 },
+      { id: "p13", name: "Mochila",         emoji: "🎒", category: "Papelería", baseCents: 2450 },
+      { id: "p14", name: "Tijeras",         emoji: "✂️", category: "Papelería", baseCents: 250 },
+      { id: "p15", name: "Balón fútbol",    emoji: "⚽", category: "Juguetes",  baseCents: 1500 },
+      { id: "p16", name: "Oso peluche",     emoji: "🧸", category: "Juguetes",  baseCents: 1150 },
+      { id: "p17", name: "Juego de mesa",   emoji: "🎲", category: "Juguetes",  baseCents: 1850 },
+      { id: "p18", name: "Patinete",        emoji: "🛴", category: "Juguetes",  baseCents: 4500 }
+    ];
+
+    let STATE = {
+      selectedCategory: "Todas",
+      cartItems: [],          // Productos en la cesta o en el ticket actual
+      trayMoney: [],          // Billetes/monedas colocados por el alumno en la bandeja
+      customerPaidBills: [],  // Billetes con los que paga el cliente en Modo Dependiente
+      pendingPopupSituation: null // Situación generada en el pop-up antes de trasladarla a pantalla
+    };
+
+    /* =========================================================================
+       SONIDOS WEB AUDIO API
+       ========================================================================= */
+    let audioCtx = null;
+    function playSound(type) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        if (type === 'coin') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(980, now);
+          osc.frequency.exponentialRampToValueAtTime(1560, now + 0.08);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.09);
+        } else if (type === 'success') {
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.24);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 0.24);
+          });
+        } else if (type === 'error') {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(210, now);
+          osc.frequency.linearRampToValueAtTime(150, now + 0.24);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.26);
+        }
+      } catch (e) {}
+    }
+
+    /* =========================================================================
+       CALCULO DE PRECIOS CON O SIN DECIMALES
+       ========================================================================= */
+    function getProductPriceCents(product) {
+      if (!CONFIG.useDecimals) {
+        // Sin decimales: redondeo a euros enteros (múltiplo de 100 céntimos)
+        return Math.max(100, Math.round(product.baseCents / 100) * 100);
+      }
+      if (CONFIG.decimalPrecision === 'half') {
+        // Con decimales múltiplos de 0,50 €
+        return Math.max(50, Math.round(product.baseCents / 50) * 50);
+      }
+      // Con decimales de 0,10 € y 0,20 €
+      return Math.max(10, Math.round(product.baseCents / 10) * 10);
+    }
+
+    function formatEuros(cents) {
+      if (!CONFIG.useDecimals && cents % 100 === 0) {
+        return `${Math.round(cents / 100)} €`;
+      }
+      const euros = (Math.round(cents) / 100).toFixed(2).replace('.', ',');
+      return `${euros} €`;
+    }
+
+    /* =========================================================================
+       INICIO DE LA APLICACION
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCategoryTabs();
+      renderProductsGrid();
+      renderActiveMoneyBank();
+      renderDenomCheckboxes();
+      updateUIForModeAndRole();
+      // Al arrancar en Modo Reto, abrir el Pop-up con la primera situación aleatoria
+      openRandomSituationPopup();
+    });
+
+    /* =========================================================================
+       GESTION DE MODO LIBRE VS MODO RETO Y ROL (COMPRADOR / DEPENDIENTE)
+       ========================================================================= */
+    function setPlayMode(mode) {
+      CONFIG.playMode = mode;
+      document.getElementById('btnPlayChallenge').classList.toggle('active-playmode', mode === 'challenge');
+      document.getElementById('btnPlayFree').classList.toggle('active-playmode', mode === 'free');
+
+      clearTray();
+      hideFeedback();
+
+      if (mode === 'free') {
+        // En Modo Libre empezamos con la cesta vacía o lista para que el alumno experimente
+        STATE.cartItems = [];
+        STATE.customerPaidBills = [];
+        updateUIForModeAndRole();
+        renderBasketAndCashierZone();
+      } else {
+        updateUIForModeAndRole();
+        openRandomSituationPopup();
+      }
+    }
+
+    function switchRole(role) {
+      CONFIG.currentRole = role;
+      document.getElementById('btnRoleBuyer').classList.toggle('active', role === 'buyer');
+      document.getElementById('btnRoleCashier').classList.toggle('active', role === 'cashier');
+
+      clearTray();
+      hideFeedback();
+      updateUIForModeAndRole();
+
+      if (CONFIG.playMode === 'challenge') {
+        openRandomSituationPopup();
+      } else {
+        renderBasketAndCashierZone();
+      }
+    }
+
+    function updateUIForModeAndRole() {
+      const isBuyer = CONFIG.currentRole === 'buyer';
+      const isFree = CONFIG.playMode === 'free';
+
+      const missionBar = document.getElementById('missionBar');
+      const missionBadge = document.getElementById('missionBadge');
+      const missionText = document.getElementById('missionText');
+      const btnNewRandom = document.getElementById('btnNewRandom');
+
+      missionBar.classList.toggle('free-mode-bar', isFree);
+      btnNewRandom.style.display = isFree ? 'none' : 'flex';
+
+      // Textos y cabeceras según Modo Libre o Reto
+      if (isFree) {
+        if (isBuyer) {
+          missionBadge.textContent = '✨ Compra Libre';
+          missionText.textContent = 'Elige libremente los productos de la estantería para tu cesta y paga con los billetes y monedas de tu monedero.';
+        } else {
+          missionBadge.textContent = '✨ Venta Libre (Cajero)';
+          missionText.textContent = 'Toca productos de la estantería para crear la cuenta del cliente, elige con qué billete te paga y devuélvele el cambio.';
+        }
+      } else {
+        missionBadge.textContent = isBuyer ? '🎯 Reto Comprador' : '🎯 Reto Dependiente';
+      }
+
+      // Zona 2 (Cesta vs Ticket) y Zona 3 (Monedero vs Caja)
+      document.getElementById('basketZoneTitle').textContent = isBuyer
+        ? '🧺 2. Mi Cesta de la Compra'
+        : '🧾 2. Ticket de Compra del Cliente';
+
+      document.getElementById('walletZoneTitle').textContent = isBuyer
+        ? '👛 3. Mi Monedero Disponible'
+        : '🗄️ 3. Caja Registradora (Extrae las vueltas)';
+
+      document.getElementById('trayTitleText').textContent = isBuyer
+        ? '📥 Bandeja de Pago (Toca para retirar)'
+        : '🤲 Bandeja de Cambio para el Cliente';
+
+      document.getElementById('btnValidateAction').innerHTML = isBuyer
+        ? '✅ Pagar y Comprobar'
+        : '✅ Entregar Cambio';
+
+      // Mostrar u ocultar panel de pago del cliente en modo Cajero
+      document.getElementById('cashierExtraBox').style.display = isBuyer ? 'none' : 'flex';
+      document.getElementById('freeCashierBillSelector').style.display = (!isBuyer && isFree) ? 'flex' : 'none';
+    }
+
+    /* =========================================================================
+       POP-UP DE NUEVA SITUACION ALEATORIA (Primero en Pop-up -> Luego a Pantalla)
+       ========================================================================= */
+    function generatePendingSituation() {
+      const numItems = Math.floor(Math.random() * 3) + 2; // 2 a 4 artículos
+      const items = [];
+      for (let i = 0; i < numItems; i++) {
+        const randProd = PRODUCTS_CATALOG[Math.floor(Math.random() * PRODUCTS_CATALOG.length)];
+        items.push(randProd);
+      }
+      const totalCents = items.reduce((sum, p) => sum + getProductPriceCents(p), 0);
+      const paidBills = buildCustomerPayment(totalCents);
+      const paidCents = paidBills.reduce((sum, b) => sum + b.cents, 0);
+
+      STATE.pendingPopupSituation = {
+        items,
+        totalCents,
+        paidBills,
+        paidCents
+      };
+    }
+
+    function openRandomSituationPopup() {
+      generatePendingSituation();
+      renderSituationPopupContent();
+      document.getElementById('situationPopupModal').classList.add('open');
+    }
+
+    function renderSituationPopupContent() {
+      const sit = STATE.pendingPopupSituation;
+      if (!sit) return;
+
+      const isBuyer = CONFIG.currentRole === 'buyer';
+      const badge = document.getElementById('popupRoleBadge');
+      const story = document.getElementById('popupStoryText');
+      const itemsContainer = document.getElementById('popupItemsList');
+      const paymentBox = document.getElementById('popupPaymentPreviewBox');
+      const paymentBills = document.getElementById('popupPaymentBills');
+
+      // Agrupar productos iguales para mostrarlos claros en el pop-up
+      const grouped = groupCartItems(sit.items);
+      itemsContainer.innerHTML = grouped.map(g => `
+        <div class="challenge-pill">
+          <span style="font-size:1.5rem;">${g.product.emoji}</span>
+          <span>${g.qty}x ${g.product.name}</span>
+          <span style="color:#b45309;">(${formatEuros(getProductPriceCents(g.product) * g.qty)})</span>
+        </div>
+      `).join('');
+
+      if (isBuyer) {
+        badge.textContent = '🛍️ Misión de Comprador';
+        story.innerHTML = `Tienes que comprar estos <strong>${sit.items.length} productos</strong> en el supermercado. El coste total es de <strong style="color:#be123c;">${formatEuros(sit.totalCents)}</strong>.<br>¿Qué billetes y monedas de tu monedero pondrás en la bandeja para pagar?`;
+        paymentBox.style.display = 'none';
+      } else {
+        badge.textContent = '🧑‍💼 Misión de Dependiente / Cajero';
+        story.innerHTML = `Un cliente lleva una compra de <strong style="color:#be123c;">${formatEuros(sit.totalCents)}</strong> y te entrega <strong style="color:#1d4ed8;">${formatEuros(sit.paidCents)}</strong> para pagar.<br>Calcula la resta y prepara las vueltas exactas en la bandeja.`;
+        paymentBox.style.display = 'flex';
+        paymentBills.innerHTML = sit.paidBills.map(d => `
+          <div class="money-item ${d.css}" style="cursor:default;">
+            <span class="bill-val">${d.label}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function closeSituationPopupAndApply() {
+      document.getElementById('situationPopupModal').classList.remove('open');
+      const sit = STATE.pendingPopupSituation;
+      if (!sit) return;
+
+      clearTray();
+      hideFeedback();
+
+      STATE.cartItems = [...sit.items];
+      STATE.customerPaidBills = [...sit.paidBills];
+
+      if (CONFIG.currentRole === 'buyer') {
+        document.getElementById('missionText').textContent =
+          `Reto en pantalla: Paga la compra de ${sit.items.length} artículos por un total de ${formatEuros(sit.totalCents)}.`;
+      } else {
+        document.getElementById('missionText').textContent =
+          `Reto en pantalla: La compra cuesta ${formatEuros(sit.totalCents)} y el cliente entrega ${formatEuros(sit.paidCents)}. ¡Devuelve el cambio exacto!`;
+      }
+
+      renderBasketAndCashierZone();
+    }
+
+    /* =========================================================================
+       RENDERIZADO DE ZONA 1 (ESTANTERIA) Y ZONA 2 (MI CESTA / TICKET)
+       ========================================================================= */
+    function renderCategoryTabs() {
+      const categories = ["Todas", ...new Set(PRODUCTS_CATALOG.map(p => p.category))];
+      const container = document.getElementById('categoryTabs');
+      container.innerHTML = categories.map(cat => `
+        <button class="cat-btn ${STATE.selectedCategory === cat ? 'active' : ''}"
+                onclick="selectCategory('${cat}')">
+          ${cat}
+        </button>
+      `).join('');
+    }
+
+    function selectCategory(cat) {
+      STATE.selectedCategory = cat;
+      renderCategoryTabs();
+      renderProductsGrid();
+    }
+
+    function renderProductsGrid() {
+      const grid = document.getElementById('productsGrid');
+      const filtered = STATE.selectedCategory === "Todas"
+        ? PRODUCTS_CATALOG
+        : PRODUCTS_CATALOG.filter(p => p.category === STATE.selectedCategory);
+
+      grid.innerHTML = filtered.map(prod => {
+        const priceCents = getProductPriceCents(prod);
+        return `
+          <div class="shelf-item" onclick="addProductToCart('${prod.id}')">
+            <div class="shelf-emoji">${prod.emoji}</div>
+            <div class="shelf-name">${prod.name}</div>
+            <div class="price-tag">${formatEuros(priceCents)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function groupCartItems(itemsArray) {
+      const map = new Map();
+      itemsArray.forEach(prod => {
+        if (!map.has(prod.id)) {
+          map.set(prod.id, { product: prod, qty: 0 });
+        }
+        map.get(prod.id).qty++;
+      });
+      return Array.from(map.values());
+    }
+
+    function addProductToCart(productId) {
+      const prod = PRODUCTS_CATALOG.find(p => p.id === productId);
+      if (!prod) return;
+      STATE.cartItems.push(prod);
+      playSound('coin');
+      hideFeedback();
+
+      // Si estamos en Modo Libre y rol Dependiente y aún no hay billete de pago o se quedó corto, ajustamos automáticamente
+      if (CONFIG.currentRole === 'cashier') {
+        ensureCustomerPaymentCoversTotal();
+      }
+      renderBasketAndCashierZone();
+    }
+
+    function changeProductQty(productId, delta) {
+      if (delta > 0) {
+        addProductToCart(productId);
+      } else {
+        const idx = STATE.cartItems.findIndex(p => p.id === productId);
+        if (idx !== -1) {
+          STATE.cartItems.splice(idx, 1);
+          playSound('coin');
+          hideFeedback();
+          if (CONFIG.currentRole === 'cashier') {
+            ensureCustomerPaymentCoversTotal();
+          }
+          renderBasketAndCashierZone();
+        }
+      }
+    }
+
+    function clearCart() {
+      STATE.cartItems = [];
+      STATE.customerPaidBills = [];
+      hideFeedback();
+      renderBasketAndCashierZone();
+    }
+
+    function getCartTotalCents() {
+      return STATE.cartItems.reduce((sum, item) => sum + getProductPriceCents(item), 0);
+    }
+
+    function renderBasketAndCashierZone() {
+      const container = document.getElementById('basketInterior');
+      const totalCents = getCartTotalCents();
+      document.getElementById('basketTotalAmount').textContent = formatEuros(totalCents);
+
+      if (STATE.cartItems.length === 0) {
+        container.innerHTML = `
+          <div style="margin:auto; text-align:center; color:#be123c; font-weight:800; padding:16px;">
+            🧺 La cesta está vacía.<br>Toca los productos de la estantería superior para añadirlos aquí.
+          </div>
+        `;
+      } else {
+        const grouped = groupCartItems(STATE.cartItems);
+        container.innerHTML = grouped.map(g => {
+          const unitCents = getProductPriceCents(g.product);
+          const subTotal = unitCents * g.qty;
+          return `
+            <div class="basket-row">
+              <div class="basket-row-info">
+                <span class="basket-qty-badge">${g.qty}x</span>
+                <span style="font-size:1.4rem;">${g.product.emoji}</span>
+                <span>${g.product.name}</span>
+                <small style="color:var(--text-muted); font-weight:700;">(${formatEuros(unitCents)} c/u)</small>
+              </div>
+              <div class="basket-row-actions">
+                <strong style="color:#be123c; font-size:1.05rem; margin-right:6px;">${formatEuros(subTotal)}</strong>
+                <button class="btn-qty" onclick="changeProductQty('${g.product.id}', -1)" title="Quitar uno">−</button>
+                <button class="btn-qty" onclick="changeProductQty('${g.product.id}', 1)" title="Añadir uno">+</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Si estamos en Modo Dependiente/Cajero, actualizar el cuadro de pago del cliente
+      if (CONFIG.currentRole === 'cashier') {
+        const paidCents = STATE.customerPaidBills.reduce((s, b) => s + b.cents, 0);
+        const paymentVis = document.getElementById('customerPaymentVisual');
+
+        if (STATE.customerPaidBills.length === 0) {
+          paymentVis.innerHTML = `<span style="color:var(--text-muted); font-weight:700;">Añade productos o selecciona con qué billetes paga el cliente.</span>`;
+        } else {
+          paymentVis.innerHTML = STATE.customerPaidBills.map(d => `
+            <div class="money-item ${d.css}" style="cursor:default;">
+              <span class="bill-val">${d.label}</span>
+            </div>
+          `).join('');
+        }
+
+        document.getElementById('cashierCostDisplay').textContent = formatEuros(totalCents);
+        document.getElementById('cashierPaidDisplay').textContent = formatEuros(paidCents);
+        if (paidCents >= totalCents && totalCents > 0) {
+          document.getElementById('cashierChangeHint').textContent = `${formatEuros(paidCents)} − ${formatEuros(totalCents)}`;
+        } else {
+          document.getElementById('cashierChangeHint').textContent = `0,00 €`;
+        }
+      }
+    }
+
+    // Funciones auxiliares para el pago del cliente en Modo Dependiente
+    function buildCustomerPayment(costCents) {
+      if (costCents <= 0) return [];
+      const standardBills = [500, 1000, 2000, 5000, 10000, 20000];
+      for (let b of standardBills) {
+        if (b > costCents) {
+          const denomObj = ALL_DENOMINATIONS.find(d => d.cents === b);
+          if (denomObj) return [denomObj];
+        }
+      }
+      const result = [];
+      let sum = 0;
+      const b50 = ALL_DENOMINATIONS.find(d => d.cents === 5000);
+      while (sum <= costCents) {
+        result.push(b50);
+        sum += 5000;
+      }
+      return result;
+    }
+
+    function ensureCustomerPaymentCoversTotal() {
+      const totalCents = getCartTotalCents();
+      const paidCents = STATE.customerPaidBills.reduce((s, b) => s + b.cents, 0);
+      if (totalCents === 0) {
+        STATE.customerPaidBills = [];
+      } else if (paidCents <= totalCents) {
+        STATE.customerPaidBills = buildCustomerPayment(totalCents);
+      }
+    }
+
+    function addCustomerPaymentBill(cents) {
+      const bill = ALL_DENOMINATIONS.find(d => d.cents === cents);
+      if (bill) {
+        STATE.customerPaidBills.push(bill);
+        playSound('coin');
+        renderBasketAndCashierZone();
+      }
+    }
+
+    function clearCustomerPaymentBills() {
+      STATE.customerPaidBills = [];
+      renderBasketAndCashierZone();
+    }
+
+    /* =========================================================================
+       ZONA 3: MONEDERO Y BANDEJA DE PAGO
+       ========================================================================= */
+    function renderActiveMoneyBank() {
+      const bank = document.getElementById('activeMoneyBank');
+      const activeDenoms = ALL_DENOMINATIONS.filter(d => d.active);
+
+      if (activeDenoms.length === 0) {
+        bank.innerHTML = `<p style="color:var(--danger); font-weight:800;">⚠️ Activa al menos una moneda o billete en Ajustes.</p>`;
+        return;
+      }
+
+      bank.innerHTML = activeDenoms.map(d => {
+        if (d.type === 'bill') {
+          return `
+            <div class="money-item ${d.css}"
+                 draggable="true"
+                 ondragstart="handleDragStart(event, '${d.id}')"
+                 onclick="addMoneyToTray('${d.id}')">
+              <span class="bill-val">${d.label}</span>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="money-item ${d.css}"
+                 draggable="true"
+                 ondragstart="handleDragStart(event, '${d.id}')"
+                 onclick="addMoneyToTray('${d.id}')">
+              <span>${d.label}</span>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function addMoneyToTray(denomId) {
+      const denom = ALL_DENOMINATIONS.find(d => d.id === denomId);
+      if (!denom) return;
+      STATE.trayMoney.push(denom);
+      playSound('coin');
+      hideFeedback();
+      renderPaymentTray();
+    }
+
+    function removeMoneyFromTray(index) {
+      STATE.trayMoney.splice(index, 1);
+      playSound('coin');
+      hideFeedback();
+      renderPaymentTray();
+    }
+
+    function clearTray() {
+      STATE.trayMoney = [];
+      hideFeedback();
+      renderPaymentTray();
+    }
+
+    function getTrayTotalCents() {
+      return STATE.trayMoney.reduce((sum, d) => sum + d.cents, 0);
+    }
+
+    function renderPaymentTray() {
+      const tray = document.getElementById('paymentTray');
+      document.getElementById('trayTotalDisplay').textContent = formatEuros(getTrayTotalCents());
+
+      if (STATE.trayMoney.length === 0) {
+        tray.innerHTML = `
+          <div class="tray-empty-msg">
+            👆 Toca los billetes y monedas de arriba para colocarlos en esta bandeja.
+          </div>
+        `;
+        return;
+      }
+
+      tray.innerHTML = STATE.trayMoney.map((d, idx) => {
+        if (d.type === 'bill') {
+          return `
+            <div class="money-item ${d.css}" onclick="removeMoneyFromTray(${idx})" title="Toca para retirar">
+              <span class="bill-val">${d.label}</span>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="money-item ${d.css}" onclick="removeMoneyFromTray(${idx})" title="Toca para retirar">
+              <span>${d.label}</span>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function handleDragStart(e, denomId) {
+      e.dataTransfer.setData('text/plain', denomId);
+    }
+    function handleDragOver(e) {
+      e.preventDefault();
+    }
+    function handleDragLeave(e) {}
+    function handleDrop(e) {
+      e.preventDefault();
+      const denomId = e.dataTransfer.getData('text/plain');
+      if (denomId) addMoneyToTray(denomId);
+    }
+
+    /* =========================================================================
+       COMPROBACION DE PAGO Y VUELTAS
+       ========================================================================= */
+    function validateTransaction() {
+      const trayCents = getTrayTotalCents();
+      const totalCents = getCartTotalCents();
+
+      if (totalCents === 0) {
+        playSound('error');
+        showFeedback('error', '🧺 Primero añade productos de la estantería a la cesta.');
+        return;
+      }
+
+      if (CONFIG.currentRole === 'buyer') {
+        if (trayCents === totalCents) {
+          CONFIG.score++;
+          document.getElementById('scoreCounter').textContent = CONFIG.score;
+          playSound('success');
+          showFeedback('success', `🎉 ¡Perfecto! Has entregado el importe exacto (${formatEuros(totalCents)}).`);
+        } else if (trayCents > totalCents) {
+          const change = trayCents - totalCents;
+          CONFIG.score++;
+          document.getElementById('scoreCounter').textContent = CONFIG.score;
+          playSound('success');
+          showFeedback('success', `👍 ¡Compra pagada! Has entregado ${formatEuros(trayCents)} para pagar ${formatEuros(totalCents)}. Te deben devolver ${formatEuros(change)} de cambio.`);
+        } else {
+          const missing = totalCents - trayCents;
+          playSound('error');
+          showFeedback('error', `🧐 Falta dinero en la bandeja. La compra cuesta ${formatEuros(totalCents)} y has puesto ${formatEuros(trayCents)}. Faltan ${formatEuros(missing)}.`);
+        }
+      } else {
+        // Modo Dependiente / Cajero
+        const paidCents = STATE.customerPaidBills.reduce((s, b) => s + b.cents, 0);
+        if (paidCents < totalCents) {
+          playSound('error');
+          showFeedback('error', `⚠️ El dinero entregado por el cliente (${formatEuros(paidCents)}) es menor que el coste de la compra (${formatEuros(totalCents)}). Añade más billetes al pago del cliente.`);
+          return;
+        }
+        const expectedChange = paidCents - totalCents;
+        const diff = trayCents - expectedChange;
+
+        if (diff === 0) {
+          CONFIG.score++;
+          document.getElementById('scoreCounter').textContent = CONFIG.score;
+          playSound('success');
+          document.getElementById('cashierChangeHint').textContent = formatEuros(expectedChange);
+          showFeedback('success', `🌟 ¡Vueltas exactas! De ${formatEuros(paidCents)} menos ${formatEuros(totalCents)}, el cambio correcto es ${formatEuros(expectedChange)}.`);
+        } else if (diff > 0) {
+          playSound('error');
+          showFeedback('error', `⚠️ Has puesto cambio de más. Has colocado ${formatEuros(trayCents)} y sobran ${formatEuros(diff)}.`);
+        } else {
+          playSound('error');
+          showFeedback('error', `⚠️ Falta cambio por devolver. Has colocado ${formatEuros(trayCents)} y faltan ${formatEuros(Math.abs(diff))}.`);
+        }
+      }
+    }
+
+    function showFeedback(type, message) {
+      const banner = document.getElementById('feedbackBanner');
+      banner.className = `feedback-banner ${type}`;
+      banner.innerHTML = `<span>${message}</span>`;
+    }
+
+    function hideFeedback() {
+      const banner = document.getElementById('feedbackBanner');
+      banner.className = 'feedback-banner';
+      banner.innerHTML = '';
+    }
+
+    /* =========================================================================
+       CONFIGURACION DOCENTE: DECIMALES SI / NO Y MONEDAS
+       ========================================================================= */
+    function setUseDecimals(useDec) {
+      CONFIG.useDecimals = useDec;
+      document.getElementById('btnDecNo').classList.toggle('active', !useDec);
+      document.getElementById('btnDecYes').classList.toggle('active', useDec);
+      document.getElementById('decimalPrecisionRow').style.display = useDec ? 'flex' : 'none';
+
+      syncCoinsWithDecimalSetting();
+      refreshAllAfterConfigChange();
+    }
+
+    function changeDecimalPrecision() {
+      CONFIG.decimalPrecision = document.getElementById('selectDecimalPrecision').value;
+      syncCoinsWithDecimalSetting();
+      refreshAllAfterConfigChange();
+    }
+
+    function syncCoinsWithDecimalSetting() {
+      const c50 = ALL_DENOMINATIONS.find(d => d.id === 'c50');
+      const c20 = ALL_DENOMINATIONS.find(d => d.id === 'c20');
+      const c10 = ALL_DENOMINATIONS.find(d => d.id === 'c10');
+
+      if (!CONFIG.useDecimals) {
+        if (c50) c50.active = false;
+        if (c20) c20.active = false;
+        if (c10) c10.active = false;
+      } else {
+        if (CONFIG.decimalPrecision === 'half') {
+          if (c50) c50.active = true;
+          if (c20) c20.active = false;
+          if (c10) c10.active = false;
+        } else {
+          if (c50) c50.active = true;
+          if (c20) c20.active = true;
+          if (c10) c10.active = true;
+        }
+      }
+    }
+
+    function refreshAllAfterConfigChange() {
+      renderDenomCheckboxes();
+      renderActiveMoneyBank();
+      renderProductsGrid();
+      if (CONFIG.currentRole === 'cashier') {
+        ensureCustomerPaymentCoversTotal();
+      }
+      renderBasketAndCashierZone();
+      renderPaymentTray();
+    }
+
+    function renderDenomCheckboxes() {
+      const container = document.getElementById('denomCheckboxes');
+      container.innerHTML = ALL_DENOMINATIONS.map(d => `
+        <label class="denom-check">
+          <input type="checkbox" ${d.active ? 'checked' : ''} onchange="toggleDenomination('${d.id}', this.checked)">
+          <span>${d.type === 'bill' ? '💵' : '🪙'} ${d.label}</span>
+        </label>
+      `).join('');
+    }
+
+    function toggleDenomination(id, isChecked) {
+      const denom = ALL_DENOMINATIONS.find(d => d.id === id);
+      if (denom) denom.active = isChecked;
+      renderActiveMoneyBank();
+    }
+
+    function updateSchoolName() {
+      const val = document.getElementById('inputSchoolName').value.trim();
+      if (val) CONFIG.schoolName = val;
+    }
+
+    /* =========================================================================
+       EXPORTAR E IMPORTAR JSON
+       ========================================================================= */
+    function exportDataJSON() {
+      const payload = {
+        app: "Supermercado Matemático 3º Primaria",
+        version: "2.0",
+        config: CONFIG,
+        activeDenominations: ALL_DENOMINATIONS.map(d => ({ id: d.id, active: d.active })),
+        catalog: PRODUCTS_CATALOG
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "supermercado_matematico_3primaria.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById('jsonStatusMsg').textContent = "✅ Archivo JSON exportado correctamente.";
+    }
+
+    function importDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data.catalog || !Array.isArray(data.catalog)) {
+            throw new Error("Formato de catálogo no válido.");
+          }
+          PRODUCTS_CATALOG = data.catalog;
+          if (data.config) {
+            CONFIG.useDecimals = Boolean(data.config.useDecimals);
+            CONFIG.schoolName = data.config.schoolName || CONFIG.schoolName;
+            document.getElementById('inputSchoolName').value = CONFIG.schoolName;
+            setUseDecimals(CONFIG.useDecimals);
+          }
+          refreshAllAfterConfigChange();
+          document.getElementById('jsonStatusMsg').textContent = "✅ Datos importados correctamente.";
+        } catch (err) {
+          document.getElementById('jsonStatusMsg').textContent = "❌ Error en el archivo JSON: " + err.message;
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* =========================================================================
+       IMPRESION FICHAS A4
+       ========================================================================= */
+    function printWorksheet(templateType) {
+      updateSchoolName();
+      const printArea = document.getElementById('printArea');
+      const school = CONFIG.schoolName || "CEIP / Colegio";
+
+      if (templateType === 'buyer') {
+        let rowsHTML = '';
+        for (let i = 1; i <= 3; i++) {
+          const count = i + 1;
+          const chosen = [];
+          for (let j = 0; j < count; j++) {
+            chosen.push(PRODUCTS_CATALOG[(i * 3 + j) % PRODUCTS_CATALOG.length]);
+          }
+          const listStr = chosen.map(p => `• ${p.emoji} <strong>${p.name}</strong>: ${formatEuros(getProductPriceCents(p))}`).join('<br>');
+
+          rowsHTML += `
+            <tr>
+              <td style="width: 34%;"><strong>Compra #${i}:</strong><br><br>${listStr}</td>
+              <td style="width: 30%;">
+                <strong>Operación de suma total:</strong>
+                <div class="calc-grid-print"></div>
+                <div style="margin-top:8px; font-weight:800;">TOTAL: _______________ €</div>
+              </td>
+              <td style="width: 36%;">
+                <strong>Dibuja los billetes y monedas para pagar:</strong>
+                <div class="draw-space"></div>
+              </td>
+            </tr>
+          `;
+        }
+
+        printArea.innerHTML = `
+          <div class="print-sheet">
+            <div class="print-header">
+              <div>
+                <h1 style="font-size:16pt;">🛒 FICHA DEL COMPRADOR: APRENDEMOS CON EL EURO</h1>
+                <p style="font-size:10.5pt; font-weight:700;">${school} · Matemáticas 3.º de Educación Primaria</p>
+              </div>
+              <div style="font-weight:800; border:1.5px solid #000; padding:4px 8px;">PLANTILLA A</div>
+            </div>
+            <div class="student-fields">
+              <div class="field-line">Nombre: </div>
+              <div class="field-line" style="max-width:170px;">Fecha: ___/___/202__</div>
+              <div class="field-line" style="max-width:100px;">Curso: 3.º ___</div>
+            </div>
+            <table class="print-table">
+              <thead>
+                <tr>
+                  <th>1. Productos comprados</th>
+                  <th>2. Calcula la suma total</th>
+                  <th>3. Billetes y monedas empleados</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHTML}</tbody>
+            </table>
+          </div>
+        `;
+      } else {
+        let rowsHTML = '';
+        for (let i = 1; i <= 3; i++) {
+          const p1 = PRODUCTS_CATALOG[(i * 2) % PRODUCTS_CATALOG.length];
+          const p2 = PRODUCTS_CATALOG[(i * 2 + 1) % PRODUCTS_CATALOG.length];
+          const totalCents = getProductPriceCents(p1) + getProductPriceCents(p2);
+          const paidBills = buildCustomerPayment(totalCents);
+          const paidCents = paidBills.reduce((s, b) => s + b.cents, 0);
+
+          rowsHTML += `
+            <tr>
+              <td style="width: 34%;">
+                <strong>Cliente #${i}:</strong><br><br>
+                • ${p1.emoji} ${p1.name} (${formatEuros(getProductPriceCents(p1))})<br>
+                • ${p2.emoji} ${p2.name} (${formatEuros(getProductPriceCents(p2))})<br><br>
+                <strong>Total compra:</strong> ${formatEuros(totalCents)}<br>
+                <strong>Entrega:</strong> ${formatEuros(paidCents)}
+              </td>
+              <td style="width: 30%;">
+                <strong>Cálculo de la resta (vueltas):</strong>
+                <div class="calc-grid-print"></div>
+                <div style="margin-top:8px; font-weight:800;">DEVOLVER: ____________ €</div>
+              </td>
+              <td style="width: 36%;">
+                <strong>Desglose de billetes y monedas devueltos:</strong>
+                <div class="draw-space"></div>
+              </td>
+            </tr>
+          `;
+        }
+
+        printArea.innerHTML = `
+          <div class="print-sheet">
+            <div class="print-header">
+              <div>
+                <h1 style="font-size:16pt;">🧑‍💼 FICHA DEL CAJERO: CÁLCULO DE VUELTAS</h1>
+                <p style="font-size:10.5pt; font-weight:700;">${school} · Matemáticas 3.º de Educación Primaria</p>
+              </div>
+              <div style="font-weight:800; border:1.5px solid #000; padding:4px 8px;">PLANTILLA B</div>
+            </div>
+            <div class="student-fields">
+              <div class="field-line">Nombre: </div>
+              <div class="field-line" style="max-width:170px;">Fecha: ___/___/202__</div>
+              <div class="field-line" style="max-width:100px;">Curso: 3.º ___</div>
+            </div>
+            <table class="print-table">
+              <thead>
+                <tr>
+                  <th>1. Compra y pago recibido</th>
+                  <th>2. Operación de resta (cambio)</th>
+                  <th>3. Billetes y monedas que devuelves</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHTML}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      closePrintModal();
+      setTimeout(() => window.print(), 150);
+    }
+
+    function openConfigModal() { document.getElementById('configModal').classList.add('open'); }
+    function closeConfigModal() { document.getElementById('configModal').classList.remove('open'); }
+    function openPrintModal() { document.getElementById('printModal').classList.add('open'); }
+    function closePrintModal() { document.getElementById('printModal').classList.remove('open'); }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+</body>
+</html>
