@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lengua Castellana 3.º Primaria - Portal Interactivo y Modo Docente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Paleta hermana en tonos azules escolares de alto contraste */
+      --bg-body: #f0f7ff;
+      --bg-surface: #ffffff;
+      --bg-soft-blue: #dbeafe;
+      --bg-tag-inactive: #eff6ff;
+      --blue-light: #93c5fd;
+      --blue-medium: #3b82f6;
+      --blue-primary: #1d4ed8;
+      --blue-dark: #1e40af;
+      --blue-deep: #1e3a8a;
+      --blue-navy: #0f172a;
+      --green-ok: #15803d;
+      --red-err: #dc2626;
+      --amber-warn: #d97706;
+      --text-main: #0f172a;
+      --text-muted: #334155;
+      --border-color: #bfdbfe;
+      --shadow-soft: 0 8px 20px rgba(29, 78, 216, 0.08);
+      --shadow-hover: 0 12px 28px rgba(29, 78, 216, 0.18);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: var(--bg-body);
+      background-image: radial-gradient(#bfdbfe 1.3px, transparent 1.3px);
+      background-size: 28px 28px;
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ================= CABECERA ================= */
+    header {
+      background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-primary) 60%, var(--blue-medium) 100%);
+      color: #ffffff;
+      padding: 1.3rem 2rem;
+      box-shadow: 0 6px 20px rgba(30, 58, 138, 0.25);
+      position: relative;
+      z-index: 20;
+    }
+
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-icon {
+      width: 66px;
+      height: 66px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 255, 255, 0.45);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .brand-text h1 {
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .brand-text p {
+      font-size: 1rem;
+      font-weight: 600;
+      opacity: 0.92;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .btn-header {
+      min-height: 60px;
+      padding: 0 1.2rem;
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .btn-header.teacher-active {
+      background: #ffd43b;
+      color: var(--blue-navy);
+      border-color: #ffffff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+
+    /* ================= BARRA DE MODO DOCENTE ================= */
+    .teacher-toolbar {
+      display: none;
+      background: linear-gradient(90deg, #0f172a, #1e3a8a);
+      color: #ffffff;
+      padding: 0.95rem 2rem;
+      border-bottom: 3px solid #ffd43b;
+    }
+
+    .teacher-toolbar.visible {
+      display: block;
+    }
+
+    .teacher-toolbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .teacher-status {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #ffd43b;
+    }
+
+    .teacher-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .btn-teacher-tool {
+      min-height: 52px;
+      padding: 0 1.1rem;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.96rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-teacher-tool.primary {
+      background: #ffd43b;
+      color: #0f172a;
+      border-color: #ffd43b;
+    }
+
+    .btn-teacher-tool:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    /* ================= CONTROLES DE BÚSQUEDA Y FILTROS ================= */
+    .controls-section {
+      background: var(--bg-surface);
+      border-bottom: 3px solid var(--border-color);
+      padding: 1.2rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 15;
+      box-shadow: 0 6px 18px rgba(29, 78, 216, 0.07);
+    }
+
+    .controls-wrapper {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1 1 320px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.2rem;
+      font-size: 1.4rem;
+      color: var(--blue-primary);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      min-height: 60px;
+      padding: 0.7rem 3.5rem 0.7rem 3.4rem;
+      font-family: inherit;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--bg-body);
+      border: 3px solid var(--border-color);
+      border-radius: var(--radius-md);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--blue-primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15);
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 0.8rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-soft-blue);
+      color: var(--blue-dark);
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clear-search-btn.visible { display: flex; }
+
+    .type-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .type-btn {
+      min-height: 60px;
+      padding: 0 1.1rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-color);
+      background: var(--bg-tag-inactive);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .type-btn.active {
+      background: var(--blue-deep);
+      color: #ffffff;
+      border-color: var(--blue-deep);
+    }
+
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .tag-filter-btn {
+      min-height: 60px;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      border: 3px solid var(--border-color);
+      background: #ffffff;
+      color: var(--blue-deep);
+      font-family: inherit;
+      font-size: 1.02rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      flex: 1 1 auto;
+      transition: all 0.2s ease;
+    }
+
+    .tag-filter-btn.active {
+      background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
+      color: #ffffff;
+      border-color: var(--blue-dark);
+      box-shadow: 0 5px 14px rgba(29, 78, 216, 0.3);
+    }
+
+    /* ================= BARRA DE ESTADO ================= */
+    .status-bar {
+      max-width: 1440px;
+      margin: 1.1rem auto 0;
+      padding: 0 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .results-counter {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--blue-deep);
+      background: var(--bg-soft-blue);
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      border: 2px solid var(--border-color);
+    }
+
+    .unit-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .unit-pill {
+      min-height: 48px;
+      padding: 0.4rem 0.95rem;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-color);
+      background: #ffffff;
+      color: var(--blue-dark);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .unit-pill.active, .unit-pill:hover {
+      background: var(--blue-primary);
+      color: #ffffff;
+      border-color: var(--blue-primary);
+    }
+
+    /* ================= CANVAS DE 6 UNIDADES ================= */
+    main {
+      max-width: 1440px;
+      width: 100%;
+      margin: 1.2rem auto 3rem;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .unit-section {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .unit-section.hidden { display: none; }
+
+    .unit-header {
+      background: linear-gradient(90deg, var(--blue-deep) 0%, var(--blue-primary) 65%, var(--blue-medium) 100%);
+      color: #ffffff;
+      padding: 1.15rem 1.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      cursor: pointer;
+    }
+
+    .unit-title-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .unit-badge {
+      background: #ffffff;
+      color: var(--blue-deep);
+      font-size: 1.2rem;
+      font-weight: 800;
+      padding: 0.45rem 0.95rem;
+      border-radius: 14px;
+      white-space: nowrap;
+    }
+
+    .unit-header h2 {
+      font-size: clamp(1.25rem, 2.1vw, 1.6rem);
+      font-weight: 800;
+    }
+
+    .unit-subtitle {
+      font-size: 0.95rem;
+      opacity: 0.92;
+      font-weight: 600;
+    }
+
+    .unit-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .unit-count-badge {
+      background: rgba(255, 255, 255, 0.22);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .unit-section.collapsed .resources-grid { display: none; }
+
+    .resources-grid {
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(315px, 1fr));
+      gap: 1.3rem;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    }
+
+    .resource-card {
+      background: #ffffff;
+      border: 2.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.06);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .resource-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--blue-primary);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .resource-card.hidden { display: none; }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .format-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .format-web { background: #dbeafe; color: #1e40af; border: 1.5px solid #93c5fd; }
+    .format-pdf { background: #ede9fe; color: #5b21b6; border: 1.5px solid #c4b5fd; }
+    .format-img { background: #e0f2fe; color: #0369a1; border: 1.5px solid #7dd3fc; }
+
+    .category-badge {
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      text-transform: capitalize;
+      color: #ffffff;
+    }
+
+    .cat-comunicacion { background: #0284c7; }
+    .cat-gramatica { background: #1d4ed8; }
+    .cat-ortografia { background: #4338ca; }
+    .cat-vocabulario { background: #0d9488; }
+    .cat-literatura { background: #7c3aed; }
+    .cat-sit-aprendizaje { background: #1e3a8a; border: 2px solid #ffd43b; }
+
+    .card-body {
+      display: flex;
+      gap: 0.95rem;
+      align-items: flex-start;
+      margin-top: 0.7rem;
+    }
+
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      border-radius: 15px;
+      background: var(--bg-soft-blue);
+      border: 2px solid var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .card-info h3 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--blue-navy);
+      margin-bottom: 0.25rem;
+      line-height: 1.25;
+    }
+
+    .card-info p {
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding-top: 0.75rem;
+      border-top: 2px dashed var(--bg-soft-blue);
+    }
+
+    .btn-open-resource {
+      width: 100%;
+      min-height: 54px;
+      border-radius: 12px;
+      border: none;
+      background: var(--bg-soft-blue);
+      color: var(--blue-dark);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .resource-card:hover .btn-open-resource {
+      background: var(--blue-primary);
+      color: #ffffff;
+    }
+
+    .card-teacher-controls {
+      display: none;
+      gap: 0.5rem;
+    }
+
+    body.teacher-mode .card-teacher-controls {
+      display: flex;
+    }
+
+    .btn-card-edit, .btn-card-delete {
+      flex: 1;
+      min-height: 46px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .btn-card-edit { background: #fef9c3; color: #a16207; border-color: #fde047; }
+    .btn-card-delete { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+
+    /* ================= MODALES ================= */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 1020px;
+      max-height: 92vh;
+      border-radius: var(--radius-lg);
+      border: 4px solid var(--blue-primary);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.38);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue-primary));
+      color: #ffffff;
+      padding: 1.1rem 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .modal-title-wrap span.icon {
+      font-size: 1.9rem;
+      background: rgba(255,255,255,0.2);
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-close-modal {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      border: 2px solid rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.2);
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .modal-content {
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .preview-canvas {
+      background: var(--bg-body);
+      border: 3px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* ================= ESTILOS DE LOS 6 MINIJUEGOS DE LENGUA ================= */
+    .minigame-container {
+      width: 100%;
+      max-width: 860px;
+      background: #ffffff;
+      border: 2.5px solid var(--blue-light);
+      border-radius: var(--radius-md);
+      padding: 1.3rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .game-top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding-bottom: 0.9rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px dashed var(--border-color);
+    }
+
+    .game-badge {
+      background: var(--bg-soft-blue);
+      color: var(--blue-deep);
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .game-feedback {
+      min-height: 2.2rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-top: 0.9rem;
+    }
+
+    .btn-game {
+      min-height: 60px;
+      padding: 0.6rem 1.3rem;
+      border-radius: 14px;
+      border: 3px solid var(--border-color);
+      background: var(--bg-tag-inactive);
+      color: var(--blue-deep);
+      font-family: inherit;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-game:hover {
+      background: var(--bg-soft-blue);
+      border-color: var(--blue-primary);
+    }
+
+    .btn-game.primary {
+      background: var(--blue-primary);
+      color: #ffffff;
+      border-color: var(--blue-dark);
+    }
+
+    /* Sílabas grandes táctiles */
+    .syllables-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+      margin: 1.4rem 0;
+    }
+
+    .syllable-box {
+      min-width: 110px;
+      min-height: 82px;
+      padding: 0.8rem 1.5rem;
+      font-size: 2rem;
+      font-weight: 800;
+      border-radius: 18px;
+      border: 3px solid var(--blue-light);
+      background: var(--bg-body);
+      color: var(--blue-navy);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .syllable-box:hover {
+      transform: translateY(-3px);
+      border-color: var(--blue-primary);
+      background: var(--bg-soft-blue);
+    }
+
+    .syllable-box.correct {
+      background: var(--green-ok);
+      color: #ffffff;
+      border-color: var(--green-ok);
+    }
+
+    .syllable-box.wrong {
+      background: var(--red-err);
+      color: #ffffff;
+      border-color: var(--red-err);
+    }
+
+    /* Tarjetas de Secuencia / Orden Alfabético */
+    .sequence-card {
+      background: var(--bg-tag-inactive);
+      border: 2.5px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.9rem 1.2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.6rem;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .sequence-card:hover {
+      border-color: var(--blue-primary);
+      background: var(--bg-soft-blue);
+    }
+
+    .sequence-card.selected {
+      background: var(--blue-primary);
+      color: #ffffff;
+      border-color: var(--blue-deep);
+    }
+
+    /* Viñeta de Cómic / Cartel */
+    .comic-stage {
+      background: linear-gradient(180deg, #e0f2fe 0%, #fef9c3 100%);
+      border: 4px solid #0f172a;
+      border-radius: 18px;
+      padding: 1.4rem;
+      min-height: 230px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 0 0 3px #ffffff;
+    }
+
+    .comic-cartela {
+      align-self: stretch;
+      background: #fde047;
+      border: 2.5px solid #0f172a;
+      padding: 0.4rem 0.9rem;
+      font-weight: 800;
+      font-size: 1rem;
+      text-align: left;
+      color: #0f172a;
+    }
+
+    .comic-bubble {
+      background: #ffffff;
+      border: 3px solid #0f172a;
+      padding: 0.9rem 1.4rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      max-width: 85%;
+      margin: 0.8rem 0;
+      position: relative;
+    }
+
+    .bubble-dialog { border-radius: 24px; }
+    .bubble-think { border-radius: 35px; border-style: dashed; }
+    .bubble-shout { border-radius: 6px; background: #fef08a; border-width: 4px; transform: rotate(-1deg); }
+
+    /* ================= FORMULARIO DOCENTE ================= */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      text-align: left;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-weight: 800;
+      color: var(--blue-deep);
+      font-size: 0.98rem;
+    }
+
+    .form-control {
+      min-height: 54px;
+      padding: 0.65rem 0.9rem;
+      border-radius: 12px;
+      border: 2.5px solid var(--border-color);
+      font-family: inherit;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--bg-body);
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: flex-end;
+      padding-top: 0.8rem;
+      border-top: 2px solid var(--bg-soft-blue);
+    }
+
+    .btn-primary-blue {
+      min-height: 58px;
+      padding: 0 1.5rem;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary-blue {
+      min-height: 58px;
+      padding: 0 1.3rem;
+      border-radius: 14px;
+      border: 2px solid var(--blue-primary);
+      background: #ffffff;
+      color: var(--blue-dark);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    footer {
+      background: var(--blue-navy);
+      color: #dbeafe;
+      text-align: center;
+      padding: 1.3rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      header, .controls-section, main, .status-bar, .teacher-toolbar {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .syllable-box { min-width: 85px; font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= CABECERA ================= -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">📚</div>
+        <div class="brand-text">
+          <h1>Lengua Castellana 3.º de Primaria</h1>
+          <p>Minijuegos MDI Integrados, Fichas PDF, Infografías y Modo Docente</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-header" id="btnToggleAllUnits">
+          <span>📂</span> <span id="toggleUnitsText">Contraer unidades</span>
+        </button>
+        <button class="btn-header" id="btnSoundToggle">
+          <span id="soundIcon">🔊</span> <span id="soundText">Sonido ON</span>
+        </button>
+        <button class="btn-header" id="btnTeacherMode">
+          <span id="teacherIcon">🔒</span> <span id="teacherText">Modo Docente</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= BARRA DE HERRAMIENTAS DEL MODO DOCENTE ================= -->
+  <div class="teacher-toolbar" id="teacherToolbar">
+    <div class="teacher-toolbar-inner">
+      <div class="teacher-status">
+        <span>🔓 MODO DOCENTE ACTIVO</span>
+        <span style="font-size:0.9rem; color:#dbeafe; font-weight:600;">(Cambios guardados en este navegador mediante LocalStorage)</span>
+      </div>
+      <div class="teacher-actions">
+        <button class="btn-teacher-tool primary" id="btnAddNewResource">➕ Añadir Nuevo Recurso</button>
+        <button class="btn-teacher-tool" id="btnExportJson">📤 Exportar Copia JSON</button>
+        <button class="btn-teacher-tool" id="btnRestoreDefaults">🔄 Restaurar de Fábrica</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BUSCADOR Y FILTROS ================= -->
+  <section class="controls-section" aria-label="Filtros y buscador de actividades de Lengua">
+    <div class="controls-wrapper">
+      <div class="search-row">
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Buscar cuento, sustantivo, adjetivo, fábula, cómic, verbo, poesía, ortografía..."
+          >
+          <button class="clear-search-btn" id="clearSearchBtn" title="Limpiar búsqueda">✕</button>
+        </div>
+
+        <div class="type-filters" role="group" aria-label="Filtrar por formato">
+          <button class="type-btn active" data-type="todos">📦 Todos</button>
+          <button class="type-btn" data-type="web">🌐 Recursos Web</button>
+          <button class="type-btn" data-type="pdf">📄 Documentos PDF</button>
+          <button class="type-btn" data-type="imagen">🖼️ Imágenes</button>
+        </div>
+      </div>
+
+      <div class="tags-row" role="group" aria-label="Filtrar por etiqueta curricular de Lengua">
+        <button class="tag-filter-btn active" data-tag="todas">✨ Todas</button>
+        <button class="tag-filter-btn" data-tag="comunicación y lectura">🗣️ Comunicación y Lectura</button>
+        <button class="tag-filter-btn" data-tag="gramática">🏷️ Gramática</button>
+        <button class="tag-filter-btn" data-tag="ortografía">✍️ Ortografía</button>
+        <button class="tag-filter-btn" data-tag="vocabulario">🔤 Vocabulario</button>
+        <button class="tag-filter-btn" data-tag="literatura y textos">📖 Literatura y Textos</button>
+        <button class="tag-filter-btn" data-tag="sit. aprendizaje">🚀 Sit. Aprendizaje</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BARRA DE ESTADO ================= -->
+  <div class="status-bar">
+    <div class="results-counter" id="resultsCounter">Mostrando 36 recursos en 6 unidades</div>
+    <div class="unit-pills">
+      <button class="unit-pill active" data-unit="all">Todas las Unidades</button>
+      <button class="unit-pill" data-unit="1">Unidad 1</button>
+      <button class="unit-pill" data-unit="2">Unidad 2</button>
+      <button class="unit-pill" data-unit="3">Unidad 3</button>
+      <button class="unit-pill" data-unit="4">Unidad 4</button>
+      <button class="unit-pill" data-unit="5">Unidad 5</button>
+      <button class="unit-pill" data-unit="6">Unidad 6</button>
+    </div>
+  </div>
+
+  <!-- ================= CANVAS DE LAS 6 UNIDADES ================= -->
+  <main id="unitsCanvas"></main>
+
+  <!-- ================= MODAL VISOR DE RECURSOS Y MINIJUEGOS ================= -->
+  <div class="modal-overlay" id="resourceModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="icon" id="modalIcon">📚</span>
+          <div>
+            <h3 id="modalTitle">Título del Recurso</h3>
+            <small id="modalSubtitle" style="font-weight:700; opacity:0.92;"></small>
+          </div>
+        </div>
+        <button class="btn-close-modal" id="btnCloseModal" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-content">
+        <p id="modalDescription" style="font-size:1.1rem; font-weight:700; color:var(--text-main);"></p>
+        <div class="preview-canvas" id="modalPreviewArea"></div>
+        <div class="modal-actions">
+          <button class="btn-secondary-blue" id="btnPrintResource">🖨️ Imprimir Vista</button>
+          <a href="#" target="_blank" rel="noopener" class="btn-primary-blue" id="modalExternalLink">🔗 Abrir Enlace Externo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL DE ACCESO DOCENTE (CONTRASEÑA) ================= -->
+  <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="icon">🔐</span>
+          <h3>Acceso Modo Docente</h3>
+        </div>
+        <button class="btn-close-modal" id="btnCloseLogin">✕</button>
+      </div>
+      <div class="modal-content">
+        <p style="font-weight:700;">Introduce la clave docente para añadir, editar o eliminar recursos de Lengua.</p>
+        <p style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">💡 Clave por defecto: <code>1234</code> (o <code>profe</code>)</p>
+        <div class="form-group">
+          <label for="teacherPassInput">Contraseña:</label>
+          <input type="password" id="teacherPassInput" class="form-control" placeholder="Escribe 1234...">
+        </div>
+        <p id="loginErrorMsg" style="color:var(--red-err); font-weight:800; display:none;">❌ Contraseña incorrecta. Prueba con 1234.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary-blue" id="btnCancelLogin">Cancelar</button>
+          <button class="btn-primary-blue" id="btnConfirmLogin">🔓 Desbloquear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL EDITOR DE RECURSOS ================= -->
+  <div class="modal-overlay" id="editorModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width: 720px;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="icon">✏️</span>
+          <h3 id="editorModalTitle">Añadir Nuevo Recurso</h3>
+        </div>
+        <button class="btn-close-modal" id="btnCloseEditor">✕</button>
+      </div>
+      <div class="modal-content">
+        <form id="resourceForm" class="form-grid">
+          <input type="hidden" id="editResId">
+
+          <div class="form-group">
+            <label for="formUnit">Unidad Didáctica:</label>
+            <select id="formUnit" class="form-control" required>
+              <option value="1">Unidad 1: Cuentos, Sustantivo y Abecedario</option>
+              <option value="2">Unidad 2: Descripción, Adjetivo y Prefijos</option>
+              <option value="3">Unidad 3: Fábula, Determinantes I y Signos</option>
+              <option value="4">Unidad 4: Cómic, Leyenda, Posesivos y Ortografía</option>
+              <option value="5">Unidad 5: Noticia, Entrevista, Verbo y G/J</option>
+              <option value="6">Unidad 6: Poesía, Teatro, Sujeto/Predicado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formTag">Etiqueta Curricular:</label>
+            <select id="formTag" class="form-control" required>
+              <option value="comunicación y lectura">🗣️ Comunicación y Lectura</option>
+              <option value="gramática">🏷️ Gramática</option>
+              <option value="ortografía">✍️ Ortografía</option>
+              <option value="vocabulario">🔤 Vocabulario</option>
+              <option value="literatura y textos">📖 Literatura y Textos</option>
+              <option value="sit. aprendizaje">🚀 Sit. Aprendizaje</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formType">Formato del Recurso:</label>
+            <select id="formType" class="form-control" required>
+              <option value="web">🌐 Recurso Web (Minijuego / App)</option>
+              <option value="pdf">📄 Documento PDF</option>
+              <option value="imagen">🖼️ Imagen / Infografía</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formIcon">Emoji / Icono:</label>
+            <input type="text" id="formIcon" class="form-control" value="📖" maxlength="4" required>
+          </div>
+
+          <div class="form-group full">
+            <label for="formTitle">Título del Recurso:</label>
+            <input type="text" id="formTitle" class="form-control" placeholder="Ej: Cazadores de la Sílaba Tónica" required>
+          </div>
+
+          <div class="form-group full">
+            <label for="formDesc">Descripción Didáctica:</label>
+            <input type="text" id="formDesc" class="form-control" placeholder="Explica brevemente en qué consiste la actividad..." required>
+          </div>
+
+          <div class="form-group" id="groupMinigame">
+            <label for="formMinigame">Minijuego Integrado en Pantalla:</label>
+            <select id="formMinigame" class="form-control">
+              <option value="silabas">🔤 Separador y Cazador de Sílaba Tónica</option>
+              <option value="gramatica">🏷️ Laboratorio de Gramática (Sust., Adj., Det., Verbo, Oración)</option>
+              <option value="ortografia">✍️ Cazadores de Ortografía (H, ¿?, MP/MB, R/RR, C/QU, G/J, LL/Y)</option>
+              <option value="vocabulario">📚 Reto de Abecedario, Sinónimos, Prefijos y Frases Hechas</option>
+              <option value="comprension">📖 Constructor de Textos (Cuento, Fábula, Noticia)</option>
+              <option value="creativo">💬 Estudio de Cómic, Eslóganes y Teatro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="formUrl">Enlace Externo o Ruta de Archivo (Opcional):</label>
+            <input type="text" id="formUrl" class="form-control" placeholder="https://... o recursos/ficha.pdf">
+          </div>
+
+          <div class="form-group full" id="groupExtraContent">
+            <label for="formExtra">Texto del Póster o Puntos Clave del PDF (separados por punto y coma ";"):</label>
+            <input type="text" id="formExtra" class="form-control" placeholder="Punto 1; Punto 2; Punto 3">
+          </div>
+
+          <div class="modal-actions full" style="grid-column: 1 / -1;">
+            <button type="button" class="btn-secondary-blue" id="btnCancelEditor">Cancelar</button>
+            <button type="submit" class="btn-primary-blue">💾 Guardar Recurso</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Portal de Lengua Castellana y Literatura · 3.º de Educación Primaria · Minijuegos MDI y Gestión con LocalStorage
+  </footer>
+
+  <script>
+    /* =========================================================================
+       1. SINTETIZADOR DE SONIDO (WEB AUDIO API)
+       ========================================================================= */
+    let soundEnabled = true;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioCtx();
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'click') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(560, now);
+        osc.frequency.exponentialRampToValueAtTime(720, now + 0.06);
+        gain.gain.setValueAtTime(0.11, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        osc.start(now); osc.stop(now + 0.07);
+      } else if (type === 'open') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.14);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+      } else if (type === 'success') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.08);
+        osc.frequency.setValueAtTime(783.99, now + 0.16);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+        osc.start(now); osc.stop(now + 0.34);
+      } else if (type === 'error') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(210, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.18);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
+      }
+    }
+
+    /* =========================================================================
+       2. CONTENIDOS DE LAS 6 UNIDADES DE LENGUA 3.º PRIMARIA + LOCALSTORAGE
+       ========================================================================= */
+    const STORAGE_KEY = "lengua_3primaria_recursos_v1";
+
+    const DEFAULT_UNITS = [
+      {
+        numero: 1,
+        titulo: "Unidad 1: Érase una Vez... Cuentos y Palabras",
+        subtitulo: "Cuentos populares (inicio, nudo y desenlace), adivinanzas, sustantivos, sílaba tónica, mayúscula y el abecedario",
+        recursos: [
+          {
+            id: "u1-r1",
+            titulo: "Constructor de Cuentos: Inicio, Nudo y Desenlace",
+            descripcion: "Lee las escenas desordenadas de los cuentos populares y ordénalas según su estructura narrativa.",
+            tipo: "web",
+            etiqueta: "comunicación y lectura",
+            icono: "🏰",
+            minijuego: "comprension",
+            url: "#cuentos-estructura"
+          },
+          {
+            id: "u1-r2",
+            titulo: "Clasificador de Sustantivos: Común/Propio, Género y Número",
+            descripcion: "Juego interactivo sobre las unidades de la lengua y las clases de sustantivos.",
+            tipo: "web",
+            etiqueta: "gramática",
+            icono: "🏷️",
+            minijuego: "gramatica",
+            url: "#sustantivos-u1"
+          },
+          {
+            id: "u1-r3",
+            titulo: "Cazadores de la Sílaba Tónica y Mayúsculas",
+            descripcion: "Toca la sílaba que suena más fuerte en cada palabra y repasa el uso del punto y la mayúscula.",
+            tipo: "web",
+            etiqueta: "ortografía",
+            icono: "🔔",
+            minijuego: "silabas",
+            url: "#silaba-tonica"
+          },
+          {
+            id: "u1-r4",
+            titulo: "Reto del Abecedario y Orden Alfabético",
+            descripcion: "Ordena palabras alfabéticamente como un auténtico detective del diccionario.",
+            tipo: "web",
+            etiqueta: "vocabulario",
+            icono: "🔤",
+            minijuego: "vocabulario",
+            url: "#abecedario-diccionario"
+          },
+          {
+            id: "u1-r5",
+            titulo: "Lámina: Adivinanzas y Canciones Populares",
+            descripcion: "Póster ilustrado con adivinanzas tradicionales, canciones infantiles y estructura del relato oral.",
+            tipo: "imagen",
+            etiqueta: "literatura y textos",
+            icono: "🎶",
+            url: "recursos/u1-adivinanzas-canciones.png",
+            textoPoster: "Relato Tradicional: Inicio (Presentación) · Nudo (Aventura) · Desenlace (Final)"
+          },
+          {
+            id: "u1-r6",
+            titulo: "SA 1: Cuentacuentos de la Convivencia y Ayuda Mutua",
+            descripcion: "Guía PDF para planificar, escribir borradores y narrar oralmente vivencias y cuentos en el aula.",
+            tipo: "pdf",
+            etiqueta: "sit. aprendizaje",
+            icono: "🤝",
+            url: "recursos/u1-sa-cuentacuentos.pdf",
+            puntosPdf: [
+              "Planificación y revisión de borradores breves con inicio, nudo y desenlace.",
+              "Uso obligatorio de mayúscula en nombres propios de personajes y punto final.",
+              "Asamblea dialogada sobre la convivencia y la ayuda mutua."
+            ]
+          }
+        ]
+      },
+      {
+        numero: 2,
+        titulo: "Unidad 2: Retratos con Palabras y Solidaridad",
+        subtitulo: "Texto expositivo y descriptivo, biografía ilustrada, adjetivos calificativos, la H, prefijos, sufijos, siglas y antónimos",
+        recursos: [
+          {
+            id: "u2-r1",
+            titulo: "Ficha PDF: Exposición Oral sobre ONG y Descripciones",
+            descripcion: "Plantilla guiada para describir personas, lugares y objetos y preparar una exposición con soporte visual.",
+            tipo: "pdf",
+            etiqueta: "comunicación y lectura",
+            icono: "🌍",
+            url: "recursos/u2-exposicion-descripcion.pdf",
+            puntosPdf: [
+              "Guion para describir personas (rasgos físicos y carácter), lugares y objetos.",
+              "Comprensión de textos expositivos e instructivos sencillos sobre iniciativas sociales y ONG."
+            ]
+          },
+          {
+            id: "u2-r2",
+            titulo: "Laboratorio del Adjetivo y la Concordancia",
+            descripcion: "Empareja cada sustantivo con el adjetivo calificativo que concuerda en género y número.",
+            tipo: "web",
+            etiqueta: "gramática",
+            icono: "🎨",
+            minijuego: "gramatica",
+            url: "#adjetivo-concordancia"
+          },
+          {
+            id: "u2-r3",
+            titulo: "Misión Ortográfica: Palabras con H (hie-, hue-, hum-)",
+            descripcion: "Juego interactivo sobre las reglas de la letra H y consolidación del punto y la mayúscula.",
+            tipo: "web",
+            etiqueta: "ortografía",
+            icono: "🕵️",
+            minijuego: "ortografia",
+            url: "#palabras-con-h"
+          },
+          {
+            id: "u2-r4",
+            titulo: "Fábrica de Palabras: Prefijos, Sufijos, Siglas y Antónimos",
+            descripcion: "Forma palabras derivadas, descubre qué significan siglas como ONG o CEIP y encuentra el antónimo.",
+            tipo: "web",
+            etiqueta: "vocabulario",
+            icono: "🧩",
+            minijuego: "vocabulario",
+            url: "#prefijos-sufijos-antonimos"
+          },
+          {
+            id: "u2-r5",
+            titulo: "Infografía: La Biografía Ilustrada y los Personajes",
+            descripcion: "Esquema visual sobre cómo narrar la vida de una persona y diferenciar protagonistas y secundarios.",
+            tipo: "imagen",
+            etiqueta: "literatura y textos",
+            icono: "🌟",
+            url: "recursos/u2-biografia-personajes.png",
+            textoPoster: "Biografía: Datos de nacimiento, infancia y logros · Personajes: Protagonistas y Secundarios"
+          },
+          {
+            id: "u2-r6",
+            titulo: "SA 2: Galería de Biografías Ilustradas y Solidarias",
+            descripcion: "Proyecto PDF: investigamos a personas que mejoran el mundo y creamos su retrato descriptivo.",
+            tipo: "pdf",
+            etiqueta: "sit. aprendizaje",
+            icono: "🖼️",
+            url: "recursos/u2-sa-biografias.pdf",
+            puntosPdf: [
+              "Localización de información descriptiva relevante en diversos soportes.",
+              "Uso rico de adjetivos calificativos en concordancia con el sustantivo.",
+              "Exposición oral breve apoyada en cartel o mural."
+            ]
+          }
+        ]
+      },
+      {
+        numero: 3,
+        titulo: "Unidad 3: Fábulas con Moraleja y Mucho Humor",
+        subtitulo: "Fábulas, anécdotas, el resumen, artículos y demostrativos, coma, dos puntos, ¿? ¡!, polisemia, sinónimos y compuestas",
+        recursos: [
+          {
+            id: "u3-r1",
+            titulo: "Lectura de Fábulas: Idea Global, Resumen y Moraleja",
+            descripcion: "Actividad interactiva para ordenar fábulas tradicionales, elegir el mejor resumen y descubrir su enseñanza.",
+            tipo: "web",
+            etiqueta: "comunicación y lectura",
+            icono: "🦊",
+            minijuego: "comprension",
+            url: "#fabulas-resumen"
+          },
+          {
+            id: "u3-r2",
+            titulo: "Determinantes I: Artículos y Demostrativos",
+            descripcion: "Practica los artículos (el, la, un, una...) y los demostrativos de cercanía, distancia media y lejanía.",
+            tipo: "web",
+            etiqueta: "gramática",
+            icono: "📍",
+            minijuego: "gramatica",
+            url: "#articulos-demostrativos"
+          },
+          {
+            id: "u3-r3",
+            titulo: "Signos de Entonación (¿? ¡!), Coma y Dos Puntos",
+            descripcion: "Elige el signo de puntuación correcto en enumeraciones, diálogos, preguntas y exclamaciones.",
+            tipo: "web",
+            etiqueta: "ortografía",
+            icono: "❗",
+            minijuego: "ortografía",
+            url: "#signos-puntuacion"
+          },
+          {
+            id: "u3-r4",
+            titulo: "Póster: Polisémicas, Sinónimos, Diminutivos, Aumentativos y Compuestas",
+            descripcion: "Lámina visual con ejemplos claros de banco/planta, diminutivos (-ito/-illo), aumentativos (-ón/-azo) y sacapuntas.",
+            tipo: "imagen",
+            etiqueta: "vocabulario",
+            icono: "🔍",
+            url: "recursos/u3-vocabulario-laminas.png",
+            textoPoster: "Sinónimos (igual significado) · Polisémicas (varios significados) · Compuestas ( saca + puntas )"
+          },
+          {
+            id: "u3-r5",
+            titulo: "Ficha PDF: La Fábula Narrativa y Relatos con Humor",
+            descripcion: "Cuadernillo para analizar moralejas clásicas y escribir anécdotas divertidas aplicando la técnica del resumen.",
+            tipo: "pdf",
+            etiqueta: "literatura y textos",
+            icono: "🐢",
+            url: "recursos/u3-fabula-moraleja.pdf",
+            puntosPdf: [
+              "Lectura comprensiva de La liebre y la tortuga y La cigarra y la hormiga.",
+              "Pasos para elaborar un buen resumen sin copiar frases largas.",
+              "Taller de creación de relatos breves con intención lúdica y humorística."
+            ]
+          },
+          {
+            id: "u3-r6",
+            titulo: "SA 3: Nuestro Libro de Fábulas y Anécdotas Divertidas",
+            descripcion: "Situación de aprendizaje en PDF para narrar anécdotas en público con entonación expresiva.",
+            tipo: "pdf",
+            etiqueta: "sit. aprendizaje",
+            icono: "🎙️",
+            url: "recursos/u3-sa-anecdotas.pdf",
+            puntosPdf: [
+              "Escucha activa y narración oral de historias humorísticas.",
+              "Aplicación de comas en enumeraciones y signos ¿? y ¡!."
+            ]
+          }
+        ]
+      },
+      {
+        numero: 4,
+        titulo: "Unidad 4: Viñetas, Leyendas y Guardianes del Planeta",
+        subtitulo: "El cómic, leyendas y mitos, avisos ambientales, posesivos, numerales, pronombres, mp/mb, r/rr, c/qu/z, refranes y onomatopeyas",
+        recursos: [
+          {
+            id: "u4-r1",
+            titulo: "Póster: Elementos del Cómic y Avisos Ambientales",
+            descripcion: "Infografía sobre viñetas, bocadillos (diálogo, pensamiento, grito), cartelas e instrucciones cotidianas.",
+            tipo: "imagen",
+            etiqueta: "comunicación y lectura",
+            icono: "💬",
+            url: "recursos/u4-elementos-comic.png",
+            textoPoster: "Cómic: Viñetas · Cartela (voz del narrador) · Bocadillos de diálogo, pensamiento y grito"
+          },
+          {
+            id: "u4-r2",
+            titulo: "Determinantes II (Posesivos y Numerales) y Pronombres",
+            descripcion: "Distingue posesivos (mi, tu, nuestro), numerales (cardinales y ordinales) y pronombres personales (yo, tú, él...).",
+            tipo: "web",
+            etiqueta: "gramática",
+            icono: "🙋",
+            minijuego: "gramatica",
+            url: "#posesivos-numerales-pronombres"
+          },
+          {
+            id: "u4-r3",
+            titulo: "Reto Ortográfico: MP/MB, R/RR, C/QU y Z/C",
+            descripcion: "Completa palabras con campana, tambor, perro, queso, cereza y zapato en la pizarra digital.",
+            tipo: "web",
+            etiqueta: "ortografía",
+            icono: "🎯",
+            minijuego: "ortografia",
+            url: "#ortografia-u4"
+          },
+          {
+            id: "u4-r4",
+            titulo: "Juego de Refranes Populares y Onomatopeyas",
+            descripcion: "Descubre el significado de refranes tradicionales e identifica onomatopeyas de sonidos y cómics.",
+            tipo: "web",
+            etiqueta: "vocabulario",
+            icono: "💥",
+            minijuego: "vocabulario",
+            url: "#refranes-onomatopeyas"
+          },
+          {
+            id: "u4-r5",
+            titulo: "Creador Interactivo de Viñetas de Cómic y Bocadillos",
+            descripcion: "Estudio digital para montar una historieta eligiendo cartela, personajes, tipo de bocadillo y onomatopeya.",
+            tipo: "web",
+            etiqueta: "literatura y textos",
+            icono: "🦸",
+            minijuego: "creativo",
+            url: "#creador-comic"
+          },
+          {
+            id: "u4-r6",
+            titulo: "SA 4: Patrulla Verde en Cómic y Avisos para el Cole",
+            descripcion: "Dossier PDF: transmitimos leyendas populares y creamos historietas y carteles de normas ambientales.",
+            tipo: "pdf",
+            etiqueta: "sit. aprendizaje",
+            icono: "🌿",
+            url: "recursos/u4-sa-comic-ambiental.pdf",
+            puntosPdf: [
+              "Plantillas de 4 y 6 viñetas con bocadillos y cartelas.",
+              "Redacción de avisos e instrucciones para cuidar el patio y ahorrar energía.",
+              "Recopilación oral de leyendas populares de nuestra comarca."
+            ]
+          }
+        ]
+      },
+      {
+        numero: 5,
+        titulo: "Unidad 5: ¡Extra, Extra! Periodistas y Publicistas",
+        subtitulo: "La noticia, la entrevista, el cartel y eslogan, comparación y metáfora, el verbo y sus tiempos, g/j y diéresis (ü), gentilicios y frases hechas",
+        recursos: [
+          {
+            id: "u5-r1",
+            titulo: "Detective de Noticias: Las 6 Preguntas del Periodista",
+            descripcion: "Ordena las partes de una noticia infantil (Titular, Entrada y Cuerpo) y responde Qué, Quién, Cuándo y Dónde.",
+            tipo: "web",
+            etiqueta: "comunicación y lectura",
+            icono: "📰",
+            minijuego: "comprension",
+            url: "#noticia-periodistica"
+          },
+          {
+            id: "u5-r2",
+            titulo: "Máquina del Tiempo Verbal: Infinitivo y Pasado, Presente y Futuro",
+            descripcion: "Identifica la 1.ª (-ar), 2.ª (-er) y 3.ª (-ir) conjugación y clasifica verbos en pasado, presente y futuro.",
+            tipo: "web",
+            etiqueta: "gramática",
+            icono: "⏳",
+            minijuego: "gramatica",
+            url: "#verbos-tiempos"
+          },
+          {
+            id: "u5-r3",
+            titulo: "Desafío G / J y la Diéresis (güe / güi)",
+            descripcion: "Practica palabras con ga, go, gu, gue, gui, güe, güi (cigüeña, pingüino) y ge, gi, ja, jo, ju.",
+            tipo: "web",
+            etiqueta: "ortografía",
+            icono: "🐧",
+            minijuego: "ortografia",
+            url: "#ortografia-g-j-dieresis"
+          },
+          {
+            id: "u5-r4",
+            titulo: "Ruleta de Gentilicios y Frases Hechas",
+            descripcion: "Relaciona localidades y regiones con su gentilicio e interpreta el sentido figurado de frases hechas.",
+            tipo: "web",
+            etiqueta: "vocabulario",
+            icono: "🗺️",
+            minijuego: "vocabulario",
+            url: "#gentilicios-frases-hechas"
+          },
+          {
+            id: "u5-r5",
+            titulo: "Infografía: Comparación, Metáfora y El Eslogan Publicitario",
+            descripcion: "Lámina visual con ejemplos de comparaciones («Sus dientes son como perlas») y metáforas («Las perlas de tu boca»).",
+            tipo: "imagen",
+            etiqueta: "literatura y textos",
+            icono: "✨",
+            url: "recursos/u5-comparacion-metafora.png",
+            textoPoster: "Comparación (usa «como»: Rubio como el oro) · Metáfora (identifica directamente: Cabellos de oro)"
+          },
+          {
+            id: "u5-r6",
+            titulo: "SA 5: Radio Escolar, Entrevistas y Carteles con Eslogan",
+            descripcion: "Guía PDF para dramatizar entrevistas periodísticas y diseñar carteles publicitarios creativos.",
+            tipo: "pdf",
+            etiqueta: "sit. aprendizaje",
+            icono: "🎤",
+            url: "recursos/u5-sa-periodistas.pdf",
+            puntosPdf: [
+              "Guion de entrevista con presentación, batería de preguntas y cierre.",
+              "Lectura crítica de noticias y anuncios en medios impresos y digitales.",
+              "Diseño en equipo de un cartel con eslogan empleando comparaciones o metáforas."
+            ]
+          }
+        ]
+      },
+      {
+        numero: 6,
+        titulo: "Unidad 6: ¡Arriba el Telón! Poesía, Teatro y Lenguas",
+        subtitulo: "El poema (verso, estrofa y rima), el guion teatral, el debate, sujeto y predicado, lenguas de España, ll/y, -d/-z, bl/br, familia de palabras y campo semántico",
+        recursos: [
+          {
+            id: "u6-r1",
+            titulo: "Ficha PDF: Normas del Debate, Cortesía Verbal y Recitado",
+            descripcion: "Guía práctica para participar en tertulias respetando el turno de palabra y entonar poemas y escenas.",
+            tipo: "pdf",
+            etiqueta: "comunicación y lectura",
+            icono: "🗣️",
+            url: "recursos/u6-debate-recitado.pdf",
+            puntosPdf: [
+              "Pautas de cortesía verbal: escuchar, pedir la palabra y argumentar con respeto.",
+              "Consejos de voz, gesto y ritmo para la declamación poética y lectura dramática."
+            ]
+          },
+          {
+            id: "u6-r2",
+            titulo: "Analizador de Oraciones: Sujeto, Predicado e Intención",
+            descripcion: "Identifica el Sujeto y el Predicado, las clases de oraciones y conoce la riqueza plurilingüe de España.",
+            tipo: "web",
+            etiqueta: "gramática",
+            icono: "🧩",
+            minijuego: "gramatica",
+            url: "#sujeto-predicado-lenguas"
+          },
+          {
+            id: "u6-r3",
+            titulo: "Reto Final de Ortografía: LL/Y, Final en -D/-Z y BL/BR",
+            descripcion: "Completa palabras con llave, yema, pared, pez, blanco y bruja con feedback instantáneo.",
+            tipo: "web",
+            etiqueta: "ortografía",
+            icono: "🏆",
+            minijuego: "ortografia",
+            url: "#ortografia-u6"
+          },
+          {
+            id: "u6-r4",
+            titulo: "Familias de Palabras, Campo Semántico y Extranjerismos",
+            descripcion: "Agrupa palabras por su raíz o campo semántico y encuentra la alternativa en castellano a los extranjerismos.",
+            tipo: "web",
+            etiqueta: "vocabulario",
+            icono: "🌳",
+            minijuego: "vocabulario",
+            url: "#familia-campo-semantico"
+          },
+          {
+            id: "u6-r5",
+            titulo: "Póster: La Poesía (Verso, Estrofa, Rima) y el Teatro",
+            descripcion: "Lámina comparativa entre la estructura de un poema (rima consonante y asonante) y un guion teatral (acotaciones).",
+            tipo: "imagen",
+            etiqueta: "literatura y textos",
+            icono: "🎭",
+            url: "recursos/u6-poesia-teatro.png",
+            textoPoster: "Poesía: Versos, Estrofas y Rima · Teatro: Personajes, Diálogos y Acotaciones (entre paréntesis)"
+          },
+          {
+            id: "u6-r6",
+            titulo: "SA 6: Gran Certamen de Poesía y Teatro de 3.º",
+            descripcion: "Situación de Aprendizaje interactiva para ensayar acotaciones teatrales, diálogos y rimas en la pizarra.",
+            tipo: "web",
+            etiqueta: "sit. aprendizaje",
+            icono: "🎬",
+            minijuego: "creativo",
+            url: "#sa-teatro-poesia"
+          }
+        ]
+      }
+    ];
+
+    let unidadesData = [];
+
+    function loadDataFromStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          unidadesData = JSON.parse(saved);
+        } else {
+          unidadesData = JSON.parse(JSON.stringify(DEFAULT_UNITS));
+        }
+      } catch (e) {
+        unidadesData = JSON.parse(JSON.stringify(DEFAULT_UNITS));
+      }
+    }
+
+    function saveDataToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(unidadesData));
+      } catch (e) {
+        console.warn("No se pudo guardar en localStorage:", e);
+      }
+    }
+
+    /* =========================================================================
+       3. RENDERIZADO DEL CANVAS Y FILTROS
+       ========================================================================= */
+    let currentSearch = "";
+    let currentTag = "todas";
+    let currentType = "todos";
+    let currentUnit = "all";
+    let allCollapsed = false;
+    let isTeacherMode = false;
+
+    const unitsCanvas = document.getElementById("unitsCanvas");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+    const resultsCounter = document.getElementById("resultsCounter");
+
+    function getFormatInfo(tipo) {
+      if (tipo === "web") return { label: "🌐 Minijuego Web", css: "format-web" };
+      if (tipo === "pdf") return { label: "📄 Documento PDF", css: "format-pdf" };
+      return { label: "🖼️ Imagen", css: "format-img" };
+    }
+
+    function getCategoryCss(etiqueta) {
+      const map = {
+        "comunicación y lectura": "cat-comunicacion",
+        "gramática": "cat-gramatica",
+        "ortografía": "cat-ortografia",
+        "vocabulario": "cat-vocabulario",
+        "literatura y textos": "cat-literatura",
+        "sit. aprendizaje": "cat-sit-aprendizaje"
+      };
+      return map[etiqueta] || "cat-comunicacion";
+    }
+
+    function renderUnits() {
+      unitsCanvas.innerHTML = "";
+
+      unidadesData.forEach(unidad => {
+        const section = document.createElement("section");
+        section.className = "unit-section";
+        section.dataset.unitNumber = unidad.numero;
+
+        const cardsHtml = unidad.recursos.map(rec => {
+          const fmt = getFormatInfo(rec.tipo);
+          const catCss = getCategoryCss(rec.etiqueta);
+          const btnLabel = rec.tipo === "web" ? "🎮 Jugar en Pizarra" : "✨ Abrir en Pizarra";
+          return `
+            <article 
+              class="resource-card" 
+              data-id="${rec.id}"
+              data-unit="${unidad.numero}"
+              data-type="${rec.tipo}"
+              data-tag="${rec.etiqueta}"
+              data-search="${(rec.titulo + ' ' + rec.descripcion + ' ' + rec.etiqueta + ' ' + rec.tipo).toLowerCase()}"
+            >
+              <div>
+                <div class="card-top">
+                  <span class="format-badge ${fmt.css}">${fmt.label}</span>
+                  <span class="category-badge ${catCss}">${rec.etiqueta}</span>
+                </div>
+                <div class="card-body">
+                  <div class="card-icon" aria-hidden="true">${rec.icono}</div>
+                  <div class="card-info">
+                    <h3>${rec.titulo}</h3>
+                    <p>${rec.descripcion}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button class="btn-open-resource" type="button">
+                  <span>${btnLabel}</span>
+                </button>
+                <div class="card-teacher-controls">
+                  <button type="button" class="btn-card-edit" data-edit-id="${rec.id}">✏️ Editar</button>
+                  <button type="button" class="btn-card-delete" data-delete-id="${rec.id}">🗑️ Borrar</button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join("");
+
+        section.innerHTML = `
+          <div class="unit-header">
+            <div class="unit-title-group">
+              <span class="unit-badge">UNIDAD ${unidad.numero}</span>
+              <div>
+                <h2>${unidad.titulo}</h2>
+                <p class="unit-subtitle">${unidad.subtitulo}</p>
+              </div>
+            </div>
+            <div class="unit-meta">
+              <span class="unit-count-badge" id="count-unit-${unidad.numero}">${unidad.recursos.length} recursos</span>
+              <span style="font-size:1.2rem;">▼</span>
+            </div>
+          </div>
+          <div class="resources-grid">
+            ${cardsHtml}
+          </div>
+        `;
+
+        section.querySelector(".unit-header").addEventListener("click", () => {
+          playSound("click");
+          section.classList.toggle("collapsed");
+        });
+
+        unitsCanvas.appendChild(section);
+      });
+
+      document.querySelectorAll(".resource-card").forEach(card => {
+        card.addEventListener("click", (e) => {
+          if (e.target.closest(".btn-card-edit") || e.target.closest(".btn-card-delete")) return;
+          openResourceModal(card.dataset.id);
+        });
+      });
+
+      document.querySelectorAll(".btn-card-edit").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openEditorForEdit(btn.dataset.editId);
+        });
+      });
+
+      document.querySelectorAll(".btn-card-delete").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          deleteResourceById(btn.dataset.deleteId);
+        });
+      });
+
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const query = currentSearch.trim().toLowerCase();
+      let totalVisibleResources = 0;
+      let totalVisibleUnits = 0;
+
+      clearSearchBtn.classList.toggle("visible", query.length > 0);
+
+      document.querySelectorAll(".unit-section").forEach(unitSection => {
+        const unitNum = unitSection.dataset.unitNumber;
+        const unitMatchesFilter = (currentUnit === "all" || currentUnit === unitNum);
+        let visibleInUnit = 0;
+
+        unitSection.querySelectorAll(".resource-card").forEach(card => {
+          const matchesSearch = query === "" || card.dataset.search.includes(query);
+          const matchesTag = currentTag === "todas" || card.dataset.tag === currentTag;
+          const matchesType = currentType === "todos" || card.dataset.type === currentType;
+
+          if (unitMatchesFilter && matchesSearch && matchesTag && matchesType) {
+            card.classList.remove("hidden");
+            visibleInUnit++;
+            totalVisibleResources++;
+          } else {
+            card.classList.add("hidden");
+          }
+        });
+
+        const badge = document.getElementById(`count-unit-${unitNum}`);
+        if (badge) badge.textContent = `${visibleInUnit} ${visibleInUnit === 1 ? 'recurso' : 'recursos'}`;
+
+        if (visibleInUnit > 0) {
+          unitSection.classList.remove("hidden");
+          totalVisibleUnits++;
+        } else {
+          unitSection.classList.add("hidden");
+        }
+      });
+
+      resultsCounter.textContent = `Mostrando ${totalVisibleResources} recursos en ${totalVisibleUnits} unidades`;
+    }
+
+    /* =========================================================================
+       4. LOS 6 MINIJUEGOS INTEGRADOS DE LENGUA CASTELLANA
+       ========================================================================= */
+
+    /* ---- MINIJUEGO 1: CAZADOR DE LA SÍLABA TÓNICA Y UNIDADES DE LA LENGUA ---- */
+    function mountSilabasGame(container) {
+      const words = [
+        { palabra: "Ventana", silabas: ["Ven", "ta", "na"], tonica: 1, pista: "Tiene 3 sílabas (trisílaba). La fuerza recae en la penúltima." },
+        { palabra: "Corazón", silabas: ["Co", "ra", "zón"], tonica: 2, pista: "La sílaba que suena más fuerte es la última." },
+        { palabra: "Mágico", silabas: ["Má", "gi", "co"], tonica: 0, pista: "Lleva tilde en la primera sílaba (antepenúltima)." },
+        { palabra: "Biblioteca", silabas: ["Bi", "blio", "te", "ca"], tonica: 2, pista: "Polisílaba de 4 sílabas." },
+        { palabra: "Árboles", silabas: ["Ár", "bo", "les"], tonica: 0, pista: "La sílaba tónica es la primera." },
+        { palabra: "Ordenador", silabas: ["Or", "de", "na", "dor"], tonica: 3, pista: "Suena más fuerte al final." }
+      ];
+      let idx = 0;
+      let score = 0;
+
+      function render() {
+        const item = words[idx];
+        const boxes = item.silabas.map((s, i) => `
+          <button class="syllable-box" data-idx="${i}">${s}</button>
+        `).join("");
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">🔔 Palabra ${idx + 1} de ${words.length} · (${item.silabas.length} sílabas)</span>
+              <span class="game-badge">⭐ Aciertos: ${score}</span>
+            </div>
+            <h4 style="font-size:1.35rem; color:var(--blue-deep);">Toca la <u>SÍLABA TÓNICA</u> (la que pronunciamos con más fuerza):</h4>
+            <div class="syllables-row">${boxes}</div>
+            <p style="font-weight:700; color:var(--text-muted);">💡 Pista: ${item.pista}</p>
+            <div class="game-feedback" id="silFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".syllable-box").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const chosen = parseInt(btn.dataset.idx, 10);
+            const fb = document.getElementById("silFeedback");
+            if (chosen === item.tonica) {
+              btn.classList.add("correct");
+              score++;
+              playSound("success");
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = `🎉 ¡Exacto! «${item.silabas[item.tonica].toUpperCase()}» es la sílaba tónica de ${item.palabra}.`;
+              setTimeout(() => {
+                idx = (idx + 1) % words.length;
+                render();
+              }, 1100);
+            } else {
+              btn.classList.add("wrong");
+              playSound("error");
+              fb.style.color = "var(--red-err)";
+              fb.textContent = "🤔 Pronúnciala dando una palmada fuerte en cada sílaba y prueba otra vez.";
+            }
+          });
+        });
+      }
+      render();
+    }
+
+    /* ---- MINIJUEGO 2: LABORATORIO DE GRAMÁTICA (UNIDADES 1 A 6) ---- */
+    function mountGramaticaGame(container, unitNum) {
+      const bank = [
+        // U1 Sustantivos
+        { u: 1, frase: "El río Segura pasa por Cieza.", pregunta: "¿Qué clase de sustantivo es «Segura»?", opciones: ["Sustantivo propio", "Sustantivo común", "Adjetivo"], correcta: 0 },
+        { u: 1, frase: "Las mochilas rojas están en la fila.", pregunta: "Género y número del sustantivo «mochilas»:", opciones: ["Femenino, plural", "Masculino, plural", "Femenino, singular"], correcta: 0 },
+        // U2 Adjetivos
+        { u: 2, frase: "Los perros juguetones corren por el parque.", pregunta: "¿Cuál es el adjetivo calificativo que concuerda con «perros»?", opciones: ["juguetones", "corren", "parque"], correcta: 0 },
+        { u: 2, frase: "Una montaña ______", pregunta: "Elige el adjetivo que concuerda en femenino y singular:", opciones: ["nevada", "nevado", "nevadas"], correcta: 0 },
+        // U3 Artículos y Demostrativos
+        { u: 3, frase: "Aquellas estrellas brillan mucho en el cielo.", pregunta: "¿Qué tipo de determinante es «Aquellas»?", opciones: ["Demostrativo de lejanía", "Demostrativo de cercanía", "Artículo indeterminado"], correcta: 0 },
+        { u: 3, frase: "Unas tortugas nadan en el estanque.", pregunta: "¿Qué clase de artículo es «Unas»?", opciones: ["Indeterminado, femenino, plural", "Determinado, femenino, plural", "Demostrativo"], correcta: 0 },
+        // U4 Posesivos, Numerales y Pronombres
+        { u: 4, frase: "Nosotros llegamos en tercer lugar a la meta.", pregunta: "¿Qué son «Nosotros» y «tercer»?", opciones: ["Pronombre personal y Numeral ordinal", "Artículos determinados", "Adjetivo y Verbo"], correcta: 0 },
+        { u: 4, frase: "Mi cuaderno tiene treinta páginas.", pregunta: "Clasifica los determinantes «Mi» y «treinta»:", opciones: ["Posesivo y Numeral cardinal", "Demostrativo y Pronombre", "Numeral ordinal y Artículo"], correcta: 0 },
+        // U5 Verbos y Tiempos
+        { u: 5, frase: "Mañana entrevistaremos al deportista en el colegio.", pregunta: "¿En qué tiempo e infinitivo está «entrevistaremos»?", opciones: ["Futuro · entrevistar (1.ª conjugación)", "Pasado · entrevistar (1.ª conjugación)", "Presente · entrevisto (2.ª conjugación)"], correcta: 0 },
+        { u: 5, frase: "Ayer escribimos una noticia muy interesante.", pregunta: "¿En qué tiempo y conjugación está «escribimos»?", opciones: ["Pasado · escribir (3.ª conjugación -ir)", "Futuro · escribir (2.ª conjugación -er)", "Presente · escribir (1.ª conjugación -ar)"], correcta: 0 },
+        // U6 Oración: Sujeto, Predicado y Lenguas
+        { u: 6, frase: "Los actores de tercero ensayan la obra de teatro.", pregunta: "¿Cuál es el SUJETO de esta oración?", opciones: ["Los actores de tercero", "ensayan la obra de teatro", "la obra de teatro"], correcta: 0 },
+        { u: 6, frase: "En España se habla castellano y también lenguas cooficiales.", pregunta: "¿Cuáles son lenguas cooficiales de España?", opciones: ["Catalán/valenciano, gallego y euskera", "Francés, alemán e italiano", "Solo el latín"], correcta: 0 }
+      ];
+
+      // Priorizar preguntas de la unidad abierta, pero permitir recorrer todas
+      const ordered = [...bank.filter(q => q.u === unitNum), ...bank.filter(q => q.u !== unitNum)];
+      let idx = 0;
+
+      function render() {
+        const item = ordered[idx];
+        const optsHtml = item.opciones.map((op, i) => `
+          <button class="btn-game gram-opt" data-idx="${i}" style="width:100%; text-align:left;">🔹 ${op}</button>
+        `).join("");
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">🏷️ Reto Gramatical (Unidad ${item.u})</span>
+              <button class="btn-game primary" id="btnNextGram">➡️ Siguiente Pregunta</button>
+            </div>
+            <div style="background:#fef9c3; border:2px solid #fde047; padding:1rem; border-radius:14px; font-size:1.3rem; font-weight:800; color:#0f172a; margin-bottom:0.9rem;">
+              «${item.frase}»
+            </div>
+            <h4 style="font-size:1.2rem; color:var(--blue-deep); margin-bottom:0.8rem;">${item.pregunta}</h4>
+            <div style="display:flex; flex-direction:column; gap:0.6rem; max-width:620px; margin:0 auto;">
+              ${optsHtml}
+            </div>
+            <div class="game-feedback" id="gramFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".gram-opt").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const chosen = parseInt(btn.dataset.idx, 10);
+            const fb = document.getElementById("gramFeedback");
+            if (chosen === item.correcta) {
+              playSound("success");
+              btn.style.background = "var(--green-ok)";
+              btn.style.color = "#ffffff";
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = "🎉 ¡Respuesta perfecta!";
+            } else {
+              playSound("error");
+              btn.style.background = "#fee2e2";
+              fb.style.color = "var(--red-err)";
+              fb.textContent = "🤔 Fíjate bien en la pista gramatical e inténtalo de nuevo.";
+            }
+          });
+        });
+
+        document.getElementById("btnNextGram").addEventListener("click", () => {
+          playSound("open");
+          idx = (idx + 1) % ordered.length;
+          render();
+        });
+      }
+      render();
+    }
+
+    /* ---- MINIJUEGO 3: CAZADORES DE ORTOGRAFÍA (UNIDADES 1 A 6) ---- */
+    function mountOrtografiaGame(container, unitNum) {
+      const items = [
+        { u: 1, palabra: "Mi amigo ___uan vive en ___urcia.", opciones: ["J / M (Mayúsculas en nombres propios)", "j / m (minúsculas)"], correcta: 0, regla: "Se escribe con mayúscula inicial y en todos los nombres propios." },
+        { u: 2, palabra: "En el jardín hay ___ierba, ___uesos y ___umo.", opciones: ["h (hie-, hue-, hum-)", "sin h (ierba, uesos)"], correcta: 0, regla: "Se escriben con H las palabras que empiezan por hie-, hue- y hum-." },
+        { u: 3, palabra: "___Qué alegría verte por aquí___", opciones: ["¡Qué alegría verte por aquí!", "¿Qué alegría verte por aquí?"], correcta: 0, regla: "Usamos los signos de exclamación ¡ ! para expresar sorpresa o alegría." },
+        { u: 4, palabra: "Tocamos la tro___peta y el ta___bor junto al pe___o.", opciones: ["mp / mb / rr", "np / nb / r"], correcta: 0, regla: "Se escribe M antes de P y B, y RR para el sonido fuerte entre vocales." },
+        { u: 4, palabra: "Comimos ___eso, ___erezas y ___anahorias.", opciones: ["qu / c / z", "c / z / c"], correcta: 0, regla: "Se escribe C ante a, o, u; QU ante e, i; Z ante a, o, u." },
+        { u: 5, palabra: "El pin___ino y la ci___eña viajan en el ___araje.", opciones: ["gü / gü / g", "gu / gu / j"], correcta: 0, regla: "Ponemos diéresis (ü) cuando la u suena en güe, güi." },
+        { u: 6, palabra: "En la pare___ pintamos un pe___ con un pincel ___anco.", opciones: ["-d / -z / bl", "-t / -c / br"], correcta: 0, regla: "Pared termina en -d (plural: paredes), pez en -z (plural: peces) y se escribe B antes de L y R (bl/br)." }
+      ];
+
+      const ordered = [...items.filter(i => i.u === unitNum), ...items.filter(i => i.u !== unitNum)];
+      let idx = 0;
+
+      function render() {
+        const it = ordered[idx];
+        const btns = it.opciones.map((op, i) => `
+          <button class="btn-game orto-btn" data-idx="${i}" style="font-size:1.25rem;">✍️ ${op}</button>
+        `).join("");
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">✍️ Ortografía Interactiva (Unidad ${it.u})</span>
+              <button class="btn-game primary" id="btnNextOrto">➡️ Otra Palabra</button>
+            </div>
+            <div style="font-size:1.75rem; font-weight:800; color:var(--blue-navy); margin:1.1rem 0;">
+              ${it.palabra}
+            </div>
+            <div style="display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+              ${btns}
+            </div>
+            <div style="margin-top:1rem; font-size:0.98rem; color:var(--text-muted); font-weight:700;">
+              📏 Regla: ${it.regla}
+            </div>
+            <div class="game-feedback" id="ortoFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".orto-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const chosen = parseInt(btn.dataset.idx, 10);
+            const fb = document.getElementById("ortoFeedback");
+            if (chosen === it.correcta) {
+              playSound("success");
+              btn.style.background = "var(--green-ok)";
+              btn.style.color = "#ffffff";
+              fb.style.color = "var(--green-ok)";
+              fb.textContent = "🎉 ¡Ortografía impecable!";
+            } else {
+              playSound("error");
+              fb.style.color = "var(--red-err)";
+              fb.textContent = "🤔 Revisa la regla ortográfica de abajo y vuelve a probar.";
+            }
+          });
+        });
+
+        document.getElementById("btnNextOrto").addEventListener("click", () => {
+          playSound("open");
+          idx = (idx + 1) % ordered.length;
+          render();
+        });
+      }
+      render();
+    }
+
+    /* ---- MINIJUEGO 4: RETO DE ABECEDARIO Y VOCABULARIO (UNIDADES 1 A 6) ---- */
+    function mountVocabularioGame(container) {
+      let mode = "alfabeto"; // 'alfabeto' | 'lexico'
+      const wordSets = [
+        ["Avión", "Ballena", "Castillo", "Dragón", "Estrella"],
+        ["Bosque", "Cometa", "Faro", "Lámpara", "Montaña"],
+        ["Camino", "Cielo", "Coche", "Cuaderno", "Cueva"]
+      ];
+      let setIdx = 0;
+      let shuffled = [...wordSets[0]].sort(() => Math.random() - 0.5);
+      let picked = [];
+
+      const lexicoQuestions = [
+        { q: "U2 · ¿Cuál es el ANTÓNIMO de «encender» y qué palabra tiene PREFIJO?", opts: ["Apagar · Deshacer (prefijo des-)", "Iluminar · Luz", "Brillar · Sol"], ok: 0 },
+        { q: "U3 · ¿Qué par son SINÓNIMOS y cuál es una PALABRA COMPUESTA?", opts: ["Contento / Alegre · Sacapuntas", "Alto / Bajo · Libreta", "Rápido / Lento · Mesita"], ok: 0 },
+        { q: "U4 · ¿Qué significa el refrán «En boca cerrada no entran moscas»?", opts: ["Que a veces es mejor ser prudente y callar", "Que hay que comer deprisa", "Que en verano hay muchos insectos"], ok: 0 },
+        { q: "U5 · ¿Cuál es el gentilicio de la Región de Murcia y qué significa «Echar una mano»?", opts: ["Murciano/a · Ayudar a alguien", "Murciense · Saludar con la mano", "Murcial · Aplaudir fuerte"], ok: 0 },
+        { q: "U6 · ¿Qué palabra es un EXTRANJERISMO y cómo se dice en castellano?", opts: ["Parking → Aparcamiento", "Panadería → Panadero", "Floristería → Flores"], ok: 0 }
+      ];
+      let lexIdx = 0;
+
+      function render() {
+        if (mode === "alfabeto") {
+          const targetOrder = wordSets[setIdx];
+          const buttonsHtml = shuffled.map(w => {
+            const already = picked.includes(w);
+            return `<button class="btn-game ${already?'primary':''}" data-word="${w}" ${already?'disabled':''}>${w}</button>`;
+          }).join("");
+
+          container.innerHTML = `
+            <div class="minigame-container">
+              <div class="game-top-bar">
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn-game primary" id="tabAlf">🔤 Orden Alfabético</button>
+                  <button class="btn-game" id="tabLex">🧩 Retos de Vocabulario (U2-U6)</button>
+                </div>
+                <button class="btn-game" id="btnNewWordSet">🔄 Nuevas Palabras</button>
+              </div>
+              <p style="font-weight:800; color:var(--blue-deep); margin-bottom:0.8rem;">
+                Toca las palabras en estricto <u>ORDEN ALFABÉTICO</u> como en el diccionario:
+              </p>
+              <div style="display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; margin-bottom:1rem;">
+                ${buttonsHtml}
+              </div>
+              <div style="background:var(--bg-body); padding:0.9rem; border-radius:12px; border:2px solid var(--border-color); font-size:1.25rem; font-weight:800;">
+                Tu diccionario: ${picked.join(" ➔ ") || "Toca la primera palabra..."}
+              </div>
+              <div class="game-feedback" id="vocFeedback"></div>
+            </div>
+          `;
+
+          container.querySelectorAll("[data-word]").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const word = btn.dataset.word;
+              const expected = targetOrder[picked.length];
+              const fb = document.getElementById("vocFeedback");
+              if (word === expected) {
+                picked.push(word);
+                playSound("click");
+                render();
+                if (picked.length === targetOrder.length) {
+                  playSound("success");
+                  document.getElementById("vocFeedback").style.color = "var(--green-ok)";
+                  document.getElementById("vocFeedback").textContent = "🎉 ¡Orden alfabético perfecto!";
+                }
+              } else {
+                playSound("error");
+                fb.style.color = "var(--red-err)";
+                fb.textContent = `🤔 Fíjate en el abecedario: antes de «${word}» va otra palabra.`;
+              }
+            });
+          });
+
+          document.getElementById("btnNewWordSet").addEventListener("click", () => {
+            playSound("open");
+            setIdx = (setIdx + 1) % wordSets.length;
+            picked = [];
+            shuffled = [...wordSets[setIdx]].sort(() => Math.random() - 0.5);
+            render();
+          });
+
+          document.getElementById("tabLex").addEventListener("click", () => {
+            playSound("click");
+            mode = "lexico";
+            render();
+          });
+        } else {
+          const item = lexicoQuestions[lexIdx];
+          const opts = item.opts.map((o, i) => `
+            <button class="btn-game lex-opt" data-idx="${i}" style="width:100%; text-align:left;">🔹 ${o}</button>
+          `).join("");
+
+          container.innerHTML = `
+            <div class="minigame-container">
+              <div class="game-top-bar">
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn-game" id="tabAlf">🔤 Orden Alfabético</button>
+                  <button class="btn-game primary" id="tabLex">🧩 Retos de Vocabulario (U2-U6)</button>
+                </div>
+                <button class="btn-game primary" id="btnNextLex">➡️ Siguiente Reto</button>
+              </div>
+              <h4 style="font-size:1.25rem; color:var(--blue-deep); margin-bottom:1rem;">${item.q}</h4>
+              <div style="display:flex; flex-direction:column; gap:0.6rem; max-width:640px; margin:0 auto;">
+                ${opts}
+              </div>
+              <div class="game-feedback" id="lexFeedback"></div>
+            </div>
+          `;
+
+          container.querySelectorAll(".lex-opt").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const i = parseInt(btn.dataset.idx, 10);
+              const fb = document.getElementById("lexFeedback");
+              if (i === item.ok) {
+                playSound("success");
+                btn.style.background = "var(--green-ok)";
+                btn.style.color = "#ffffff";
+                fb.style.color = "var(--green-ok)";
+                fb.textContent = "🎉 ¡Dominas el vocabulario!";
+              } else {
+                playSound("error");
+                fb.style.color = "var(--red-err)";
+                fb.textContent = "🤔 Piénsalo un poquito más y prueba otra opción.";
+              }
+            });
+          });
+
+          document.getElementById("btnNextLex").addEventListener("click", () => {
+            playSound("open");
+            lexIdx = (lexIdx + 1) % lexicoQuestions.length;
+            render();
+          });
+
+          document.getElementById("tabAlf").addEventListener("click", () => {
+            playSound("click");
+            mode = "alfabeto";
+            render();
+          });
+        }
+      }
+      render();
+    }
+
+    /* ---- MINIJUEGO 5: CONSTRUCTOR DE TEXTOS (CUENTO, FÁBULA Y NOTICIA) ---- */
+    function mountComprensionGame(container) {
+      const textos = [
+        {
+          tipo: "Cuento Tradicional (Inicio · Nudo · Desenlace)",
+          partes: [
+            "1. INICIO: Érase una vez una pequeña ardilla que vivía en lo alto de un pino centenario en Sierra Espuña.",
+            "2. NUDO: Un día de viento, su reserva de piñones rodó cuesta abajo y tuvo que pedir ayuda a su amigo el erizo.",
+            "3. DESENLACE: Juntos recogieron todas las piñas y aprendieron que compartiendo el trabajo todo es más fácil."
+          ]
+        },
+        {
+          tipo: "Fábula con Moraleja (Situación · Problema · Enseñanza)",
+          partes: [
+            "1. PRESENTACIÓN: Una liebre muy veloz se burlaba todos los días de los pasos lentos de una tortuga.",
+            "2. NUDO: Hicieron una carrera y, confiada en su rapidez, la liebre se tumbó a dormir la siesta bajo un árbol.",
+            "3. MORALEJA: Paso a paso, la tortuga cruzó la meta. Con constancia y esfuerzo se alcanzan grandes metas."
+          ]
+        },
+        {
+          tipo: "Noticia Periodística (Titular · Entrada · Cuerpo)",
+          partes: [
+            "1. TITULAR: El alumnado de 3.º de Primaria inaugura un nuevo huerto ecológico escolar.",
+            "2. ENTRADA: Ayer jueves, cuarenta niños y niñas plantaron tomates, lechugas y plantas aromáticas en el patio.",
+            "3. CUERPO: El proyecto permitirá estudiar la naturaleza en directo y donar verduras al comedor escolar."
+          ]
+        }
+      ];
+
+      let tIdx = 0;
+      let shuffled = [...textos[0].partes].sort(() => Math.random() - 0.5);
+      let chosenOrder = [];
+
+      function render() {
+        const current = textos[tIdx];
+        const cardsHtml = shuffled.map(p => {
+          const picked = chosenOrder.includes(p);
+          return `
+            <div class="sequence-card ${picked?'selected':''}" data-part="${encodeURIComponent(p)}">
+              ${picked ? "✅ " : "📄 "} ${p.replace(/^[0-9]+\.\s*[A-ZÁÉÍÓÚ]+:\s*/, "")}
+            </div>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">📖 ${current.tipo}</span>
+              <div style="display:flex; gap:0.5rem;">
+                <button class="btn-game" id="btnResetSeq">🧹 Reiniciar</button>
+                <button class="btn-game primary" id="btnNextText">➡️ Otro Texto</button>
+              </div>
+            </div>
+            <p style="font-weight:800; color:var(--blue-deep); margin-bottom:0.8rem;">
+              Toca los 3 fragmentos en el orden correcto (1.º Inicio/Titular, 2.º Nudo/Entrada, 3.º Desenlace/Cuerpo):
+            </p>
+            <div>${cardsHtml}</div>
+            <div class="game-feedback" id="seqFeedback"></div>
+          </div>
+        `;
+
+        container.querySelectorAll(".sequence-card").forEach(card => {
+          card.addEventListener("click", () => {
+            const part = decodeURIComponent(card.dataset.part);
+            if (chosenOrder.includes(part)) return;
+            const expected = current.partes[chosenOrder.length];
+            const fb = document.getElementById("seqFeedback");
+
+            if (part === expected) {
+              chosenOrder.push(part);
+              playSound("click");
+              render();
+              if (chosenOrder.length === current.partes.length) {
+                playSound("success");
+                document.getElementById("seqFeedback").style.color = "var(--green-ok)";
+                document.getElementById("seqFeedback").textContent = "🎉 ¡Excelente! Has ordenado toda la secuencia del texto.";
+              }
+            } else {
+              playSound("error");
+              fb.style.color = "var(--red-err)";
+              fb.textContent = "🤔 Ese fragmento no va en este lugar. Lee bien cómo empieza la historia.";
+            }
+          });
+        });
+
+        document.getElementById("btnResetSeq").addEventListener("click", () => {
+          playSound("click");
+          chosenOrder = [];
+          render();
+        });
+
+        document.getElementById("btnNextText").addEventListener("click", () => {
+          playSound("open");
+          tIdx = (tIdx + 1) % textos.length;
+          chosenOrder = [];
+          shuffled = [...textos[tIdx].partes].sort(() => Math.random() - 0.5);
+          render();
+        });
+      }
+      render();
+    }
+
+    /* ---- MINIJUEGO 6: ESTUDIO CREATIVO DE CÓMIC, ESLÓGANES Y TEATRO ---- */
+    function mountCreativoGame(container) {
+      const cartelas = [
+        "CARTELA: Mientras tanto, en el patio del colegio...",
+        "ACOTACIÓN TEATRAL: (Entra en escena de puntillas mirando con una lupa)",
+        "ESLOGAN PUBLICITARIO: ¡Cuida cada gota de agua, el futuro empieza hoy!"
+      ];
+      const personajes = ["🦸‍♂️ Superlector", "🕵️‍♀️ Detective Ortografía", "🦊 Zorro Fabulista", "🎭 Actor Poeta"];
+      const tiposBocadillo = [
+        { label: "💬 Diálogo", css: "bubble-dialog", texto: "¡En equipo resolveremos el misterio de la biblioteca!" },
+        { label: "💭 Pensamiento", css: "bubble-think", texto: "Mmm... creo que esta palabra lleva diéresis en güe." },
+        { label: "⚡ Grito / Exclamación", css: "bubble-shout", texto: "¡ZAS! ¡Cuidado con las faltas de ortografía!" }
+      ];
+      const onomatopeyas = ["💥 ¡BUM!", "🔔 ¡RING, RING!", "💨 ¡ZAS!", "👏 ¡PLAS, PLAS!"];
+
+      let cIdx = 0, pIdx = 0, bIdx = 0, oIdx = 0;
+
+      function render() {
+        const b = tiposBocadillo[bIdx];
+        container.innerHTML = `
+          <div class="minigame-container">
+            <div class="game-top-bar">
+              <span class="game-badge">💬 Estudio Interactivo de Cómic, Cartel y Teatro</span>
+              <button class="btn-game primary" id="btnRandomComic">🎲 Combinación Sorpresa</button>
+            </div>
+            <div class="comic-stage">
+              <div class="comic-cartela">${cartelas[cIdx]}</div>
+              <div class="comic-bubble ${b.css}">${b.texto}</div>
+              <div style="display:flex; width:100%; justify-content:space-between; align-items:center;">
+                <span style="font-size:2rem; font-weight:800;">${personajes[pIdx]}</span>
+                <span style="background:#ef4444; color:#ffffff; padding:0.4rem 1rem; border-radius:999px; font-weight:800; font-size:1.25rem; transform:rotate(-6deg);">
+                  ${onomatopeyas[oIdx]}
+                </span>
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.6rem; justify-content:center; margin-top:1rem;">
+              <button class="btn-game" id="btnChangeCartela">📝 Cambiar Cartela/Acotación</button>
+              <button class="btn-game" id="btnChangeBubble">💬 Tipo de Bocadillo (${b.label})</button>
+              <button class="btn-game" id="btnChangeChar">🎭 Cambiar Personaje</button>
+              <button class="btn-game" id="btnChangeOno">💥 Cambiar Onomatopeya</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("btnChangeCartela").addEventListener("click", () => {
+          playSound("click"); cIdx = (cIdx + 1) % cartelas.length; render();
+        });
+        document.getElementById("btnChangeBubble").addEventListener("click", () => {
+          playSound("click"); bIdx = (bIdx + 1) % tiposBocadillo.length; render();
+        });
+        document.getElementById("btnChangeChar").addEventListener("click", () => {
+          playSound("click"); pIdx = (pIdx + 1) % personajes.length; render();
+        });
+        document.getElementById("btnChangeOno").addEventListener("click", () => {
+          playSound("click"); oIdx = (oIdx + 1) % onomatopeyas.length; render();
+        });
+        document.getElementById("btnRandomComic").addEventListener("click", () => {
+          playSound("success");
+          cIdx = Math.floor(Math.random() * cartelas.length);
+          bIdx = Math.floor(Math.random() * tiposBocadillo.length);
+          pIdx = Math.floor(Math.random() * personajes.length);
+          oIdx = Math.floor(Math.random() * onomatopeyas.length);
+          render();
+        });
+      }
+      render();
+    }
+
+    /* =========================================================================
+       5. APERTURA DEL MODAL DE RECURSO
+       ========================================================================= */
+    const resourceModal = document.getElementById("resourceModal");
+    const modalIcon = document.getElementById("modalIcon");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSubtitle = document.getElementById("modalSubtitle");
+    const modalDescription = document.getElementById("modalDescription");
+    const modalPreviewArea = document.getElementById("modalPreviewArea");
+    const modalExternalLink = document.getElementById("modalExternalLink");
+
+    function findResourceById(id) {
+      for (const u of unidadesData) {
+        const found = u.recursos.find(r => r.id === id);
+        if (found) return { recurso: found, unidad: u };
+      }
+      return null;
+    }
+
+    function openResourceModal(id) {
+      const data = findResourceById(id);
+      if (!data) return;
+      playSound("open");
+
+      const { recurso, unidad } = data;
+      const fmt = getFormatInfo(recurso.tipo);
+
+      modalIcon.textContent = recurso.icono;
+      modalTitle.textContent = recurso.titulo;
+      modalSubtitle.textContent = `Unidad ${unidad.numero} · ${fmt.label} · Etiqueta: ${recurso.etiqueta.toUpperCase()}`;
+      modalDescription.textContent = recurso.descripcion;
+      modalExternalLink.href = recurso.url || "#";
+
+      modalPreviewArea.innerHTML = "";
+
+      if (recurso.tipo === "web") {
+        const game = recurso.minijuego || "gramatica";
+        if (game === "silabas") mountSilabasGame(modalPreviewArea);
+        else if (game === "gramatica") mountGramaticaGame(modalPreviewArea, unidad.numero);
+        else if (game === "ortografia") mountOrtografiaGame(modalPreviewArea, unidad.numero);
+        else if (game === "vocabulario") mountVocabularioGame(modalPreviewArea);
+        else if (game === "comprension") mountComprensionGame(modalPreviewArea);
+        else mountCreativoGame(modalPreviewArea);
+      } else if (recurso.tipo === "pdf") {
+        const puntos = (recurso.puntosPdf && recurso.puntosPdf.length > 0)
+          ? recurso.puntosPdf
+          : ["Actividad paso a paso adaptada a 3.º de Primaria.", "Lista para proyectar en pizarra o imprimir en formato A4."];
+        const listItems = puntos.map(item => `<li style="margin-bottom:0.55rem;">✅ ${item}</li>`).join("");
+
+        modalPreviewArea.innerHTML = `
+          <div class="minigame-container" style="text-align:left;">
+            <div style="display:flex; justify-content:space-between; border-bottom:2px solid var(--border-color); padding-bottom:0.7rem; margin-bottom:1rem;">
+              <strong style="color:var(--blue-deep); font-size:1.2rem;">📄 Vista Previa del Documento PDF</strong>
+              <span class="format-badge format-pdf">Imprimible A4</span>
+            </div>
+            <ul style="list-style:none; font-size:1.12rem; font-weight:700;">${listItems}</ul>
+            <div style="margin-top:1rem; padding:0.8rem; background:var(--bg-body); border-radius:10px; font-weight:600; color:var(--text-muted);">
+              📁 Archivo vinculado: <code>${recurso.url || "Sin ruta externa"}</code>
+            </div>
+          </div>
+        `;
+      } else {
+        modalPreviewArea.innerHTML = `
+          <div class="minigame-container">
+            <svg viewBox="0 0 740 230" width="100%" height="auto" style="border-radius:14px; background:linear-gradient(135deg, #f0f7ff, #dbeafe); border:2px solid #93c5fd;">
+              <rect x="16" y="16" width="708" height="198" rx="14" fill="#ffffff" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="8 6"/>
+              <text x="370" y="72" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="32" font-weight="800" fill="#1e3a8a">
+                ${recurso.icono} ${recurso.titulo}
+              </text>
+              <text x="370" y="135" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="18" font-weight="700" fill="#0f172a">
+                ${recurso.textoPoster || recurso.descripcion}
+              </text>
+              <text x="370" y="188" text-anchor="middle" font-family="Quicksand, sans-serif" font-size="15" font-weight="700" fill="#334155">
+                Lámina Visual de Aula · Lengua 3.º de Primaria · Etiqueta: ${recurso.etiqueta.toUpperCase()}
+              </text>
+            </svg>
+          </div>
+        `;
+      }
+
+      resourceModal.classList.add("active");
+    }
+
+    /* =========================================================================
+       6. MODO DOCENTE (CONTRASEÑA, AÑADIR, EDITAR, BORRAR Y LOCALSTORAGE)
+       ========================================================================= */
+    const btnTeacherMode = document.getElementById("btnTeacherMode");
+    const teacherToolbar = document.getElementById("teacherToolbar");
+    const loginModal = document.getElementById("loginModal");
+    const teacherPassInput = document.getElementById("teacherPassInput");
+    const loginErrorMsg = document.getElementById("loginErrorMsg");
+    const editorModal = document.getElementById("editorModal");
+    const resourceForm = document.getElementById("resourceForm");
+
+    function setTeacherMode(active) {
+      isTeacherMode = active;
+      document.body.classList.toggle("teacher-mode", active);
+      teacherToolbar.classList.toggle("visible", active);
+      btnTeacherMode.classList.toggle("teacher-active", active);
+      document.getElementById("teacherIcon").textContent = active ? "🔓" : "🔒";
+      document.getElementById("teacherText").textContent = active ? "Salir Modo Docente" : "Modo Docente";
+    }
+
+    btnTeacherMode.addEventListener("click", () => {
+      playSound("click");
+      if (isTeacherMode) {
+        setTeacherMode(false);
+      } else {
+        teacherPassInput.value = "";
+        loginErrorMsg.style.display = "none";
+        loginModal.classList.add("active");
+        setTimeout(() => teacherPassInput.focus(), 80);
+      }
+    });
+
+    function verifyTeacherPassword() {
+      const val = teacherPassInput.value.trim().toLowerCase();
+      if (val === "1234" || val === "profe") {
+        playSound("success");
+        loginModal.classList.remove("active");
+        setTeacherMode(true);
+      } else {
+        playSound("error");
+        loginErrorMsg.style.display = "block";
+      }
+    }
+
+    document.getElementById("btnConfirmLogin").addEventListener("click", verifyTeacherPassword);
+    teacherPassInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") verifyTeacherPassword();
+    });
+    document.getElementById("btnCloseLogin").addEventListener("click", () => loginModal.classList.remove("active"));
+    document.getElementById("btnCancelLogin").addEventListener("click", () => loginModal.classList.remove("active"));
+
+    const formType = document.getElementById("formType");
+    const groupMinigame = document.getElementById("groupMinigame");
+    formType.addEventListener("change", () => {
+      groupMinigame.style.display = formType.value === "web" ? "flex" : "none";
+    });
+
+    document.getElementById("btnAddNewResource").addEventListener("click", () => {
+      playSound("open");
+      document.getElementById("editorModalTitle").textContent = "➕ Añadir Nuevo Recurso de Lengua";
+      document.getElementById("editResId").value = "";
+      document.getElementById("formUnit").value = currentUnit === "all" ? "1" : currentUnit;
+      document.getElementById("formTag").value = currentTag === "todas" ? "comunicación y lectura" : currentTag;
+      document.getElementById("formType").value = "web";
+      document.getElementById("formIcon").value = "📖";
+      document.getElementById("formTitle").value = "";
+      document.getElementById("formDesc").value = "";
+      document.getElementById("formMinigame").value = "gramatica";
+      document.getElementById("formUrl").value = "";
+      document.getElementById("formExtra").value = "";
+      groupMinigame.style.display = "flex";
+      editorModal.classList.add("active");
+    });
+
+    function openEditorForEdit(id) {
+      const data = findResourceById(id);
+      if (!data) return;
+      playSound("open");
+      const { recurso, unidad } = data;
+
+      document.getElementById("editorModalTitle").textContent = "✏️ Editar Recurso de Lengua";
+      document.getElementById("editResId").value = recurso.id;
+      document.getElementById("formUnit").value = String(unidad.numero);
+      document.getElementById("formTag").value = recurso.etiqueta;
+      document.getElementById("formType").value = recurso.tipo;
+      document.getElementById("formIcon").value = recurso.icono;
+      document.getElementById("formTitle").value = recurso.titulo;
+      document.getElementById("formDesc").value = recurso.descripcion;
+      document.getElementById("formMinigame").value = recurso.minijuego || "gramatica";
+      document.getElementById("formUrl").value = recurso.url || "";
+
+      if (recurso.tipo === "pdf" && recurso.puntosPdf) {
+        document.getElementById("formExtra").value = recurso.puntosPdf.join("; ");
+      } else if (recurso.tipo === "imagen" && recurso.textoPoster) {
+        document.getElementById("formExtra").value = recurso.textoPoster;
+      } else {
+        document.getElementById("formExtra").value = "";
+      }
+
+      groupMinigame.style.display = recurso.tipo === "web" ? "flex" : "none";
+      editorModal.classList.add("active");
+    }
+
+    resourceForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const editId = document.getElementById("editResId").value;
+      const targetUnitNum = parseInt(document.getElementById("formUnit").value, 10);
+      const tipo = document.getElementById("formType").value;
+      const extraRaw = document.getElementById("formExtra").value.trim();
+
+      const newObj = {
+        id: editId || ("lengua-" + Date.now()),
+        titulo: document.getElementById("formTitle").value.trim(),
+        descripcion: document.getElementById("formDesc").value.trim(),
+        tipo: tipo,
+        etiqueta: document.getElementById("formTag").value,
+        icono: document.getElementById("formIcon").value.trim() || "📖",
+        url: document.getElementById("formUrl").value.trim() || "#"
+      };
+
+      if (tipo === "web") {
+        newObj.minijuego = document.getElementById("formMinigame").value;
+      } else if (tipo === "pdf") {
+        newObj.puntosPdf = extraRaw ? extraRaw.split(";").map(s => s.trim()).filter(Boolean) : [newObj.descripcion];
+      } else if (tipo === "imagen") {
+        newObj.textoPoster = extraRaw || newObj.descripcion;
+      }
+
+      if (editId) {
+        unidadesData.forEach(u => {
+          u.recursos = u.recursos.filter(r => r.id !== editId);
+        });
+      }
+
+      const unitTarget = unidadesData.find(u => u.numero === targetUnitNum);
+      if (unitTarget) {
+        unitTarget.recursos.push(newObj);
+      }
+
+      saveDataToStorage();
+      renderUnits();
+      playSound("success");
+      editorModal.classList.remove("active");
+    });
+
+    function deleteResourceById(id) {
+      const data = findResourceById(id);
+      if (!data) return;
+      if (!confirm(`¿Seguro que deseas eliminar «${data.recurso.titulo}»?`)) return;
+      unidadesData.forEach(u => {
+        u.recursos = u.recursos.filter(r => r.id !== id);
+      });
+      saveDataToStorage();
+      renderUnits();
+      playSound("click");
+    }
+
+    document.getElementById("btnCloseEditor").addEventListener("click", () => editorModal.classList.remove("active"));
+    document.getElementById("btnCancelEditor").addEventListener("click", () => editorModal.classList.remove("active"));
+
+    document.getElementById("btnExportJson").addEventListener("click", () => {
+      playSound("click");
+      const blob = new Blob([JSON.stringify(unidadesData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recursos-lengua-3primaria.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById("btnRestoreDefaults").addEventListener("click", () => {
+      if (!confirm("¿Restaurar los 36 recursos originales de Lengua? Se borrarán los cambios personalizados en este navegador.")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      loadDataFromStorage();
+      renderUnits();
+      playSound("open");
+    });
+
+    /* =========================================================================
+       7. EVENTOS GENERALES DE BÚSQUEDA Y FILTRADO
+       ========================================================================= */
+    searchInput.addEventListener("input", (e) => {
+      currentSearch = e.target.value;
+      applyFilters();
+    });
+
+    clearSearchBtn.addEventListener("click", () => {
+      playSound("click");
+      searchInput.value = "";
+      currentSearch = "";
+      applyFilters();
+    });
+
+    document.querySelectorAll(".tag-filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        playSound("click");
+        document.querySelectorAll(".tag-filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTag = btn.dataset.tag;
+        applyFilters();
+      });
+    });
+
+    document.querySelectorAll(".type-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        playSound("click");
+        document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentType = btn.dataset.type;
+        applyFilters();
+      });
+    });
+
+    document.querySelectorAll(".unit-pill").forEach(pill => {
+      pill.addEventListener("click", () => {
+        playSound("click");
+        document.querySelectorAll(".unit-pill").forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentUnit = pill.dataset.unit;
+        applyFilters();
+      });
+    });
+
+    document.getElementById("btnToggleAllUnits").addEventListener("click", () => {
+      playSound("click");
+      allCollapsed = !allCollapsed;
+      document.querySelectorAll(".unit-section").forEach(sec => sec.classList.toggle("collapsed", allCollapsed));
+      document.getElementById("toggleUnitsText").textContent = allCollapsed ? "Expandir unidades" : "Contraer unidades";
+    });
+
+    document.getElementById("btnSoundToggle").addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById("soundIcon").textContent = soundEnabled ? "🔊" : "🔇";
+      document.getElementById("soundText").textContent = soundEnabled ? "Sonido ON" : "Silencio";
+      if (soundEnabled) playSound("click");
+    });
+
+    document.getElementById("btnCloseModal").addEventListener("click", () => {
+      playSound("click");
+      resourceModal.classList.remove("active");
+    });
+
+    resourceModal.addEventListener("click", (e) => {
+      if (e.target === resourceModal) resourceModal.classList.remove("active");
+    });
+
+    document.getElementById("btnPrintResource").addEventListener("click", () => window.print());
+
+    // Inicializar aplicación
+    loadDataFromStorage();
+    renderUnits();
+  </script>
+</body>
+</html>
