@@ -80,6 +80,7 @@
       font-size: 1.35rem;
       font-weight: 800;
       color: var(--primary-dark);
+      cursor: pointer;
     }
 
     .brand-icon {
@@ -111,7 +112,7 @@
       color: var(--text-main);
       font-family: var(--font-main);
       font-weight: 700;
-      font-size: 0.98rem;
+      font-size: 0.96rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -126,6 +127,16 @@
 
     .btn-top:active {
       transform: scale(0.96);
+    }
+
+    .btn-top.btn-home-top {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: var(--primary-dark);
+    }
+
+    .btn-top.btn-home-top:hover {
+      background: #dbeafe;
     }
 
     .btn-top.btn-pdf-top {
@@ -143,7 +154,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      max-width: 1400px;
+      max-width: 1420px;
       width: 100%;
       margin: 0 auto;
       padding: 16px;
@@ -194,7 +205,6 @@
       gap: 8px;
     }
 
-    /* Tarjetas de Operación */
     .op-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -258,7 +268,6 @@
     .op-card.selected[data-op="mul"] { border-color: #d97706; background: #fffbeb; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.18); }
     .op-card.selected[data-op="div"] { border-color: #16a34a; background: #f0fdf4; box-shadow: 0 6px 18px rgba(22, 163, 74, 0.18); }
 
-    /* Configuración de Cifras y Llevadas */
     .settings-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -291,6 +300,7 @@
     .pill-group {
       display: flex;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .pill-btn {
@@ -301,11 +311,15 @@
       border: 2px solid #cbd5e1;
       background: white;
       font-family: var(--font-main);
-      font-size: 1.08rem;
+      font-size: 1.02rem;
       font-weight: 800;
       color: var(--text-main);
       cursor: pointer;
       transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     .pill-btn:active {
@@ -324,7 +338,6 @@
       pointer-events: none;
     }
 
-    /* Entrada Manual para el Maestro */
     .manual-box {
       display: flex;
       align-items: center;
@@ -353,7 +366,6 @@
       background: #eff6ff;
     }
 
-    /* Selector de Modo de Práctica */
     .mode-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -404,10 +416,9 @@
       font-weight: 600;
     }
 
-    /* Fila de Botones de Acción (Empezar + Generar Ficha PDF) */
     .start-actions-row {
       display: grid;
-      grid-template-columns: 1.5fr 1fr;
+      grid-template-columns: 1.45fr 1fr;
       gap: 14px;
     }
 
@@ -445,7 +456,7 @@
       background: linear-gradient(135deg, #fffbeb, #fef3c7);
       color: #92400e;
       font-family: var(--font-main);
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 6px 16px rgba(245, 158, 11, 0.2);
@@ -460,10 +471,6 @@
     .btn-worksheet-main:hover {
       transform: translateY(-2px);
       background: #fde68a;
-    }
-
-    .btn-worksheet-main:active {
-      transform: scale(0.98);
     }
 
     /* ==========================================
@@ -493,6 +500,51 @@
       justify-content: space-between;
       position: relative;
       overflow-x: auto;
+    }
+
+    /* Barra rápida de navegación por las operaciones de la ficha cuando se corrige en pizarra */
+    .worksheet-sync-bar {
+      display: none;
+      background: #fffbeb;
+      border: 2px solid #fcd34d;
+      border-radius: 16px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .worksheet-sync-bar.active {
+      display: flex;
+    }
+
+    .sync-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .sync-pill-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 2px solid #f59e0b;
+      background: white;
+      color: #92400e;
+      font-family: var(--font-main);
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sync-pill-btn.active {
+      background: #d97706;
+      border-color: #92400e;
+      color: white;
+      transform: scale(1.06);
     }
 
     .notebook-top-bar {
@@ -556,7 +608,6 @@
       position: relative;
     }
 
-    /* Cabeceras de Valor Posicional */
     .pos-header {
       width: var(--cell-size);
       height: 36px;
@@ -586,7 +637,6 @@
     .pos-CM { background: var(--col-cm); }
     .pos-MM { background: var(--col-mm); }
 
-    /* Celdas estáticas */
     .static-cell {
       width: var(--cell-size);
       height: var(--cell-size);
@@ -631,7 +681,6 @@
       font-weight: 900;
     }
 
-    /* Casillas Interactivas */
     .input-cell {
       width: var(--cell-size);
       height: var(--cell-size);
@@ -729,7 +778,6 @@
       margin: 4px 0;
     }
 
-    /* CAJA ESPAÑOLA DE DIVISIÓN */
     .spanish-div-layout {
       display: flex;
       align-items: flex-start;
@@ -764,7 +812,6 @@
       justify-content: flex-start;
     }
 
-    /* COLUMNA DERECHA: BOCADILLO + TECLADO */
     .assistant-keypad-col {
       display: flex;
       flex-direction: column;
@@ -936,6 +983,7 @@
       justify-content: space-between;
       gap: 16px;
       animation: fadeIn 0.3s ease;
+      flex-wrap: wrap;
     }
 
     .victory-banner.show {
@@ -949,38 +997,51 @@
     }
 
     /* ==============================================================
-       3. GENERADOR DE FICHA IMPRIMIBLE (8 OPERACIONES + SOLUCIONARIO)
+       3. GENERADOR DE FICHA IMPRIMIBLE (4, 6 u 8 OPERACIONES + PROBLEMA)
        ============================================================== */
     .worksheet-toolbar {
       background: var(--bg-card);
       border-radius: 20px;
-      padding: 16px 22px;
+      padding: 16px 20px;
       margin-bottom: 20px;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .ws-toolbar-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 14px;
-      border: 2px solid #e2e8f0;
+      gap: 12px;
     }
 
     .ws-toolbar-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
+    .ws-label {
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
     .btn-print-cta {
-      min-height: 52px;
+      min-height: 50px;
       padding: 0 22px;
       border-radius: 14px;
       border: none;
       background: linear-gradient(135deg, #16a34a, #15803d);
       color: white;
       font-family: var(--font-main);
-      font-size: 1.1rem;
+      font-size: 1.08rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -1007,7 +1068,7 @@
       background: #ffffff;
       width: 210mm;
       min-height: 285mm;
-      padding: 12mm 14mm;
+      padding: 11mm 13mm;
       border-radius: 12px;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
       border: 1px solid #cbd5e1;
@@ -1023,19 +1084,19 @@
 
     .sheet-header {
       border-bottom: 3px solid #1e293b;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .sheet-title-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .sheet-main-title {
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: #1e293b;
       display: flex;
@@ -1046,7 +1107,7 @@
     .sheet-badge {
       padding: 4px 12px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 800;
       text-transform: uppercase;
     }
@@ -1067,7 +1128,7 @@
       display: grid;
       grid-template-columns: 2.2fr 1.1fr 0.9fr 0.9fr;
       gap: 12px;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #334155;
     }
@@ -1077,14 +1138,64 @@
       padding-bottom: 3px;
     }
 
-    /* Cuadrícula de las 8 operaciones (2 columnas x 4 filas) */
-    .exercises-grid-8 {
+    /* Cuadrícula dinámica de 4, 6 u 8 operaciones */
+    .exercises-grid-print {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(4, auto);
-      gap: 14px 18px;
+      gap: 12px 16px;
       flex: 1;
-      align-content: space-between;
+      align-content: start;
+      /* Variables de escala según cantidad de operaciones */
+      --p-size: 27px;
+      --p-carry-sz: 19px;
+      --p-font: 1.05rem;
+      --card-min-h: 190px;
+    }
+
+    .exercises-grid-print.count-4 {
+      --p-size: 34px;
+      --p-carry-sz: 24px;
+      --p-font: 1.28rem;
+      --card-min-h: 265px;
+      gap: 18px 20px;
+    }
+
+    .exercises-grid-print.count-6 {
+      --p-size: 30px;
+      --p-carry-sz: 21px;
+      --p-font: 1.15rem;
+      --card-min-h: 215px;
+      gap: 14px 18px;
+    }
+
+    .exercises-grid-print.count-8 {
+      --p-size: 26px;
+      --p-carry-sz: 18px;
+      --p-font: 1.02rem;
+      --card-min-h: 175px;
+      gap: 10px 14px;
+    }
+
+    .exercises-grid-print.with-problem.count-8 {
+      --p-size: 24px;
+      --p-carry-sz: 17px;
+      --p-font: 0.96rem;
+      --card-min-h: 146px;
+      gap: 8px 12px;
+    }
+
+    .exercises-grid-print.with-problem.count-6 {
+      --p-size: 27px;
+      --p-carry-sz: 19px;
+      --p-font: 1.05rem;
+      --card-min-h: 175px;
+    }
+
+    .exercises-grid-print.with-problem.count-4 {
+      --p-size: 31px;
+      --p-carry-sz: 22px;
+      --p-font: 1.18rem;
+      --card-min-h: 220px;
     }
 
     .exercise-card-print {
@@ -1100,7 +1211,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 210px;
+      min-height: var(--card-min-h);
     }
 
     .exercise-num-tag {
@@ -1112,14 +1223,41 @@
       border-radius: 50%;
       background: #1e293b;
       color: white;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    /* Celdas compactas para la hoja A4 */
+    /* Botón en cada tarjeta de la ficha para abrir y resolver esa operación en la Pizarra Digital */
+    .btn-load-board {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1.5px solid #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-family: var(--font-main);
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .btn-load-board:hover {
+      background: #2563eb;
+      color: white;
+      border-color: #1d4ed8;
+      transform: scale(1.04);
+    }
+
+    /* Celdas adaptables para la hoja A4 */
     .p-math-grid {
       display: grid;
       gap: 3px 4px;
@@ -1128,11 +1266,11 @@
     }
 
     .p-pos {
-      width: 28px;
-      height: 20px;
+      width: var(--p-size);
+      height: 19px;
       border-radius: 5px;
       color: white;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -1142,12 +1280,12 @@
     }
 
     .p-cell {
-      width: 28px;
-      height: 28px;
+      width: var(--p-size);
+      height: var(--p-size);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: var(--p-font);
       font-weight: 800;
       color: #0f172a;
       position: relative;
@@ -1155,39 +1293,39 @@
 
     .p-cell.p-sign {
       color: #1d4ed8;
-      font-size: 1.2rem;
+      font-size: calc(var(--p-font) * 1.1);
     }
 
     .p-box {
-      width: 28px;
-      height: 28px;
+      width: var(--p-size);
+      height: var(--p-size);
       border: 1.5px solid #94a3b8;
       border-radius: 6px;
       background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.05rem;
+      font-size: var(--p-font);
       font-weight: 800;
       color: #15803d;
     }
 
     .p-carry {
-      width: 20px;
-      height: 20px;
+      width: var(--p-carry-sz);
+      height: var(--p-carry-sz);
       border-radius: 50%;
       border: 1.5px dashed #94a3b8;
       background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 800;
       color: #dc2626;
     }
 
     .p-line {
-      height: 3px;
+      height: 2.5px;
       background: #0f172a;
       width: 100%;
       margin: 2px 0;
@@ -1196,7 +1334,6 @@
       print-color-adjust: exact;
     }
 
-    /* Caja española en versión impresa A4 */
     .p-div-layout {
       display: flex;
       align-items: flex-start;
@@ -1237,13 +1374,77 @@
       border-radius: 8px 8px 0 0;
     }
 
+    /* Caja del Problema Matemático Contextualizado al pie de la ficha */
+    .word-problem-box {
+      margin-top: 12px;
+      border: 2px solid #1e293b;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .word-problem-box.hidden-problem {
+      display: none !important;
+    }
+
+    .wp-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #1d4ed8;
+      border-bottom: 1.5px solid #cbd5e1;
+      padding-bottom: 4px;
+    }
+
+    .wp-statement {
+      font-size: 0.92rem;
+      line-height: 1.4;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .wp-workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 12px;
+      margin-top: 2px;
+    }
+
+    .wp-field-box {
+      border: 1.5px dashed #94a3b8;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 6px 10px;
+      min-height: 54px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .wp-solution-text {
+      color: #15803d;
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
     .sheet-footer {
-      margin-top: 10px;
+      margin-top: 8px;
       padding-top: 6px;
       border-top: 1px solid #cbd5e1;
       display: flex;
       justify-content: space-between;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: #64748b;
       font-weight: 700;
     }
@@ -1263,7 +1464,8 @@
       header,
       #screenConfig,
       #screenWorkspace,
-      .worksheet-toolbar {
+      .worksheet-toolbar,
+      .btn-load-board {
         display: none !important;
       }
 
@@ -1287,7 +1489,7 @@
         min-height: 276mm !important;
         box-shadow: none !important;
         border: none !important;
-        padding: 4mm 6mm !important;
+        padding: 3mm 5mm !important;
         margin: 0 !important;
         page-break-after: always;
         break-after: page;
@@ -1299,7 +1501,7 @@
       }
 
       .pos-U, .pos-D, .pos-C, .pos-UM, .pos-DM, .pos-CM, .pos-MM,
-      .exercise-num-tag, .sheet-badge, .exercise-card-print {
+      .exercise-num-tag, .sheet-badge, .exercise-card-print, .word-problem-box {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
@@ -1330,7 +1532,7 @@
       .static-cell, .input-cell {
         font-size: 1.55rem;
       }
-      .exercises-grid-8 {
+      .exercises-grid-print, .wp-workspace-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -1338,18 +1540,18 @@
 </head>
 <body>
 
-  <!-- CABECERA -->
+  <!-- CABECERA CON BOTÓN HOME SIEMPRE DISPONIBLE -->
   <header>
-    <div class="brand">
+    <div class="brand" onclick="app.showConfigScreen()" title="Ir al Inicio">
       <div class="brand-icon">🧮</div>
       <span>Algoritmo Tradicional Español</span>
     </div>
     <div class="header-actions">
-      <button class="btn-top btn-pdf-top" onclick="app.openWorksheetScreen()">
-        🖨️ Ficha 8 Operaciones + Solucionario PDF
+      <button class="btn-top btn-home-top" id="btnHomeTop" onclick="app.showConfigScreen()" title="Volver a la pantalla de inicio">
+        🏠 Inicio
       </button>
-      <button class="btn-top" id="btnBackMenu" style="display: none;" onclick="app.showConfigScreen()">
-        ⚙️ Configurar Operación
+      <button class="btn-top btn-pdf-top" onclick="app.openWorksheetScreen()">
+        🖨️ Ficha PDF + Solucionario
       </button>
       <button class="btn-top" id="btnSoundToggle" onclick="app.toggleSound()" aria-label="Activar o desactivar sonido">
         🔊 Sonido
@@ -1359,7 +1561,7 @@
 
   <main>
     <!-- ==========================================
-         PANTALLA 1: MENÚ DE CONFIGURACIÓN
+         PANTALLA 1: MENÚ DE CONFIGURACIÓN (INICIO)
          ========================================== -->
     <section id="screenConfig" class="screen active">
       <div class="config-card">
@@ -1456,13 +1658,13 @@
           </div>
         </div>
 
-        <!-- Botones de Inicio Interactivo o Generación de Ficha PDF -->
+        <!-- Botones de Acción Principal -->
         <div class="start-actions-row">
           <button class="btn-start" onclick="app.startOperation()">
             <span>¡Empezar en Pizarra Digital!</span> ✨
           </button>
           <button class="btn-worksheet-main" onclick="app.openWorksheetScreen()">
-            🖨️ Generar Ficha PDF (8 operaciones + Solucionario)
+            🖨️ Generar Ficha Imprimible PDF + Solucionario
           </button>
         </div>
 
@@ -1478,8 +1680,24 @@
         <!-- IZQUIERDA: Libreta Cuadriculada -->
         <div class="notebook-panel">
           <div>
+            <!-- Barra rápida cuando se está corrigiendo una ficha en la pizarra digital -->
+            <div class="worksheet-sync-bar" id="worksheetSyncBar">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="font-weight:800; color:#92400e; font-size:0.95rem;">📄 Corrigiendo Ficha en Pizarra:</span>
+                <div class="sync-pills" id="syncPillsContainer"></div>
+              </div>
+              <button class="btn-top" style="min-height:38px; padding:0 12px; font-size:0.88rem;" onclick="app.returnToWorksheetFromBoard()">
+                🔙 Volver a la Ficha PDF
+              </button>
+            </div>
+
             <div class="notebook-top-bar">
-              <span id="badgeCurrentMode" class="badge-mode guided">🦉 Práctica Guiada</span>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span id="badgeCurrentMode" class="badge-mode guided">🦉 Práctica Guiada</span>
+                <button class="btn-top" style="min-height:38px; padding:0 12px; font-size:0.88rem;" onclick="app.toggleModeInWorkspace()">
+                  🔄 Cambiar Modo (Guiado/Libre)
+                </button>
+              </div>
               <span id="stepCounterBadge" class="step-progress">Paso 1 de 4</span>
             </div>
 
@@ -1489,9 +1707,14 @@
 
             <div id="victoryBanner" class="victory-banner">
               <div class="victory-text">🎉 ¡Excelente trabajo! Has resuelto la operación correctamente.</div>
-              <button class="btn-top" style="background:#16a34a; color:white; border-color:#15803d;" onclick="app.newRandomSameConfig()">
-                🔄 Otra operación igual
-              </button>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-top" id="btnNextWorksheetOp" style="display:none; background:#2563eb; color:white; border-color:#1d4ed8;" onclick="app.loadNextWorksheetOp()">
+                  ➡️ Siguiente operación de la ficha
+                </button>
+                <button class="btn-top" style="background:#16a34a; color:white; border-color:#15803d;" onclick="app.newRandomSameConfig()">
+                  🎲 Otra operación al azar
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1546,35 +1769,58 @@
     </section>
 
     <!-- ==========================================================
-         PANTALLA 3: VISTA PREVIA E IMPRESIÓN PDF (8 OPERACIONES)
+         PANTALLA 3: VISTA PREVIA E IMPRESIÓN PDF (4, 6 u 8 OPERACIONES)
          ========================================================== -->
     <section id="screenWorksheet" class="screen">
       <div class="worksheet-toolbar">
-        <div class="ws-toolbar-group">
-          <button class="btn-top" onclick="app.closeWorksheetScreen()">
-            ⬅️ Volver
-          </button>
-          <button class="btn-top" onclick="app.generateWorksheetBatch()">
-            🎲 Generar otras 8 operaciones
+        <!-- Fila 1: Navegación, Regeneración e Impresión -->
+        <div class="ws-toolbar-row">
+          <div class="ws-toolbar-group">
+            <button class="btn-top" onclick="app.closeWorksheetScreen()">
+              ⬅️ Volver
+            </button>
+            <button class="btn-top" onclick="app.generateWorksheetBatch(true)">
+              🎲 Generar nuevos números
+            </button>
+          </div>
+
+          <div class="ws-toolbar-group">
+            <span class="ws-label">Páginas a imprimir:</span>
+            <button class="pill-btn active" data-pview="both" onclick="app.setWorksheetView('both')">Ficha + Solucionario</button>
+            <button class="pill-btn" data-pview="student" onclick="app.setWorksheetView('student')">Solo Alumno</button>
+            <button class="pill-btn" data-pview="teacher" onclick="app.setWorksheetView('teacher')">Solo Solucionario</button>
+          </div>
+
+          <button class="btn-print-cta" onclick="window.print()">
+            🖨️ Imprimir / Guardar en PDF
           </button>
         </div>
 
-        <div class="ws-toolbar-group">
-          <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-muted);">Qué incluir en el PDF:</span>
-          <button class="pill-btn active" data-pview="both" onclick="app.setWorksheetView('both')">Ficha + Solucionario (2 págs.)</button>
-          <button class="pill-btn" data-pview="student" onclick="app.setWorksheetView('student')">Solo Ficha Alumno</button>
-          <button class="pill-btn" data-pview="teacher" onclick="app.setWorksheetView('teacher')">Solo Solucionario</button>
-        </div>
+        <!-- Fila 2: Cantidad de Operaciones (4, 6, 8) + Problema Matemático Contextualizado -->
+        <div class="ws-toolbar-row" style="border-top: 2px dashed #e2e8f0; padding-top: 12px;">
+          <div class="ws-toolbar-group">
+            <span class="ws-label">📐 Operaciones por página:</span>
+            <button class="pill-btn" data-pcount="4" onclick="app.setWorksheetCount(4)">4 (Más espacio)</button>
+            <button class="pill-btn" data-pcount="6" onclick="app.setWorksheetCount(6)">6 (Intermedio)</button>
+            <button class="pill-btn active" data-pcount="8" onclick="app.setWorksheetCount(8)">8 (Estándar)</button>
+          </div>
 
-        <button class="btn-print-cta" onclick="window.print()">
-          🖨️ Imprimir / Guardar en PDF
-        </button>
+          <div class="ws-toolbar-group">
+            <span class="ws-label">📖 Problema contextualizado al pie (con la Op. 1):</span>
+            <button class="pill-btn active" id="btnToggleProblem" onclick="app.toggleWorksheetProblem()">
+              ✅ Incluir Problema Matemático
+            </button>
+            <button class="btn-top" id="btnNewProblemStory" style="min-height:44px; padding:0 12px; font-size:0.88rem;" onclick="app.cycleProblemTemplate()">
+              🔄 Cambiar enunciado
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="worksheet-pages-container">
         <!-- PÁGINA 1: HOJA DE CÁLCULO PARA EL ALUMNO -->
         <div class="a4-sheet" id="sheetStudent">
-          <div>
+          <div style="display:flex; flex-direction:column; flex:1;">
             <div class="sheet-header">
               <div class="sheet-title-row">
                 <div class="sheet-main-title">
@@ -1586,12 +1832,33 @@
                 <div class="meta-field">Nombre y apellidos:</div>
                 <div class="meta-field">Fecha: &nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/ 202_</div>
                 <div class="meta-field">Curso:</div>
-                <div class="meta-field">Aciertos: &nbsp;&nbsp;&nbsp;&nbsp; / 8</div>
+                <div class="meta-field" id="metaScoreStudent">Aciertos: &nbsp;&nbsp;&nbsp;&nbsp; / 8</div>
               </div>
             </div>
 
-            <div class="exercises-grid-8" id="gridStudent8">
-              <!-- Se inyectan 8 operaciones vacías con pauta y llevadas -->
+            <div class="exercises-grid-print count-8 with-problem" id="gridStudentPrint">
+              <!-- Se inyectan 4, 6 u 8 operaciones vacías con botón para cargar en pizarra -->
+            </div>
+
+            <!-- Problema matemático contextualizado (Alumno) -->
+            <div class="word-problem-box" id="problemBoxStudent">
+              <div class="wp-header">
+                <span>🧩 Reto Matemático en Contexto (Usa el resultado de la Operación n.º 1)</span>
+                <button class="btn-load-board" style="position:static;" onclick="app.loadWorksheetOpIntoBoard(0)">
+                  🖥️ Resolver Op. 1 en Pizarra
+                </button>
+              </div>
+              <div class="wp-statement" id="wpTextStudent"></div>
+              <div class="wp-workspace-grid">
+                <div class="wp-field-box">
+                  <span>📌 Datos importantes:</span>
+                  <span style="border-bottom:1px dotted #cbd5e1; height:18px;"></span>
+                </div>
+                <div class="wp-field-box">
+                  <span>✍️ Solución completa (con unidades):</span>
+                  <span style="border-bottom:1px dotted #cbd5e1; height:18px;"></span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1603,7 +1870,7 @@
 
         <!-- PÁGINA 2: SOLUCIONARIO COMPLETO PARA EL DOCENTE -->
         <div class="a4-sheet" id="sheetTeacher">
-          <div>
+          <div style="display:flex; flex-direction:column; flex:1;">
             <div class="sheet-header">
               <div class="sheet-title-row">
                 <div class="sheet-main-title">
@@ -1611,13 +1878,22 @@
                 </div>
                 <span class="sheet-badge teacher">Solucionario Docente</span>
               </div>
-              <div style="font-size: 0.9rem; font-weight: 700; color: #475569;">
-                Incluye el desarrollo completo del algoritmo tradicional español (llevadas, productos parciales y restos escalonados).
+              <div style="font-size: 0.86rem; font-weight: 700; color: #475569;">
+                Desarrollo completo del algoritmo tradicional español. Pulsa «🖥️ Resolver en Pizarra» en cualquier tarjeta para explicarla paso a paso en clase.
               </div>
             </div>
 
-            <div class="exercises-grid-8" id="gridTeacher8">
-              <!-- Se inyectan las mismas 8 operaciones completamente resueltas -->
+            <div class="exercises-grid-print count-8 with-problem" id="gridTeacherPrint">
+              <!-- Se inyectan las mismas operaciones completamente resueltas -->
+            </div>
+
+            <!-- Problema matemático contextualizado resuelto (Docente) -->
+            <div class="word-problem-box" id="problemBoxTeacher">
+              <div class="wp-header">
+                <span>✅ Solución del Reto Matemático (Vinculado a la Operación n.º 1)</span>
+              </div>
+              <div class="wp-statement" id="wpTextTeacher"></div>
+              <div class="wp-solution-text" id="wpAnswerTeacher"></div>
             </div>
           </div>
 
@@ -1712,6 +1988,80 @@
     }
 
     /* =========================================================================
+       BANCO DE PROBLEMAS CONTEXTUALIZADOS ESCOLARES (POR OPERACIÓN)
+       ========================================================================= */
+    const WORD_PROBLEM_TEMPLATES = {
+      add: [
+        (a, b, res) => ({
+          q: `En la biblioteca del colegio había ${a.toLocaleString('es-ES')} libros de aventuras y esta semana la asociación de familias ha donado ${b.toLocaleString('es-ES')} libros más. ¿Cuántos libros hay ahora en total en la biblioteca?`,
+          d: `Había ${a.toLocaleString('es-ES')} libros | Donan ${b.toLocaleString('es-ES')} libros`,
+          s: `Operación: ${a.toLocaleString('es-ES')} + ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Ahora hay ${res.toLocaleString('es-ES')} libros en total.`
+        }),
+        (a, b, res) => ({
+          q: `Para la campaña solidaria de reciclaje, los grupos de Primaria recogieron ${a.toLocaleString('es-ES')} tapones de plástico en el primer trimestre y ${b.toLocaleString('es-ES')} tapones en el segundo trimestre. ¿Cuántos tapones han reunido en total?`,
+          d: `1.er trimestre: ${a.toLocaleString('es-ES')} tapones | 2.º trimestre: ${b.toLocaleString('es-ES')} tapones`,
+          s: `Operación: ${a.toLocaleString('es-ES')} + ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Han reunido ${res.toLocaleString('es-ES')} tapones en total.`
+        }),
+        (a, b, res) => ({
+          q: `En una excursión por la montaña, una familia recorrió ${a.toLocaleString('es-ES')} metros por la mañana y ${b.toLocaleString('es-ES')} metros por la tarde. ¿Cuántos metros caminaron en total durante todo el día?`,
+          d: `Mañana: ${a.toLocaleString('es-ES')} m | Tarde: ${b.toLocaleString('es-ES')} m`,
+          s: `Operación: ${a.toLocaleString('es-ES')} + ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Caminaron ${res.toLocaleString('es-ES')} metros en total.`
+        })
+      ],
+      sub: [
+        (a, b, res) => ({
+          q: `Un vivero forestal tenía preparados ${a.toLocaleString('es-ES')} plantones de pino para repoblar el monte. Si los escolares ya han plantado ${b.toLocaleString('es-ES')} plantones, ¿cuántos árboles quedan todavía por plantar?`,
+          d: `Tenían ${a.toLocaleString('es-ES')} plantones | Han plantado ${b.toLocaleString('es-ES')}`,
+          s: `Operación: ${a.toLocaleString('es-ES')} − ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Quedan ${res.toLocaleString('es-ES')} árboles por plantar.`
+        }),
+        (a, b, res) => ({
+          q: `El pabellón deportivo municipal tiene capacidad para ${a.toLocaleString('es-ES')} espectadores. Si para el torneo escolar ya se han ocupado ${b.toLocaleString('es-ES')} asientos, ¿cuántos asientos libres quedan?`,
+          d: `Capacidad: ${a.toLocaleString('es-ES')} asientos | Ocupados: ${b.toLocaleString('es-ES')}`,
+          s: `Operación: ${a.toLocaleString('es-ES')} − ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Quedan ${res.toLocaleString('es-ES')} asientos libres.`
+        }),
+        (a, b, res) => ({
+          q: `En un álbum de naturaleza caben ${a.toLocaleString('es-ES')} cromos en total. Si ya hemos pegado ${b.toLocaleString('es-ES')} cromos, ¿cuántos cromos nos faltan para completarlo?`,
+          d: `Total álbum: ${a.toLocaleString('es-ES')} cromos | Pegados: ${b.toLocaleString('es-ES')}`,
+          s: `Operación: ${a.toLocaleString('es-ES')} − ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Nos faltan ${res.toLocaleString('es-ES')} cromos.`
+        })
+      ],
+      mul: [
+        (a, b, res) => ({
+          q: `Para abastecer las aulas del colegio han llegado ${b.toLocaleString('es-ES')} cajas de material escolar con ${a.toLocaleString('es-ES')} pinturas de colores en cada caja. ¿Cuántas pinturas de colores han llegado en total?`,
+          d: `${b.toLocaleString('es-ES')} cajas | ${a.toLocaleString('es-ES')} pinturas por caja`,
+          s: `Operación: ${a.toLocaleString('es-ES')} × ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Han llegado ${res.toLocaleString('es-ES')} pinturas en total.`
+        }),
+        (a, b, res) => ({
+          q: `En una huerta ecológica hay ${b.toLocaleString('es-ES')} filas de tomateras y en cada fila se han recogido ${a.toLocaleString('es-ES')} tomates maduros. ¿Cuántos tomates se han cosechado en total?`,
+          d: `${b.toLocaleString('es-ES')} filas | ${a.toLocaleString('es-ES')} tomates en cada fila`,
+          s: `Operación: ${a.toLocaleString('es-ES')} × ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Se han cosechado ${res.toLocaleString('es-ES')} tomates en total.`
+        }),
+        (a, b, res) => ({
+          q: `Un tren turístico realiza ${b.toLocaleString('es-ES')} viajes iguales a lo largo del mes llevando ${a.toLocaleString('es-ES')} pasajeros en cada viaje. ¿Cuántos pasajeros ha transportado en total?`,
+          d: `${a.toLocaleString('es-ES')} pasajeros por viaje | ${b.toLocaleString('es-ES')} viajes`,
+          s: `Operación: ${a.toLocaleString('es-ES')} × ${b.toLocaleString('es-ES')} = ${res.toLocaleString('es-ES')}. Solución: Ha transportado ${res.toLocaleString('es-ES')} pasajeros.`
+        })
+      ],
+      div: [
+        (a, b, q, r) => ({
+          q: `Una cooperativa agraria quiere repartir ${a.toLocaleString('es-ES')} piezas de fruta en partes iguales entre ${b.toLocaleString('es-ES')} cajas para los colegios. ¿Cuántas piezas pondrán en cada caja y cuántas sobrarán?`,
+          d: `Dividendo: ${a.toLocaleString('es-ES')} frutas | Divisor: ${b.toLocaleString('es-ES')} cajas`,
+          s: `Operación: ${a.toLocaleString('es-ES')} ÷ ${b.toLocaleString('es-ES')} → Cociente = ${q.toLocaleString('es-ES')}, Resto = ${r.toLocaleString('es-ES')}. Solución: Pondrán ${q.toLocaleString('es-ES')} piezas por caja y sobrarán ${r.toLocaleString('es-ES')}.`
+        }),
+        (a, b, q, r) => ({
+          q: `En el taller de plástica tenemos ${a.toLocaleString('es-ES')} cuentas de madera para hacer collares iguales de ${b.toLocaleString('es-ES')} cuentas cada uno. ¿Cuántos collares completos podremos fabricar y cuántas cuentas quedarán sueltas?`,
+          d: `Total: ${a.toLocaleString('es-ES')} cuentas | ${b.toLocaleString('es-ES')} cuentas por collar`,
+          s: `Operación: ${a.toLocaleString('es-ES')} ÷ ${b.toLocaleString('es-ES')} → Cociente = ${q.toLocaleString('es-ES')}, Resto = ${r.toLocaleString('es-ES')}. Solución: Fabricaremos ${q.toLocaleString('es-ES')} collares y sobrarán ${r.toLocaleString('es-ES')} cuentas.`
+        }),
+        (a, b, q, r) => ({
+          q: `Para organizar una gran carrera escolar de relevos participan ${a.toLocaleString('es-ES')} alumnos agrupados en equipos de ${b.toLocaleString('es-ES')} participantes. ¿Cuántos equipos completos se formarán y cuántos alumnos quedarán como jueces ayudantes?`,
+          d: `Participantes: ${a.toLocaleString('es-ES')} | Equipos de ${b.toLocaleString('es-ES')}`,
+          s: `Operación: ${a.toLocaleString('es-ES')} ÷ ${b.toLocaleString('es-ES')} → Cociente = ${q.toLocaleString('es-ES')}, Resto = ${r.toLocaleString('es-ES')}. Solución: Se formarán ${q.toLocaleString('es-ES')} equipos y ${r.toLocaleString('es-ES')} ayudantes.`
+        })
+      ]
+    };
+
+    /* =========================================================================
        APLICACIÓN PRINCIPAL: MOTOR INTERACTIVO Y GENERADOR DE HOJA PDF
        ========================================================================= */
     const POS_LABELS = ['U', 'D', 'C', 'UM', 'DM', 'CM', 'MM'];
@@ -1728,11 +2078,14 @@
     const app = {
       sound: new SoundEngine(),
       config: {
-        op: 'add',        // 'add' | 'sub' | 'mul' | 'div'
-        digits1: 3,       // 1..5
-        digits2: 3,       // 1..4 (1..3 en mul y div)
-        carryMode: 'yes', // 'yes' | 'random'
-        mode: 'guided'    // 'guided' | 'free'
+        op: 'add',             // 'add' | 'sub' | 'mul' | 'div'
+        digits1: 3,            // 1..5
+        digits2: 3,            // 1..4 (1..3 en mul y div)
+        carryMode: 'yes',      // 'yes' | 'random'
+        mode: 'guided',        // 'guided' | 'free'
+        worksheetCount: 8,     // 4 | 6 | 8 operaciones por página
+        includeProblem: true,  // Incluir problema contextualizado al pie
+        problemTemplateIdx: 0  // Índice de plantilla de problema
       },
       state: {
         num1: 0,
@@ -1743,7 +2096,8 @@
         focusedCellId: null,
         completed: false,
         previousScreenId: 'screenConfig',
-        worksheetPairs: []
+        worksheetPairs: [],        // Array de hasta 8 pares { n1, n2 }
+        activeWorksheetIndex: null // Si != null, indica qué ejercicio de la ficha estamos resolviendo en pizarra
       },
 
       init() {
@@ -1771,11 +2125,14 @@
       },
 
       /* -----------------------------------------------------------------------
-         MÉTODOS DE CONFIGURACIÓN DEL MENÚ PRINCIPAL
+         MÉTODOS DE CONFIGURACIÓN DEL MENÚ PRINCIPAL E INICIO (HOME)
          ----------------------------------------------------------------------- */
       selectOperation(op) {
         this.sound.play('tap');
         this.config.op = op;
+        this.state.worksheetPairs = []; // Reiniciar lote si cambia tipo de operación
+        this.state.activeWorksheetIndex = null;
+
         document.querySelectorAll('.op-card').forEach(c => {
           c.classList.toggle('selected', c.dataset.op === op);
         });
@@ -1793,6 +2150,7 @@
 
       setDigits(which, val) {
         this.sound.play('tap');
+        this.state.worksheetPairs = [];
         if (which === 1) {
           this.config.digits1 = val;
           if (this.config.op === 'div' && this.config.digits2 > val) {
@@ -1810,10 +2168,10 @@
       setCarryMode(mode) {
         this.sound.play('tap');
         this.config.carryMode = mode;
+        this.state.worksheetPairs = [];
         document.querySelectorAll('#pillsCarry .pill-btn').forEach(b => {
-          cToggle(b, b.dataset.carry === mode);
+          b.classList.toggle('active', b.dataset.carry === mode);
         });
-        function cToggle(el, cond) { el.classList.toggle('active', cond); }
       },
 
       selectMode(mode) {
@@ -1822,6 +2180,15 @@
         document.querySelectorAll('.mode-card').forEach(c => {
           c.classList.toggle('selected', c.dataset.mode === mode);
         });
+      },
+
+      toggleModeInWorkspace() {
+        this.sound.play('tap');
+        this.config.mode = (this.config.mode === 'guided') ? 'free' : 'guided';
+        document.querySelectorAll('.mode-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.mode === this.config.mode);
+        });
+        this.buildWorkspace();
       },
 
       updateConfigLabels() {
@@ -1856,7 +2223,6 @@
         this.sound.play('tap');
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('screenConfig').classList.add('active');
-        document.getElementById('btnBackMenu').style.display = 'none';
       },
 
       /* -----------------------------------------------------------------------
@@ -1932,23 +2298,79 @@
 
       startOperation() {
         this.sound.play('tap');
+        this.state.activeWorksheetIndex = null;
         this.generateNumbers();
         this.buildWorkspace();
 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('screenWorkspace').classList.add('active');
-        document.getElementById('btnBackMenu').style.display = 'inline-flex';
       },
 
       newRandomSameConfig() {
         document.getElementById('customNum1').value = '';
         document.getElementById('customNum2').value = '';
+        this.state.activeWorksheetIndex = null;
         this.startOperation();
       },
 
       resetCurrentBoard() {
         this.sound.play('tap');
         this.buildWorkspace();
+      },
+
+      /* -----------------------------------------------------------------------
+         CONEXIÓN ENTRE FICHA IMPRIMIBLE Y PIZARRA DIGITAL INTERACTIVA
+         ----------------------------------------------------------------------- */
+      loadWorksheetOpIntoBoard(index) {
+        if (!this.state.worksheetPairs || !this.state.worksheetPairs[index]) return;
+        this.sound.play('tap');
+        this.state.activeWorksheetIndex = index;
+        this.state.num1 = this.state.worksheetPairs[index].n1;
+        this.state.num2 = this.state.worksheetPairs[index].n2;
+
+        this.buildWorkspace();
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screenWorkspace').classList.add('active');
+      },
+
+      loadNextWorksheetOp() {
+        if (this.state.activeWorksheetIndex === null) return;
+        const limit = this.config.worksheetCount;
+        const nextIdx = (this.state.activeWorksheetIndex + 1) % limit;
+        this.loadWorksheetOpIntoBoard(nextIdx);
+      },
+
+      returnToWorksheetFromBoard() {
+        this.sound.play('tap');
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screenWorksheet').classList.add('active');
+      },
+
+      renderWorksheetSyncBar() {
+        const bar = document.getElementById('worksheetSyncBar');
+        const container = document.getElementById('syncPillsContainer');
+        const btnNext = document.getElementById('btnNextWorksheetOp');
+
+        if (this.state.activeWorksheetIndex === null || this.state.worksheetPairs.length === 0) {
+          bar.classList.remove('active');
+          btnNext.style.display = 'none';
+          return;
+        }
+
+        bar.classList.add('active');
+        btnNext.style.display = 'inline-flex';
+        container.innerHTML = '';
+
+        const count = this.config.worksheetCount;
+        for (let i = 0; i < count; i++) {
+          const b = document.createElement('button');
+          b.className = 'sync-pill-btn' + (i === this.state.activeWorksheetIndex ? ' active' : '');
+          b.textContent = i + 1;
+          b.title = `Cargar operación n.º ${i + 1} de la ficha`;
+          b.onclick = () => this.loadWorksheetOpIntoBoard(i);
+          container.appendChild(b);
+        }
       },
 
       /* -----------------------------------------------------------------------
@@ -1962,6 +2384,7 @@
         this.state.completed = false;
 
         document.getElementById('victoryBanner').classList.remove('show');
+        this.renderWorksheetSyncBar();
 
         const badge = document.getElementById('badgeCurrentMode');
         const btnCheck = document.getElementById('btnMainCheck');
@@ -3041,7 +3464,7 @@
 
         this.setBubbleMessage(
           '🏆 ¡Operación completada con éxito!',
-          '¡Enhorabuena! Has dominado todos los pasos del algoritmo tradicional español. Puedes generar otra operación o cambiar la dificultad.',
+          '¡Enhorabuena! Has dominado todos los pasos del algoritmo tradicional español. Puedes pasar a la siguiente operación de la ficha o generar nuevos números.',
           'success'
         );
 
@@ -3068,7 +3491,7 @@
       },
 
       /* =======================================================================
-         MÓDULO DE GENERACIÓN DE FICHA DE 8 OPERACIONES + SOLUCIONARIO PDF
+         MÓDULO DE GENERACIÓN DE FICHA IMPRIMIBLE (4, 6 u 8 OPS + PROBLEMA + PIZARRA)
          ======================================================================= */
       openWorksheetScreen() {
         this.sound.play('tap');
@@ -3079,9 +3502,12 @@
 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('screenWorksheet').classList.add('active');
-        document.getElementById('btnBackMenu').style.display = 'inline-flex';
 
-        this.generateWorksheetBatch();
+        if (this.state.worksheetPairs.length === 0) {
+          this.generateWorksheetBatch(false);
+        } else {
+          this.renderWorksheetDOM();
+        }
       },
 
       closeWorksheetScreen() {
@@ -3089,7 +3515,6 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         const prev = this.state.previousScreenId || 'screenConfig';
         document.getElementById(prev).classList.add('active');
-        document.getElementById('btnBackMenu').style.display = (prev === 'screenConfig') ? 'none' : 'inline-flex';
       },
 
       setWorksheetView(viewMode) {
@@ -3105,8 +3530,63 @@
         tSheet.classList.toggle('hidden-sheet', viewMode === 'student');
       },
 
-      generateWorksheetBatch() {
+      setWorksheetCount(count) {
         this.sound.play('tap');
+        this.config.worksheetCount = count;
+        document.querySelectorAll('[data-pcount]').forEach(b => {
+          b.classList.toggle('active', parseInt(b.dataset.pcount, 10) === count);
+        });
+        this.renderWorksheetDOM();
+      },
+
+      toggleWorksheetProblem() {
+        this.sound.play('tap');
+        this.config.includeProblem = !this.config.includeProblem;
+        const btn = document.getElementById('btnToggleProblem');
+        const btnStory = document.getElementById('btnNewProblemStory');
+
+        btn.classList.toggle('active', this.config.includeProblem);
+        btn.textContent = this.config.includeProblem
+          ? '✅ Incluir Problema Matemático'
+          : '⬜ Sin Problema Matemático';
+        btnStory.style.display = this.config.includeProblem ? 'inline-flex' : 'none';
+
+        this.renderWorksheetDOM();
+      },
+
+      cycleProblemTemplate() {
+        this.sound.play('tap');
+        const templates = WORD_PROBLEM_TEMPLATES[this.config.op] || [];
+        if (templates.length > 0) {
+          this.config.problemTemplateIdx = (this.config.problemTemplateIdx + 1) % templates.length;
+        }
+        this.renderWordProblemBox();
+      },
+
+      generateWorksheetBatch(playSound = false) {
+        if (playSound) this.sound.play('tap');
+
+        // Generar siempre un lote base de 8 operaciones únicas
+        const pairs = [];
+        const usedKeys = new Set();
+
+        for (let i = 0; i < 8; i++) {
+          let pair = this.generateRandomPairForConfig();
+          let attempts = 0;
+          while (usedKeys.has(`${pair.n1}_${pair.n2}`) && attempts < 25) {
+            pair = this.generateRandomPairForConfig();
+            attempts++;
+          }
+          usedKeys.add(`${pair.n1}_${pair.n2}`);
+          pairs.push(pair);
+        }
+
+        this.state.worksheetPairs = pairs;
+        this.renderWorksheetDOM();
+      },
+
+      renderWorksheetDOM() {
+        const count = this.config.worksheetCount;
         const opTitles = {
           add: `Sumas (${this.config.digits1} y ${this.config.digits2} cifras)`,
           sub: `Restas (${this.config.digits1} y ${this.config.digits2} cifras)`,
@@ -3116,43 +3596,79 @@
 
         document.getElementById('wsTitleStudent').textContent = opTitles[this.config.op];
         document.getElementById('wsTitleTeacher').textContent = opTitles[this.config.op];
+        document.getElementById('metaScoreStudent').innerHTML = `Aciertos: &nbsp;&nbsp;&nbsp;&nbsp; / ${count}`;
 
-        // Generar 8 operaciones sin duplicados exactos
-        const pairs = [];
-        const usedKeys = new Set();
+        const gridStudent = document.getElementById('gridStudentPrint');
+        const gridTeacher = document.getElementById('gridTeacherPrint');
 
-        for (let i = 0; i < 8; i++) {
-          let pair = this.generateRandomPairForConfig();
-          let attempts = 0;
-          while (usedKeys.has(`${pair.n1}_${pair.n2}`) && attempts < 20) {
-            pair = this.generateRandomPairForConfig();
-            attempts++;
-          }
-          usedKeys.add(`${pair.n1}_${pair.n2}`);
-          pairs.push(pair);
-        }
+        const problemClass = this.config.includeProblem ? ' with-problem' : '';
+        gridStudent.className = `exercises-grid-print count-${count}${problemClass}`;
+        gridTeacher.className = `exercises-grid-print count-${count}${problemClass}`;
 
-        this.state.worksheetPairs = pairs;
-
-        const gridStudent = document.getElementById('gridStudent8');
-        const gridTeacher = document.getElementById('gridTeacher8');
         gridStudent.innerHTML = '';
         gridTeacher.innerHTML = '';
 
-        pairs.forEach((pair, idx) => {
-          gridStudent.appendChild(this.renderPrintExerciseCard(idx + 1, pair.n1, pair.n2, false));
-          gridTeacher.appendChild(this.renderPrintExerciseCard(idx + 1, pair.n1, pair.n2, true));
+        const visiblePairs = this.state.worksheetPairs.slice(0, count);
+        visiblePairs.forEach((pair, idx) => {
+          gridStudent.appendChild(this.renderPrintExerciseCard(idx, pair.n1, pair.n2, false));
+          gridTeacher.appendChild(this.renderPrintExerciseCard(idx, pair.n1, pair.n2, true));
         });
+
+        this.renderWordProblemBox();
       },
 
-      renderPrintExerciseCard(indexNumber, n1, n2, solved) {
+      renderWordProblemBox() {
+        const boxStudent = document.getElementById('problemBoxStudent');
+        const boxTeacher = document.getElementById('problemBoxTeacher');
+
+        if (!this.config.includeProblem || this.state.worksheetPairs.length === 0) {
+          boxStudent.classList.add('hidden-problem');
+          boxTeacher.classList.add('hidden-problem');
+          return;
+        }
+
+        boxStudent.classList.remove('hidden-problem');
+        boxTeacher.classList.remove('hidden-problem');
+
+        // Usamos siempre la Operación n.º 1 (índice 0) de la ficha para el problema contextualizado
+        const { n1, n2 } = this.state.worksheetPairs[0];
+        const templates = WORD_PROBLEM_TEMPLATES[this.config.op];
+        const tplFn = templates[this.config.problemTemplateIdx % templates.length];
+
+        let dataObj;
+        if (this.config.op === 'add') {
+          dataObj = tplFn(n1, n2, n1 + n2);
+        } else if (this.config.op === 'sub') {
+          dataObj = tplFn(n1, n2, n1 - n2);
+        } else if (this.config.op === 'mul') {
+          dataObj = tplFn(n1, n2, n1 * n2);
+        } else {
+          const q = Math.floor(n1 / n2);
+          const r = n1 % n2;
+          dataObj = tplFn(n1, n2, q, r);
+        }
+
+        document.getElementById('wpTextStudent').textContent = dataObj.q;
+        document.getElementById('wpTextTeacher').textContent = `${dataObj.q} (${dataObj.d})`;
+        document.getElementById('wpAnswerTeacher').textContent = `✔ ${dataObj.s}`;
+      },
+
+      renderPrintExerciseCard(zeroBasedIdx, n1, n2, solved) {
         const card = document.createElement('div');
         card.className = 'exercise-card-print';
 
         const tag = document.createElement('div');
         tag.className = 'exercise-num-tag';
-        tag.textContent = indexNumber;
+        tag.textContent = zeroBasedIdx + 1;
         card.appendChild(tag);
+
+        // Botón para cargar esta operación directamente en el lienzo interactivo de la pizarra digital
+        const btnBoard = document.createElement('button');
+        btnBoard.className = 'btn-load-board';
+        btnBoard.innerHTML = '🖥️ Resolver en Pizarra';
+        btnBoard.title = 'Abrir esta operación en la pizarra digital para resolverla paso a paso';
+        btnBoard.onclick = () => this.loadWorksheetOpIntoBoard(zeroBasedIdx);
+        card.appendChild(btnBoard);
 
         if (this.config.op === 'add') {
           card.appendChild(this.buildPrintAddSubDOM(n1, n2, 'add', solved));
@@ -3203,7 +3719,6 @@
         grid.className = 'p-math-grid';
         grid.style.gridTemplateColumns = `repeat(${totalCols}, auto)`;
 
-        // Cabeceras Posicionales
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
           const pKey = POS_LABELS[c] || 'MM';
@@ -3213,7 +3728,6 @@
           grid.appendChild(h);
         }
 
-        // Fila de Llevadas
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
           if (c === 0) {
@@ -3226,27 +3740,23 @@
           }
         }
 
-        // Operando 1
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
           const ch = s1[maxCols - 1 - c];
           grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
         }
 
-        // Signo y Operando 2
         grid.appendChild(this.pStatic(opType === 'add' ? '+' : '−', true));
         for (let c = maxCols - 1; c >= 0; c--) {
           const ch = s2[maxCols - 1 - c];
           grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
         }
 
-        // Línea
         const line = document.createElement('div');
         line.className = 'p-line';
         line.style.gridColumn = `1 / span ${totalCols}`;
         grid.appendChild(line);
 
-        // Resultado
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
           const box = document.createElement('div');
@@ -3278,7 +3788,6 @@
         grid.className = 'p-math-grid';
         grid.style.gridTemplateColumns = `repeat(${totalCols}, auto)`;
 
-        // Cabeceras
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
           const pKey = POS_LABELS[c] || 'MM';
@@ -3288,14 +3797,12 @@
           grid.appendChild(h);
         }
 
-        // Una fila de círculos de llevadas sobre el multiplicando
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
           if (c >= 1 && c <= len1) {
             const cEl = document.createElement('div');
             cEl.className = 'p-carry';
             if (solved && len2 === 1) {
-              // Mostrar llevadas directas cuando es de 1 cifra
               const mDigit = parseInt(s2[0], 10);
               let carryVal = 0;
               for (let i = 0; i < c; i++) {
@@ -3310,7 +3817,6 @@
           }
         }
 
-        // Multiplicando
         const s1Pad = s1.padStart(maxCols, ' ');
         grid.appendChild(this.pEmpty());
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -3318,7 +3824,6 @@
           grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
         }
 
-        // Multiplicador
         const s2Pad = s2.padStart(maxCols, ' ');
         grid.appendChild(this.pStatic('×', true));
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -3331,7 +3836,6 @@
         line1.style.gridColumn = `1 / span ${totalCols}`;
         grid.appendChild(line1);
 
-        // Productos parciales escalonados
         for (let r = 0; r < len2; r++) {
           const mDigit = parseInt(s2[len2 - 1 - r], 10);
           const partStr = String(n1 * mDigit);
@@ -3356,7 +3860,6 @@
           }
         }
 
-        // Suma final si hay más de 1 cifra en el multiplicador
         if (len2 > 1) {
           const line2 = document.createElement('div');
           line2.className = 'p-line';
@@ -3393,7 +3896,6 @@
         leftGrid.className = 'p-math-grid';
         leftGrid.style.gridTemplateColumns = `repeat(${divLen}, auto)`;
 
-        // Cabeceras Posicionales
         for (let i = 0; i < divLen; i++) {
           const pKey = POS_LABELS[divLen - 1 - i] || 'MM';
           const h = document.createElement('div');
@@ -3402,14 +3904,12 @@
           leftGrid.appendChild(h);
         }
 
-        // Cifras del Dividendo con arco superior
         for (let i = 0; i < divLen; i++) {
           const c = this.pStatic(divStr[i]);
           if (i <= firstEndCol) c.classList.add('p-arc-top');
           leftGrid.appendChild(c);
         }
 
-        // Filas escalonadas de restos parciales y cifras bajadas
         for (let s = 0; s < divStepsData.length; s++) {
           const st = divStepsData[s];
           const remStr = String(st.rem);
@@ -3436,12 +3936,11 @@
 
         left.appendChild(leftGrid);
 
-        // Bloque Derecho: Caja Española del Divisor y Casillas del Cociente
         const right = document.createElement('div');
         right.className = 'p-div-right';
 
         const spacer = document.createElement('div');
-        spacer.style.height = '23px';
+        spacer.style.height = '22px';
         right.appendChild(spacer);
 
         const divBox = document.createElement('div');
@@ -3469,8 +3968,8 @@
 
       pEmpty() {
         const d = document.createElement('div');
-        d.style.width = '28px';
-        d.style.height = '28px';
+        d.style.width = 'var(--p-size)';
+        d.style.height = 'var(--p-size)';
         return d;
       },
 
