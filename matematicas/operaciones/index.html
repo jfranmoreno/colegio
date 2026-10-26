@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Laboratorio de Cálculo - Algoritmo Tradicional Español</title>
+  <title>Laboratorio de Cálculo - Algoritmo Tradicional Español + Generador PDF</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
@@ -69,6 +69,8 @@
       justify-content: space-between;
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
       z-index: 20;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .brand {
@@ -97,6 +99,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .btn-top {
@@ -108,7 +111,7 @@
       color: var(--text-main);
       font-family: var(--font-main);
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 0.98rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -123,6 +126,16 @@
 
     .btn-top:active {
       transform: scale(0.96);
+    }
+
+    .btn-top.btn-pdf-top {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+
+    .btn-top.btn-pdf-top:hover {
+      background: #fde68a;
     }
 
     /* CONTENEDOR DE PANTALLAS */
@@ -161,16 +174,16 @@
       border-radius: 24px;
       padding: 24px 28px;
       box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
-      max-width: 1020px;
+      max-width: 1040px;
       width: 100%;
       margin: auto;
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 20px;
     }
 
     .section-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -199,7 +212,7 @@
       cursor: pointer;
       background: #f8fafc;
       transition: all 0.2s ease;
-      min-height: 120px;
+      min-height: 118px;
       justify-content: center;
     }
 
@@ -212,8 +225,8 @@
     }
 
     .op-symbol {
-      width: 56px;
-      height: 56px;
+      width: 54px;
+      height: 54px;
       border-radius: 16px;
       display: flex;
       align-items: center;
@@ -288,7 +301,7 @@
       border: 2px solid #cbd5e1;
       background: white;
       font-family: var(--font-main);
-      font-size: 1.1rem;
+      font-size: 1.08rem;
       font-weight: 800;
       color: var(--text-main);
       cursor: pointer;
@@ -391,7 +404,13 @@
       font-weight: 600;
     }
 
-    /* Botón Principal Empezar */
+    /* Fila de Botones de Acción (Empezar + Generar Ficha PDF) */
+    .start-actions-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 14px;
+    }
+
     .btn-start {
       min-height: 64px;
       border-radius: 18px;
@@ -399,7 +418,7 @@
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
       color: white;
       font-family: var(--font-main);
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
@@ -419,8 +438,36 @@
       transform: scale(0.98);
     }
 
+    .btn-worksheet-main {
+      min-height: 64px;
+      border-radius: 18px;
+      border: 3px solid #f59e0b;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      color: #92400e;
+      font-family: var(--font-main);
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 16px;
+      transition: all 0.2s;
+    }
+
+    .btn-worksheet-main:hover {
+      transform: translateY(-2px);
+      background: #fde68a;
+    }
+
+    .btn-worksheet-main:active {
+      transform: scale(0.98);
+    }
+
     /* ==========================================
-       2. PANTALLA DE RESOLUCIÓN (LIENZO + ASISTENTE + TECLADO)
+       2. PANTALLA DE RESOLUCIÓN INTERACTIVA
        ========================================== */
     .workspace-layout {
       display: grid;
@@ -430,7 +477,6 @@
       align-items: start;
     }
 
-    /* Libreta Cuadriculada Pedagógica */
     .notebook-panel {
       background: #ffffff;
       background-image:
@@ -490,7 +536,6 @@
       border: 1px solid #cbd5e1;
     }
 
-    /* Contenedor de la cuadrícula matemática */
     .board-wrapper {
       margin: auto;
       padding: 18px 24px;
@@ -511,7 +556,7 @@
       position: relative;
     }
 
-    /* Cabeceras de Valor Posicional (U, D, C, UM, DM...) */
+    /* Cabeceras de Valor Posicional */
     .pos-header {
       width: var(--cell-size);
       height: 36px;
@@ -541,7 +586,7 @@
     .pos-CM { background: var(--col-cm); }
     .pos-MM { background: var(--col-mm); }
 
-    /* Celdas fijas (dígitos de los operandos y signos) */
+    /* Celdas estáticas */
     .static-cell {
       width: var(--cell-size);
       height: var(--cell-size);
@@ -565,7 +610,6 @@
       box-shadow: inset 0 0 0 2px #f59e0b;
     }
 
-    /* Arco superior de división para marcar las primeras cifras tomadas */
     .div-arc-top::before {
       content: '';
       position: absolute;
@@ -577,7 +621,6 @@
       border-radius: 12px 12px 0 0;
     }
 
-    /* Coma superior para indicar cifra que se baja en la división */
     .div-drop-tick::after {
       content: '´';
       position: absolute;
@@ -588,7 +631,7 @@
       font-weight: 900;
     }
 
-    /* Casillas Interactivas de Resultado */
+    /* Casillas Interactivas */
     .input-cell {
       width: var(--cell-size);
       height: var(--cell-size);
@@ -606,7 +649,6 @@
       position: relative;
     }
 
-    /* Círculos de Llevadas (Cifras Auxiliares) */
     .carry-cell {
       width: var(--carry-size);
       height: var(--carry-size);
@@ -623,14 +665,12 @@
       transition: all 0.15s ease;
     }
 
-    /* Colores de borde sutiles según columna para las llevadas */
     .carry-cell[data-pos="D"]  { border-color: var(--col-d); color: var(--col-d); }
     .carry-cell[data-pos="C"]  { border-color: var(--col-c); color: var(--col-c); }
     .carry-cell[data-pos="UM"] { border-color: var(--col-um); color: var(--col-um); }
     .carry-cell[data-pos="DM"] { border-color: var(--col-dm); color: var(--col-dm); }
     .carry-cell[data-pos="CM"] { border-color: var(--col-cm); color: var(--col-cm); }
 
-    /* Estados de las celdas interactivas */
     .input-cell.locked,
     .carry-cell.locked {
       background: #f1f5f9;
@@ -681,7 +721,6 @@
       75% { transform: translateX(5px); }
     }
 
-    /* Línea horizontal de operación (Suma, Resta, Multiplicación) */
     .op-divider-line {
       height: 5px;
       background: #1e293b;
@@ -725,16 +764,13 @@
       justify-content: flex-start;
     }
 
-    /* ==========================================
-       3. COLUMNA DERECHA: BOCADILLO PEDAGÓGICO + TECLADO
-       ========================================== */
+    /* COLUMNA DERECHA: BOCADILLO + TECLADO */
     .assistant-keypad-col {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    /* Bocadillo / Pop-up Pedagógico (No intrusivo) */
     .pedagogical-bubble {
       background: #ffffff;
       border: 3px solid #3b82f6;
@@ -798,7 +834,6 @@
       color: #92400e;
     }
 
-    /* Teclado Numérico Táctil Integrado */
     .keypad-card {
       background: var(--bg-card);
       border-radius: 22px;
@@ -881,7 +916,6 @@
       gap: 8px;
     }
 
-    /* Barra inferior del cuaderno (Nueva operación / Reiniciar) */
     .notebook-footer {
       display: flex;
       justify-content: space-between;
@@ -891,7 +925,6 @@
       flex-wrap: wrap;
     }
 
-    /* Banner de Celebración al Completar */
     .victory-banner {
       display: none;
       margin-top: 14px;
@@ -915,7 +948,364 @@
       color: #14532d;
     }
 
-    /* Responsive para Tablets y Pantallas Compactas */
+    /* ==============================================================
+       3. GENERADOR DE FICHA IMPRIMIBLE (8 OPERACIONES + SOLUCIONARIO)
+       ============================================================== */
+    .worksheet-toolbar {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 16px 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      border: 2px solid #e2e8f0;
+    }
+
+    .ws-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-print-cta {
+      min-height: 52px;
+      padding: 0 22px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      font-family: var(--font-main);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+      transition: all 0.15s;
+    }
+
+    .btn-print-cta:hover {
+      transform: translateY(-2px);
+    }
+
+    .worksheet-pages-container {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      align-items: center;
+      padding-bottom: 40px;
+    }
+
+    /* Hoja A4 de Vista Previa e Impresión */
+    .a4-sheet {
+      background: #ffffff;
+      width: 210mm;
+      min-height: 285mm;
+      padding: 12mm 14mm;
+      border-radius: 12px;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+      border: 1px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #0f172a;
+    }
+
+    .a4-sheet.hidden-sheet {
+      display: none !important;
+    }
+
+    .sheet-header {
+      border-bottom: 3px solid #1e293b;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .sheet-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .sheet-main-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sheet-badge {
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .sheet-badge.student {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1.5px solid #93c5fd;
+    }
+
+    .sheet-badge.teacher {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1.5px solid #86efac;
+    }
+
+    .student-meta-grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1.1fr 0.9fr 0.9fr;
+      gap: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .meta-field {
+      border-bottom: 1.5px dashed #94a3b8;
+      padding-bottom: 3px;
+    }
+
+    /* Cuadrícula de las 8 operaciones (2 columnas x 4 filas) */
+    .exercises-grid-8 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(4, auto);
+      gap: 14px 18px;
+      flex: 1;
+      align-content: space-between;
+    }
+
+    .exercise-card-print {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background-image:
+        linear-gradient(to right, #f1f5f9 1px, transparent 1px),
+        linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
+      background-size: 18px 18px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 210px;
+    }
+
+    .exercise-num-tag {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Celdas compactas para la hoja A4 */
+    .p-math-grid {
+      display: grid;
+      gap: 3px 4px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .p-pos {
+      width: 28px;
+      height: 20px;
+      border-radius: 5px;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .p-cell {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0f172a;
+      position: relative;
+    }
+
+    .p-cell.p-sign {
+      color: #1d4ed8;
+      font-size: 1.2rem;
+    }
+
+    .p-box {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid #94a3b8;
+      border-radius: 6px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #15803d;
+    }
+
+    .p-carry {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px dashed #94a3b8;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #dc2626;
+    }
+
+    .p-line {
+      height: 3px;
+      background: #0f172a;
+      width: 100%;
+      margin: 2px 0;
+      border-radius: 2px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Caja española en versión impresa A4 */
+    .p-div-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .p-div-left {
+      padding-right: 6px;
+    }
+
+    .p-div-right {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .p-divisor-box {
+      border-left: 3px solid #0f172a;
+      border-bottom: 3px solid #0f172a;
+      padding: 2px 8px 4px 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .p-quotient-box {
+      padding: 6px 8px 2px 8px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .p-arc-top::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 2px;
+      right: 2px;
+      height: 6px;
+      border-top: 2.5px solid #dc2626;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .sheet-footer {
+      margin-top: 10px;
+      padding-top: 6px;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 700;
+    }
+
+    /* REGLAS DE IMPRESIÓN NATIVA A PDF (@media print) */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 8mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        background-image: none !important;
+      }
+
+      header,
+      #screenConfig,
+      #screenWorkspace,
+      .worksheet-toolbar {
+        display: none !important;
+      }
+
+      main {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+      }
+
+      #screenWorksheet {
+        display: block !important;
+      }
+
+      .worksheet-pages-container {
+        gap: 0 !important;
+        padding: 0 !important;
+      }
+
+      .a4-sheet {
+        width: 100% !important;
+        min-height: 276mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 4mm 6mm !important;
+        margin: 0 !important;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .a4-sheet:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      .pos-U, .pos-D, .pos-C, .pos-UM, .pos-DM, .pos-CM, .pos-MM,
+      .exercise-num-tag, .sheet-badge, .exercise-card-print {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    /* Responsive general */
     @media (max-width: 1024px) {
       .workspace-layout {
         grid-template-columns: 1fr;
@@ -923,18 +1313,25 @@
       .op-grid {
         grid-template-columns: repeat(2, 1fr);
       }
-      .settings-row, .mode-grid {
+      .settings-row, .mode-grid, .start-actions-row {
         grid-template-columns: 1fr;
+      }
+      .a4-sheet {
+        width: 100%;
+        min-height: auto;
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
       :root {
         --cell-size: 46px;
         --carry-size: 30px;
       }
       .static-cell, .input-cell {
         font-size: 1.55rem;
+      }
+      .exercises-grid-8 {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -948,6 +1345,9 @@
       <span>Algoritmo Tradicional Español</span>
     </div>
     <div class="header-actions">
+      <button class="btn-top btn-pdf-top" onclick="app.openWorksheetScreen()">
+        🖨️ Ficha 8 Operaciones + Solucionario PDF
+      </button>
       <button class="btn-top" id="btnBackMenu" style="display: none;" onclick="app.showConfigScreen()">
         ⚙️ Configurar Operación
       </button>
@@ -1027,7 +1427,6 @@
               </div>
             </div>
 
-            <!-- Opción de números personalizados para el docente -->
             <div class="manual-box">
               <span class="digit-label" style="font-size: 0.92rem;">✏️ Números del maestro (opcional):</span>
               <input type="number" id="customNum1" class="manual-input" placeholder="1.er núm" min="1" max="99999">
@@ -1038,7 +1437,7 @@
 
         <!-- 4. Selector de Modo de Práctica -->
         <div>
-          <div class="section-title">4. Modo de Práctica</div>
+          <div class="section-title">4. Modo de Práctica en Pizarra / Tablet</div>
           <div class="mode-grid">
             <div class="mode-card selected" data-mode="guided" onclick="app.selectMode('guided')">
               <div class="mode-icon">🦉</div>
@@ -1057,16 +1456,21 @@
           </div>
         </div>
 
-        <!-- Botón de Inicio -->
-        <button class="btn-start" onclick="app.startOperation()">
-          <span>¡Empezar a calcular!</span> ✨
-        </button>
+        <!-- Botones de Inicio Interactivo o Generación de Ficha PDF -->
+        <div class="start-actions-row">
+          <button class="btn-start" onclick="app.startOperation()">
+            <span>¡Empezar en Pizarra Digital!</span> ✨
+          </button>
+          <button class="btn-worksheet-main" onclick="app.openWorksheetScreen()">
+            🖨️ Generar Ficha PDF (8 operaciones + Solucionario)
+          </button>
+        </div>
 
       </div>
     </section>
 
     <!-- ==========================================
-         PANTALLA 2: LIENZO DE RESOLUCIÓN
+         PANTALLA 2: LIENZO DE RESOLUCIÓN INTERACTIVO
          ========================================== -->
     <section id="screenWorkspace" class="screen">
       <div class="workspace-layout">
@@ -1080,12 +1484,9 @@
             </div>
 
             <div style="display:flex; justify-content:center; width:100%; overflow-x:auto; padding: 8px 0;">
-              <div class="board-wrapper" id="boardWrapper">
-                <!-- Aquí se inyecta dinámicamente la cuadrícula de Suma, Resta, Multiplicación o División Española -->
-              </div>
+              <div class="board-wrapper" id="boardWrapper"></div>
             </div>
 
-            <!-- Banner de Operación Completada -->
             <div id="victoryBanner" class="victory-banner">
               <div class="victory-text">🎉 ¡Excelente trabajo! Has resuelto la operación correctamente.</div>
               <button class="btn-top" style="background:#16a34a; color:white; border-color:#15803d;" onclick="app.newRandomSameConfig()">
@@ -1102,7 +1503,6 @@
 
         <!-- DERECHA: Bocadillo Pedagógico + Teclado Táctil -->
         <div class="assistant-keypad-col">
-          <!-- Pop-up / Bocadillo Pedagógico (Siempre visible y nunca tapa las casillas) -->
           <div class="pedagogical-bubble" id="pedagogicalBubble">
             <div class="bubble-header">
               <div class="owl-avatar" id="owlAvatar">🦉</div>
@@ -1113,7 +1513,6 @@
             </div>
           </div>
 
-          <!-- Teclado Numérico Táctil Integrado -->
           <div class="keypad-card">
             <div class="numpad-grid">
               <button class="key-btn" onclick="app.pressDigit('7')">7</button>
@@ -1143,6 +1542,90 @@
           </div>
         </div>
 
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         PANTALLA 3: VISTA PREVIA E IMPRESIÓN PDF (8 OPERACIONES)
+         ========================================================== -->
+    <section id="screenWorksheet" class="screen">
+      <div class="worksheet-toolbar">
+        <div class="ws-toolbar-group">
+          <button class="btn-top" onclick="app.closeWorksheetScreen()">
+            ⬅️ Volver
+          </button>
+          <button class="btn-top" onclick="app.generateWorksheetBatch()">
+            🎲 Generar otras 8 operaciones
+          </button>
+        </div>
+
+        <div class="ws-toolbar-group">
+          <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-muted);">Qué incluir en el PDF:</span>
+          <button class="pill-btn active" data-pview="both" onclick="app.setWorksheetView('both')">Ficha + Solucionario (2 págs.)</button>
+          <button class="pill-btn" data-pview="student" onclick="app.setWorksheetView('student')">Solo Ficha Alumno</button>
+          <button class="pill-btn" data-pview="teacher" onclick="app.setWorksheetView('teacher')">Solo Solucionario</button>
+        </div>
+
+        <button class="btn-print-cta" onclick="window.print()">
+          🖨️ Imprimir / Guardar en PDF
+        </button>
+      </div>
+
+      <div class="worksheet-pages-container">
+        <!-- PÁGINA 1: HOJA DE CÁLCULO PARA EL ALUMNO -->
+        <div class="a4-sheet" id="sheetStudent">
+          <div>
+            <div class="sheet-header">
+              <div class="sheet-title-row">
+                <div class="sheet-main-title">
+                  🧮 Hoja de Cálculo Escolar — <span id="wsTitleStudent">Suma Tradicional</span>
+                </div>
+                <span class="sheet-badge student">Ficha para el Alumno/a</span>
+              </div>
+              <div class="student-meta-grid">
+                <div class="meta-field">Nombre y apellidos:</div>
+                <div class="meta-field">Fecha: &nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/ 202_</div>
+                <div class="meta-field">Curso:</div>
+                <div class="meta-field">Aciertos: &nbsp;&nbsp;&nbsp;&nbsp; / 8</div>
+              </div>
+            </div>
+
+            <div class="exercises-grid-8" id="gridStudent8">
+              <!-- Se inyectan 8 operaciones vacías con pauta y llevadas -->
+            </div>
+          </div>
+
+          <div class="sheet-footer">
+            <span>Algoritmo Tradicional Español • Cuadrícula Posicional con Llevadas</span>
+            <span>Página 1 de 2 (Actividades)</span>
+          </div>
+        </div>
+
+        <!-- PÁGINA 2: SOLUCIONARIO COMPLETO PARA EL DOCENTE -->
+        <div class="a4-sheet" id="sheetTeacher">
+          <div>
+            <div class="sheet-header">
+              <div class="sheet-title-row">
+                <div class="sheet-main-title">
+                  ✅ Solucionario Paso a Paso — <span id="wsTitleTeacher">Suma Tradicional</span>
+                </div>
+                <span class="sheet-badge teacher">Solucionario Docente</span>
+              </div>
+              <div style="font-size: 0.9rem; font-weight: 700; color: #475569;">
+                Incluye el desarrollo completo del algoritmo tradicional español (llevadas, productos parciales y restos escalonados).
+              </div>
+            </div>
+
+            <div class="exercises-grid-8" id="gridTeacher8">
+              <!-- Se inyectan las mismas 8 operaciones completamente resueltas -->
+            </div>
+          </div>
+
+          <div class="sheet-footer">
+            <span>Algoritmo Tradicional Español • Solucionario de Corrección</span>
+            <span>Página 2 de 2 (Solucionario)</span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -1229,7 +1712,7 @@
     }
 
     /* =========================================================================
-       APLICACIÓN PRINCIPAL: MOTOR DE ALGORITMOS TRADICIONALES ESPAÑOLES
+       APLICACIÓN PRINCIPAL: MOTOR INTERACTIVO Y GENERADOR DE HOJA PDF
        ========================================================================= */
     const POS_LABELS = ['U', 'D', 'C', 'UM', 'DM', 'CM', 'MM'];
     const POS_NAMES = {
@@ -1254,11 +1737,13 @@
       state: {
         num1: 0,
         num2: 0,
-        steps: [],           // Lista de micropasos para Modo Guiado
+        steps: [],
         currentStepIdx: 0,
-        cellsMap: {},        // Mapa id -> { id, expected, optionalZero, userVal, el, hintTitle, hintText }
+        cellsMap: {},
         focusedCellId: null,
-        completed: false
+        completed: false,
+        previousScreenId: 'screenConfig',
+        worksheetPairs: []
       },
 
       init() {
@@ -1295,12 +1780,10 @@
           c.classList.toggle('selected', c.dataset.op === op);
         });
 
-        // Limitar el 2.º operando en multiplicación y división a máximo 3 cifras para pizarra digital
         const maxD2 = (op === 'mul' || op === 'div') ? 3 : 4;
         if (this.config.digits2 > maxD2) {
           this.config.digits2 = maxD2;
         }
-        // En división el dividendo debe tener al menos tantas cifras como el divisor
         if (op === 'div' && this.config.digits1 < this.config.digits2) {
           this.config.digits1 = this.config.digits2;
         }
@@ -1328,8 +1811,9 @@
         this.sound.play('tap');
         this.config.carryMode = mode;
         document.querySelectorAll('#pillsCarry .pill-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.carry === mode);
+          cToggle(b, b.dataset.carry === mode);
         });
+        function cToggle(el, cond) { el.classList.toggle('active', cond); }
       },
 
       selectMode(mode) {
@@ -1370,18 +1854,60 @@
 
       showConfigScreen() {
         this.sound.play('tap');
-        document.getElementById('screenWorkspace').classList.remove('active');
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('screenConfig').classList.add('active');
         document.getElementById('btnBackMenu').style.display = 'none';
       },
 
       /* -----------------------------------------------------------------------
-         GENERADOR DE NÚMEROS ESCOLARES ADECUADOS
+         GENERADOR DE PARES DE NÚMEROS ESCOLARES
          ----------------------------------------------------------------------- */
       randomWithDigits(d) {
         const min = d === 1 ? 1 : Math.pow(10, d - 1);
         const max = Math.pow(10, d) - 1;
         return Math.floor(Math.random() * (max - min + 1)) + min;
+      },
+
+      generateRandomPairForConfig() {
+        const { op, digits1, digits2, carryMode } = this.config;
+
+        if (op === 'add') {
+          let n1 = this.randomWithDigits(digits1);
+          let n2 = this.randomWithDigits(digits2);
+          if (carryMode === 'yes') {
+            const u1 = Math.floor(Math.random() * 5) + 5;
+            const u2 = Math.floor(Math.random() * 5) + 5;
+            n1 = Math.floor(n1 / 10) * 10 + u1;
+            n2 = Math.floor(n2 / 10) * 10 + u2;
+          }
+          return { n1, n2 };
+        } else if (op === 'sub') {
+          let n1 = this.randomWithDigits(digits1);
+          let n2 = this.randomWithDigits(digits2);
+          if (n1 < n2) [n1, n2] = [n2, n1];
+          if (carryMode === 'yes' && n1 >= 10) {
+            const u1 = Math.floor(Math.random() * 4) + 1;
+            const u2 = Math.floor(Math.random() * 4) + 5;
+            let base1 = Math.floor(n1 / 10) * 10 + u1;
+            let base2 = Math.floor(n2 / 10) * 10 + u2;
+            if (base1 <= base2) base1 += 10;
+            n1 = base1;
+            n2 = base2;
+          }
+          return { n1, n2 };
+        } else if (op === 'mul') {
+          let n1 = this.randomWithDigits(digits1);
+          let n2 = this.randomWithDigits(digits2);
+          if (digits2 === 1 && n2 < 2) n2 = Math.floor(Math.random() * 8) + 2;
+          return { n1, n2 };
+        } else {
+          let d1 = Math.max(digits1, digits2);
+          let divisor = this.randomWithDigits(digits2);
+          if (digits2 === 1 && divisor < 2) divisor = Math.floor(Math.random() * 8) + 2;
+          let dividend = this.randomWithDigits(d1);
+          if (dividend < divisor) dividend = divisor * (Math.floor(Math.random() * 8) + 2);
+          return { n1: dividend, n2: divisor };
+        }
       },
 
       generateNumbers() {
@@ -1391,10 +1917,7 @@
         if (!isNaN(c1) && !isNaN(c2) && c1 > 0 && c2 > 0) {
           let n1 = Math.min(99999, c1);
           let n2 = Math.min(9999, c2);
-          if (this.config.op === 'sub' && n1 < n2) {
-            [n1, n2] = [n2, n1];
-          }
-          if (this.config.op === 'div' && n1 < n2) {
+          if ((this.config.op === 'sub' || this.config.op === 'div') && n1 < n2) {
             [n1, n2] = [n2, n1];
           }
           this.state.num1 = n1;
@@ -1402,51 +1925,9 @@
           return;
         }
 
-        const { op, digits1, digits2, carryMode } = this.config;
-
-        if (op === 'add') {
-          let n1 = this.randomWithDigits(digits1);
-          let n2 = this.randomWithDigits(digits2);
-          if (carryMode === 'yes') {
-            // Garantizar al menos una llevada en las unidades
-            const u1 = Math.floor(Math.random() * 5) + 5; // 5..9
-            const u2 = Math.floor(Math.random() * 5) + 6; // 6..10 -> ajustado a 5..9
-            n1 = Math.floor(n1 / 10) * 10 + u1;
-            n2 = Math.floor(n2 / 10) * 10 + Math.min(9, u2);
-          }
-          this.state.num1 = n1;
-          this.state.num2 = n2;
-        } else if (op === 'sub') {
-          let n1 = this.randomWithDigits(digits1);
-          let n2 = this.randomWithDigits(digits2);
-          if (n1 < n2) [n1, n2] = [n2, n1];
-          if (carryMode === 'yes' && n1 >= 10) {
-            // Garantizar llevada en las unidades (cifra unidad minuendo < cifra unidad sustraendo)
-            const u1 = Math.floor(Math.random() * 4) + 1; // 1..4
-            const u2 = Math.floor(Math.random() * 4) + 5; // 5..8
-            let base1 = Math.floor(n1 / 10) * 10 + u1;
-            let base2 = Math.floor(n2 / 10) * 10 + u2;
-            if (base1 <= base2) base1 += 10;
-            n1 = base1;
-            n2 = base2;
-          }
-          this.state.num1 = n1;
-          this.state.num2 = n2;
-        } else if (op === 'mul') {
-          let n1 = this.randomWithDigits(digits1);
-          let n2 = this.randomWithDigits(digits2);
-          if (digits2 === 1 && n2 < 2) n2 = Math.floor(Math.random() * 8) + 2;
-          this.state.num1 = n1;
-          this.state.num2 = n2;
-        } else if (op === 'div') {
-          let d1 = Math.max(digits1, digits2);
-          let divisor = this.randomWithDigits(digits2);
-          if (digits2 === 1 && divisor < 2) divisor = Math.floor(Math.random() * 8) + 2;
-          let dividend = this.randomWithDigits(d1);
-          if (dividend < divisor) dividend = divisor * (Math.floor(Math.random() * 8) + 2);
-          this.state.num1 = dividend;
-          this.state.num2 = divisor;
-        }
+        const pair = this.generateRandomPairForConfig();
+        this.state.num1 = pair.n1;
+        this.state.num2 = pair.n2;
       },
 
       startOperation() {
@@ -1454,7 +1935,7 @@
         this.generateNumbers();
         this.buildWorkspace();
 
-        document.getElementById('screenConfig').classList.remove('active');
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('screenWorkspace').classList.add('active');
         document.getElementById('btnBackMenu').style.display = 'inline-flex';
       },
@@ -1471,7 +1952,7 @@
       },
 
       /* -----------------------------------------------------------------------
-         CONSTRUCCIÓN DEL LIENZO Y MOTOR DE PASOS POR OPERACIÓN
+         CONSTRUCCIÓN DEL LIENZO INTERACTIVO
          ----------------------------------------------------------------------- */
       buildWorkspace() {
         this.state.steps = [];
@@ -1537,14 +2018,13 @@
         const sum = n1 + n2;
 
         const maxCols = Math.max(String(n1).length, String(n2).length, String(sum).length);
-        const totalGridCols = maxCols + 1; // +1 columna izquierda para el signo '+'
+        const totalGridCols = maxCols + 1;
 
         const grid = document.createElement('div');
         grid.className = 'math-grid';
         grid.style.gridTemplateColumns = `repeat(${totalGridCols}, auto)`;
 
-        // 1. Fila de Cabeceras Posicionales (DM, UM, C, D, U)
-        grid.appendChild(this.createEmptySlot()); // Hueco sobre el signo
+        grid.appendChild(this.createEmptySlot());
         for (let c = maxCols - 1; c >= 0; c--) {
           const pKey = POS_LABELS[c] || 'MM';
           const h = document.createElement('div');
@@ -1554,7 +2034,6 @@
           grid.appendChild(h);
         }
 
-        // Precálculo de sumas columna por columna (de derecha a izquierda: c = 0..maxCols-1)
         const s1 = String(n1).padStart(maxCols, ' ');
         const s2 = String(n2).padStart(maxCols, ' ');
 
@@ -1570,45 +2049,38 @@
           carries[c + 1] = Math.floor(total / 10);
         }
 
-        // 2. Fila de Círculos de Llevadas
         grid.appendChild(this.createEmptySlot());
         const carryEls = {};
         for (let c = maxCols - 1; c >= 0; c--) {
           if (c === 0) {
-            // La columna de las Unidades nunca recibe llevada previa
             grid.appendChild(this.createEmptySlot());
           } else {
             const pKey = POS_LABELS[c] || 'MM';
             const cEl = document.createElement('div');
             cEl.className = 'carry-cell';
             cEl.dataset.pos = pKey;
-            cEl.title = `Llevada en ${POS_NAMES[pKey]}`;
             grid.appendChild(cEl);
             carryEls[c] = cEl;
           }
         }
 
-        // 3. Fila del 1.er Sumando
         grid.appendChild(this.createEmptySlot());
         for (let c = maxCols - 1; c >= 0; c--) {
           const ch = s1[maxCols - 1 - c];
           grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op1-col-${c}`));
         }
 
-        // 4. Fila del Signo '+' y 2.º Sumando
         grid.appendChild(this.createStaticCell('+', null, true));
         for (let c = maxCols - 1; c >= 0; c--) {
           const ch = s2[maxCols - 1 - c];
           grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op2-col-${c}`));
         }
 
-        // 5. Línea divisoria
         const line = document.createElement('div');
         line.className = 'op-divider-line';
         line.style.gridColumn = `1 / span ${totalGridCols}`;
         grid.appendChild(line);
 
-        // 6. Fila de Casillas de Resultado
         grid.appendChild(this.createEmptySlot());
         const resEls = {};
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -1618,7 +2090,6 @@
           resEls[c] = rEl;
         }
 
-        // Registrar celdas y construir micropasos de derecha a izquierda
         for (let c = 0; c < maxCols; c++) {
           const idx = maxCols - 1 - c;
           const hasAnyOperandDigit = (s1[idx] !== ' ' || s2[idx] !== ' ');
@@ -1634,15 +2105,14 @@
           const colName = POS_NAMES[pKey];
           const nextColName = POS_NAMES[nextPKey];
 
-          // Explicación pedagógica detallada
           let sumExpr = `${d1} + ${d2}`;
           if (prevCarry > 0) sumExpr += ` + ${prevCarry} (que nos llevábamos)`;
           sumExpr += ` = <strong>${colSum}</strong>`;
 
           let stepExplain = '';
           const stepCellIds = [];
-
           const resId = `res_${c}`;
+
           if (!hasAnyOperandDigit && prevCarry > 0 && c === maxCols - 1) {
             stepExplain = `En la columna de las <strong>${colName} (${pKey})</strong> bajamos directamente el <strong>${prevCarry}</strong> que nos llevábamos.`;
           } else if (nextCarry > 0 && c + 1 < maxCols) {
@@ -1651,37 +2121,24 @@
             stepExplain = `Sumamos las <strong>${colName} (${pKey})</strong>: ${sumExpr}. No nos llevamos nada. Escribe el <strong>${digitOut}</strong> en la casilla de las ${colName}.`;
           }
 
-          this.registerCell(
-            resId,
-            digitOut,
-            false,
-            resEls[c],
-            `Columna de las ${colName} (${pKey})`,
-            stepExplain,
-            pKey
-          );
+          this.registerCell(resId, digitOut, false, resEls[c], `Columna de las ${colName} (${pKey})`, stepExplain, pKey);
           stepCellIds.push(resId);
 
-          // Si hay círculo de llevada en la columna siguiente (c + 1)
           if (c + 1 < maxCols && carryEls[c + 1]) {
             const carryId = `carry_${c + 1}`;
             const isZeroCarry = (nextCarry === 0);
             this.registerCell(
               carryId,
               nextCarry,
-              isZeroCarry, // En Modo Libre no penaliza dejar vacío si la llevada es 0
+              isZeroCarry,
               carryEls[c + 1],
               `Llevada en ${nextColName} (${nextPKey})`,
               nextCarry > 0
                 ? `De la suma de las ${colName} (${colSum}), nos llevamos <strong>${nextCarry}</strong> a la columna de las ${nextColName}.`
-                : `En las ${colName} la suma dio ${colSum} (menor que 10), así que no te llevas nada (puedes dejar el círculo vacío).`,
+                : `En las ${colName} la suma dio ${colSum} (menor que 10), así que no te llevas nada.`,
               nextPKey
             );
-
-            // En Modo Guiado solo exigimos rellenar el círculo si realmente hay llevada (> 0)
-            if (nextCarry > 0) {
-              stepCellIds.push(carryId);
-            }
+            if (nextCarry > 0) stepCellIds.push(carryId);
           }
 
           this.state.steps.push({
@@ -1702,8 +2159,6 @@
       buildSubtractionBoard(wrapper) {
         const n1 = this.state.num1;
         const n2 = this.state.num2;
-        const diff = n1 - n2;
-
         const maxCols = Math.max(String(n1).length, String(n2).length);
         const totalGridCols = maxCols + 1;
 
@@ -1711,7 +2166,6 @@
         grid.className = 'math-grid';
         grid.style.gridTemplateColumns = `repeat(${totalGridCols}, auto)`;
 
-        // 1. Cabeceras Posicionales
         grid.appendChild(this.createEmptySlot());
         for (let c = maxCols - 1; c >= 0; c--) {
           const pKey = POS_LABELS[c] || 'MM';
@@ -1725,8 +2179,6 @@
         const s1 = String(n1).padStart(maxCols, ' ');
         const s2 = String(n2).padStart(maxCols, ' ');
 
-        // Cálculo de llevadas en resta tradicional española:
-        // Si minuendo < sustraendo + llevada, sumamos 10 al minuendo y nos llevamos 1 a la siguiente columna
         const carries = new Array(maxCols + 1).fill(0);
         const resDigits = new Array(maxCols).fill(0);
 
@@ -1744,7 +2196,6 @@
           }
         }
 
-        // 2. Fila de Círculos de Llevadas
         grid.appendChild(this.createEmptySlot());
         const carryEls = {};
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -1760,27 +2211,23 @@
           }
         }
 
-        // 3. Fila del Minuendo
         grid.appendChild(this.createEmptySlot());
         for (let c = maxCols - 1; c >= 0; c--) {
           const ch = s1[maxCols - 1 - c];
           grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op1-col-${c}`));
         }
 
-        // 4. Fila del Signo '−' y Sustraendo
         grid.appendChild(this.createStaticCell('−', null, true));
         for (let c = maxCols - 1; c >= 0; c--) {
           const ch = s2[maxCols - 1 - c];
           grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op2-col-${c}`));
         }
 
-        // 5. Línea divisoria
         const line = document.createElement('div');
         line.className = 'op-divider-line';
         line.style.gridColumn = `1 / span ${totalGridCols}`;
         grid.appendChild(line);
 
-        // 6. Fila de Resultado (Diferencia)
         grid.appendChild(this.createEmptySlot());
         const resEls = {};
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -1790,7 +2237,6 @@
           resEls[c] = rEl;
         }
 
-        // Registrar celdas y micropasos
         for (let c = 0; c < maxCols; c++) {
           const idx = maxCols - 1 - c;
           const d1 = s1[idx] === ' ' ? 0 : parseInt(s1[idx], 10);
@@ -1817,15 +2263,7 @@
           }
 
           const resId = `res_${c}`;
-          this.registerCell(
-            resId,
-            digitOut,
-            false,
-            resEls[c],
-            `Columna de las ${colName} (${pKey})`,
-            stepExplain,
-            pKey
-          );
+          this.registerCell(resId, digitOut, false, resEls[c], `Columna de las ${colName} (${pKey})`, stepExplain, pKey);
           stepCellIds.push(resId);
 
           if (c + 1 < maxCols && carryEls[c + 1]) {
@@ -1857,7 +2295,7 @@
       },
 
       /* =======================================================================
-         ALGORITMO 3: MULTIPLICACIÓN (DE 1 O VARIAS CIFRAS CON SUMA FINAL)
+         ALGORITMO 3: MULTIPLICACIÓN
          ======================================================================= */
       buildMultiplicationBoard(wrapper) {
         const n1 = this.state.num1;
@@ -1869,23 +2307,19 @@
         const len1 = s1.length;
         const len2 = s2.length;
 
-        // Número de columnas necesarias para el producto final o los productos parciales desplazados
-        let maxCols = Math.max(len1 + len2, String(totalProd).length);
-        // Ajustar maxCols al tamaño real máximo de cualquier fila
         let realMaxLen = Math.max(len1, len2, String(totalProd).length);
         for (let r = 0; r < len2; r++) {
           const mDigit = parseInt(s2[len2 - 1 - r], 10);
           const pLen = String(n1 * mDigit).length + r;
           if (pLen > realMaxLen) realMaxLen = pLen;
         }
-        maxCols = realMaxLen;
+        const maxCols = realMaxLen;
         const totalGridCols = maxCols + 1;
 
         const grid = document.createElement('div');
         grid.className = 'math-grid';
         grid.style.gridTemplateColumns = `repeat(${totalGridCols}, auto)`;
 
-        // 1. Cabeceras Posicionales
         grid.appendChild(this.createEmptySlot());
         for (let c = maxCols - 1; c >= 0; c--) {
           const pKey = POS_LABELS[c] || 'MM';
@@ -1896,13 +2330,11 @@
           grid.appendChild(h);
         }
 
-        // 2. Círculos de llevadas para los productos parciales (una fila por cada cifra del multiplicador)
         const mulCarryEls = [];
         for (let r = 0; r < len2; r++) {
           const rowCarries = {};
           grid.appendChild(this.createEmptySlot());
           for (let c = maxCols - 1; c >= 0; c--) {
-            // Para la fila parcial r, las llevadas se colocan sobre las columnas 1..len1
             if (c >= 1 && c <= len1) {
               const pKey = POS_LABELS[c] || 'MM';
               const cEl = document.createElement('div');
@@ -1917,7 +2349,6 @@
           mulCarryEls.push(rowCarries);
         }
 
-        // 3. Fila del Multiplicando
         const s1Pad = s1.padStart(maxCols, ' ');
         grid.appendChild(this.createEmptySlot());
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -1925,7 +2356,6 @@
           grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op1-col-${c}`));
         }
 
-        // 4. Fila del Signo '×' y Multiplicador
         const s2Pad = s2.padStart(maxCols, ' ');
         grid.appendChild(this.createStaticCell('×', null, true));
         for (let c = maxCols - 1; c >= 0; c--) {
@@ -1933,17 +2363,14 @@
           grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op2-col-${c}`));
         }
 
-        // 5. Línea divisoria
         const line1 = document.createElement('div');
         line1.className = 'op-divider-line';
         line1.style.gridColumn = `1 / span ${totalGridCols}`;
         grid.appendChild(line1);
 
-        // 6. Filas de Productos Parciales (escalonadas a la izquierda según r)
         for (let r = 0; r < len2; r++) {
           const mDigit = parseInt(s2[len2 - 1 - r], 10);
 
-          // Calcular dígitos y llevadas de n1 * mDigit paso a paso
           const pCarries = new Array(len1 + 1).fill(0);
           const pDigits = [];
           for (let i = 0; i < len1; i++) {
@@ -1959,7 +2386,6 @@
           const numCellsThisRow = pDigits.length;
           const partialEls = {};
 
-          // Signo '+' en la última fila de producto parcial si hay más de 1 cifra
           if (len2 > 1 && r === len2 - 1) {
             grid.appendChild(this.createStaticCell('+', null, true));
           } else {
@@ -1967,7 +2393,6 @@
           }
 
           for (let c = maxCols - 1; c >= 0; c--) {
-            // El producto parcial r empieza en la columna r y ocupa hasta r + numCellsThisRow - 1
             const localIdx = c - r;
             if (localIdx >= 0 && localIdx < numCellsThisRow) {
               const pEl = document.createElement('div');
@@ -1979,7 +2404,6 @@
             }
           }
 
-          // Generar micropasos de este producto parcial
           for (let i = 0; i < len1; i++) {
             const d1 = parseInt(s1[len1 - 1 - i], 10);
             const prevC = pCarries[i];
@@ -1998,7 +2422,6 @@
 
             const stepCellIds = [];
             let explain = '';
-
             const cellId = `part_${r}_${i}`;
 
             if (isLastMultiplicandDigit && nextC > 0) {
@@ -2011,7 +2434,6 @@
               this.registerCell(extraCellId, nextC, false, partialEls[len1], `Producto parcial`, explain, extraPKey);
               stepCellIds.push(extraCellId);
 
-              // El círculo de llevada i+1 queda opcional en Modo Libre
               if (mulCarryEls[r][i + 1]) {
                 this.registerCell(`mcarry_${r}_${i + 1}`, 0, true, mulCarryEls[r][i + 1], `Llevada`, `Ya escribimos la cifra completa abajo.`, POS_LABELS[i + 1]);
               }
@@ -2047,14 +2469,12 @@
           }
         }
 
-        // 7. Si el multiplicador tiene 2 o más cifras, añadimos la SUMA FINAL con sus círculos de llevadas
         if (len2 > 1) {
           const line2 = document.createElement('div');
           line2.className = 'op-divider-line';
           line2.style.gridColumn = `1 / span ${totalGridCols}`;
           grid.appendChild(line2);
 
-          // Círculos de llevadas de la suma final
           grid.appendChild(this.createEmptySlot());
           const sumCarryEls = {};
           for (let c = maxCols - 1; c >= 0; c--) {
@@ -2070,7 +2490,6 @@
             }
           }
 
-          // Casillas del resultado final
           grid.appendChild(this.createEmptySlot());
           const finalResEls = {};
           for (let c = maxCols - 1; c >= 0; c--) {
@@ -2080,7 +2499,6 @@
             finalResEls[c] = fEl;
           }
 
-          // Calcular suma columna por columna de los productos parciales desplazados
           const partialStrings = [];
           for (let r = 0; r < len2; r++) {
             const mDigit = parseInt(s2[len2 - 1 - r], 10);
@@ -2092,14 +2510,11 @@
           for (let c = 0; c < maxCols; c++) {
             const idx = maxCols - 1 - c;
             let colSum = sCarries[c];
-            const addends = [];
             for (let r = 0; r < len2; r++) {
               const mDigit = parseInt(s2[len2 - 1 - r], 10);
               const rawLen = String(n1 * mDigit).length + r;
               if (c >= r && c < rawLen) {
-                const d = parseInt(partialStrings[r][idx], 10);
-                colSum += d;
-                addends.push(d);
+                colSum += parseInt(partialStrings[r][idx], 10);
               }
             }
             const outD = colSum % 10;
@@ -2147,15 +2562,12 @@
       },
 
       /* =======================================================================
-         ALGORITMO 4: DIVISIÓN CON CAJA TRADICIONAL ESPAÑOLA (Directa escalonada)
+         ALGORITMO 4: DIVISIÓN CON CAJA TRADICIONAL ESPAÑOLA
          ======================================================================= */
-      buildSpanishDivisionBoard(wrapper) {
-        const dividend = this.state.num1;
-        const divisor = this.state.num2;
+      computeSpanishDivisionSteps(dividend, divisor) {
         const divStr = String(dividend);
         const divLen = divStr.length;
 
-        // Precalcular los pasos del algoritmo español de división (sin escribir las restas, o anotando restos parciales y bajando la cifra siguiente)
         let idx = 0;
         let currentVal = 0;
         while (idx < divLen && (currentVal * 10 + parseInt(divStr[idx], 10)) < divisor) {
@@ -2165,7 +2577,7 @@
         if (idx < divLen) {
           currentVal = currentVal * 10 + parseInt(divStr[idx], 10);
         }
-        const firstEndCol = idx; // Índice (0..divLen-1) donde termina el primer arco del dividendo
+        const firstEndCol = idx;
 
         const divStepsData = [];
         let stepEndCol = firstEndCol;
@@ -2196,11 +2608,20 @@
           }
         }
 
-        // Contenedor con diseño de Caja Tradicional Española: Dividendo |___Divisor___
+        return { firstEndCol, divStepsData };
+      },
+
+      buildSpanishDivisionBoard(wrapper) {
+        const dividend = this.state.num1;
+        const divisor = this.state.num2;
+        const divStr = String(dividend);
+        const divLen = divStr.length;
+
+        const { firstEndCol, divStepsData } = this.computeSpanishDivisionSteps(dividend, divisor);
+
         const layout = document.createElement('div');
         layout.className = 'spanish-div-layout';
 
-        // BLOQUE IZQUIERDO: Cabeceras del Dividendo + Cifras del Dividendo + Restos Parciales Escalonados
         const leftBlock = document.createElement('div');
         leftBlock.className = 'div-left-block';
 
@@ -2208,7 +2629,6 @@
         leftGrid.className = 'math-grid';
         leftGrid.style.gridTemplateColumns = `repeat(${divLen}, auto)`;
 
-        // Cabeceras Posicionales del Dividendo
         for (let i = 0; i < divLen; i++) {
           const posIdx = divLen - 1 - i;
           const pKey = POS_LABELS[posIdx] || 'MM';
@@ -2219,7 +2639,6 @@
           leftGrid.appendChild(h);
         }
 
-        // Fila del Dividendo con el arco superior en las cifras iniciales tomadas
         for (let i = 0; i < divLen; i++) {
           const cell = this.createStaticCell(divStr[i], `div-digit-${i}`);
           if (i <= firstEndCol) {
@@ -2230,13 +2649,11 @@
           leftGrid.appendChild(cell);
         }
 
-        // Filas escalonadas de Restos Parciales y Cifras Bajadas bajo el dividendo
         const remRowEls = [];
         for (let s = 0; s < divStepsData.length; s++) {
           const st = divStepsData[s];
           const remStr = String(st.rem);
           const remLen = remStr.length;
-          // El resto se alinea de modo que su última cifra quede bajo st.endCol
           const remStartCol = st.endCol - remLen + 1;
           const dropCol = st.hasNextDigit ? st.endCol + 1 : -1;
 
@@ -2262,11 +2679,9 @@
 
         leftBlock.appendChild(leftGrid);
 
-        // BLOQUE DERECHO: Caja Española del Divisor arriba y Casillas del Cociente debajo
         const rightBlock = document.createElement('div');
         rightBlock.className = 'div-right-block';
 
-        // Espaciador superior para alinear el divisor con la fila de números del dividendo
         const topSpacer = document.createElement('div');
         topSpacer.style.height = '42px';
         rightBlock.appendChild(topSpacer);
@@ -2294,13 +2709,11 @@
         layout.appendChild(rightBlock);
         wrapper.appendChild(layout);
 
-        // Construir micropasos pedagógicos para la División Española
         for (let s = 0; s < divStepsData.length; s++) {
           const st = divStepsData[s];
           const posIdx = divLen - 1 - st.endCol;
           const pKey = POS_LABELS[posIdx] || 'U';
 
-          // Micropaso A: Buscar cifra del cociente
           let qExplain = '';
           if (s === 0) {
             if (firstEndCol > 0) {
@@ -2323,7 +2736,6 @@
             refStaticIds: [`div-digit-${st.endCol}`]
           });
 
-          // Micropaso B: Calcular el resto parcial y bajar la siguiente cifra (si existe)
           const remCellsInfo = remRowEls[s].remCells;
           const dropCellInfo = remRowEls[s].dropCell;
           const stepBIds = [];
@@ -2357,9 +2769,6 @@
         }
       },
 
-      /* -----------------------------------------------------------------------
-         UTILIDADES DOM PARA LA CUADRÍCULA
-         ----------------------------------------------------------------------- */
       createEmptySlot() {
         const d = document.createElement('div');
         d.style.width = 'var(--cell-size)';
@@ -2376,10 +2785,9 @@
       },
 
       /* -----------------------------------------------------------------------
-         GESTIÓN DE BLOQUEOS, FOCO E INTERACCIÓN EN AMBOS MODOS
+         GESTIÓN DE BLOQUEOS, FOCO E INTERACCIÓN
          ----------------------------------------------------------------------- */
       applyModeLocksAndFocus() {
-        // Limpiar iluminaciones de cabeceras y referencias
         document.querySelectorAll('.pos-header').forEach(h => h.classList.remove('active-col'));
         document.querySelectorAll('.static-cell').forEach(s => s.classList.remove('highlight-ref'));
 
@@ -2395,22 +2803,18 @@
           const currentStep = this.state.steps[idx];
           document.getElementById('stepCounterBadge').textContent = `Paso ${idx + 1} de ${totalSteps}`;
 
-          // Iluminar cabecera de columna activa
           if (currentStep.posKey) {
             const hEl = document.getElementById(`pos-header-${currentStep.posKey}`);
             if (hEl) hEl.classList.add('active-col');
           }
 
-          // Iluminar cifras de referencia
           (currentStep.refStaticIds || []).forEach(sid => {
             const sEl = document.getElementById(sid);
             if (sEl) sEl.classList.add('highlight-ref');
           });
 
-          // Actualizar Bocadillo Pedagógico
           this.setBubbleMessage(currentStep.title, currentStep.text, 'normal');
 
-          // Bloquear todas las celdas que no pertenezcan al paso actual
           Object.values(this.state.cellsMap).forEach(cell => {
             cell.el.classList.remove('step-enabled', 'focused', 'locked');
             if (cell.el.classList.contains('correct')) return;
@@ -2421,19 +2825,16 @@
             }
           });
 
-          // Poner el foco en la primera casilla pendiente del paso actual
           const firstPending = currentStep.cellIds.find(cid => !this.state.cellsMap[cid].el.classList.contains('correct'));
           if (firstPending) {
             this.focusCell(firstPending);
           }
         } else {
-          // MODO 2: PRÁCTICA LIBRE
           document.getElementById('stepCounterBadge').textContent = 'Resolución Autónoma';
           Object.values(this.state.cellsMap).forEach(cell => {
             cell.el.classList.remove('locked', 'step-enabled');
           });
 
-          // Seleccionar primera casilla del primer paso por comodidad
           if (!this.state.focusedCellId && this.state.steps.length > 0) {
             const firstId = this.state.steps[0].cellIds[0];
             if (firstId) this.focusCell(firstId);
@@ -2515,9 +2916,6 @@
         this.backspaceCell();
       },
 
-      /* -----------------------------------------------------------------------
-         VALIDACIÓN EN MODO GUIADO (INMEDIATA Y CON PISTAS CONSTRUCTIVAS)
-         ----------------------------------------------------------------------- */
       checkGuidedDigitImmediate(cell) {
         const currentStep = this.state.steps[this.state.currentStepIdx];
         if (!currentStep) return;
@@ -2527,7 +2925,6 @@
           cell.el.classList.add('correct');
           this.sound.play('success');
 
-          // Comprobar si quedan otras casillas en este mismo paso (ej. el circulito de llevada)
           const nextPendingId = currentStep.cellIds.find(
             cid => !this.state.cellsMap[cid].el.classList.contains('correct')
           );
@@ -2544,14 +2941,12 @@
               'success'
             );
           } else {
-            // Paso completado: avanzar automáticamente al siguiente paso
             this.state.currentStepIdx++;
             setTimeout(() => {
               this.applyModeLocksAndFocus();
             }, 280);
           }
         } else {
-          // Error en modo guiado: dar pista constructiva sin borrar el progreso anterior
           cell.el.classList.add('wrong');
           this.sound.play('error');
           const isCarry = cell.el.classList.contains('carry-cell');
@@ -2565,11 +2960,7 @@
         }
       },
 
-      /* -----------------------------------------------------------------------
-         NAVEGACIÓN Y VALIDACIÓN EN MODO LIBRE
-         ----------------------------------------------------------------------- */
       advanceFocusFreeMode(currentId) {
-        // Construir orden lógico de casillas según los pasos del algoritmo
         const orderedIds = [];
         this.state.steps.forEach(st => {
           st.cellIds.forEach(cid => {
@@ -2600,14 +2991,12 @@
           return;
         }
 
-        // Validación completa en MODO LIBRE
         let allCorrect = true;
         let firstWrongId = null;
 
         Object.values(this.state.cellsMap).forEach(cell => {
           cell.el.classList.remove('wrong', 'correct');
 
-          // Si es un círculo de llevada con valor 0, permitimos dejarlo vacío o escribir '0'
           if (cell.optionalZero && (cell.userVal === '' || cell.userVal === '0')) {
             if (cell.userVal === '0') cell.el.classList.add('correct');
             return;
@@ -2640,11 +3029,7 @@
         const cell = this.state.cellsMap[this.state.focusedCellId];
         if (!cell) return;
         this.sound.play('tap');
-        this.setBubbleMessage(
-          `💡 Pista: ${cell.hintTitle}`,
-          cell.hintText,
-          'normal'
-        );
+        this.setBubbleMessage(`💡 Pista: ${cell.hintTitle}`, cell.hintText, 'normal');
       },
 
       finishOperationSuccess() {
@@ -2680,6 +3065,420 @@
 
         document.getElementById('bubbleTitle').textContent = title;
         document.getElementById('bubbleBody').innerHTML = htmlText;
+      },
+
+      /* =======================================================================
+         MÓDULO DE GENERACIÓN DE FICHA DE 8 OPERACIONES + SOLUCIONARIO PDF
+         ======================================================================= */
+      openWorksheetScreen() {
+        this.sound.play('tap');
+        const currentActive = document.querySelector('.screen.active');
+        if (currentActive && currentActive.id !== 'screenWorksheet') {
+          this.state.previousScreenId = currentActive.id;
+        }
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screenWorksheet').classList.add('active');
+        document.getElementById('btnBackMenu').style.display = 'inline-flex';
+
+        this.generateWorksheetBatch();
+      },
+
+      closeWorksheetScreen() {
+        this.sound.play('tap');
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const prev = this.state.previousScreenId || 'screenConfig';
+        document.getElementById(prev).classList.add('active');
+        document.getElementById('btnBackMenu').style.display = (prev === 'screenConfig') ? 'none' : 'inline-flex';
+      },
+
+      setWorksheetView(viewMode) {
+        this.sound.play('tap');
+        document.querySelectorAll('[data-pview]').forEach(b => {
+          b.classList.toggle('active', b.dataset.pview === viewMode);
+        });
+
+        const sSheet = document.getElementById('sheetStudent');
+        const tSheet = document.getElementById('sheetTeacher');
+
+        sSheet.classList.toggle('hidden-sheet', viewMode === 'teacher');
+        tSheet.classList.toggle('hidden-sheet', viewMode === 'student');
+      },
+
+      generateWorksheetBatch() {
+        this.sound.play('tap');
+        const opTitles = {
+          add: `Sumas (${this.config.digits1} y ${this.config.digits2} cifras)`,
+          sub: `Restas (${this.config.digits1} y ${this.config.digits2} cifras)`,
+          mul: `Multiplicaciones (${this.config.digits1} × ${this.config.digits2} cifras)`,
+          div: `Divisiones en Caja Española (${this.config.digits1} ÷ ${this.config.digits2} cifras)`
+        };
+
+        document.getElementById('wsTitleStudent').textContent = opTitles[this.config.op];
+        document.getElementById('wsTitleTeacher').textContent = opTitles[this.config.op];
+
+        // Generar 8 operaciones sin duplicados exactos
+        const pairs = [];
+        const usedKeys = new Set();
+
+        for (let i = 0; i < 8; i++) {
+          let pair = this.generateRandomPairForConfig();
+          let attempts = 0;
+          while (usedKeys.has(`${pair.n1}_${pair.n2}`) && attempts < 20) {
+            pair = this.generateRandomPairForConfig();
+            attempts++;
+          }
+          usedKeys.add(`${pair.n1}_${pair.n2}`);
+          pairs.push(pair);
+        }
+
+        this.state.worksheetPairs = pairs;
+
+        const gridStudent = document.getElementById('gridStudent8');
+        const gridTeacher = document.getElementById('gridTeacher8');
+        gridStudent.innerHTML = '';
+        gridTeacher.innerHTML = '';
+
+        pairs.forEach((pair, idx) => {
+          gridStudent.appendChild(this.renderPrintExerciseCard(idx + 1, pair.n1, pair.n2, false));
+          gridTeacher.appendChild(this.renderPrintExerciseCard(idx + 1, pair.n1, pair.n2, true));
+        });
+      },
+
+      renderPrintExerciseCard(indexNumber, n1, n2, solved) {
+        const card = document.createElement('div');
+        card.className = 'exercise-card-print';
+
+        const tag = document.createElement('div');
+        tag.className = 'exercise-num-tag';
+        tag.textContent = indexNumber;
+        card.appendChild(tag);
+
+        if (this.config.op === 'add') {
+          card.appendChild(this.buildPrintAddSubDOM(n1, n2, 'add', solved));
+        } else if (this.config.op === 'sub') {
+          card.appendChild(this.buildPrintAddSubDOM(n1, n2, 'sub', solved));
+        } else if (this.config.op === 'mul') {
+          card.appendChild(this.buildPrintMulDOM(n1, n2, solved));
+        } else {
+          card.appendChild(this.buildPrintDivDOM(n1, n2, solved));
+        }
+
+        return card;
+      },
+
+      /* Renderizador Impreso A4: Suma y Resta */
+      buildPrintAddSubDOM(n1, n2, opType, solved) {
+        const resultVal = opType === 'add' ? (n1 + n2) : (n1 - n2);
+        const maxCols = Math.max(String(n1).length, String(n2).length, String(resultVal).length);
+        const totalCols = maxCols + 1;
+
+        const s1 = String(n1).padStart(maxCols, ' ');
+        const s2 = String(n2).padStart(maxCols, ' ');
+
+        const carries = new Array(maxCols + 1).fill(0);
+        const resDigits = new Array(maxCols).fill(0);
+
+        for (let c = 0; c < maxCols; c++) {
+          const idx = maxCols - 1 - c;
+          const d1 = s1[idx] === ' ' ? 0 : parseInt(s1[idx], 10);
+          const d2 = s2[idx] === ' ' ? 0 : parseInt(s2[idx], 10);
+          if (opType === 'add') {
+            const tot = d1 + d2 + carries[c];
+            resDigits[c] = tot % 10;
+            carries[c + 1] = Math.floor(tot / 10);
+          } else {
+            const subTot = d2 + carries[c];
+            if (d1 < subTot) {
+              resDigits[c] = (d1 + 10) - subTot;
+              carries[c + 1] = 1;
+            } else {
+              resDigits[c] = d1 - subTot;
+              carries[c + 1] = 0;
+            }
+          }
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'p-math-grid';
+        grid.style.gridTemplateColumns = `repeat(${totalCols}, auto)`;
+
+        // Cabeceras Posicionales
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const pKey = POS_LABELS[c] || 'MM';
+          const h = document.createElement('div');
+          h.className = `p-pos pos-${pKey}`;
+          h.textContent = pKey;
+          grid.appendChild(h);
+        }
+
+        // Fila de Llevadas
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          if (c === 0) {
+            grid.appendChild(this.pEmpty());
+          } else {
+            const carryEl = document.createElement('div');
+            carryEl.className = 'p-carry';
+            if (solved && carries[c] > 0) carryEl.textContent = carries[c];
+            grid.appendChild(carryEl);
+          }
+        }
+
+        // Operando 1
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s1[maxCols - 1 - c];
+          grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
+        }
+
+        // Signo y Operando 2
+        grid.appendChild(this.pStatic(opType === 'add' ? '+' : '−', true));
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s2[maxCols - 1 - c];
+          grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
+        }
+
+        // Línea
+        const line = document.createElement('div');
+        line.className = 'p-line';
+        line.style.gridColumn = `1 / span ${totalCols}`;
+        grid.appendChild(line);
+
+        // Resultado
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const box = document.createElement('div');
+          box.className = 'p-box';
+          if (solved) box.textContent = resDigits[c];
+          grid.appendChild(box);
+        }
+
+        return grid;
+      },
+
+      /* Renderizador Impreso A4: Multiplicación */
+      buildPrintMulDOM(n1, n2, solved) {
+        const totalProd = n1 * n2;
+        const s1 = String(n1);
+        const s2 = String(n2);
+        const len1 = s1.length;
+        const len2 = s2.length;
+
+        let maxCols = Math.max(len1, len2, String(totalProd).length);
+        for (let r = 0; r < len2; r++) {
+          const mDigit = parseInt(s2[len2 - 1 - r], 10);
+          const pLen = String(n1 * mDigit).length + r;
+          if (pLen > maxCols) maxCols = pLen;
+        }
+        const totalCols = maxCols + 1;
+
+        const grid = document.createElement('div');
+        grid.className = 'p-math-grid';
+        grid.style.gridTemplateColumns = `repeat(${totalCols}, auto)`;
+
+        // Cabeceras
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const pKey = POS_LABELS[c] || 'MM';
+          const h = document.createElement('div');
+          h.className = `p-pos pos-${pKey}`;
+          h.textContent = pKey;
+          grid.appendChild(h);
+        }
+
+        // Una fila de círculos de llevadas sobre el multiplicando
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          if (c >= 1 && c <= len1) {
+            const cEl = document.createElement('div');
+            cEl.className = 'p-carry';
+            if (solved && len2 === 1) {
+              // Mostrar llevadas directas cuando es de 1 cifra
+              const mDigit = parseInt(s2[0], 10);
+              let carryVal = 0;
+              for (let i = 0; i < c; i++) {
+                const d1 = parseInt(s1[len1 - 1 - i], 10);
+                carryVal = Math.floor((d1 * mDigit + carryVal) / 10);
+              }
+              if (carryVal > 0 && c < len1) cEl.textContent = carryVal;
+            }
+            grid.appendChild(cEl);
+          } else {
+            grid.appendChild(this.pEmpty());
+          }
+        }
+
+        // Multiplicando
+        const s1Pad = s1.padStart(maxCols, ' ');
+        grid.appendChild(this.pEmpty());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s1Pad[maxCols - 1 - c];
+          grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
+        }
+
+        // Multiplicador
+        const s2Pad = s2.padStart(maxCols, ' ');
+        grid.appendChild(this.pStatic('×', true));
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s2Pad[maxCols - 1 - c];
+          grid.appendChild(this.pStatic(ch === ' ' ? '' : ch));
+        }
+
+        const line1 = document.createElement('div');
+        line1.className = 'p-line';
+        line1.style.gridColumn = `1 / span ${totalCols}`;
+        grid.appendChild(line1);
+
+        // Productos parciales escalonados
+        for (let r = 0; r < len2; r++) {
+          const mDigit = parseInt(s2[len2 - 1 - r], 10);
+          const partStr = String(n1 * mDigit);
+          const pLen = partStr.length;
+
+          if (len2 > 1 && r === len2 - 1) {
+            grid.appendChild(this.pStatic('+', true));
+          } else {
+            grid.appendChild(this.pEmpty());
+          }
+
+          for (let c = maxCols - 1; c >= 0; c--) {
+            const localIdx = c - r;
+            if (localIdx >= 0 && localIdx < pLen) {
+              const box = document.createElement('div');
+              box.className = 'p-box';
+              if (solved) box.textContent = partStr[pLen - 1 - localIdx];
+              grid.appendChild(box);
+            } else {
+              grid.appendChild(this.pEmpty());
+            }
+          }
+        }
+
+        // Suma final si hay más de 1 cifra en el multiplicador
+        if (len2 > 1) {
+          const line2 = document.createElement('div');
+          line2.className = 'p-line';
+          line2.style.gridColumn = `1 / span ${totalCols}`;
+          grid.appendChild(line2);
+
+          const finalStr = String(totalProd).padStart(maxCols, ' ');
+          grid.appendChild(this.pEmpty());
+          for (let c = maxCols - 1; c >= 0; c--) {
+            const ch = finalStr[maxCols - 1 - c];
+            const box = document.createElement('div');
+            box.className = 'p-box';
+            if (solved && ch !== ' ') box.textContent = ch;
+            grid.appendChild(box);
+          }
+        }
+
+        return grid;
+      },
+
+      /* Renderizador Impreso A4: División con Caja Tradicional Española */
+      buildPrintDivDOM(dividend, divisor, solved) {
+        const divStr = String(dividend);
+        const divLen = divStr.length;
+        const { firstEndCol, divStepsData } = this.computeSpanishDivisionSteps(dividend, divisor);
+
+        const layout = document.createElement('div');
+        layout.className = 'p-div-layout';
+
+        const left = document.createElement('div');
+        left.className = 'p-div-left';
+
+        const leftGrid = document.createElement('div');
+        leftGrid.className = 'p-math-grid';
+        leftGrid.style.gridTemplateColumns = `repeat(${divLen}, auto)`;
+
+        // Cabeceras Posicionales
+        for (let i = 0; i < divLen; i++) {
+          const pKey = POS_LABELS[divLen - 1 - i] || 'MM';
+          const h = document.createElement('div');
+          h.className = `p-pos pos-${pKey}`;
+          h.textContent = pKey;
+          leftGrid.appendChild(h);
+        }
+
+        // Cifras del Dividendo con arco superior
+        for (let i = 0; i < divLen; i++) {
+          const c = this.pStatic(divStr[i]);
+          if (i <= firstEndCol) c.classList.add('p-arc-top');
+          leftGrid.appendChild(c);
+        }
+
+        // Filas escalonadas de restos parciales y cifras bajadas
+        for (let s = 0; s < divStepsData.length; s++) {
+          const st = divStepsData[s];
+          const remStr = String(st.rem);
+          const remLen = remStr.length;
+          const remStartCol = st.endCol - remLen + 1;
+          const dropCol = st.hasNextDigit ? st.endCol + 1 : -1;
+
+          for (let col = 0; col < divLen; col++) {
+            if (col >= remStartCol && col <= st.endCol) {
+              const box = document.createElement('div');
+              box.className = 'p-box';
+              if (solved) box.textContent = remStr[col - remStartCol];
+              leftGrid.appendChild(box);
+            } else if (col === dropCol) {
+              const box = document.createElement('div');
+              box.className = 'p-box';
+              if (solved) box.textContent = String(st.nextDividendDigit);
+              leftGrid.appendChild(box);
+            } else {
+              leftGrid.appendChild(this.pEmpty());
+            }
+          }
+        }
+
+        left.appendChild(leftGrid);
+
+        // Bloque Derecho: Caja Española del Divisor y Casillas del Cociente
+        const right = document.createElement('div');
+        right.className = 'p-div-right';
+
+        const spacer = document.createElement('div');
+        spacer.style.height = '23px';
+        right.appendChild(spacer);
+
+        const divBox = document.createElement('div');
+        divBox.className = 'p-divisor-box';
+        const divisorStr = String(divisor);
+        for (let i = 0; i < divisorStr.length; i++) {
+          divBox.appendChild(this.pStatic(divisorStr[i]));
+        }
+        right.appendChild(divBox);
+
+        const qArea = document.createElement('div');
+        qArea.className = 'p-quotient-box';
+        for (let s = 0; s < divStepsData.length; s++) {
+          const box = document.createElement('div');
+          box.className = 'p-box';
+          if (solved) box.textContent = divStepsData[s].qDigit;
+          qArea.appendChild(box);
+        }
+        right.appendChild(qArea);
+
+        layout.appendChild(left);
+        layout.appendChild(right);
+        return layout;
+      },
+
+      pEmpty() {
+        const d = document.createElement('div');
+        d.style.width = '28px';
+        d.style.height = '28px';
+        return d;
+      },
+
+      pStatic(text, isSign = false) {
+        const d = document.createElement('div');
+        d.className = 'p-cell' + (isSign ? ' p-sign' : '');
+        d.textContent = text;
+        return d;
       }
     };
 
