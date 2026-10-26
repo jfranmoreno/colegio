@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Laboratorio de Cálculo - Algoritmo Tradicional Español</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Colores de Valor Posicional (Estándar Escolar Español) */
+      --col-u: #2563eb;   /* Unidades: Azul */
+      --col-d: #dc2626;   /* Decenas: Rojo */
+      --col-c: #16a34a;   /* Centenas: Verde */
+      --col-um: #d97706;  /* Unidades de Millar: Naranja */
+      --col-dm: #7c3aed;  /* Decenas de Millar: Morado */
+      --col-cm: #db2777;  /* Centenas de Millar: Rosa */
+      --col-mm: #0d9488;  /* Millones: Turquesa */
+
+      /* Paleta UI General */
+      --bg-app: #f0f5ff;
+      --bg-card: #ffffff;
+      --grid-line: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --primary: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+      --warning: #f59e0b;
+      --warning-bg: #fef3c7;
+      --focus-ring: #f59e0b;
+
+      --cell-size: 56px;
+      --carry-size: 34px;
+      --font-main: 'Quicksand', 'Nunito', 'Comic Sans MS', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-app);
+      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* BARRA SUPERIOR */
+    header {
+      background: var(--bg-card);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 3px 8px rgba(59, 130, 246, 0.35);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-top {
+      min-height: 48px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 2px solid #e2e8f0;
+      background: #f8fafc;
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-top:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    .btn-top:active {
+      transform: scale(0.96);
+    }
+
+    /* CONTENEDOR DE PANTALLAS */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================
+       1. PANTALLA DE CONFIGURACIÓN (MENÚ)
+       ========================================== */
+    .config-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 24px 28px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+      max-width: 1020px;
+      width: 100%;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Tarjetas de Operación */
+    .op-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .op-card {
+      border: 3px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+      min-height: 120px;
+      justify-content: center;
+    }
+
+    .op-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .op-card:active {
+      transform: scale(0.96);
+    }
+
+    .op-symbol {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .op-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .op-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .op-card[data-op="add"] .op-symbol { background: #2563eb; }
+    .op-card[data-op="sub"] .op-symbol { background: #dc2626; }
+    .op-card[data-op="mul"] .op-symbol { background: #d97706; }
+    .op-card[data-op="div"] .op-symbol { background: #16a34a; }
+
+    .op-card.selected[data-op="add"] { border-color: #2563eb; background: #eff6ff; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.18); }
+    .op-card.selected[data-op="sub"] { border-color: #dc2626; background: #fef2f2; box-shadow: 0 6px 18px rgba(220, 38, 38, 0.18); }
+    .op-card.selected[data-op="mul"] { border-color: #d97706; background: #fffbeb; box-shadow: 0 6px 18px rgba(217, 119, 6, 0.18); }
+    .op-card.selected[data-op="div"] { border-color: #16a34a; background: #f0fdf4; box-shadow: 0 6px 18px rgba(22, 163, 74, 0.18); }
+
+    /* Configuración de Cifras y Llevadas */
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .setting-box {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .digit-selector-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .digit-label {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pill-btn {
+      min-width: 48px;
+      height: 48px;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background: white;
+      font-family: var(--font-main);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill-btn:active {
+      transform: scale(0.95);
+    }
+
+    .pill-btn.active {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: white;
+      box-shadow: 0 3px 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .pill-btn:disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    /* Entrada Manual para el Maestro */
+    .manual-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 6px;
+      border-top: 2px dashed #e2e8f0;
+    }
+
+    .manual-input {
+      width: 125px;
+      height: 48px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      padding: 0 12px;
+      font-family: var(--font-main);
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--text-main);
+    }
+
+    .manual-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    /* Selector de Modo de Práctica */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .mode-card {
+      border: 3px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 16px 18px;
+      cursor: pointer;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s;
+      min-height: 84px;
+    }
+
+    .mode-card.selected {
+      border-color: #7c3aed;
+      background: #f5f3ff;
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.15);
+    }
+
+    .mode-icon {
+      font-size: 2rem;
+      width: 52px;
+      height: 52px;
+      background: white;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      flex-shrink: 0;
+    }
+
+    .mode-info h4 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .mode-info p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Botón Principal Empezar */
+    .btn-start {
+      min-height: 64px;
+      border-radius: 18px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      font-family: var(--font-main);
+      font-size: 1.4rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .btn-start:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
+    }
+
+    .btn-start:active {
+      transform: scale(0.98);
+    }
+
+    /* ==========================================
+       2. PANTALLA DE RESOLUCIÓN (LIENZO + ASISTENTE + TECLADO)
+       ========================================== */
+    .workspace-layout {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 20px;
+      flex: 1;
+      align-items: start;
+    }
+
+    /* Libreta Cuadriculada Pedagógica */
+    .notebook-panel {
+      background: #ffffff;
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 28px 28px;
+      border-radius: 24px;
+      border: 3px solid #cbd5e1;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+      min-height: 540px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow-x: auto;
+    }
+
+    .notebook-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .badge-mode {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-mode.guided {
+      background: #f3e8ff;
+      color: #6d28d9;
+      border: 2px solid #c4b5fd;
+    }
+
+    .badge-mode.free {
+      background: #dcfce7;
+      color: #15803d;
+      border: 2px solid #86efac;
+    }
+
+    .step-progress {
+      font-weight: 800;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 14px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Contenedor de la cuadrícula matemática */
+    .board-wrapper {
+      margin: auto;
+      padding: 18px 24px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      border: 2px solid #e2e8f0;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .math-grid {
+      display: grid;
+      gap: 6px 8px;
+      align-items: center;
+      justify-items: center;
+      position: relative;
+    }
+
+    /* Cabeceras de Valor Posicional (U, D, C, UM, DM...) */
+    .pos-header {
+      width: var(--cell-size);
+      height: 36px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pos-header.active-col {
+      transform: translateY(-4px) scale(1.08);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.22);
+      outline: 3px solid var(--focus-ring);
+    }
+
+    .pos-U  { background: var(--col-u); }
+    .pos-D  { background: var(--col-d); }
+    .pos-C  { background: var(--col-c); }
+    .pos-UM { background: var(--col-um); }
+    .pos-DM { background: var(--col-dm); }
+    .pos-CM { background: var(--col-cm); }
+    .pos-MM { background: var(--col-mm); }
+
+    /* Celdas fijas (dígitos de los operandos y signos) */
+    .static-cell {
+      width: var(--cell-size);
+      height: var(--cell-size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .static-cell.op-sign {
+      font-size: 2.2rem;
+      color: var(--primary-dark);
+    }
+
+    .static-cell.highlight-ref {
+      background: #fef3c7;
+      box-shadow: inset 0 0 0 2px #f59e0b;
+    }
+
+    /* Arco superior de división para marcar las primeras cifras tomadas */
+    .div-arc-top::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 4px;
+      right: 4px;
+      height: 10px;
+      border-top: 4px solid #dc2626;
+      border-radius: 12px 12px 0 0;
+    }
+
+    /* Coma superior para indicar cifra que se baja en la división */
+    .div-drop-tick::after {
+      content: '´';
+      position: absolute;
+      top: -10px;
+      right: 4px;
+      color: #dc2626;
+      font-size: 1.6rem;
+      font-weight: 900;
+    }
+
+    /* Casillas Interactivas de Resultado */
+    .input-cell {
+      width: var(--cell-size);
+      height: var(--cell-size);
+      border-radius: 14px;
+      border: 3px solid #94a3b8;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    /* Círculos de Llevadas (Cifras Auxiliares) */
+    .carry-cell {
+      width: var(--carry-size);
+      height: var(--carry-size);
+      border-radius: 50%;
+      border: 2.5px dashed #94a3b8;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    /* Colores de borde sutiles según columna para las llevadas */
+    .carry-cell[data-pos="D"]  { border-color: var(--col-d); color: var(--col-d); }
+    .carry-cell[data-pos="C"]  { border-color: var(--col-c); color: var(--col-c); }
+    .carry-cell[data-pos="UM"] { border-color: var(--col-um); color: var(--col-um); }
+    .carry-cell[data-pos="DM"] { border-color: var(--col-dm); color: var(--col-dm); }
+    .carry-cell[data-pos="CM"] { border-color: var(--col-cm); color: var(--col-cm); }
+
+    /* Estados de las celdas interactivas */
+    .input-cell.locked,
+    .carry-cell.locked {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .input-cell.step-enabled,
+    .carry-cell.step-enabled {
+      background: #fffbeb;
+      border-color: #f59e0b;
+      border-style: solid;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    .input-cell.focused,
+    .carry-cell.focused {
+      border-color: #2563eb !important;
+      border-style: solid !important;
+      background: #eff6ff !important;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3) !important;
+      transform: scale(1.06);
+      z-index: 5;
+    }
+
+    .input-cell.correct,
+    .carry-cell.correct {
+      background: var(--success-bg) !important;
+      border-color: var(--success) !important;
+      border-style: solid !important;
+      color: #14532d !important;
+    }
+
+    .input-cell.wrong,
+    .carry-cell.wrong {
+      background: var(--error-bg) !important;
+      border-color: var(--error) !important;
+      border-style: solid !important;
+      color: #7f1d1d !important;
+      animation: shake 0.35s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Línea horizontal de operación (Suma, Resta, Multiplicación) */
+    .op-divider-line {
+      height: 5px;
+      background: #1e293b;
+      border-radius: 4px;
+      width: 100%;
+      margin: 4px 0;
+    }
+
+    /* CAJA ESPAÑOLA DE DIVISIÓN */
+    .spanish-div-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .div-left-block {
+      padding-right: 12px;
+    }
+
+    .div-right-block {
+      display: flex;
+      flex-direction: column;
+      min-width: 160px;
+    }
+
+    .spanish-divisor-box {
+      border-left: 5px solid #1e293b;
+      border-bottom: 5px solid #1e293b;
+      padding: 8px 14px 10px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .spanish-quotient-area {
+      padding: 12px 14px 8px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    /* ==========================================
+       3. COLUMNA DERECHA: BOCADILLO PEDAGÓGICO + TECLADO
+       ========================================== */
+    .assistant-keypad-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Bocadillo / Pop-up Pedagógico (No intrusivo) */
+    .pedagogical-bubble {
+      background: #ffffff;
+      border: 3px solid #3b82f6;
+      border-radius: 22px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 165px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .pedagogical-bubble.hint-error {
+      border-color: var(--error);
+      background: #fff5f5;
+    }
+
+    .pedagogical-bubble.hint-success {
+      border-color: var(--success);
+      background: #f0fdf4;
+    }
+
+    .bubble-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .owl-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: #eff6ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.65rem;
+      flex-shrink: 0;
+    }
+
+    .bubble-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .bubble-body {
+      font-size: 1.02rem;
+      line-height: 1.48;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .bubble-body strong {
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Teclado Numérico Táctil Integrado */
+    .keypad-card {
+      background: var(--bg-card);
+      border-radius: 22px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .numpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .key-btn {
+      min-height: 58px;
+      border-radius: 16px;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      font-family: var(--font-main);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 0 #cbd5e1;
+      transition: all 0.1s ease;
+    }
+
+    .key-btn:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+
+    .key-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #cbd5e1;
+    }
+
+    .key-btn.key-del {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #dc2626;
+      box-shadow: 0 4px 0 #fca5a5;
+      font-size: 1.25rem;
+    }
+
+    .key-btn.key-clear {
+      background: #fffbeb;
+      border-color: #fcd34d;
+      color: #b45309;
+      box-shadow: 0 4px 0 #fcd34d;
+      font-size: 1.05rem;
+    }
+
+    .key-btn.key-check {
+      grid-column: span 3;
+      min-height: 60px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      border-color: #14532d;
+      color: white;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 0 #14532d;
+      gap: 10px;
+    }
+
+    .key-btn.key-hint {
+      grid-column: span 3;
+      min-height: 50px;
+      background: #f5f3ff;
+      border-color: #c4b5fd;
+      color: #6d28d9;
+      font-size: 1.05rem;
+      box-shadow: 0 3px 0 #c4b5fd;
+      gap: 8px;
+    }
+
+    /* Barra inferior del cuaderno (Nueva operación / Reiniciar) */
+    .notebook-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    /* Banner de Celebración al Completar */
+    .victory-banner {
+      display: none;
+      margin-top: 14px;
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      border: 3px solid #16a34a;
+      border-radius: 18px;
+      padding: 14px 20px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .victory-banner.show {
+      display: flex;
+    }
+
+    .victory-text {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #14532d;
+    }
+
+    /* Responsive para Tablets y Pantallas Compactas */
+    @media (max-width: 1024px) {
+      .workspace-layout {
+        grid-template-columns: 1fr;
+      }
+      .op-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .settings-row, .mode-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --cell-size: 46px;
+        --carry-size: 30px;
+      }
+      .static-cell, .input-cell {
+        font-size: 1.55rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🧮</div>
+      <span>Algoritmo Tradicional Español</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-top" id="btnBackMenu" style="display: none;" onclick="app.showConfigScreen()">
+        ⚙️ Configurar Operación
+      </button>
+      <button class="btn-top" id="btnSoundToggle" onclick="app.toggleSound()" aria-label="Activar o desactivar sonido">
+        🔊 Sonido
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ==========================================
+         PANTALLA 1: MENÚ DE CONFIGURACIÓN
+         ========================================== -->
+    <section id="screenConfig" class="screen active">
+      <div class="config-card">
+
+        <!-- 1. Selector de Operación -->
+        <div>
+          <div class="section-title">1. Elige la operación matemática</div>
+          <div class="op-grid">
+            <div class="op-card selected" data-op="add" onclick="app.selectOperation('add')">
+              <div class="op-symbol">+</div>
+              <div class="op-name">Suma</div>
+              <div class="op-desc">Con llevadas en círculos superiores</div>
+            </div>
+            <div class="op-card" data-op="sub" onclick="app.selectOperation('sub')">
+              <div class="op-symbol">−</div>
+              <div class="op-name">Resta</div>
+              <div class="op-desc">Minuendo ≥ Sustraendo siempre</div>
+            </div>
+            <div class="op-card" data-op="mul" onclick="app.selectOperation('mul')">
+              <div class="op-symbol">×</div>
+              <div class="op-name">Multiplicación</div>
+              <div class="op-desc">Productos parciales escalonados</div>
+            </div>
+            <div class="op-card" data-op="div" onclick="app.selectOperation('div')">
+              <div class="op-symbol">÷</div>
+              <div class="op-name">División</div>
+              <div class="op-desc">Con caja tradicional española</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Selector de Cifras y Llevadas -->
+        <div class="settings-row">
+          <div class="setting-box">
+            <div class="section-title">2. Número de Cifras</div>
+            <div class="digit-selector-group">
+              <span class="digit-label" id="lblDigits1">1.er Sumando:</span>
+              <div class="pill-group" id="pillsDigits1">
+                <button class="pill-btn" data-val="1" onclick="app.setDigits(1, 1)">1</button>
+                <button class="pill-btn" data-val="2" onclick="app.setDigits(1, 2)">2</button>
+                <button class="pill-btn active" data-val="3" onclick="app.setDigits(1, 3)">3</button>
+                <button class="pill-btn" data-val="4" onclick="app.setDigits(1, 4)">4</button>
+                <button class="pill-btn" data-val="5" onclick="app.setDigits(1, 5)">5</button>
+              </div>
+            </div>
+
+            <div class="digit-selector-group">
+              <span class="digit-label" id="lblDigits2">2.º Sumando:</span>
+              <div class="pill-group" id="pillsDigits2">
+                <button class="pill-btn" data-val="1" onclick="app.setDigits(2, 1)">1</button>
+                <button class="pill-btn" data-val="2" onclick="app.setDigits(2, 2)">2</button>
+                <button class="pill-btn active" data-val="3" onclick="app.setDigits(2, 3)">3</button>
+                <button class="pill-btn" data-val="4" onclick="app.setDigits(2, 4)">4</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-box">
+            <div class="section-title">3. Opciones Didácticas y Maestro</div>
+            <div class="digit-selector-group" id="carryOptionRow">
+              <span class="digit-label">Permitir llevadas:</span>
+              <div class="pill-group" id="pillsCarry">
+                <button class="pill-btn active" data-carry="yes" onclick="app.setCarryMode('yes')">Sí (Con llevadas)</button>
+                <button class="pill-btn" data-carry="random" onclick="app.setCarryMode('random')">Aleatorio</button>
+              </div>
+            </div>
+
+            <!-- Opción de números personalizados para el docente -->
+            <div class="manual-box">
+              <span class="digit-label" style="font-size: 0.92rem;">✏️ Números del maestro (opcional):</span>
+              <input type="number" id="customNum1" class="manual-input" placeholder="1.er núm" min="1" max="99999">
+              <input type="number" id="customNum2" class="manual-input" placeholder="2.º núm" min="1" max="9999">
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Selector de Modo de Práctica -->
+        <div>
+          <div class="section-title">4. Modo de Práctica</div>
+          <div class="mode-grid">
+            <div class="mode-card selected" data-mode="guided" onclick="app.selectMode('guided')">
+              <div class="mode-icon">🦉</div>
+              <div class="mode-info">
+                <h4>Modo 1: Práctica Guiada (Paso a paso)</h4>
+                <p>El asistente explica cada paso mental e ilumina solo las casillas que tocan.</p>
+              </div>
+            </div>
+            <div class="mode-card" data-mode="free" onclick="app.selectMode('free')">
+              <div class="mode-icon">🚀</div>
+              <div class="mode-info">
+                <h4>Modo 2: Práctica Libre (Autónoma)</h4>
+                <p>Todas las casillas desbloqueadas para resolver a tu ritmo y comprobar al final.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón de Inicio -->
+        <button class="btn-start" onclick="app.startOperation()">
+          <span>¡Empezar a calcular!</span> ✨
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PANTALLA 2: LIENZO DE RESOLUCIÓN
+         ========================================== -->
+    <section id="screenWorkspace" class="screen">
+      <div class="workspace-layout">
+
+        <!-- IZQUIERDA: Libreta Cuadriculada -->
+        <div class="notebook-panel">
+          <div>
+            <div class="notebook-top-bar">
+              <span id="badgeCurrentMode" class="badge-mode guided">🦉 Práctica Guiada</span>
+              <span id="stepCounterBadge" class="step-progress">Paso 1 de 4</span>
+            </div>
+
+            <div style="display:flex; justify-content:center; width:100%; overflow-x:auto; padding: 8px 0;">
+              <div class="board-wrapper" id="boardWrapper">
+                <!-- Aquí se inyecta dinámicamente la cuadrícula de Suma, Resta, Multiplicación o División Española -->
+              </div>
+            </div>
+
+            <!-- Banner de Operación Completada -->
+            <div id="victoryBanner" class="victory-banner">
+              <div class="victory-text">🎉 ¡Excelente trabajo! Has resuelto la operación correctamente.</div>
+              <button class="btn-top" style="background:#16a34a; color:white; border-color:#15803d;" onclick="app.newRandomSameConfig()">
+                🔄 Otra operación igual
+              </button>
+            </div>
+          </div>
+
+          <div class="notebook-footer">
+            <button class="btn-top" onclick="app.newRandomSameConfig()">🎲 Nuevos números al azar</button>
+            <button class="btn-top" onclick="app.resetCurrentBoard()">🧹 Vaciar todas las casillas</button>
+          </div>
+        </div>
+
+        <!-- DERECHA: Bocadillo Pedagógico + Teclado Táctil -->
+        <div class="assistant-keypad-col">
+          <!-- Pop-up / Bocadillo Pedagógico (Siempre visible y nunca tapa las casillas) -->
+          <div class="pedagogical-bubble" id="pedagogicalBubble">
+            <div class="bubble-header">
+              <div class="owl-avatar" id="owlAvatar">🦉</div>
+              <div class="bubble-title" id="bubbleTitle">Paso 1: Columna de las Unidades</div>
+            </div>
+            <div class="bubble-body" id="bubbleBody">
+              Observa las cifras de la columna activa y escribe el resultado usando el teclado numérico.
+            </div>
+          </div>
+
+          <!-- Teclado Numérico Táctil Integrado -->
+          <div class="keypad-card">
+            <div class="numpad-grid">
+              <button class="key-btn" onclick="app.pressDigit('7')">7</button>
+              <button class="key-btn" onclick="app.pressDigit('8')">8</button>
+              <button class="key-btn" onclick="app.pressDigit('9')">9</button>
+
+              <button class="key-btn" onclick="app.pressDigit('4')">4</button>
+              <button class="key-btn" onclick="app.pressDigit('5')">5</button>
+              <button class="key-btn" onclick="app.pressDigit('6')">6</button>
+
+              <button class="key-btn" onclick="app.pressDigit('1')">1</button>
+              <button class="key-btn" onclick="app.pressDigit('2')">2</button>
+              <button class="key-btn" onclick="app.pressDigit('3')">3</button>
+
+              <button class="key-btn key-clear" onclick="app.clearFocusedCell()">Limpiar</button>
+              <button class="key-btn" onclick="app.pressDigit('0')">0</button>
+              <button class="key-btn key-del" onclick="app.backspaceCell()">⌫ Borrar</button>
+
+              <button class="key-btn key-check" id="btnMainCheck" onclick="app.validateAction()">
+                ✓ Siguiente paso / Comprobar
+              </button>
+
+              <button class="key-btn key-hint" id="btnFreeHint" style="display: none;" onclick="app.showFreeModeHint()">
+                💡 Dame una pista para esta casilla
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =========================================================================
+       SINTETIZADOR DE SONIDO (WEB AUDIO API - 100% OFFLINE)
+       ========================================================================= */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      play(type) {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+
+        if (type === 'tap') {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(660, now + 0.05);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        } else if (type === 'success') {
+          [523.25, 659.25, 783.99].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + i * 0.07);
+            gain.gain.setValueAtTime(0.14, now + i * 0.07);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.18);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.07);
+            osc.stop(now + i * 0.07 + 0.18);
+          });
+        } else if (type === 'error') {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(165, now + 0.22);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.24);
+        } else if (type === 'win') {
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+            gain.gain.setValueAtTime(0.18, now + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.3);
+          });
+        }
+      }
+    }
+
+    /* =========================================================================
+       APLICACIÓN PRINCIPAL: MOTOR DE ALGORITMOS TRADICIONALES ESPAÑOLES
+       ========================================================================= */
+    const POS_LABELS = ['U', 'D', 'C', 'UM', 'DM', 'CM', 'MM'];
+    const POS_NAMES = {
+      'U': 'Unidades',
+      'D': 'Decenas',
+      'C': 'Centenas',
+      'UM': 'Unidades de Millar',
+      'DM': 'Decenas de Millar',
+      'CM': 'Centenas de Millar',
+      'MM': 'Unidades de Millón'
+    };
+
+    const app = {
+      sound: new SoundEngine(),
+      config: {
+        op: 'add',        // 'add' | 'sub' | 'mul' | 'div'
+        digits1: 3,       // 1..5
+        digits2: 3,       // 1..4 (1..3 en mul y div)
+        carryMode: 'yes', // 'yes' | 'random'
+        mode: 'guided'    // 'guided' | 'free'
+      },
+      state: {
+        num1: 0,
+        num2: 0,
+        steps: [],           // Lista de micropasos para Modo Guiado
+        currentStepIdx: 0,
+        cellsMap: {},        // Mapa id -> { id, expected, optionalZero, userVal, el, hintTitle, hintText }
+        focusedCellId: null,
+        completed: false
+      },
+
+      init() {
+        this.updateConfigLabels();
+        window.addEventListener('keydown', (e) => {
+          const ws = document.getElementById('screenWorkspace');
+          if (!ws.classList.contains('active')) return;
+          if (e.key >= '0' && e.key <= '9') {
+            e.preventDefault();
+            this.pressDigit(e.key);
+          } else if (e.key === 'Backspace' || e.key === 'Delete') {
+            e.preventDefault();
+            this.backspaceCell();
+          } else if (e.key === 'Enter') {
+            e.preventDefault();
+            this.validateAction();
+          }
+        });
+      },
+
+      toggleSound() {
+        this.sound.muted = !this.sound.muted;
+        const btn = document.getElementById('btnSoundToggle');
+        btn.textContent = this.sound.muted ? '🔇 Silencio' : '🔊 Sonido';
+      },
+
+      /* -----------------------------------------------------------------------
+         MÉTODOS DE CONFIGURACIÓN DEL MENÚ PRINCIPAL
+         ----------------------------------------------------------------------- */
+      selectOperation(op) {
+        this.sound.play('tap');
+        this.config.op = op;
+        document.querySelectorAll('.op-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.op === op);
+        });
+
+        // Limitar el 2.º operando en multiplicación y división a máximo 3 cifras para pizarra digital
+        const maxD2 = (op === 'mul' || op === 'div') ? 3 : 4;
+        if (this.config.digits2 > maxD2) {
+          this.config.digits2 = maxD2;
+        }
+        // En división el dividendo debe tener al menos tantas cifras como el divisor
+        if (op === 'div' && this.config.digits1 < this.config.digits2) {
+          this.config.digits1 = this.config.digits2;
+        }
+
+        this.updateConfigLabels();
+      },
+
+      setDigits(which, val) {
+        this.sound.play('tap');
+        if (which === 1) {
+          this.config.digits1 = val;
+          if (this.config.op === 'div' && this.config.digits2 > val) {
+            this.config.digits2 = val;
+          }
+        } else {
+          this.config.digits2 = val;
+          if (this.config.op === 'div' && this.config.digits1 < val) {
+            this.config.digits1 = val;
+          }
+        }
+        this.updateConfigLabels();
+      },
+
+      setCarryMode(mode) {
+        this.sound.play('tap');
+        this.config.carryMode = mode;
+        document.querySelectorAll('#pillsCarry .pill-btn').forEach(b => {
+          b.classList.toggle('active', b.dataset.carry === mode);
+        });
+      },
+
+      selectMode(mode) {
+        this.sound.play('tap');
+        this.config.mode = mode;
+        document.querySelectorAll('.mode-card').forEach(c => {
+          c.classList.toggle('selected', c.dataset.mode === mode);
+        });
+      },
+
+      updateConfigLabels() {
+        const names = {
+          add: ['1.er Sumando:', '2.º Sumando:'],
+          sub: ['Minuendo:', 'Sustraendo:'],
+          mul: ['Multiplicando:', 'Multiplicador:'],
+          div: ['Dividendo:', 'Divisor:']
+        }[this.config.op];
+
+        document.getElementById('lblDigits1').textContent = names[0];
+        document.getElementById('lblDigits2').textContent = names[1];
+
+        const maxD2 = (this.config.op === 'mul' || this.config.op === 'div') ? 3 : 4;
+
+        document.querySelectorAll('#pillsDigits1 .pill-btn').forEach(b => {
+          const v = parseInt(b.dataset.val, 10);
+          b.classList.toggle('active', v === this.config.digits1);
+        });
+
+        document.querySelectorAll('#pillsDigits2 .pill-btn').forEach(b => {
+          const v = parseInt(b.dataset.val, 10);
+          b.disabled = (v > maxD2) || (this.config.op === 'div' && v > this.config.digits1);
+          b.classList.toggle('active', v === this.config.digits2);
+        });
+
+        const carryRow = document.getElementById('carryOptionRow');
+        carryRow.style.opacity = (this.config.op === 'add' || this.config.op === 'sub') ? '1' : '0.45';
+      },
+
+      showConfigScreen() {
+        this.sound.play('tap');
+        document.getElementById('screenWorkspace').classList.remove('active');
+        document.getElementById('screenConfig').classList.add('active');
+        document.getElementById('btnBackMenu').style.display = 'none';
+      },
+
+      /* -----------------------------------------------------------------------
+         GENERADOR DE NÚMEROS ESCOLARES ADECUADOS
+         ----------------------------------------------------------------------- */
+      randomWithDigits(d) {
+        const min = d === 1 ? 1 : Math.pow(10, d - 1);
+        const max = Math.pow(10, d) - 1;
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      },
+
+      generateNumbers() {
+        const c1 = parseInt(document.getElementById('customNum1').value, 10);
+        const c2 = parseInt(document.getElementById('customNum2').value, 10);
+
+        if (!isNaN(c1) && !isNaN(c2) && c1 > 0 && c2 > 0) {
+          let n1 = Math.min(99999, c1);
+          let n2 = Math.min(9999, c2);
+          if (this.config.op === 'sub' && n1 < n2) {
+            [n1, n2] = [n2, n1];
+          }
+          if (this.config.op === 'div' && n1 < n2) {
+            [n1, n2] = [n2, n1];
+          }
+          this.state.num1 = n1;
+          this.state.num2 = n2;
+          return;
+        }
+
+        const { op, digits1, digits2, carryMode } = this.config;
+
+        if (op === 'add') {
+          let n1 = this.randomWithDigits(digits1);
+          let n2 = this.randomWithDigits(digits2);
+          if (carryMode === 'yes') {
+            // Garantizar al menos una llevada en las unidades
+            const u1 = Math.floor(Math.random() * 5) + 5; // 5..9
+            const u2 = Math.floor(Math.random() * 5) + 6; // 6..10 -> ajustado a 5..9
+            n1 = Math.floor(n1 / 10) * 10 + u1;
+            n2 = Math.floor(n2 / 10) * 10 + Math.min(9, u2);
+          }
+          this.state.num1 = n1;
+          this.state.num2 = n2;
+        } else if (op === 'sub') {
+          let n1 = this.randomWithDigits(digits1);
+          let n2 = this.randomWithDigits(digits2);
+          if (n1 < n2) [n1, n2] = [n2, n1];
+          if (carryMode === 'yes' && n1 >= 10) {
+            // Garantizar llevada en las unidades (cifra unidad minuendo < cifra unidad sustraendo)
+            const u1 = Math.floor(Math.random() * 4) + 1; // 1..4
+            const u2 = Math.floor(Math.random() * 4) + 5; // 5..8
+            let base1 = Math.floor(n1 / 10) * 10 + u1;
+            let base2 = Math.floor(n2 / 10) * 10 + u2;
+            if (base1 <= base2) base1 += 10;
+            n1 = base1;
+            n2 = base2;
+          }
+          this.state.num1 = n1;
+          this.state.num2 = n2;
+        } else if (op === 'mul') {
+          let n1 = this.randomWithDigits(digits1);
+          let n2 = this.randomWithDigits(digits2);
+          if (digits2 === 1 && n2 < 2) n2 = Math.floor(Math.random() * 8) + 2;
+          this.state.num1 = n1;
+          this.state.num2 = n2;
+        } else if (op === 'div') {
+          let d1 = Math.max(digits1, digits2);
+          let divisor = this.randomWithDigits(digits2);
+          if (digits2 === 1 && divisor < 2) divisor = Math.floor(Math.random() * 8) + 2;
+          let dividend = this.randomWithDigits(d1);
+          if (dividend < divisor) dividend = divisor * (Math.floor(Math.random() * 8) + 2);
+          this.state.num1 = dividend;
+          this.state.num2 = divisor;
+        }
+      },
+
+      startOperation() {
+        this.sound.play('tap');
+        this.generateNumbers();
+        this.buildWorkspace();
+
+        document.getElementById('screenConfig').classList.remove('active');
+        document.getElementById('screenWorkspace').classList.add('active');
+        document.getElementById('btnBackMenu').style.display = 'inline-flex';
+      },
+
+      newRandomSameConfig() {
+        document.getElementById('customNum1').value = '';
+        document.getElementById('customNum2').value = '';
+        this.startOperation();
+      },
+
+      resetCurrentBoard() {
+        this.sound.play('tap');
+        this.buildWorkspace();
+      },
+
+      /* -----------------------------------------------------------------------
+         CONSTRUCCIÓN DEL LIENZO Y MOTOR DE PASOS POR OPERACIÓN
+         ----------------------------------------------------------------------- */
+      buildWorkspace() {
+        this.state.steps = [];
+        this.state.currentStepIdx = 0;
+        this.state.cellsMap = {};
+        this.state.focusedCellId = null;
+        this.state.completed = false;
+
+        document.getElementById('victoryBanner').classList.remove('show');
+
+        const badge = document.getElementById('badgeCurrentMode');
+        const btnCheck = document.getElementById('btnMainCheck');
+        const btnHint = document.getElementById('btnFreeHint');
+
+        if (this.config.mode === 'guided') {
+          badge.className = 'badge-mode guided';
+          badge.innerHTML = '🦉 Modo 1: Práctica Guiada';
+          btnCheck.innerHTML = '✓ Comprobar paso';
+          btnHint.style.display = 'none';
+        } else {
+          badge.className = 'badge-mode free';
+          badge.innerHTML = '🚀 Modo 2: Práctica Libre';
+          btnCheck.innerHTML = '✓ Comprobar operación completa';
+          btnHint.style.display = 'flex';
+        }
+
+        const wrapper = document.getElementById('boardWrapper');
+        wrapper.innerHTML = '';
+
+        if (this.config.op === 'add') {
+          this.buildAdditionBoard(wrapper);
+        } else if (this.config.op === 'sub') {
+          this.buildSubtractionBoard(wrapper);
+        } else if (this.config.op === 'mul') {
+          this.buildMultiplicationBoard(wrapper);
+        } else if (this.config.op === 'div') {
+          this.buildSpanishDivisionBoard(wrapper);
+        }
+
+        this.applyModeLocksAndFocus();
+      },
+
+      registerCell(id, expected, optionalZero, el, hintTitle, hintText, posKey) {
+        this.state.cellsMap[id] = {
+          id,
+          expected: String(expected),
+          optionalZero: Boolean(optionalZero),
+          userVal: '',
+          el,
+          hintTitle,
+          hintText,
+          posKey: posKey || null
+        };
+        el.addEventListener('click', () => this.onCellClick(id));
+      },
+
+      /* =======================================================================
+         ALGORITMO 1: SUMA TRADICIONAL CON LLEVADAS
+         ======================================================================= */
+      buildAdditionBoard(wrapper) {
+        const n1 = this.state.num1;
+        const n2 = this.state.num2;
+        const sum = n1 + n2;
+
+        const maxCols = Math.max(String(n1).length, String(n2).length, String(sum).length);
+        const totalGridCols = maxCols + 1; // +1 columna izquierda para el signo '+'
+
+        const grid = document.createElement('div');
+        grid.className = 'math-grid';
+        grid.style.gridTemplateColumns = `repeat(${totalGridCols}, auto)`;
+
+        // 1. Fila de Cabeceras Posicionales (DM, UM, C, D, U)
+        grid.appendChild(this.createEmptySlot()); // Hueco sobre el signo
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const pKey = POS_LABELS[c] || 'MM';
+          const h = document.createElement('div');
+          h.className = `pos-header pos-${pKey}`;
+          h.id = `pos-header-${pKey}`;
+          h.textContent = pKey;
+          grid.appendChild(h);
+        }
+
+        // Precálculo de sumas columna por columna (de derecha a izquierda: c = 0..maxCols-1)
+        const s1 = String(n1).padStart(maxCols, ' ');
+        const s2 = String(n2).padStart(maxCols, ' ');
+
+        const carries = new Array(maxCols + 1).fill(0);
+        const resDigits = new Array(maxCols).fill(0);
+
+        for (let c = 0; c < maxCols; c++) {
+          const idx = maxCols - 1 - c;
+          const d1 = s1[idx] === ' ' ? 0 : parseInt(s1[idx], 10);
+          const d2 = s2[idx] === ' ' ? 0 : parseInt(s2[idx], 10);
+          const total = d1 + d2 + carries[c];
+          resDigits[c] = total % 10;
+          carries[c + 1] = Math.floor(total / 10);
+        }
+
+        // 2. Fila de Círculos de Llevadas
+        grid.appendChild(this.createEmptySlot());
+        const carryEls = {};
+        for (let c = maxCols - 1; c >= 0; c--) {
+          if (c === 0) {
+            // La columna de las Unidades nunca recibe llevada previa
+            grid.appendChild(this.createEmptySlot());
+          } else {
+            const pKey = POS_LABELS[c] || 'MM';
+            const cEl = document.createElement('div');
+            cEl.className = 'carry-cell';
+            cEl.dataset.pos = pKey;
+            cEl.title = `Llevada en ${POS_NAMES[pKey]}`;
+            grid.appendChild(cEl);
+            carryEls[c] = cEl;
+          }
+        }
+
+        // 3. Fila del 1.er Sumando
+        grid.appendChild(this.createEmptySlot());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s1[maxCols - 1 - c];
+          grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op1-col-${c}`));
+        }
+
+        // 4. Fila del Signo '+' y 2.º Sumando
+        grid.appendChild(this.createStaticCell('+', null, true));
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s2[maxCols - 1 - c];
+          grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op2-col-${c}`));
+        }
+
+        // 5. Línea divisoria
+        const line = document.createElement('div');
+        line.className = 'op-divider-line';
+        line.style.gridColumn = `1 / span ${totalGridCols}`;
+        grid.appendChild(line);
+
+        // 6. Fila de Casillas de Resultado
+        grid.appendChild(this.createEmptySlot());
+        const resEls = {};
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const rEl = document.createElement('div');
+          rEl.className = 'input-cell';
+          grid.appendChild(rEl);
+          resEls[c] = rEl;
+        }
+
+        // Registrar celdas y construir micropasos de derecha a izquierda
+        for (let c = 0; c < maxCols; c++) {
+          const idx = maxCols - 1 - c;
+          const hasAnyOperandDigit = (s1[idx] !== ' ' || s2[idx] !== ' ');
+          const d1 = s1[idx] === ' ' ? 0 : parseInt(s1[idx], 10);
+          const d2 = s2[idx] === ' ' ? 0 : parseInt(s2[idx], 10);
+          const prevCarry = carries[c];
+          const colSum = d1 + d2 + prevCarry;
+          const digitOut = resDigits[c];
+          const nextCarry = carries[c + 1];
+
+          const pKey = POS_LABELS[c] || 'MM';
+          const nextPKey = POS_LABELS[c + 1] || 'MM';
+          const colName = POS_NAMES[pKey];
+          const nextColName = POS_NAMES[nextPKey];
+
+          // Explicación pedagógica detallada
+          let sumExpr = `${d1} + ${d2}`;
+          if (prevCarry > 0) sumExpr += ` + ${prevCarry} (que nos llevábamos)`;
+          sumExpr += ` = <strong>${colSum}</strong>`;
+
+          let stepExplain = '';
+          const stepCellIds = [];
+
+          const resId = `res_${c}`;
+          if (!hasAnyOperandDigit && prevCarry > 0 && c === maxCols - 1) {
+            stepExplain = `En la columna de las <strong>${colName} (${pKey})</strong> bajamos directamente el <strong>${prevCarry}</strong> que nos llevábamos.`;
+          } else if (nextCarry > 0 && c + 1 < maxCols) {
+            stepExplain = `Sumamos las <strong>${colName} (${pKey})</strong>: ${sumExpr}. Como pasa de 9, escribe el <strong>${digitOut}</strong> en la casilla de las ${colName} y anota el <strong>${nextCarry}</strong> que te llevas en el circulito encima de las <strong>${nextColName} (${nextPKey})</strong>.`;
+          } else {
+            stepExplain = `Sumamos las <strong>${colName} (${pKey})</strong>: ${sumExpr}. No nos llevamos nada. Escribe el <strong>${digitOut}</strong> en la casilla de las ${colName}.`;
+          }
+
+          this.registerCell(
+            resId,
+            digitOut,
+            false,
+            resEls[c],
+            `Columna de las ${colName} (${pKey})`,
+            stepExplain,
+            pKey
+          );
+          stepCellIds.push(resId);
+
+          // Si hay círculo de llevada en la columna siguiente (c + 1)
+          if (c + 1 < maxCols && carryEls[c + 1]) {
+            const carryId = `carry_${c + 1}`;
+            const isZeroCarry = (nextCarry === 0);
+            this.registerCell(
+              carryId,
+              nextCarry,
+              isZeroCarry, // En Modo Libre no penaliza dejar vacío si la llevada es 0
+              carryEls[c + 1],
+              `Llevada en ${nextColName} (${nextPKey})`,
+              nextCarry > 0
+                ? `De la suma de las ${colName} (${colSum}), nos llevamos <strong>${nextCarry}</strong> a la columna de las ${nextColName}.`
+                : `En las ${colName} la suma dio ${colSum} (menor que 10), así que no te llevas nada (puedes dejar el círculo vacío).`,
+              nextPKey
+            );
+
+            // En Modo Guiado solo exigimos rellenar el círculo si realmente hay llevada (> 0)
+            if (nextCarry > 0) {
+              stepCellIds.push(carryId);
+            }
+          }
+
+          this.state.steps.push({
+            title: `Paso ${this.state.steps.length + 1}: Columna de las ${colName} (${pKey})`,
+            text: stepExplain,
+            cellIds: stepCellIds,
+            posKey: pKey,
+            refStaticIds: [`op1-col-${c}`, `op2-col-${c}`]
+          });
+        }
+
+        wrapper.appendChild(grid);
+      },
+
+      /* =======================================================================
+         ALGORITMO 2: RESTA TRADICIONAL ESPAÑOLA CON LLEVADAS
+         ======================================================================= */
+      buildSubtractionBoard(wrapper) {
+        const n1 = this.state.num1;
+        const n2 = this.state.num2;
+        const diff = n1 - n2;
+
+        const maxCols = Math.max(String(n1).length, String(n2).length);
+        const totalGridCols = maxCols + 1;
+
+        const grid = document.createElement('div');
+        grid.className = 'math-grid';
+        grid.style.gridTemplateColumns = `repeat(${totalGridCols}, auto)`;
+
+        // 1. Cabeceras Posicionales
+        grid.appendChild(this.createEmptySlot());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const pKey = POS_LABELS[c] || 'MM';
+          const h = document.createElement('div');
+          h.className = `pos-header pos-${pKey}`;
+          h.id = `pos-header-${pKey}`;
+          h.textContent = pKey;
+          grid.appendChild(h);
+        }
+
+        const s1 = String(n1).padStart(maxCols, ' ');
+        const s2 = String(n2).padStart(maxCols, ' ');
+
+        // Cálculo de llevadas en resta tradicional española:
+        // Si minuendo < sustraendo + llevada, sumamos 10 al minuendo y nos llevamos 1 a la siguiente columna
+        const carries = new Array(maxCols + 1).fill(0);
+        const resDigits = new Array(maxCols).fill(0);
+
+        for (let c = 0; c < maxCols; c++) {
+          const idx = maxCols - 1 - c;
+          const d1 = s1[idx] === ' ' ? 0 : parseInt(s1[idx], 10);
+          const d2 = s2[idx] === ' ' ? 0 : parseInt(s2[idx], 10);
+          const subTotal = d2 + carries[c];
+          if (d1 < subTotal) {
+            resDigits[c] = (d1 + 10) - subTotal;
+            carries[c + 1] = 1;
+          } else {
+            resDigits[c] = d1 - subTotal;
+            carries[c + 1] = 0;
+          }
+        }
+
+        // 2. Fila de Círculos de Llevadas
+        grid.appendChild(this.createEmptySlot());
+        const carryEls = {};
+        for (let c = maxCols - 1; c >= 0; c--) {
+          if (c === 0) {
+            grid.appendChild(this.createEmptySlot());
+          } else {
+            const pKey = POS_LABELS[c] || 'MM';
+            const cEl = document.createElement('div');
+            cEl.className = 'carry-cell';
+            cEl.dataset.pos = pKey;
+            grid.appendChild(cEl);
+            carryEls[c] = cEl;
+          }
+        }
+
+        // 3. Fila del Minuendo
+        grid.appendChild(this.createEmptySlot());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s1[maxCols - 1 - c];
+          grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op1-col-${c}`));
+        }
+
+        // 4. Fila del Signo '−' y Sustraendo
+        grid.appendChild(this.createStaticCell('−', null, true));
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s2[maxCols - 1 - c];
+          grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op2-col-${c}`));
+        }
+
+        // 5. Línea divisoria
+        const line = document.createElement('div');
+        line.className = 'op-divider-line';
+        line.style.gridColumn = `1 / span ${totalGridCols}`;
+        grid.appendChild(line);
+
+        // 6. Fila de Resultado (Diferencia)
+        grid.appendChild(this.createEmptySlot());
+        const resEls = {};
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const rEl = document.createElement('div');
+          rEl.className = 'input-cell';
+          grid.appendChild(rEl);
+          resEls[c] = rEl;
+        }
+
+        // Registrar celdas y micropasos
+        for (let c = 0; c < maxCols; c++) {
+          const idx = maxCols - 1 - c;
+          const d1 = s1[idx] === ' ' ? 0 : parseInt(s1[idx], 10);
+          const d2 = s2[idx] === ' ' ? 0 : parseInt(s2[idx], 10);
+          const prevCarry = carries[c];
+          const subTotal = d2 + prevCarry;
+          const digitOut = resDigits[c];
+          const nextCarry = carries[c + 1];
+
+          const pKey = POS_LABELS[c] || 'MM';
+          const nextPKey = POS_LABELS[c + 1] || 'MM';
+          const colName = POS_NAMES[pKey];
+          const nextColName = POS_NAMES[nextPKey];
+
+          let stepExplain = '';
+          const stepCellIds = [];
+
+          if (nextCarry === 1) {
+            const subDesc = prevCarry > 0 ? `${d2} + 1 (de llevada) = ${subTotal}` : `${d2}`;
+            stepExplain = `En las <strong>${colName} (${pKey})</strong>: como a <strong>${d1}</strong> no le podemos quitar <strong>${subTotal}</strong> (${subDesc}), le sumamos 10 y decimos: de <strong>${subTotal}</strong> hasta <strong>${d1 + 10}</strong> van <strong>${digitOut}</strong>. Escribe el <strong>${digitOut}</strong> y anota <strong>1</strong> de llevada en el circulito de las <strong>${nextColName} (${nextPKey})</strong>.`;
+          } else {
+            const subDesc = prevCarry > 0 ? `(${d2} + 1 que nos llevábamos = ${subTotal})` : `${d2}`;
+            stepExplain = `En las <strong>${colName} (${pKey})</strong>: a <strong>${d1}</strong> le quitamos <strong>${subTotal}</strong> ${prevCarry > 0 ? subDesc : ''}: ${d1} − ${subTotal} = <strong>${digitOut}</strong>. No nos llevamos nada. Escribe el <strong>${digitOut}</strong>.`;
+          }
+
+          const resId = `res_${c}`;
+          this.registerCell(
+            resId,
+            digitOut,
+            false,
+            resEls[c],
+            `Columna de las ${colName} (${pKey})`,
+            stepExplain,
+            pKey
+          );
+          stepCellIds.push(resId);
+
+          if (c + 1 < maxCols && carryEls[c + 1]) {
+            const carryId = `carry_${c + 1}`;
+            this.registerCell(
+              carryId,
+              nextCarry,
+              nextCarry === 0,
+              carryEls[c + 1],
+              `Llevada en ${nextColName} (${nextPKey})`,
+              nextCarry > 0
+                ? `Como tuvimos que añadir 10 en las ${colName}, nos llevamos <strong>1</strong> al circulito de las ${nextColName}.`
+                : `No hubo llevada en las ${colName}, puedes dejar este circulito vacío.`,
+              nextPKey
+            );
+            if (nextCarry > 0) stepCellIds.push(carryId);
+          }
+
+          this.state.steps.push({
+            title: `Paso ${this.state.steps.length + 1}: Restamos las ${colName} (${pKey})`,
+            text: stepExplain,
+            cellIds: stepCellIds,
+            posKey: pKey,
+            refStaticIds: [`op1-col-${c}`, `op2-col-${c}`]
+          });
+        }
+
+        wrapper.appendChild(grid);
+      },
+
+      /* =======================================================================
+         ALGORITMO 3: MULTIPLICACIÓN (DE 1 O VARIAS CIFRAS CON SUMA FINAL)
+         ======================================================================= */
+      buildMultiplicationBoard(wrapper) {
+        const n1 = this.state.num1;
+        const n2 = this.state.num2;
+        const totalProd = n1 * n2;
+
+        const s1 = String(n1);
+        const s2 = String(n2);
+        const len1 = s1.length;
+        const len2 = s2.length;
+
+        // Número de columnas necesarias para el producto final o los productos parciales desplazados
+        let maxCols = Math.max(len1 + len2, String(totalProd).length);
+        // Ajustar maxCols al tamaño real máximo de cualquier fila
+        let realMaxLen = Math.max(len1, len2, String(totalProd).length);
+        for (let r = 0; r < len2; r++) {
+          const mDigit = parseInt(s2[len2 - 1 - r], 10);
+          const pLen = String(n1 * mDigit).length + r;
+          if (pLen > realMaxLen) realMaxLen = pLen;
+        }
+        maxCols = realMaxLen;
+        const totalGridCols = maxCols + 1;
+
+        const grid = document.createElement('div');
+        grid.className = 'math-grid';
+        grid.style.gridTemplateColumns = `repeat(${totalGridCols}, auto)`;
+
+        // 1. Cabeceras Posicionales
+        grid.appendChild(this.createEmptySlot());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const pKey = POS_LABELS[c] || 'MM';
+          const h = document.createElement('div');
+          h.className = `pos-header pos-${pKey}`;
+          h.id = `pos-header-${pKey}`;
+          h.textContent = pKey;
+          grid.appendChild(h);
+        }
+
+        // 2. Círculos de llevadas para los productos parciales (una fila por cada cifra del multiplicador)
+        const mulCarryEls = [];
+        for (let r = 0; r < len2; r++) {
+          const rowCarries = {};
+          grid.appendChild(this.createEmptySlot());
+          for (let c = maxCols - 1; c >= 0; c--) {
+            // Para la fila parcial r, las llevadas se colocan sobre las columnas 1..len1
+            if (c >= 1 && c <= len1) {
+              const pKey = POS_LABELS[c] || 'MM';
+              const cEl = document.createElement('div');
+              cEl.className = 'carry-cell';
+              cEl.dataset.pos = pKey;
+              grid.appendChild(cEl);
+              rowCarries[c] = cEl;
+            } else {
+              grid.appendChild(this.createEmptySlot());
+            }
+          }
+          mulCarryEls.push(rowCarries);
+        }
+
+        // 3. Fila del Multiplicando
+        const s1Pad = s1.padStart(maxCols, ' ');
+        grid.appendChild(this.createEmptySlot());
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s1Pad[maxCols - 1 - c];
+          grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op1-col-${c}`));
+        }
+
+        // 4. Fila del Signo '×' y Multiplicador
+        const s2Pad = s2.padStart(maxCols, ' ');
+        grid.appendChild(this.createStaticCell('×', null, true));
+        for (let c = maxCols - 1; c >= 0; c--) {
+          const ch = s2Pad[maxCols - 1 - c];
+          grid.appendChild(this.createStaticCell(ch === ' ' ? '' : ch, `op2-col-${c}`));
+        }
+
+        // 5. Línea divisoria
+        const line1 = document.createElement('div');
+        line1.className = 'op-divider-line';
+        line1.style.gridColumn = `1 / span ${totalGridCols}`;
+        grid.appendChild(line1);
+
+        // 6. Filas de Productos Parciales (escalonadas a la izquierda según r)
+        for (let r = 0; r < len2; r++) {
+          const mDigit = parseInt(s2[len2 - 1 - r], 10);
+
+          // Calcular dígitos y llevadas de n1 * mDigit paso a paso
+          const pCarries = new Array(len1 + 1).fill(0);
+          const pDigits = [];
+          for (let i = 0; i < len1; i++) {
+            const d1 = parseInt(s1[len1 - 1 - i], 10);
+            const val = d1 * mDigit + pCarries[i];
+            pDigits[i] = val % 10;
+            pCarries[i + 1] = Math.floor(val / 10);
+          }
+          if (pCarries[len1] > 0) {
+            pDigits[len1] = pCarries[len1];
+          }
+
+          const numCellsThisRow = pDigits.length;
+          const partialEls = {};
+
+          // Signo '+' en la última fila de producto parcial si hay más de 1 cifra
+          if (len2 > 1 && r === len2 - 1) {
+            grid.appendChild(this.createStaticCell('+', null, true));
+          } else {
+            grid.appendChild(this.createEmptySlot());
+          }
+
+          for (let c = maxCols - 1; c >= 0; c--) {
+            // El producto parcial r empieza en la columna r y ocupa hasta r + numCellsThisRow - 1
+            const localIdx = c - r;
+            if (localIdx >= 0 && localIdx < numCellsThisRow) {
+              const pEl = document.createElement('div');
+              pEl.className = 'input-cell';
+              grid.appendChild(pEl);
+              partialEls[localIdx] = pEl;
+            } else {
+              grid.appendChild(this.createEmptySlot());
+            }
+          }
+
+          // Generar micropasos de este producto parcial
+          for (let i = 0; i < len1; i++) {
+            const d1 = parseInt(s1[len1 - 1 - i], 10);
+            const prevC = pCarries[i];
+            const prodVal = d1 * mDigit + prevC;
+            const outDig = pDigits[i];
+            const nextC = pCarries[i + 1];
+            const isLastMultiplicandDigit = (i === len1 - 1);
+
+            const targetCol = r + i;
+            const pKey = POS_LABELS[targetCol] || 'MM';
+            const multiplicandPKey = POS_LABELS[i] || 'MM';
+
+            let calcStr = `${mDigit} × ${d1} = ${mDigit * d1}`;
+            if (prevC > 0) calcStr += `, más ${prevC} que nos llevábamos = <strong>${prodVal}</strong>`;
+            else calcStr = `${mDigit} × ${d1} = <strong>${prodVal}</strong>`;
+
+            const stepCellIds = [];
+            let explain = '';
+
+            const cellId = `part_${r}_${i}`;
+
+            if (isLastMultiplicandDigit && nextC > 0) {
+              explain = `Multiplicamos <strong>${mDigit}</strong> por <strong>${d1}</strong> (${POS_NAMES[multiplicandPKey]}): ${calcStr}. Como es la última cifra del multiplicando, escribimos el <strong>${prodVal}</strong> completo (el <strong>${outDig}</strong> y el <strong>${nextC}</strong> a su izquierda).`;
+              this.registerCell(cellId, outDig, false, partialEls[i], `Producto parcial`, explain, pKey);
+              stepCellIds.push(cellId);
+
+              const extraCellId = `part_${r}_${len1}`;
+              const extraPKey = POS_LABELS[r + len1] || 'MM';
+              this.registerCell(extraCellId, nextC, false, partialEls[len1], `Producto parcial`, explain, extraPKey);
+              stepCellIds.push(extraCellId);
+
+              // El círculo de llevada i+1 queda opcional en Modo Libre
+              if (mulCarryEls[r][i + 1]) {
+                this.registerCell(`mcarry_${r}_${i + 1}`, 0, true, mulCarryEls[r][i + 1], `Llevada`, `Ya escribimos la cifra completa abajo.`, POS_LABELS[i + 1]);
+              }
+            } else if (nextC > 0) {
+              const nextMultColName = POS_NAMES[POS_LABELS[i + 1] || 'MM'];
+              explain = `Multiplicamos <strong>${mDigit}</strong> por <strong>${d1}</strong> (${POS_NAMES[multiplicandPKey]}): ${calcStr}. Escribe el <strong>${outDig}</strong> abajo y anota el <strong>${nextC}</strong> que te llevas en el circulito sobre las ${nextMultColName}.`;
+              this.registerCell(cellId, outDig, false, partialEls[i], `Producto parcial`, explain, pKey);
+              stepCellIds.push(cellId);
+
+              if (mulCarryEls[r][i + 1]) {
+                const cId = `mcarry_${r}_${i + 1}`;
+                this.registerCell(cId, nextC, false, mulCarryEls[r][i + 1], `Llevada de multiplicación`, explain, POS_LABELS[i + 1]);
+                stepCellIds.push(cId);
+              }
+            } else {
+              explain = `Multiplicamos <strong>${mDigit}</strong> por <strong>${d1}</strong> (${POS_NAMES[multiplicandPKey]}): ${calcStr}. Escribe el <strong>${outDig}</strong> en su casilla.`;
+              this.registerCell(cellId, outDig, false, partialEls[i], `Producto parcial`, explain, pKey);
+              stepCellIds.push(cellId);
+
+              if (mulCarryEls[r][i + 1]) {
+                const cId = `mcarry_${r}_${i + 1}`;
+                this.registerCell(cId, 0, true, mulCarryEls[r][i + 1], `Sin llevada`, `No nos llevamos nada en este paso.`, POS_LABELS[i + 1]);
+              }
+            }
+
+            this.state.steps.push({
+              title: `Paso ${this.state.steps.length + 1}: Multiplicamos ${mDigit} × ${d1}`,
+              text: explain,
+              cellIds: stepCellIds,
+              posKey: pKey,
+              refStaticIds: [`op1-col-${i}`, `op2-col-${r}`]
+            });
+          }
+        }
+
+        // 7. Si el multiplicador tiene 2 o más cifras, añadimos la SUMA FINAL con sus círculos de llevadas
+        if (len2 > 1) {
+          const line2 = document.createElement('div');
+          line2.className = 'op-divider-line';
+          line2.style.gridColumn = `1 / span ${totalGridCols}`;
+          grid.appendChild(line2);
+
+          // Círculos de llevadas de la suma final
+          grid.appendChild(this.createEmptySlot());
+          const sumCarryEls = {};
+          for (let c = maxCols - 1; c >= 0; c--) {
+            if (c === 0) {
+              grid.appendChild(this.createEmptySlot());
+            } else {
+              const pKey = POS_LABELS[c] || 'MM';
+              const cEl = document.createElement('div');
+              cEl.className = 'carry-cell';
+              cEl.dataset.pos = pKey;
+              grid.appendChild(cEl);
+              sumCarryEls[c] = cEl;
+            }
+          }
+
+          // Casillas del resultado final
+          grid.appendChild(this.createEmptySlot());
+          const finalResEls = {};
+          for (let c = maxCols - 1; c >= 0; c--) {
+            const fEl = document.createElement('div');
+            fEl.className = 'input-cell';
+            grid.appendChild(fEl);
+            finalResEls[c] = fEl;
+          }
+
+          // Calcular suma columna por columna de los productos parciales desplazados
+          const partialStrings = [];
+          for (let r = 0; r < len2; r++) {
+            const mDigit = parseInt(s2[len2 - 1 - r], 10);
+            const valStr = String(n1 * mDigit) + '0'.repeat(r);
+            partialStrings.push(valStr.padStart(maxCols, '0'));
+          }
+
+          const sCarries = new Array(maxCols + 1).fill(0);
+          for (let c = 0; c < maxCols; c++) {
+            const idx = maxCols - 1 - c;
+            let colSum = sCarries[c];
+            const addends = [];
+            for (let r = 0; r < len2; r++) {
+              const mDigit = parseInt(s2[len2 - 1 - r], 10);
+              const rawLen = String(n1 * mDigit).length + r;
+              if (c >= r && c < rawLen) {
+                const d = parseInt(partialStrings[r][idx], 10);
+                colSum += d;
+                addends.push(d);
+              }
+            }
+            const outD = colSum % 10;
+            const nextC = Math.floor(colSum / 10);
+            sCarries[c + 1] = nextC;
+
+            const pKey = POS_LABELS[c] || 'MM';
+            const nextPKey = POS_LABELS[c + 1] || 'MM';
+            const colName = POS_NAMES[pKey];
+            const nextColName = POS_NAMES[nextPKey];
+
+            let sumExplain = `Sumamos la columna de las <strong>${colName} (${pKey})</strong> de los productos parciales`;
+            if (sCarries[c] > 0) sumExplain += ` más <strong>${sCarries[c]}</strong> que nos llevábamos`;
+            sumExplain += `: total = <strong>${colSum}</strong>. `;
+
+            const stepIds = [];
+            const fId = `final_sum_${c}`;
+
+            if (nextC > 0 && c + 1 < maxCols) {
+              sumExplain += `Escribe el <strong>${outD}</strong> abajo y anota el <strong>${nextC}</strong> en el circulito de llevada de las ${nextColName}.`;
+            } else {
+              sumExplain += `Escribe el <strong>${outD}</strong> en el resultado final.`;
+            }
+
+            this.registerCell(fId, outD, false, finalResEls[c], `Suma final (${colName})`, sumExplain, pKey);
+            stepIds.push(fId);
+
+            if (c + 1 < maxCols && sumCarryEls[c + 1]) {
+              const scId = `sum_carry_${c + 1}`;
+              this.registerCell(scId, nextC, nextC === 0, sumCarryEls[c + 1], `Llevada de la suma`, sumExplain, nextPKey);
+              if (nextC > 0) stepIds.push(scId);
+            }
+
+            this.state.steps.push({
+              title: `Paso ${this.state.steps.length + 1}: Sumamos las ${colName} (${pKey})`,
+              text: sumExplain,
+              cellIds: stepIds,
+              posKey: pKey,
+              refStaticIds: []
+            });
+          }
+        }
+
+        wrapper.appendChild(grid);
+      },
+
+      /* =======================================================================
+         ALGORITMO 4: DIVISIÓN CON CAJA TRADICIONAL ESPAÑOLA (Directa escalonada)
+         ======================================================================= */
+      buildSpanishDivisionBoard(wrapper) {
+        const dividend = this.state.num1;
+        const divisor = this.state.num2;
+        const divStr = String(dividend);
+        const divLen = divStr.length;
+
+        // Precalcular los pasos del algoritmo español de división (sin escribir las restas, o anotando restos parciales y bajando la cifra siguiente)
+        let idx = 0;
+        let currentVal = 0;
+        while (idx < divLen && (currentVal * 10 + parseInt(divStr[idx], 10)) < divisor) {
+          currentVal = currentVal * 10 + parseInt(divStr[idx], 10);
+          idx++;
+        }
+        if (idx < divLen) {
+          currentVal = currentVal * 10 + parseInt(divStr[idx], 10);
+        }
+        const firstEndCol = idx; // Índice (0..divLen-1) donde termina el primer arco del dividendo
+
+        const divStepsData = [];
+        let stepEndCol = firstEndCol;
+        let workingNumber = currentVal;
+
+        while (stepEndCol < divLen) {
+          const qDigit = Math.floor(workingNumber / divisor);
+          const prod = qDigit * divisor;
+          const rem = workingNumber - prod;
+          const hasNextDigit = (stepEndCol + 1) < divLen;
+          const nextDividendDigit = hasNextDigit ? parseInt(divStr[stepEndCol + 1], 10) : null;
+
+          divStepsData.push({
+            endCol: stepEndCol,
+            workingNumber,
+            qDigit,
+            prod,
+            rem,
+            hasNextDigit,
+            nextDividendDigit
+          });
+
+          if (hasNextDigit) {
+            workingNumber = rem * 10 + nextDividendDigit;
+            stepEndCol++;
+          } else {
+            break;
+          }
+        }
+
+        // Contenedor con diseño de Caja Tradicional Española: Dividendo |___Divisor___
+        const layout = document.createElement('div');
+        layout.className = 'spanish-div-layout';
+
+        // BLOQUE IZQUIERDO: Cabeceras del Dividendo + Cifras del Dividendo + Restos Parciales Escalonados
+        const leftBlock = document.createElement('div');
+        leftBlock.className = 'div-left-block';
+
+        const leftGrid = document.createElement('div');
+        leftGrid.className = 'math-grid';
+        leftGrid.style.gridTemplateColumns = `repeat(${divLen}, auto)`;
+
+        // Cabeceras Posicionales del Dividendo
+        for (let i = 0; i < divLen; i++) {
+          const posIdx = divLen - 1 - i;
+          const pKey = POS_LABELS[posIdx] || 'MM';
+          const h = document.createElement('div');
+          h.className = `pos-header pos-${pKey}`;
+          h.id = `pos-header-${pKey}`;
+          h.textContent = pKey;
+          leftGrid.appendChild(h);
+        }
+
+        // Fila del Dividendo con el arco superior en las cifras iniciales tomadas
+        for (let i = 0; i < divLen; i++) {
+          const cell = this.createStaticCell(divStr[i], `div-digit-${i}`);
+          if (i <= firstEndCol) {
+            cell.classList.add('div-arc-top');
+          } else {
+            cell.classList.add('div-drop-tick');
+          }
+          leftGrid.appendChild(cell);
+        }
+
+        // Filas escalonadas de Restos Parciales y Cifras Bajadas bajo el dividendo
+        const remRowEls = [];
+        for (let s = 0; s < divStepsData.length; s++) {
+          const st = divStepsData[s];
+          const remStr = String(st.rem);
+          const remLen = remStr.length;
+          // El resto se alinea de modo que su última cifra quede bajo st.endCol
+          const remStartCol = st.endCol - remLen + 1;
+          const dropCol = st.hasNextDigit ? st.endCol + 1 : -1;
+
+          const rowMap = { remCells: [], dropCell: null };
+
+          for (let col = 0; col < divLen; col++) {
+            if (col >= remStartCol && col <= st.endCol) {
+              const rEl = document.createElement('div');
+              rEl.className = 'input-cell';
+              leftGrid.appendChild(rEl);
+              rowMap.remCells.push({ col, digit: remStr[col - remStartCol], el: rEl });
+            } else if (col === dropCol) {
+              const dEl = document.createElement('div');
+              dEl.className = 'input-cell';
+              leftGrid.appendChild(dEl);
+              rowMap.dropCell = { col, digit: String(st.nextDividendDigit), el: dEl };
+            } else {
+              leftGrid.appendChild(this.createEmptySlot());
+            }
+          }
+          remRowEls.push(rowMap);
+        }
+
+        leftBlock.appendChild(leftGrid);
+
+        // BLOQUE DERECHO: Caja Española del Divisor arriba y Casillas del Cociente debajo
+        const rightBlock = document.createElement('div');
+        rightBlock.className = 'div-right-block';
+
+        // Espaciador superior para alinear el divisor con la fila de números del dividendo
+        const topSpacer = document.createElement('div');
+        topSpacer.style.height = '42px';
+        rightBlock.appendChild(topSpacer);
+
+        const divisorBox = document.createElement('div');
+        divisorBox.className = 'spanish-divisor-box';
+        const divisorStr = String(divisor);
+        for (let i = 0; i < divisorStr.length; i++) {
+          divisorBox.appendChild(this.createStaticCell(divisorStr[i], `divisor-digit-${i}`));
+        }
+        rightBlock.appendChild(divisorBox);
+
+        const quotientArea = document.createElement('div');
+        quotientArea.className = 'spanish-quotient-area';
+        const qEls = [];
+        for (let s = 0; s < divStepsData.length; s++) {
+          const qEl = document.createElement('div');
+          qEl.className = 'input-cell';
+          quotientArea.appendChild(qEl);
+          qEls.push(qEl);
+        }
+        rightBlock.appendChild(quotientArea);
+
+        layout.appendChild(leftBlock);
+        layout.appendChild(rightBlock);
+        wrapper.appendChild(layout);
+
+        // Construir micropasos pedagógicos para la División Española
+        for (let s = 0; s < divStepsData.length; s++) {
+          const st = divStepsData[s];
+          const posIdx = divLen - 1 - st.endCol;
+          const pKey = POS_LABELS[posIdx] || 'U';
+
+          // Micropaso A: Buscar cifra del cociente
+          let qExplain = '';
+          if (s === 0) {
+            if (firstEndCol > 0) {
+              qExplain = `¡Empezamos! Como la primera cifra del dividendo (<strong>${divStr[0]}</strong>) es menor que el divisor (<strong>${divisor}</strong>), tomamos las <strong>${firstEndCol + 1} primeras cifras (${st.workingNumber})</strong>. Busca un número que multiplicado por ${divisor} se acerque a ${st.workingNumber} sin pasarse: <strong>${divisor} × ${st.qDigit} = ${st.prod}</strong>. Escribe el <strong>${st.qDigit}</strong> en el cociente (debajo de la caja).`;
+            } else {
+              qExplain = `¡Empezamos! Tomamos la primera cifra del dividendo (<strong>${st.workingNumber}</strong>). Busca en la tabla del ${divisor} un número que se acerque a ${st.workingNumber} sin pasarse: <strong>${divisor} × ${st.qDigit} = ${st.prod}</strong>. Escribe el <strong>${st.qDigit}</strong> en el cociente.`;
+            }
+          } else {
+            qExplain = `Ahora dividimos <strong>${st.workingNumber}</strong> entre <strong>${divisor}</strong>. El número que más se acerca sin pasarse es <strong>${st.qDigit}</strong> (porque ${divisor} × ${st.qDigit} = ${st.prod}). Escribe el <strong>${st.qDigit}</strong> en la siguiente casilla del cociente.`;
+          }
+
+          const qCellId = `div_q_${s}`;
+          this.registerCell(qCellId, st.qDigit, false, qEls[s], `Cifra del Cociente`, qExplain, pKey);
+
+          this.state.steps.push({
+            title: `Paso ${this.state.steps.length + 1}: Calculamos la cifra del cociente`,
+            text: qExplain,
+            cellIds: [qCellId],
+            posKey: pKey,
+            refStaticIds: [`div-digit-${st.endCol}`]
+          });
+
+          // Micropaso B: Calcular el resto parcial y bajar la siguiente cifra (si existe)
+          const remCellsInfo = remRowEls[s].remCells;
+          const dropCellInfo = remRowEls[s].dropCell;
+          const stepBIds = [];
+
+          let remExplain = `Multiplicamos <strong>${st.qDigit} × ${divisor} = ${st.prod}</strong> y restamos mentalmente: de <strong>${st.prod}</strong> hasta <strong>${st.workingNumber}</strong> van <strong>${st.rem}</strong>. Escribe el resto <strong>${st.rem}</strong> debajo del dividendo`;
+          if (st.hasNextDigit) {
+            remExplain += ` y baja la siguiente cifra del dividendo (el <strong>${st.nextDividendDigit}</strong>) a su derecha para formar el <strong>${st.rem * 10 + st.nextDividendDigit}</strong>.`;
+          } else {
+            remExplain += `. ¡Ya no quedan más cifras por bajar! El resto final de la división es <strong>${st.rem}</strong>.`;
+          }
+
+          remCellsInfo.forEach((rc, idxRem) => {
+            const rId = `div_rem_${s}_${idxRem}`;
+            this.registerCell(rId, rc.digit, false, rc.el, `Resto parcial`, remExplain, pKey);
+            stepBIds.push(rId);
+          });
+
+          if (dropCellInfo) {
+            const dId = `div_drop_${s}`;
+            this.registerCell(dId, dropCellInfo.digit, false, dropCellInfo.el, `Bajar cifra siguiente`, remExplain, pKey);
+            stepBIds.push(dId);
+          }
+
+          this.state.steps.push({
+            title: `Paso ${this.state.steps.length + 1}: Resto parcial${st.hasNextDigit ? ' y bajar cifra' : ' final'}`,
+            text: remExplain,
+            cellIds: stepBIds,
+            posKey: pKey,
+            refStaticIds: st.hasNextDigit ? [`div-digit-${st.endCol + 1}`] : []
+          });
+        }
+      },
+
+      /* -----------------------------------------------------------------------
+         UTILIDADES DOM PARA LA CUADRÍCULA
+         ----------------------------------------------------------------------- */
+      createEmptySlot() {
+        const d = document.createElement('div');
+        d.style.width = 'var(--cell-size)';
+        d.style.height = 'var(--cell-size)';
+        return d;
+      },
+
+      createStaticCell(text, id, isSign = false) {
+        const d = document.createElement('div');
+        d.className = 'static-cell' + (isSign ? ' op-sign' : '');
+        if (id) d.id = id;
+        d.textContent = text;
+        return d;
+      },
+
+      /* -----------------------------------------------------------------------
+         GESTIÓN DE BLOQUEOS, FOCO E INTERACCIÓN EN AMBOS MODOS
+         ----------------------------------------------------------------------- */
+      applyModeLocksAndFocus() {
+        // Limpiar iluminaciones de cabeceras y referencias
+        document.querySelectorAll('.pos-header').forEach(h => h.classList.remove('active-col'));
+        document.querySelectorAll('.static-cell').forEach(s => s.classList.remove('highlight-ref'));
+
+        if (this.config.mode === 'guided') {
+          const totalSteps = this.state.steps.length;
+          const idx = this.state.currentStepIdx;
+
+          if (idx >= totalSteps) {
+            this.finishOperationSuccess();
+            return;
+          }
+
+          const currentStep = this.state.steps[idx];
+          document.getElementById('stepCounterBadge').textContent = `Paso ${idx + 1} de ${totalSteps}`;
+
+          // Iluminar cabecera de columna activa
+          if (currentStep.posKey) {
+            const hEl = document.getElementById(`pos-header-${currentStep.posKey}`);
+            if (hEl) hEl.classList.add('active-col');
+          }
+
+          // Iluminar cifras de referencia
+          (currentStep.refStaticIds || []).forEach(sid => {
+            const sEl = document.getElementById(sid);
+            if (sEl) sEl.classList.add('highlight-ref');
+          });
+
+          // Actualizar Bocadillo Pedagógico
+          this.setBubbleMessage(currentStep.title, currentStep.text, 'normal');
+
+          // Bloquear todas las celdas que no pertenezcan al paso actual
+          Object.values(this.state.cellsMap).forEach(cell => {
+            cell.el.classList.remove('step-enabled', 'focused', 'locked');
+            if (cell.el.classList.contains('correct')) return;
+            if (currentStep.cellIds.includes(cell.id)) {
+              cell.el.classList.add('step-enabled');
+            } else {
+              cell.el.classList.add('locked');
+            }
+          });
+
+          // Poner el foco en la primera casilla pendiente del paso actual
+          const firstPending = currentStep.cellIds.find(cid => !this.state.cellsMap[cid].el.classList.contains('correct'));
+          if (firstPending) {
+            this.focusCell(firstPending);
+          }
+        } else {
+          // MODO 2: PRÁCTICA LIBRE
+          document.getElementById('stepCounterBadge').textContent = 'Resolución Autónoma';
+          Object.values(this.state.cellsMap).forEach(cell => {
+            cell.el.classList.remove('locked', 'step-enabled');
+          });
+
+          // Seleccionar primera casilla del primer paso por comodidad
+          if (!this.state.focusedCellId && this.state.steps.length > 0) {
+            const firstId = this.state.steps[0].cellIds[0];
+            if (firstId) this.focusCell(firstId);
+          }
+
+          this.setBubbleMessage(
+            '🚀 Modo Práctica Libre',
+            'Todas las casillas y los circulitos de llevadas están desbloqueados. Toca cualquier casilla para escribir y pulsa <strong>«Comprobar operación completa»</strong> cuando termines.',
+            'normal'
+          );
+        }
+      },
+
+      onCellClick(cellId) {
+        if (this.state.completed) return;
+        const cell = this.state.cellsMap[cellId];
+        if (!cell) return;
+
+        if (this.config.mode === 'guided') {
+          const currentStep = this.state.steps[this.state.currentStepIdx];
+          if (!currentStep || !currentStep.cellIds.includes(cellId)) {
+            this.sound.play('error');
+            return;
+          }
+        }
+
+        this.sound.play('tap');
+        this.focusCell(cellId);
+      },
+
+      focusCell(cellId) {
+        Object.values(this.state.cellsMap).forEach(c => c.el.classList.remove('focused'));
+        this.state.focusedCellId = cellId;
+        const cell = this.state.cellsMap[cellId];
+        if (cell) {
+          cell.el.classList.add('focused');
+          if (this.config.mode === 'free' && cell.posKey) {
+            document.querySelectorAll('.pos-header').forEach(h => h.classList.remove('active-col'));
+            const hEl = document.getElementById(`pos-header-${cell.posKey}`);
+            if (hEl) hEl.classList.add('active-col');
+          }
+        }
+      },
+
+      pressDigit(digitStr) {
+        if (this.state.completed || !this.state.focusedCellId) return;
+        const cell = this.state.cellsMap[this.state.focusedCellId];
+        if (!cell) return;
+
+        if (this.config.mode === 'guided') {
+          const currentStep = this.state.steps[this.state.currentStepIdx];
+          if (!currentStep || !currentStep.cellIds.includes(cell.id)) return;
+        }
+
+        this.sound.play('tap');
+        cell.userVal = String(digitStr);
+        cell.el.textContent = cell.userVal;
+        cell.el.classList.remove('wrong', 'correct');
+
+        if (this.config.mode === 'guided') {
+          this.checkGuidedDigitImmediate(cell);
+        } else {
+          this.advanceFocusFreeMode(cell.id);
+        }
+      },
+
+      backspaceCell() {
+        if (this.state.completed || !this.state.focusedCellId) return;
+        const cell = this.state.cellsMap[this.state.focusedCellId];
+        if (!cell || cell.el.classList.contains('locked')) return;
+
+        this.sound.play('tap');
+        cell.userVal = '';
+        cell.el.textContent = '';
+        cell.el.classList.remove('wrong', 'correct');
+      },
+
+      clearFocusedCell() {
+        this.backspaceCell();
+      },
+
+      /* -----------------------------------------------------------------------
+         VALIDACIÓN EN MODO GUIADO (INMEDIATA Y CON PISTAS CONSTRUCTIVAS)
+         ----------------------------------------------------------------------- */
+      checkGuidedDigitImmediate(cell) {
+        const currentStep = this.state.steps[this.state.currentStepIdx];
+        if (!currentStep) return;
+
+        if (cell.userVal === cell.expected) {
+          cell.el.classList.remove('wrong', 'step-enabled');
+          cell.el.classList.add('correct');
+          this.sound.play('success');
+
+          // Comprobar si quedan otras casillas en este mismo paso (ej. el circulito de llevada)
+          const nextPendingId = currentStep.cellIds.find(
+            cid => !this.state.cellsMap[cid].el.classList.contains('correct')
+          );
+
+          if (nextPendingId) {
+            this.focusCell(nextPendingId);
+            const pendingCell = this.state.cellsMap[nextPendingId];
+            const isCarry = pendingCell.el.classList.contains('carry-cell');
+            this.setBubbleMessage(
+              '¡Muy bien! Ahora anota la llevada',
+              isCarry
+                ? `¡Correcto! No olvides anotar el <strong>${pendingCell.expected}</strong> que te llevas en el circulito iluminado.`
+                : currentStep.text,
+              'success'
+            );
+          } else {
+            // Paso completado: avanzar automáticamente al siguiente paso
+            this.state.currentStepIdx++;
+            setTimeout(() => {
+              this.applyModeLocksAndFocus();
+            }, 280);
+          }
+        } else {
+          // Error en modo guiado: dar pista constructiva sin borrar el progreso anterior
+          cell.el.classList.add('wrong');
+          this.sound.play('error');
+          const isCarry = cell.el.classList.contains('carry-cell');
+          this.setBubbleMessage(
+            '💡 ¡Casi! Revisa este cálculo',
+            isCarry
+              ? `Has escrito <strong>${cell.userVal}</strong> en el circulito de llevada, pero fíjate bien en las decenas del resultado anterior. ${currentStep.text}`
+              : `Has puesto <strong>${cell.userVal}</strong>, pero revisa la operación mental de este paso: ${currentStep.text}`,
+            'error'
+          );
+        }
+      },
+
+      /* -----------------------------------------------------------------------
+         NAVEGACIÓN Y VALIDACIÓN EN MODO LIBRE
+         ----------------------------------------------------------------------- */
+      advanceFocusFreeMode(currentId) {
+        // Construir orden lógico de casillas según los pasos del algoritmo
+        const orderedIds = [];
+        this.state.steps.forEach(st => {
+          st.cellIds.forEach(cid => {
+            if (!orderedIds.includes(cid)) orderedIds.push(cid);
+          });
+        });
+
+        const idx = orderedIds.indexOf(currentId);
+        if (idx !== -1 && idx + 1 < orderedIds.length) {
+          this.focusCell(orderedIds[idx + 1]);
+        }
+      },
+
+      validateAction() {
+        if (this.state.completed) return;
+
+        if (this.config.mode === 'guided') {
+          const cell = this.state.cellsMap[this.state.focusedCellId];
+          if (cell && cell.userVal !== '') {
+            this.checkGuidedDigitImmediate(cell);
+          } else {
+            this.sound.play('tap');
+            const currentStep = this.state.steps[this.state.currentStepIdx];
+            if (currentStep) {
+              this.setBubbleMessage(currentStep.title, currentStep.text, 'normal');
+            }
+          }
+          return;
+        }
+
+        // Validación completa en MODO LIBRE
+        let allCorrect = true;
+        let firstWrongId = null;
+
+        Object.values(this.state.cellsMap).forEach(cell => {
+          cell.el.classList.remove('wrong', 'correct');
+
+          // Si es un círculo de llevada con valor 0, permitimos dejarlo vacío o escribir '0'
+          if (cell.optionalZero && (cell.userVal === '' || cell.userVal === '0')) {
+            if (cell.userVal === '0') cell.el.classList.add('correct');
+            return;
+          }
+
+          if (cell.userVal === cell.expected) {
+            cell.el.classList.add('correct');
+          } else {
+            allCorrect = false;
+            cell.el.classList.add('wrong');
+            if (!firstWrongId) firstWrongId = cell.id;
+          }
+        });
+
+        if (allCorrect) {
+          this.finishOperationSuccess();
+        } else {
+          this.sound.play('error');
+          if (firstWrongId) this.focusCell(firstWrongId);
+          this.setBubbleMessage(
+            '🔍 Revisa las casillas en rojo',
+            'Las casillas en <strong>verde</strong> están genial. Toca las casillas marcadas en <strong>rojo suave</strong> para corregirlas o pulsa el botón <strong>«Dame una pista»</strong>.',
+            'error'
+          );
+        }
+      },
+
+      showFreeModeHint() {
+        if (!this.state.focusedCellId) return;
+        const cell = this.state.cellsMap[this.state.focusedCellId];
+        if (!cell) return;
+        this.sound.play('tap');
+        this.setBubbleMessage(
+          `💡 Pista: ${cell.hintTitle}`,
+          cell.hintText,
+          'normal'
+        );
+      },
+
+      finishOperationSuccess() {
+        this.state.completed = true;
+        this.sound.play('win');
+        Object.values(this.state.cellsMap).forEach(c => c.el.classList.remove('focused', 'step-enabled'));
+        document.querySelectorAll('.pos-header').forEach(h => h.classList.remove('active-col'));
+        document.querySelectorAll('.static-cell').forEach(s => s.classList.remove('highlight-ref'));
+
+        this.setBubbleMessage(
+          '🏆 ¡Operación completada con éxito!',
+          '¡Enhorabuena! Has dominado todos los pasos del algoritmo tradicional español. Puedes generar otra operación o cambiar la dificultad.',
+          'success'
+        );
+
+        document.getElementById('victoryBanner').classList.add('show');
+      },
+
+      setBubbleMessage(title, htmlText, status = 'normal') {
+        const bubble = document.getElementById('pedagogicalBubble');
+        const avatar = document.getElementById('owlAvatar');
+        bubble.classList.remove('hint-error', 'hint-success');
+
+        if (status === 'error') {
+          bubble.classList.add('hint-error');
+          avatar.textContent = '🧐';
+        } else if (status === 'success') {
+          bubble.classList.add('hint-success');
+          avatar.textContent = '🌟';
+        } else {
+          avatar.textContent = '🦉';
+        }
+
+        document.getElementById('bubbleTitle').textContent = title;
+        document.getElementById('bubbleBody').innerHTML = htmlText;
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => app.init());
+  </script>
+</body>
+</html>
