@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pirámides de Sumas - 3.º de Primaria</title>
+    <style>
+        :root {
+            --bg-main: #f0f4f8;
+            --bg-card: #ffffff;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --brick-given: #e2e8f0;
+            --brick-given-border: #94a3b8;
+            --brick-empty: #ffffff;
+            --brick-empty-border: #3b82f6;
+            --brick-selected: #fef3c7;
+            --brick-selected-border: #f59e0b;
+            --brick-parent: #ede9fe;
+            --brick-parent-border: #8b5cf6;
+            --brick-child: #dbeafe;
+            --brick-child-border: #2563eb;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* BARRA SUPERIOR PERSISTENTE */
+        .top-bar {
+            background: var(--bg-card);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            z-index: 20;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .badge-level {
+            background: #dbeafe;
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.12);
+        }
+
+        .btn-outline {
+            background: #f1f5f9;
+            color: var(--text-dark);
+            border: 2px solid #cbd5e1;
+        }
+        .btn-outline:hover { background: #e2e8f0; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        .btn-secondary:hover { background: var(--secondary-dark); }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover { background: #059669; }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-accent:hover { background: #7c3aed; }
+
+        /* CONTENEDOR PRINCIPAL */
+        .screen {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* PANTALLA DE MENÚ */
+        .menu-container {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            max-width: 980px;
+            width: 100%;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .menu-header {
+            text-align: center;
+        }
+
+        .menu-header h1 {
+            font-size: 2.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+        }
+
+        .menu-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .config-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .config-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .option-card {
+            border: 3px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            background: #f8fafc;
+            transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: left;
+        }
+
+        .option-card:hover {
+            border-color: #93c5fd;
+            background: #eff6ff;
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: #dbeafe;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .option-card .opt-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .option-card .opt-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .start-btn-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .btn-start {
+            font-size: 1.35rem;
+            padding: 16px 48px;
+            border-radius: 999px;
+        }
+
+        /* PANTALLA DE JUEGO */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        @media (max-width: 1024px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ZONA DE LA PIRÁMIDE */
+        .pyramid-board {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed #e2e8f0;
+        }
+
+        .tree-formula-box {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 52px;
+        }
+
+        .formula-pill {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+        .pill-child { background: var(--brick-child); color: var(--primary-dark); border: 2px solid var(--brick-child-border); }
+        .pill-parent { background: var(--brick-parent); color: #5b21b6; border: 2px solid var(--brick-parent-border); }
+
+        /* LIENZO DE PIRÁMIDE Y LÍNEAS DE ÁRBOL */
+        .pyramid-stage {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+            gap: 18px;
+        }
+
+        #tree-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .pyramid-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .brick-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .brick {
+            width: 110px;
+            height: 72px;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.08);
+        }
+
+        .pyramid-size-5 .brick {
+            width: 96px;
+            height: 64px;
+            font-size: 1.6rem;
+        }
+
+        .brick.given {
+            background: var(--brick-given);
+            border: 3px solid var(--brick-given-border);
+            color: #0f172a;
+        }
+
+        .brick.editable {
+            background: var(--brick-empty);
+            border: 3px dashed var(--brick-empty-border);
+            color: var(--primary-dark);
+        }
+
+        .brick.editable.filled {
+            border-style: solid;
+            background: #f8fafc;
+        }
+
+        .brick.selected {
+            background: var(--brick-selected) !important;
+            border: 4px solid var(--brick-selected-border) !important;
+            transform: scale(1.06);
+            z-index: 5;
+        }
+
+        .brick.highlight-parent {
+            background: var(--brick-parent);
+            border-color: var(--brick-parent-border);
+        }
+
+        .brick.highlight-child {
+            background: var(--brick-child);
+            border-color: var(--brick-child-border);
+        }
+
+        .brick.correct {
+            background: var(--success-bg) !important;
+            border: 3px solid var(--success) !important;
+            color: #065f46 !important;
+        }
+
+        .brick.wrong {
+            background: var(--danger-bg) !important;
+            border: 3px solid var(--danger) !important;
+            color: #991b1b !important;
+            animation: shake 0.35s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* BOTÓN DE PERMUTAR EN BASE (CONMUTATIVA) */
+        .swap-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            background: #f5f3ff;
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 -10px;
+            z-index: 6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .swap-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.15);
+        }
+
+        /* BARRA INFERIOR DE PROPIEDADES */
+        .properties-drawer {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .prop-info {
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .prop-highlight {
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        /* PANEL LATERAL: TECLADO Y CONTROLES */
+        .side-panel {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .status-banner {
+            background: #eff6ff;
+            border-left: 5px solid var(--primary);
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .key-btn {
+            height: 66px;
+            border-radius: var(--radius-md);
+            border: 2px solid #cbd5e1;
+            background: #f8fafc;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 0 #cbd5e1;
+            transition: transform 0.1s ease, background 0.1s ease;
+        }
+
+        .key-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #cbd5e1;
+            background: #e2e8f0;
+        }
+
+        .key-btn.key-clear {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #b91c1c;
+            box-shadow: 0 4px 0 #fca5a5;
+            font-size: 1.25rem;
+        }
+
+        .key-btn.key-back {
+            background: #fef3c7;
+            border-color: #fcd34d;
+            color: #b45309;
+            box-shadow: 0 4px 0 #fcd34d;
+            font-size: 1.4rem;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-full {
+            grid-column: span 2;
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN SIEMPRE VISIBLE -->
+    <header class="top-bar">
+        <div class="app-title">
+            <span>🔺 Pirámides de Sumas</span>
+            <span id="header-badge" class="badge-level">Menú Principal</span>
+        </div>
+        <div class="nav-actions">
+            <button id="btn-back-menu" class="btn btn-outline" onclick="showMenu()" style="display: none;">
+                ⬅️ Volver al Menú
+            </button>
+            <button id="btn-undo" class="btn btn-outline" onclick="undoLastAction()" style="display: none;" title="Deshacer último cambio">
+                ↩️ Atrás
+            </button>
+            <button id="btn-new-pyramid" class="btn btn-secondary" onclick="generateNewPyramid()" style="display: none;">
+                🎲 Generar otra distinta
+            </button>
+        </div>
+    </header>
+
+    <!-- PANTALLA 1: MENÚ DE CONFIGURACIÓN -->
+    <main id="screen-menu" class="screen active">
+        <div class="menu-container">
+            <div class="menu-header">
+                <h1>Configura tu Pirámide Matemática</h1>
+                <p>Practica el cálculo en árbol, la propiedad conmutativa y la propiedad asociativa en la pizarra.</p>
+            </div>
+
+            <!-- 1. ALTURA -->
+            <div class="config-section">
+                <div class="config-title">1. Altura de la pirámide (Niveles)</div>
+                <div class="options-grid" id="opt-levels">
+                    <div class="option-card selected" data-value="3" onclick="selectOption('levels', 3, this)">
+                        <span class="opt-title">3 Niveles (6 ladrillos)</span>
+                        <span class="opt-desc">Ideal para calentar y explicar la propiedad asociativa con 3 sumandos.</span>
+                    </div>
+                    <div class="option-card" data-value="4" onclick="selectOption('levels', 4, this)">
+                        <span class="opt-title">4 Niveles (10 ladrillos)</span>
+                        <span class="opt-desc">Reto intermedio estándar para 3.º de Primaria.</span>
+                    </div>
+                    <div class="option-card" data-value="5" onclick="selectOption('levels', 5, this)">
+                        <span class="opt-title">5 Niveles (15 ladrillos)</span>
+                        <span class="opt-desc">Gran pirámide cooperativa para resolver en equipo en la pizarra.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. CIFRAS Y RANGO -->
+            <div class="config-section">
+                <div class="config-title">2. Cifras de los números iniciales (Base)</div>
+                <div class="options-grid" id="opt-digits">
+                    <div class="option-card selected" data-value="1d" onclick="selectOption('digits', '1d', this)">
+                        <span class="opt-title">1 Cifra (del 1 al 9)</span>
+                        <span class="opt-desc">Cálculo ágil para centrarse en la estructura del árbol.</span>
+                    </div>
+                    <div class="option-card" data-value="tens" onclick="selectOption('digits', 'tens', this)">
+                        <span class="opt-title">Decenas exactas (10 a 50)</span>
+                        <span class="opt-desc">Números como 10, 20, 30... Fantástico para cálculo mental.</span>
+                    </div>
+                    <div class="option-card" data-value="2d_easy" onclick="selectOption('digits', '2d_easy', this)">
+                        <span class="opt-title">2 Cifras sencillas (10 al 25)</span>
+                        <span class="opt-desc">Sumas con y sin llevadas llegando a la centena en la cima.</span>
+                    </div>
+                    <div class="option-card" data-value="2d_hard" onclick="selectOption('digits', '2d_hard', this)">
+                        <span class="opt-title">2 Cifras reto (15 al 50)</span>
+                        <span class="opt-desc">Números mayores para practicar sumas con llevadas.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. MODO / DIFICULTAD -->
+            <div class="config-section">
+                <div class="config-title">3. Dificultad y Modo de trabajo</div>
+                <div class="options-grid" id="opt-mode">
+                    <div class="option-card selected" data-value="up" onclick="selectOption('mode', 'up', this)">
+                        <span class="opt-title">🌱 Ascendente (Árbol directo)</span>
+                        <span class="opt-desc">Damos toda la base y subimos sumando parejas paso a paso.</span>
+                    </div>
+                    <div class="option-card" data-value="gaps" onclick="selectOption('mode', 'gaps', this)">
+                        <span class="opt-title">🧩 Con huecos (Inversa)</span>
+                        <span class="opt-desc">Pistas repartidas. Hay que pensar qué número falta (sumar y restar).</span>
+                    </div>
+                    <div class="option-card" data-value="lab" onclick="selectOption('mode', 'lab', this)">
+                        <span class="opt-title">🔬 Laboratorio de Propiedades</span>
+                        <span class="opt-desc">Permite intercambiar ladrillos de la base (Conmutativa y Asociativa).</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="start-btn-wrapper">
+                <button class="btn btn-primary btn-start" onclick="startGame()">
+                    🚀 ¡Construir Pirámide!
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- PANTALLA 2: TABLERO DE LA PIRÁMIDE -->
+    <main id="screen-game" class="screen">
+        <div class="game-layout">
+            
+            <!-- ZONA IZQUIERDA: PIRÁMIDE VISUAL -->
+            <section class="pyramid-board">
+                <div class="board-header">
+                    <div class="tree-formula-box" id="formula-display">
+                        <span>👆 Toca un ladrillo para ver su <strong>operación en árbol</strong></span>
+                    </div>
+                    <button class="btn btn-accent" onclick="shuffleBaseNumbers()" title="Cambiar el orden de los ladrillos de la base">
+                        🔀 Permutar base (Conmutativa)
+                    </button>
+                </div>
+
+                <!-- ESCENARIO DE LA PIRÁMIDE CON CONECTORES EN ÁRBOL -->
+                <div id="pyramid-stage" class="pyramid-stage">
+                    <svg id="tree-svg"></svg>
+                    <div id="pyramid-rows-container" style="display:flex; flex-direction:column; gap:18px; align-items:center; z-index:2;"></div>
+                </div>
+
+                <!-- EXPLICACIÓN DINÁMICA DE PROPIEDADES (ASOCIATIVA / CONMUTATIVA) -->
+                <div class="properties-drawer">
+                    <div class="prop-info" id="associative-info">
+                        💡 <strong>Operación en árbol:</strong> Cada ladrillo superior es el resultado de agrupar y sumar los dos ladrillos que tiene justo debajo.
+                    </div>
+                    <button class="btn btn-outline" onclick="showAssociativeTreeModal()">
+                        🌳 Ver descomposición asociativa
+                    </button>
+                </div>
+            </section>
+
+            <!-- ZONA DERECHA: TECLADO INTERACTIVO Y ACCIONES -->
+            <aside class="side-panel">
+                <div class="status-banner" id="status-message">
+                    Selecciona cualquier ladrillo vacío para escribir su resultado.
+                </div>
+
+                <div class="numpad">
+                    <button class="key-btn" onclick="pressDigit('7')">7</button>
+                    <button class="key-btn" onclick="pressDigit('8')">8</button>
+                    <button class="key-btn" onclick="pressDigit('9')">9</button>
+                    <button class="key-btn" onclick="pressDigit('4')">4</button>
+                    <button class="key-btn" onclick="pressDigit('5')">5</button>
+                    <button class="key-btn" onclick="pressDigit('6')">6</button>
+                    <button class="key-btn" onclick="pressDigit('1')">1</button>
+                    <button class="key-btn" onclick="pressDigit('2')">2</button>
+                    <button class="key-btn" onclick="pressDigit('3')">3</button>
+                    <button class="key-btn key-clear" onclick="clearBrick()">Borrar</button>
+                    <button class="key-btn" onclick="pressDigit('0')">0</button>
+                    <button class="key-btn key-back" onclick="backspaceBrick()">⌫</button>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn btn-outline" onclick="giveHint()">
+                        💡 Pista
+                    </button>
+                    <button class="btn btn-outline" onclick="solveCurrentBrick()">
+                        🔓 Resolver este
+                    </button>
+                    <button class="btn btn-success btn-full" onclick="checkPyramid()">
+                        ✅ Comprobar Pirámide
+                    </button>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <script>
+        // CONFIGURACIÓN ACTUAL
+        const config = {
+            levels: 3,
+            digits: '1d',
+            mode: 'up'
+        };
+
+        // ESTADO DE LA PIRÁMIDE
+        // row 0 = Cima, row (levels-1) = Base
+        let solutionGrid = [];
+        let userGrid = [];
+        let givenMask = [];
+        let selectedCell = null; // { r, c }
+        let historyStack = [];
+
+        // SELECCIÓN EN EL MENÚ
+        function selectOption(group, value, element) {
+            config[group] = value;
+            const container = document.getElementById(`opt-${group}`);
+            container.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // CAMBIAR ENTRE MENÚ Y JUEGO
+        function showMenu() {
+            document.getElementById('screen-menu').classList.add('active');
+            document.getElementById('screen-game').classList.remove('active');
+            document.getElementById('btn-back-menu').style.display = 'none';
+            document.getElementById('btn-new-pyramid').style.display = 'none';
+            document.getElementById('btn-undo').style.display = 'none';
+            document.getElementById('header-badge').textContent = 'Menú Principal';
+        }
+
+        function startGame() {
+            document.getElementById('screen-menu').classList.remove('active');
+            document.getElementById('screen-game').classList.add('active');
+            document.getElementById('btn-back-menu').style.display = 'inline-flex';
+            document.getElementById('btn-new-pyramid').style.display = 'inline-flex';
+            document.getElementById('btn-undo').style.display = 'inline-flex';
+
+            const modeLabels = {
+                up: 'Ascendente',
+                gaps: 'Con huecos',
+                lab: 'Laboratorio'
+            };
+            document.getElementById('header-badge').textContent = `${config.levels} Niveles · ${modeLabels[config.mode]}`;
+
+            generateNewPyramid();
+        }
+
+        // GENERADOR DE NÚMEROS ALEATORIOS SEGÚN RANGO
+        function randomBaseNumber() {
+            switch (config.digits) {
+                case '1d':
+                    return Math.floor(Math.random() * 9) + 1; // 1 a 9
+                case 'tens':
+                    return (Math.floor(Math.random() * 5) + 1) * 10; // 10, 20, 30, 40, 50
+                case '2d_easy':
+                    return Math.floor(Math.random() * 16) + 10; // 10 a 25
+                case '2d_hard':
+                    return Math.floor(Math.random() * 36) + 15; // 15 a 50
+                default:
+                    return Math.floor(Math.random() * 9) + 1;
+            }
+        }
+
+        // CREAR UNA NUEVA PIRÁMIDE
+        function generateNewPyramid() {
+            const L = config.levels;
+            solutionGrid = Array.from({ length: L }, (_, r) => Array(r + 1).fill(0));
+            userGrid = Array.from({ length: L }, (_, r) => Array(r + 1).fill(''));
+            givenMask = Array.from({ length: L }, (_, r) => Array(r + 1).fill(false));
+            historyStack = [];
+            selectedCell = null;
+
+            // 1. Rellenar base
+            for (let c = 0; c < L; c++) {
+                solutionGrid[L - 1][c] = randomBaseNumber();
+            }
+
+            // 2. Calcular hacia arriba
+            recalculateSolutionFromBase();
+
+            // 3. Definir qué casillas se dan como pista según el modo
+            if (config.mode === 'up' || config.mode === 'lab') {
+                for (let c = 0; c < L; c++) {
+                    givenMask[L - 1][c] = true;
+                    userGrid[L - 1][c] = String(solutionGrid[L - 1][c]);
+                }
+            } else if (config.mode === 'gaps') {
+                buildSolvableGapsMask(L);
+            }
+
+            renderPyramid();
+            autoSelectFirstEmpty();
+            updateAssociativeExplanation();
+            setStatus('¡Nueva pirámide generada! Toca un ladrillo para empezar.', '#eff6ff', '#2563eb');
+        }
+
+        function recalculateSolutionFromBase() {
+            const L = config.levels;
+            for (let r = L - 2; r >= 0; r--) {
+                for (let c = 0; c <= r; c++) {
+                    solutionGrid[r][c] = solutionGrid[r + 1][c] + solutionGrid[r + 1][c + 1];
+                }
+            }
+        }
+
+        // GENERA UN PATRÓN DE HUECOS 100% RESOLUBLE POR DEDUCCIÓN
+        function buildSolvableGapsMask(L) {
+            // Empezamos dando la base excepto 1 o 2 huecos y compensamos con pistas arriba
+            for (let c = 0; c < L; c++) {
+                givenMask[L - 1][c] = true;
+            }
+            const missingIndex = Math.floor(Math.random() * L);
+            givenMask[L - 1][missingIndex] = false;
+
+            // Damos el padre de ese hueco para poder deducirlo con resta
+            const parentCol = missingIndex < L - 1 ? missingIndex : missingIndex - 1;
+            givenMask[L - 2][parentCol] = true;
+
+            if (L >= 4) {
+                const secondMissing = (missingIndex + 2) % L;
+                givenMask[L - 1][secondMissing] = false;
+                givenMask[0][0] = true; // Damos la cima también como referencia
+            }
+
+            for (let r = 0; r < L; r++) {
+                for (let c = 0; c <= r; c++) {
+                    if (givenMask[r][c]) {
+                        userGrid[r][c] = String(solutionGrid[r][c]);
+                    }
+                }
+            }
+        }
+
+        // RENDERIZAR PIRÁMIDE EN EL DOM
+        function renderPyramid() {
+            const L = config.levels;
+            const container = document.getElementById('pyramid-rows-container');
+            const stage = document.getElementById('pyramid-stage');
+            stage.className = `pyramid-stage pyramid-size-${L}`;
+            container.innerHTML = '';
+
+            for (let r = 0; r < L; r++) {
+                const rowEl = document.createElement('div');
+                rowEl.className = 'pyramid-row';
+
+                for (let c = 0; c <= r; c++) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'brick-wrapper';
+
+                    const brick = document.createElement('div');
+                    brick.id = `brick-${r}-${c}`;
+                    const isGiven = givenMask[r][c];
+                    const val = userGrid[r][c];
+
+                    brick.className = `brick ${isGiven ? 'given' : 'editable'} ${val !== '' ? 'filled' : ''}`;
+                    brick.textContent = val;
+                    brick.onclick = () => selectBrick(r, c);
+
+                    wrapper.appendChild(brick);
+
+                    // Si estamos en la fila base, añadimos botón entre ladrillos para permutar (Propiedad Conmutativa)
+                    if (r === L - 1 && c < r) {
+                        const swapBtn = document.createElement('button');
+                        swapBtn.className = 'swap-btn';
+                        swapBtn.title = 'Intercambiar estos dos ladrillos (Propiedad Conmutativa)';
+                        swapBtn.innerHTML = '⇄';
+                        swapBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            swapAdjacentBaseBricks(c, c + 1);
+                        };
+                        wrapper.appendChild(swapBtn);
+                    }
+
+                    rowEl.appendChild(wrapper);
+                }
+
+                container.appendChild(rowEl);
+            }
+
+            updateSelectionHighlights();
+            requestAnimationFrame(drawTreeLines);
+        }
+
+        // SELECCIONAR UN LADRILLO Y MOSTRAR SU ÁRBOL DE SUMA
+        function selectBrick(r, c) {
+            selectedCell = { r, c };
+            updateSelectionHighlights();
+            drawTreeLines();
+            updateFormulaBox(r, c);
+        }
+
+        function updateSelectionHighlights() {
+            const L = config.levels;
+            for (let r = 0; r < L; r++) {
+                for (let c = 0; c <= r; c++) {
+                    const el = document.getElementById(`brick-${r}-${c}`);
+                    if (!el) continue;
+                    el.classList.remove('selected', 'highlight-parent', 'highlight-child');
+                }
+            }
+
+            if (!selectedCell) return;
+            const { r, c } = selectedCell;
+            const currentEl = document.getElementById(`brick-${r}-${c}`);
+            if (currentEl) currentEl.classList.add('selected');
+
+            // Si no es la fila base, iluminar sus dos hijos debajo
+            if (r < L - 1) {
+                const leftChild = document.getElementById(`brick-${r + 1}-${c}`);
+                const rightChild = document.getElementById(`brick-${r + 1}-${c + 1}`);
+                if (leftChild) leftChild.classList.add('highlight-child');
+                if (rightChild) rightChild.classList.add('highlight-child');
+            } else if (r > 0) {
+                // Si es la base, iluminar a qué padres alimenta
+                if (c <= r - 1) {
+                    const rightParent = document.getElementById(`brick-${r - 1}-${c}`);
+                    if (rightParent) rightParent.classList.add('highlight-parent');
+                }
+                if (c - 1 >= 0) {
+                    const leftParent = document.getElementById(`brick-${r - 1}-${c - 1}`);
+                    if (leftParent) leftParent.classList.add('highlight-parent');
+                }
+            }
+        }
+
+        // DIBUJAR LÍNEAS DE OPERACIÓN EN ÁRBOL EN SVG
+        function drawTreeLines() {
+            const svg = document.getElementById('tree-svg');
+            if (!svg) return;
+            svg.innerHTML = '';
+
+            if (!selectedCell) return;
+            const L = config.levels;
+            const { r, c } = selectedCell;
+
+            const stageRect = document.getElementById('pyramid-stage').getBoundingClientRect();
+
+            // Si el ladrillo seleccionado tiene 2 hijos debajo, dibujamos las ramas del árbol
+            if (r < L - 1) {
+                const parentEl = document.getElementById(`brick-${r}-${c}`);
+                const leftEl = document.getElementById(`brick-${r + 1}-${c}`);
+                const rightEl = document.getElementById(`brick-${r + 1}-${c + 1}`);
+
+                if (parentEl && leftEl && rightEl) {
+                    const pRect = parentEl.getBoundingClientRect();
+                    const lRect = leftEl.getBoundingClientRect();
+                    const rRect = rightEl.getBoundingClientRect();
+
+                    const px = pRect.left + pRect.width / 2 - stageRect.left;
+                    const py = pRect.bottom - stageRect.top;
+
+                    const lx = lRect.left + lRect.width / 2 - stageRect.left;
+                    const ly = lRect.top - stageRect.top;
+
+                    const rx = rRect.left + rRect.width / 2 - stageRect.left;
+                    const ry = rRect.top - stageRect.top;
+
+                    createSvgLine(svg, lx, ly, px, py, '#2563eb');
+                    createSvgLine(svg, rx, ry, px, py, '#2563eb');
+                }
+            }
+        }
+
+        function createSvgLine(svg, x1, y1, x2, y2, color) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', '5');
+            line.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(line);
+        }
+
+        // MOSTRAR LA SUMA EN ÁRBOL DEL LADRILLO SELECCIONADO
+        function updateFormulaBox(r, c) {
+            const box = document.getElementById('formula-display');
+            const L = config.levels;
+
+            if (r < L - 1) {
+                const leftVal = userGrid[r + 1][c] !== '' ? userGrid[r + 1][c] : '?';
+                const rightVal = userGrid[r + 1][c + 1] !== '' ? userGrid[r + 1][c + 1] : '?';
+                const parentVal = userGrid[r][c] !== '' ? userGrid[r][c] : '?';
+
+                box.innerHTML = `
+                    <span>Árbol de suma:</span>
+                    <span class="formula-pill pill-child">${leftVal}</span>
+                    <span>+</span>
+                    <span class="formula-pill pill-child">${rightVal}</span>
+                    <span>=</span>
+                    <span class="formula-pill pill-parent">${parentVal}</span>
+                    <span style="font-size:0.95rem; color:#64748b; margin-left:6px;">
+                        (Conmutativa: ${rightVal} + ${leftVal} = ${parentVal})
+                    </span>
+                `;
+            } else {
+                const val = userGrid[r][c] !== '' ? userGrid[r][c] : '?';
+                box.innerHTML = `
+                    <span>Ladrillo de la base: <strong>${val}</strong> · Pulsa <strong>⇄</strong> para intercambiar su posición con el vecino.</span>
+                `;
+            }
+        }
+
+        // INTERCAMBIAR DOS LADRILLOS DE LA BASE (PROPIEDAD CONMUTATIVA / ASOCIATIVA)
+        function swapAdjacentBaseBricks(c1, c2) {
+            const L = config.levels;
+            const baseRow = L - 1;
+
+            // Intercambiar en la solución base y recalcular
+            const tempSol = solutionGrid[baseRow][c1];
+            solutionGrid[baseRow][c1] = solutionGrid[baseRow][c2];
+            solutionGrid[baseRow][c2] = tempSol;
+            recalculateSolutionFromBase();
+
+            // Si estamos en modo ascendente o laboratorio, actualizamos los valores de la base y limpiamos pisos superiores
+            if (config.mode === 'up' || config.mode === 'lab') {
+                for (let c = 0; c < L; c++) {
+                    userGrid[baseRow][c] = String(solutionGrid[baseRow][c]);
+                }
+                // Si estamos en modo laboratorio y queremos ver el efecto inmediato o recalcular:
+                for (let r = 0; r < L - 1; r++) {
+                    for (let c = 0; c <= r; c++) {
+                        if (userGrid[r][c] !== '') {
+                            userGrid[r][c] = String(solutionGrid[r][c]);
+                        }
+                    }
+                }
+            } else {
+                const tempUser = userGrid[baseRow][c1];
+                userGrid[baseRow][c1] = userGrid[baseRow][c2];
+                userGrid[baseRow][c2] = tempUser;
+            }
+
+            renderPyramid();
+            updateAssociativeExplanation();
+            setStatus(`¡Has intercambiado los ladrillos ${c1 + 1} y ${c2 + 1} de la base! Observa cómo cambian las sumas intermedias.`, '#f5f3ff', '#7c3aed');
+        }
+
+        function shuffleBaseNumbers() {
+            const L = config.levels;
+            const baseRow = L - 1;
+            for (let i = L - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const tmp = solutionGrid[baseRow][i];
+                solutionGrid[baseRow][i] = solutionGrid[baseRow][j];
+                solutionGrid[baseRow][j] = tmp;
+            }
+            recalculateSolutionFromBase();
+
+            for (let c = 0; c < L; c++) {
+                if (givenMask[baseRow][c]) {
+                    userGrid[baseRow][c] = String(solutionGrid[baseRow][c]);
+                }
+            }
+            // Limpiamos respuestas superiores para volver a calcular el árbol con el nuevo orden
+            for (let r = 0; r < L - 1; r++) {
+                for (let c = 0; c <= r; c++) {
+                    if (!givenMask[r][c]) userGrid[r][c] = '';
+                }
+            }
+
+            renderPyramid();
+            autoSelectFirstEmpty();
+            updateAssociativeExplanation();
+            setStatus('🔀 Hemos cambiado el orden de la base (Propiedad Conmutativa). ¡Comprueba las nuevas ramas del árbol!', '#f5f3ff', '#7c3aed');
+        }
+
+        // EXPLICACIÓN DE LA PROPIEDAD ASOCIATIVA EN LA BARRA INFERIOR
+        function updateAssociativeExplanation() {
+            const L = config.levels;
+            const base = solutionGrid[L - 1];
+            const infoEl = document.getElementById('associative-info');
+
+            if (L === 3) {
+                const [a, b, c] = base;
+                const leftBranch = a + b;
+                const rightBranch = b + c;
+                const top = solutionGrid[0][0];
+                infoEl.innerHTML = `
+                    🌳 <strong>Árbol y Propiedad Asociativa en 3 niveles:</strong> 
+                    Rama izquierda <span class="prop-highlight">(${a} + ${b}) = ${leftBranch}</span> y 
+                    rama derecha <span class="prop-highlight">(${b} + ${c}) = ${rightBranch}</span>. 
+                    El ladrillo central <strong>${b}</strong> suma en ambos lados, por eso la cima es 
+                    <strong>(${a} + ${b}) + (${b} + ${c}) = ${top}</strong>.
+                `;
+            } else {
+                const sumBase = base.reduce((acc, n) => acc + n, 0);
+                infoEl.innerHTML = `
+                    🌳 <strong>Propiedades de la suma:</strong> Suma actual de los números de la base = <strong>${sumBase}</strong>. 
+                    Si cambias de orden los extremos con <strong>⇄</strong>, verás cómo cambian las parejas agrupadas en cada piso.
+                `;
+            }
+        }
+
+        function showAssociativeTreeModal() {
+            const L = config.levels;
+            const base = solutionGrid[L - 1];
+            if (L === 3) {
+                const [a, b, c] = base;
+                setStatus(`Árbol completo: (${a} + ${b}) + (${b} + ${c}) = ${a + b} + ${b + c} = ${solutionGrid[0][0]}`, '#ede9fe', '#6d28d9');
+            } else {
+                const row1 = solutionGrid[1];
+                setStatus(`Cima formada por la pareja superior: (${row1[0]}) + (${row1[1]}) = ${solutionGrid[0][0]}`, '#ede9fe', '#6d28d9');
+            }
+        }
+
+        // ENTRADA DEL TECLADO NUMÉRICO
+        function pressDigit(digit) {
+            if (!selectedCell) {
+                setStatus('⚠️ Primero toca un ladrillo vacío de la pirámide.', '#fef3c7', '#d97706');
+                return;
+            }
+            const { r, c } = selectedCell;
+            if (givenMask[r][c] && config.mode !== 'lab') {
+                setStatus('🔒 Este ladrillo es un dato fijo de la pirámide. Elige uno vacío.', '#fef3c7', '#d97706');
+                return;
+            }
+
+            const prevVal = userGrid[r][c];
+            if (prevVal.length >= 4) return; // Máximo 4 cifras
+
+            saveHistory(r, c, prevVal);
+            userGrid[r][c] = prevVal === '0' ? digit : prevVal + digit;
+
+            // Si estamos en modo laboratorio y editan la base, recalculamos la solución
+            if (config.mode === 'lab' && r === config.levels - 1) {
+                solutionGrid[r][c] = parseInt(userGrid[r][c], 10) || 0;
+                recalculateSolutionFromBase();
+                updateAssociativeExplanation();
+            }
+
+            refreshBrickDOM(r, c);
+            updateFormulaBox(r, c);
+        }
+
+        function backspaceBrick() {
+            if (!selectedCell) return;
+            const { r, c } = selectedCell;
+            if (givenMask[r][c] && config.mode !== 'lab') return;
+
+            const prevVal = userGrid[r][c];
+            if (prevVal === '') return;
+
+            saveHistory(r, c, prevVal);
+            userGrid[r][c] = prevVal.slice(0, -1);
+            refreshBrickDOM(r, c);
+            updateFormulaBox(r, c);
+        }
+
+        function clearBrick() {
+            if (!selectedCell) return;
+            const { r, c } = selectedCell;
+            if (givenMask[r][c] && config.mode !== 'lab') return;
+
+            saveHistory(r, c, userGrid[r][c]);
+            userGrid[r][c] = '';
+            refreshBrickDOM(r, c);
+            updateFormulaBox(r, c);
+        }
+
+        function refreshBrickDOM(r, c) {
+            const el = document.getElementById(`brick-${r}-${c}`);
+            if (!el) return;
+            el.textContent = userGrid[r][c];
+            el.classList.remove('correct', 'wrong');
+            if (userGrid[r][c] !== '') {
+                el.classList.add('filled');
+            } else {
+                el.classList.remove('filled');
+            }
+        }
+
+        // HISTORIAL PARA EL BOTÓN ATRÁS (DESHACER)
+        function saveHistory(r, c, oldVal) {
+            historyStack.push({ r, c, oldVal });
+            if (historyStack.length > 30) historyStack.shift();
+        }
+
+        function undoLastAction() {
+            if (historyStack.length === 0) {
+                setStatus('No hay movimientos anteriores para deshacer.', '#f1f5f9', '#64748b');
+                return;
+            }
+            const last = historyStack.pop();
+            userGrid[last.r][last.c] = last.oldVal;
+            refreshBrickDOM(last.r, last.c);
+            selectBrick(last.r, last.c);
+            setStatus('↩️ Último número deshecho.', '#eff6ff', '#2563eb');
+        }
+
+        // PISTAS Y RESOLUCIÓN
+        function giveHint() {
+            const L = config.levels;
+            // Buscar un ladrillo vacío cuyos dos hijos ya estén rellenos
+            for (let r = L - 2; r >= 0; r--) {
+                for (let c = 0; c <= r; c++) {
+                    if (userGrid[r][c] === '' && userGrid[r + 1][c] !== '' && userGrid[r + 1][c + 1] !== '') {
+                        selectBrick(r, c);
+                        const a = userGrid[r + 1][c];
+                        const b = userGrid[r + 1][c + 1];
+                        setStatus(`💡 Pista: Suma los dos ladrillos azules de abajo: ${a} + ${b}`, '#fef3c7', '#d97706');
+                        return;
+                    }
+                }
+            }
+            // Si falta un hueco inverso
+            for (let r = L - 1; r >= 0; r--) {
+                for (let c = 0; c <= r; c++) {
+                    if (userGrid[r][c] === '') {
+                        selectBrick(r, c);
+                        setStatus(`💡 Pista: Fíjate en los números que rodean a este ladrillo para deducirlo.`, '#fef3c7', '#d97706');
+                        return;
+                    }
+                }
+            }
+        }
+
+        function solveCurrentBrick() {
+            if (!selectedCell) {
+                setStatus('Toca primero el ladrillo que quieras descubrir.', '#fef3c7', '#d97706');
+                return;
+            }
+            const { r, c } = selectedCell;
+            saveHistory(r, c, userGrid[r][c]);
+            userGrid[r][c] = String(solutionGrid[r][c]);
+            refreshBrickDOM(r, c);
+            const el = document.getElementById(`brick-${r}-${c}`);
+            if (el) el.classList.add('correct');
+            updateFormulaBox(r, c);
+            setStatus(`🔓 Ladrillo resuelto: ${solutionGrid[r][c]}`, '#d1fae5', '#059669');
+        }
+
+        // COMPROBAR TODA LA PIRÁMIDE
+        function checkPyramid() {
+            const L = config.levels;
+            let emptyCount = 0;
+            let wrongCount = 0;
+
+            for (let r = 0; r < L; r++) {
+                for (let c = 0; c <= r; c++) {
+                    const el = document.getElementById(`brick-${r}-${c}`);
+                    el.classList.remove('correct', 'wrong');
+
+                    if (givenMask[r][c] && config.mode !== 'lab') continue;
+
+                    const valStr = userGrid[r][c];
+                    if (valStr === '') {
+                        emptyCount++;
+                        continue;
+                    }
+
+                    const num = parseInt(valStr, 10);
+                    // Comprobamos tanto contra la solución como si cumple la regla de sus dos hijos directos
+                    let isValid = (num === solutionGrid[r][c]);
+                    if (r < L - 1) {
+                        const leftVal = parseInt(userGrid[r + 1][c], 10);
+                        const rightVal = parseInt(userGrid[r + 1][c + 1], 10);
+                        if (!isNaN(leftVal) && !isNaN(rightVal)) {
+                            isValid = (num === leftVal + rightVal);
+                        }
+                    }
+
+                    if (isValid) {
+                        el.classList.add('correct');
+                    } else {
+                        el.classList.add('wrong');
+                        wrongCount++;
+                    }
+                }
+            }
+
+            if (wrongCount === 0 && emptyCount === 0) {
+                setStatus('🎉 ¡Enhorabuena! ¡La pirámide está completa y todas las sumas en árbol son correctas!', '#d1fae5', '#059669');
+            } else if (wrongCount > 0) {
+                setStatus(`⚠️ Hay ${wrongCount} ladrillo(s) en rojo que debemos revisar. ¡Tócalos para ver su suma en árbol!`, '#fee2e2', '#dc2626');
+            } else {
+                setStatus(`👍 ¡Vas muy bien! Todo lo escrito es correcto, faltan ${emptyCount} ladrillo(s) por completar.`, '#eff6ff', '#2563eb');
+            }
+        }
+
+        function autoSelectFirstEmpty() {
+            const L = config.levels;
+            for (let r = L - 1; r >= 0; r--) {
+                for (let c = 0; c <= r; c++) {
+                    if (!givenMask[r][c] && userGrid[r][c] === '') {
+                        selectBrick(r, c);
+                        return;
+                    }
+                }
+            }
+            selectBrick(0, 0);
+        }
+
+        function setStatus(text, bg, borderColor) {
+            const banner = document.getElementById('status-message');
+            banner.textContent = text;
+            banner.style.backgroundColor = bg;
+            banner.style.borderLeftColor = borderColor;
+        }
+
+        // SOPORTE TAMBIÉN PARA TECLADO FÍSICO SI SE USA DESDE ORDENADOR
+        window.addEventListener('keydown', (e) => {
+            if (!document.getElementById('screen-game').classList.contains('active')) return;
+            if (e.key >= '0' && e.key <= '9') {
+                pressDigit(e.key);
+            } else if (e.key === 'Backspace') {
+                backspaceBrick();
+            } else if (e.key === 'Delete') {
+                clearBrick();
+            } else if (e.key === 'Enter') {
+                checkPyramid();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            requestAnimationFrame(drawTreeLines);
+        });
+    </script>
+</body>
+</html>
