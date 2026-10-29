@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CruciMates y CruciNúmeros - CEIP El Romeral</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --font-display: 'Fredoka', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+        }
+        body {
+            font-family: var(--font-body);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        h1, h2, h3, .font-display {
+            font-family: var(--font-display);
+        }
+        .btn-3d {
+            transition: all 0.1s ease;
+            border-bottom-width: 5px;
+        }
+        .btn-3d:active:not(:disabled) {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+        }
+        @keyframes pulse-fast {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .animate-bomb-danger {
+            animation: pulse-fast 0.45s infinite;
+        }
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-35px) scale(1.25); }
+        }
+        .float-badge {
+            animation: float-up 1s ease-out forwards;
+        }
+        @keyframes spark-flicker {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.3) rotate(18deg); opacity: 0.85; }
+        }
+        .spark {
+            animation: spark-flicker 0.2s infinite;
+        }
+        .cruci-cell {
+            transition: all 0.15s ease;
+        }
+        .cruci-input.selected {
+            outline: 4px solid #3b82f6;
+            outline-offset: -2px;
+            background-color: #dbeafe !important;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        .cruci-input-p2.selected {
+            outline: 4px solid #ef4444;
+            outline-offset: -2px;
+            background-color: #fee2e2 !important;
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        /* Estilos de celdas impresas A4 */
+        .print-Sheet-box {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-cell-num {
+            border: 2.5px solid #000000 !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border-radius: 6px;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-cell-given {
+            border: 2.5px solid #000000 !important;
+            background-color: #e2e8f0 !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            border-radius: 6px;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-cell-op {
+            border: 1.5px solid #334155 !important;
+            background-color: #f8fafc !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            border-radius: 6px;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-cell-block {
+            background: transparent !important;
+            border: 2px solid transparent !important;
+            box-sizing: border-box;
+        }
+        .crucinum-print-table {
+            border-collapse: collapse !important;
+            margin: 0 auto;
+        }
+        .crucinum-print-table td.cell-active-empty {
+            border: 2.5px solid #000000 !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            text-align: center;
+            vertical-align: middle;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .crucinum-print-table td.cell-active-given {
+            border: 2.5px solid #000000 !important;
+            background-color: #e2e8f0 !important;
+            color: #000000 !important;
+            font-weight: 800 !important;
+            text-align: center;
+            vertical-align: middle;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .crucinum-print-table td.cell-empty-space {
+            border: none !important;
+            background: transparent !important;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #print-area {
+                display: block !important;
+                width: 100% !important;
+            }
+            .print-page {
+                page-break-after: always;
+                break-after: page;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .print-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-sky-100 via-indigo-50 to-amber-50 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- ================= CABECERA LIMPIA (NO-PRINT) ================= -->
+    <header class="no-print bg-white/95 backdrop-blur border-b-4 border-indigo-200 px-4 py-3 shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Identidad CEIP El Romeral + Selector Apartados -->
+            <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 flex items-center justify-center text-white shadow-md border-b-4 border-indigo-800">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-amber-400 text-amber-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase">CEIP El Romeral</span>
+                    </div>
+                    <h1 id="main-app-title" class="text-lg font-bold text-indigo-950 tracking-tight leading-none mt-1">
+                        1. CruciMates <span class="text-sky-600 font-normal text-sm">| Operaciones Cruzadas</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Selector Central de Apartados -->
+            <div class="flex items-center bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-300 shadow-inner gap-1.5">
+                <button id="btn-sec-crucimates" onclick="App.setSection('crucimates')" class="btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-indigo-600 text-white border-indigo-800">
+                    <span>🧮</span> 1. CruciMates
+                </button>
+                <button id="btn-sec-crucinumeros" onclick="App.setSection('crucinumeros')" class="btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-white text-slate-700 border-slate-300 hover:bg-teal-50">
+                    <span>🧭</span> 2. CruciNúmeros
+                </button>
+            </div>
+
+            <!-- Botones de Acción Global (Configuración y Sonido) -->
+            <div class="flex items-center gap-2">
+                <button onclick="ConfigModal.open()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-amber-950 border-amber-600 px-4 py-2 rounded-2xl font-display font-bold text-sm flex items-center gap-1.5 shadow-sm">
+                    <span>⚙️</span> Configuración
+                </button>
+                <button id="btn-mute" onclick="SoundFX.toggleMute()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 px-3 py-2 rounded-2xl font-bold text-sm" title="Silenciar sonido">
+                    <span id="mute-icon" class="text-lg">🔊</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra Inferior de Modos de Juego -->
+        <nav class="max-w-7xl mx-auto mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button onclick="App.setMode('practice')" id="tab-practice" class="mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-800">
+                    <span>🎯</span> Práctica Libre
+                </button>
+                <button onclick="App.setMode('bomb')" id="tab-bomb" class="mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-white text-slate-700 border-slate-300 hover:bg-rose-50">
+                    <span>💣</span> ¡Desactiva la Bomba!
+                </button>
+                <button onclick="App.setMode('versus')" id="tab-versus" class="mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-white text-slate-700 border-slate-300 hover:bg-sky-50">
+                    <span>⚡</span> Competición 1 vs 1
+                </button>
+                <button onclick="App.setMode('tournament')" id="tab-tournament" class="mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-white text-slate-700 border-slate-300 hover:bg-amber-50">
+                    <span>🏆</span> Copa El Romeral
+                </button>
+            </div>
+
+            <button onclick="App.setMode('print')" id="tab-print" class="mode-tab btn-3d px-4 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-emerald-500 text-white border-emerald-700 hover:bg-emerald-600">
+                <span>🖨️</span> Generador de Fichas PDF
+            </button>
+        </nav>
+    </header>
+
+    <!-- ================= CONTENEDOR PRINCIPAL DE JUEGO (NO-PRINT) ================= -->
+    <main class="no-print flex-grow max-w-7xl w-full mx-auto px-3 py-4 flex flex-col justify-center">
+
+        <!-- ==================== MODO 1: PRÁCTICA Y MODO 2: BOMBA ==================== -->
+        <section id="view-single" class="w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                
+                <!-- Panel Izquierdo: Info + Brújula Crucinúmeros + Controles -->
+                <div class="lg:col-span-4 flex flex-col gap-3.5">
+                    
+                    <!-- Banner Torneo Activo -->
+                    <div id="tourney-active-banner" class="hidden bg-gradient-to-r from-amber-500 to-orange-500 text-white p-3.5 rounded-3xl shadow-lg border-b-4 border-amber-700">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold uppercase tracking-wider bg-black/20 px-2.5 py-0.5 rounded-full" id="tourney-round-label">Ronda 1 / 3</span>
+                            <button onclick="Tournament.openDashboard()" class="text-xs underline font-bold hover:text-amber-100">Ver Clasificación</button>
+                        </div>
+                        <div class="mt-1.5 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs opacity-90">Turno del equipo:</p>
+                                <h3 class="text-lg font-display font-bold" id="tourney-current-player">Equipo Azul</h3>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs opacity-90">Puntos Ronda</p>
+                                <p class="text-2xl font-display font-bold" id="tourney-live-pts">100</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Práctica -->
+                    <div id="card-practice-info" class="bg-white rounded-3xl p-5 shadow-md border-b-4 border-indigo-200 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-indigo-100 text-indigo-800 font-display font-bold text-xs px-3 py-1 rounded-full" id="badge-curriculum">3º Primaria · Explorador</span>
+                            <div class="flex items-center gap-1.5 text-slate-600 font-bold text-sm bg-slate-100 px-3 py-1 rounded-full">
+                                <span>⏱️</span>
+                                <span id="practice-timer">00:00</span>
+                            </div>
+                        </div>
+                        <h2 id="practice-card-title" class="text-xl font-display font-bold text-indigo-950">Reto en Progreso</h2>
+                        <p class="text-sm text-slate-600 leading-snug" id="curriculum-desc">
+                            Completa las casillas vacías.
+                        </p>
+
+                        <!-- Brújula Visual Crucinúmeros -->
+                        <div id="compass-helper" class="hidden bg-teal-50 border-2 border-teal-200 rounded-2xl p-2.5 text-center">
+                            <p class="text-[11px] font-extrabold uppercase text-teal-800 mb-1.5">Rosa de los Vientos Numérica</p>
+                            <div class="grid grid-cols-3 gap-1 max-w-[190px] mx-auto text-xs font-display font-bold">
+                                <div></div>
+                                <div class="bg-amber-100 text-amber-900 border border-amber-300 rounded-lg py-1">⬆️ -10</div>
+                                <div></div>
+                                <div class="bg-sky-100 text-sky-900 border border-sky-300 rounded-lg py-1">⬅️ -1</div>
+                                <div class="bg-teal-600 text-white rounded-lg py-1">N</div>
+                                <div class="bg-sky-100 text-sky-900 border border-sky-300 rounded-lg py-1">+1 ➡️</div>
+                                <div></div>
+                                <div class="bg-amber-100 text-amber-900 border border-amber-300 rounded-lg py-1">⬇️ +10</div>
+                                <div></div>
+                            </div>
+                        </div>
+
+                        <!-- Progreso -->
+                        <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200 flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-500 uppercase">Casillas completadas:</span>
+                            <span id="single-progress-text" class="text-base font-display font-bold text-indigo-600">0 / 0</span>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="btn-hint" onclick="SingleGame.giveHint()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-amber-950 border-amber-600 py-2.5 px-3 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-1.5">
+                                <span>💡</span> Pista (<span id="hints-left">3</span>)
+                            </button>
+                            <button onclick="SingleGame.checkBoard(true)" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 py-2.5 px-3 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-1.5">
+                                <span>✔️</span> ¡Comprobar!
+                            </button>
+                        </div>
+                        <button onclick="SingleGame.newGame()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 py-2.5 px-4 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-2 w-full">
+                            <span>🔄</span> Nuevo Reto
+                        </button>
+                    </div>
+
+                    <!-- Tarjeta Bomba -->
+                    <div id="card-bomb-info" class="hidden bg-slate-900 text-white rounded-3xl p-5 shadow-xl border-b-4 border-rose-700 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-rose-600 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                                🔥 ¡Desactiva la Bomba!
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <span class="text-xs text-slate-300 font-bold">Reloj:</span>
+                                <select id="bomb-init-time" onchange="SingleGame.changeBombInitialTime()" class="bg-slate-800 text-amber-400 font-bold text-xs rounded-lg px-2 py-1 border border-slate-700">
+                                    <option value="60">60 seg</option>
+                                    <option value="90" selected>90 seg</option>
+                                    <option value="120">120 seg</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-around my-2.5 bg-slate-800/90 p-4 rounded-2xl border border-slate-700 relative">
+                            <div id="bomb-float-Feedback" class="absolute top-1 right-4 pointer-events-none"></div>
+                            <div id="bomb-graphic" class="relative w-20 h-20 flex items-center justify-center">
+                                <svg class="w-20 h-20" viewBox="0 0 100 100">
+                                    <path d="M62 22 Q75 8 88 16" fill="none" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+                                    <circle cx="48" cy="58" r="34" fill="#1e293b" stroke="#475569" stroke-width="4"/>
+                                    <circle cx="36" cy="46" r="8" fill="#64748b" opacity="0.45"/>
+                                    <rect x="52" y="20" width="14" height="10" rx="3" transform="rotate(20 52 20)" fill="#334155"/>
+                                </svg>
+                                <div id="bomb-spark" class="spark absolute -top-1 right-1 text-2xl">✨</div>
+                            </div>
+
+                            <div class="text-right">
+                                <span class="text-xs uppercase font-bold text-rose-300 tracking-wider block">Detonación en</span>
+                                <div id="bomb-timer-display" class="text-4xl font-display font-bold text-emerald-400 tracking-tight">01:30</div>
+                                <span class="text-[11px] text-slate-300 block mt-0.5">+5s acierto · -3s fallo</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden border border-slate-700 p-0.5 mb-3">
+                            <div id="bomb-fuse-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="SingleGame.verifyBombStep()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-slate-950 border-amber-600 py-2.5 px-3 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-1.5">
+                                <span>✂️</span> Cortar Cable
+                            </button>
+                            <button onclick="SingleGame.newGame()" class="btn-3d bg-slate-700 hover:bg-slate-600 text-white border-slate-950 py-2.5 px-3 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-1.5">
+                                <span>🔄</span> Reiniciar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Central: Tablero -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center">
+                    <div id="board-frame" class="bg-white p-4 sm:p-6 rounded-3xl shadow-xl border-b-8 border-indigo-200 w-full max-w-md flex flex-col items-center">
+                        <div id="single-board-container" class="w-full aspect-square flex items-center justify-center"></div>
+                    </div>
+                </div>
+
+                <!-- Panel Derecho: Teclado MDI -->
+                <div class="lg:col-span-3 flex flex-col items-center justify-center">
+                    <div class="bg-white p-4 rounded-3xl shadow-lg border-b-4 border-slate-200 w-full max-w-xs">
+                        <div class="flex items-center justify-between mb-2 px-1">
+                            <span class="text-xs font-extrabold uppercase text-slate-400">Teclado Táctil MDI</span>
+                            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">Casilla activa</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <button onclick="SingleGame.inputDigit(1)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">1</button>
+                            <button onclick="SingleGame.inputDigit(2)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">2</button>
+                            <button onclick="SingleGame.inputDigit(3)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">3</button>
+                            <button onclick="SingleGame.inputDigit(4)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">4</button>
+                            <button onclick="SingleGame.inputDigit(5)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">5</button>
+                            <button onclick="SingleGame.inputDigit(6)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">6</button>
+                            <button onclick="SingleGame.inputDigit(7)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">7</button>
+                            <button onclick="SingleGame.inputDigit(8)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">8</button>
+                            <button onclick="SingleGame.inputDigit(9)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">9</button>
+                            <button onclick="SingleGame.clearCell()" class="btn-3d bg-rose-100 hover:bg-rose-200 text-rose-800 border-rose-300 h-14 rounded-2xl font-display font-bold text-lg flex items-center justify-center">⌫</button>
+                            <button onclick="SingleGame.inputDigit(0)" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border-indigo-300 h-14 rounded-2xl font-display font-bold text-2xl">0</button>
+                            <button onclick="SingleGame.onEnterKey()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 h-14 rounded-2xl font-display font-bold text-base flex items-center justify-center">OK</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== MODO 3: COMPETICIÓN 1 VS 1 ==================== -->
+        <section id="view-versus" class="hidden w-full">
+            <div class="bg-white rounded-3xl px-4 py-2.5 mb-3 shadow-md border-b-4 border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                    <span class="bg-sky-600 text-white font-display font-bold px-3 py-1 rounded-xl text-sm">🔵 Jugador 1: <span id="vs-score-p1">0</span></span>
+                    <span class="font-display font-bold text-slate-400">VS</span>
+                    <span class="bg-rose-600 text-white font-display font-bold px-3 py-1 rounded-xl text-sm">🔴 Jugador 2: <span id="vs-score-p2">0</span></span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-100 px-3 py-1 rounded-xl font-display font-bold text-slate-700 text-sm">
+                        ⏱️ <span id="vs-timer">00:00</span>
+                    </div>
+                    <button onclick="VersusGame.startNewDuel()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 px-4 py-1.5 rounded-xl font-display font-bold text-xs">
+                        🔄 Nuevo Duelo
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- JUGADOR 1 -->
+                <div class="bg-sky-50/90 border-4 border-sky-300 rounded-3xl p-3 sm:p-4 shadow-lg flex flex-col sm:flex-row items-center gap-3">
+                    <div class="flex-1 w-full flex flex-col items-center">
+                        <div class="flex items-center justify-between w-full mb-2 px-1">
+                            <span class="font-display font-bold text-sky-900 text-base">🔵 JUGADOR 1</span>
+                            <span id="vs-prog-p1" class="text-xs font-extrabold bg-sky-200 text-sky-900 px-2.5 py-0.5 rounded-full">0 / 0</span>
+                        </div>
+                        <div id="vs-board-p1" class="w-full max-w-[300px] aspect-square bg-white p-2 rounded-2xl shadow-inner border-2 border-sky-200 flex items-center justify-center"></div>
+                    </div>
+                    <div class="w-full sm:w-40 bg-white p-2.5 rounded-2xl border-2 border-sky-200 shadow-sm">
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="VersusGame.input(1, 1)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">1</button>
+                            <button onclick="VersusGame.input(1, 2)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">2</button>
+                            <button onclick="VersusGame.input(1, 3)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">3</button>
+                            <button onclick="VersusGame.input(1, 4)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">4</button>
+                            <button onclick="VersusGame.input(1, 5)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">5</button>
+                            <button onclick="VersusGame.input(1, 6)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">6</button>
+                            <button onclick="VersusGame.input(1, 7)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">7</button>
+                            <button onclick="VersusGame.input(1, 8)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">8</button>
+                            <button onclick="VersusGame.input(1, 9)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">9</button>
+                            <button onclick="VersusGame.clear(1)" class="btn-3d bg-amber-100 text-amber-900 border-amber-300 h-11 rounded-xl font-display font-bold text-base">⌫</button>
+                            <button onclick="VersusGame.input(1, 0)" class="btn-3d bg-sky-100 text-sky-950 border-sky-300 h-11 rounded-xl font-display font-bold text-lg">0</button>
+                            <button onclick="VersusGame.checkPlayer(1)" class="btn-3d bg-emerald-500 text-white border-emerald-700 h-11 rounded-xl font-display font-bold text-xs">LISTO</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JUGADOR 2 -->
+                <div class="bg-rose-50/90 border-4 border-rose-300 rounded-3xl p-3 sm:p-4 shadow-lg flex flex-col sm:flex-row items-center gap-3">
+                    <div class="flex-1 w-full flex flex-col items-center">
+                        <div class="flex items-center justify-between w-full mb-2 px-1">
+                            <span class="font-display font-bold text-rose-900 text-base">🔴 JUGADOR 2</span>
+                            <span id="vs-prog-p2" class="text-xs font-extrabold bg-rose-200 text-rose-900 px-2.5 py-0.5 rounded-full">0 / 0</span>
+                        </div>
+                        <div id="vs-board-p2" class="w-full max-w-[300px] aspect-square bg-white p-2 rounded-2xl shadow-inner border-2 border-rose-200 flex items-center justify-center"></div>
+                    </div>
+                    <div class="w-full sm:w-40 bg-white p-2.5 rounded-2xl border-2 border-rose-200 shadow-sm">
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="VersusGame.input(2, 1)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">1</button>
+                            <button onclick="VersusGame.input(2, 2)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">2</button>
+                            <button onclick="VersusGame.input(2, 3)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">3</button>
+                            <button onclick="VersusGame.input(2, 4)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">4</button>
+                            <button onclick="VersusGame.input(2, 5)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">5</button>
+                            <button onclick="VersusGame.input(2, 6)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">6</button>
+                            <button onclick="VersusGame.input(2, 7)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">7</button>
+                            <button onclick="VersusGame.input(2, 8)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">8</button>
+                            <button onclick="VersusGame.input(2, 9)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">9</button>
+                            <button onclick="VersusGame.clear(2)" class="btn-3d bg-amber-100 text-amber-900 border-amber-300 h-11 rounded-xl font-display font-bold text-base">⌫</button>
+                            <button onclick="VersusGame.input(2, 0)" class="btn-3d bg-rose-100 text-rose-950 border-rose-300 h-11 rounded-xl font-display font-bold text-lg">0</button>
+                            <button onclick="VersusGame.checkPlayer(2)" class="btn-3d bg-emerald-500 text-white border-emerald-700 h-11 rounded-xl font-display font-bold text-xs">LISTO</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MODO 4: CAMPEONATO / COPA EL ROMERAL ==================== -->
+        <section id="view-tournament" class="hidden w-full max-w-4xl mx-auto">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-amber-300">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-5">
+                    <div class="flex items-center gap-3">
+                        <span class="text-4xl">🏆</span>
+                        <div>
+                            <h2 class="text-2xl font-display font-bold text-indigo-950">Copa El Romeral · Torneo de Aula</h2>
+                            <p class="text-sm text-slate-600">Competición por equipos con clasificación general.</p>
+                        </div>
+                    </div>
+                    <button onclick="Tournament.resetSetup()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 px-3.5 py-2 rounded-2xl font-bold text-xs">
+                        ⚙️ Configurar Torneo
+                    </button>
+                </div>
+
+                <div id="tourney-setup-panel" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
+                            <label class="block text-xs font-extrabold uppercase text-amber-900 mb-2">Equipos / Jugadores (2 a 8):</label>
+                            <select id="tourney-num-teams" onchange="Tournament.renderTeamInputs()" class="w-full bg-white font-bold text-slate-800 rounded-xl px-3 py-2 border border-amber-300">
+                                <option value="2">2 Equipos</option>
+                                <option value="3">3 Equipos</option>
+                                <option value="4" selected>4 Equipos Cooperativos (Aula)</option>
+                                <option value="6">6 Equipos</option>
+                                <option value="8">8 Equipos</option>
+                            </select>
+                        </div>
+                        <div class="bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200">
+                            <label class="block text-xs font-extrabold uppercase text-indigo-900 mb-2">Rondas:</label>
+                            <select id="tourney-num-rounds" class="w-full bg-white font-bold text-slate-800 rounded-xl px-3 py-2 border border-indigo-300">
+                                <option value="3" selected>3 Rondas</option>
+                                <option value="4">4 Rondas</option>
+                                <option value="5">5 Rondas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-2">Nombres de los Equipos:</label>
+                        <div id="tourney-team-names" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5"></div>
+                    </div>
+
+                    <button onclick="Tournament.start()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-amber-950 border-amber-600 w-full py-3.5 rounded-2xl font-display font-bold text-lg shadow-md flex items-center justify-center gap-2">
+                        <span>🚀</span> ¡Comenzar Copa El Romeral!
+                    </button>
+                </div>
+
+                <div id="tourney-dashboard-panel" class="hidden space-y-5">
+                    <div class="bg-gradient-to-r from-indigo-900 to-sky-900 text-white p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <span id="tourney-status-badge" class="bg-amber-400 text-amber-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase">Ronda 1 de 3</span>
+                            <h3 id="tourney-next-up-title" class="text-xl font-display font-bold mt-1">Siguiente turno: Equipo 1</h3>
+                        </div>
+                        <button id="btn-tourney-play-turn" onclick="Tournament.playNextTurn()" class="btn-3d bg-emerald-400 hover:bg-emerald-500 text-slate-950 border-emerald-600 px-6 py-3 rounded-2xl font-display font-bold text-base flex items-center gap-2">
+                            <span>▶️</span> Jugar Turno Ahora
+                        </button>
+                    </div>
+
+                    <div class="overflow-hidden rounded-2xl border-2 border-slate-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-extrabold">
+                                    <th class="py-3 px-4">Pos.</th>
+                                    <th class="py-3 px-4">Equipo / Jugador</th>
+                                    <th class="py-3 px-4 text-center">Rondas</th>
+                                    <th class="py-3 px-4 text-right">Puntos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tourney-leaderboard-body" class="divide-y divide-slate-200 text-sm font-bold"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== MODO 5: GENERADOR DE FICHAS IMPRIMIBLES (PDF / A4) ==================== -->
+        <section id="view-print" class="hidden w-full max-w-5xl mx-auto">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-emerald-200 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold">🖨️</div>
+                        <div>
+                            <h2 class="text-2xl font-display font-bold text-slate-900">Generador de Fichas A4 · CEIP El Romeral</h2>
+                            <p class="text-sm text-slate-600">Imprime fichas listas para papel A4 con solucionario docente.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="PrintModule.generatePreview()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 px-4 py-2.5 rounded-2xl font-display font-bold text-sm">
+                            <span>🎲</span> Generar Nuevos Retos
+                        </button>
+                        <button onclick="window.print()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 px-5 py-2.5 rounded-2xl font-display font-bold text-sm shadow-md">
+                            <span>🖨️</span> Imprimir / Guardar PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Apartado:</label>
+                        <select id="print-section" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
+                            <option value="crucimates">1. CruciMates</option>
+                            <option value="crucinumeros">2. CruciNúmeros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Curso:</label>
+                        <select id="print-grade" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
+                            <option value="1">1º de Primaria</option>
+                            <option value="2">2º de Primaria</option>
+                            <option value="3" selected>3º de Primaria</option>
+                            <option value="4">4º de Primaria</option>
+                            <option value="5">5º de Primaria</option>
+                            <option value="6">6º de Primaria</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Dificultad:</label>
+                        <select id="print-diff" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
+                            <option value="easy">Iniciación</option>
+                            <option value="medium" selected>Explorador</option>
+                            <option value="hard">Maestro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Retos / Página:</label>
+                        <select id="print-count" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
+                            <option value="1">1 Grande</option>
+                            <option value="2">2 Medianos</option>
+                            <option value="4" selected>4 Estándar</option>
+                            <option value="6">6 Rápido</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col justify-center pt-3">
+                        <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="print-solutions" onchange="PrintModule.generatePreview()" checked class="w-5 h-5 rounded text-emerald-600">
+                            <span class="text-xs font-extrabold text-slate-700 uppercase">Solucionario</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-slate-200/70 p-4 rounded-2xl border border-slate-300 overflow-x-auto">
+                    <div id="print-screen-preview" class="bg-white max-w-[794px] mx-auto p-6 rounded-xl shadow-md text-black"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= PANTALLA EXCLUSIVA DE CONFIGURACIÓN (MODAL) ================= -->
+    <div id="config-modal-overlay" class="no-print fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-b-8 border-amber-400 space-y-5 transform transition-all">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-3xl">⚙️</span>
+                    <h3 class="text-2xl font-display font-bold text-indigo-950">Panel de Configuración</h3>
+                </div>
+                <button onclick="ConfigModal.close()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full font-bold text-slate-600 flex items-center justify-center">✕</button>
+            </div>
+
+            <!-- Selector de Curso Escolar -->
+            <div class="space-y-1.5 bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200">
+                <label class="block text-xs font-extrabold uppercase text-indigo-900">Curso Escolar (Adaptador Curricular LOMLOE):</label>
+                <select id="modal-select-grade" class="w-full bg-white font-bold text-indigo-950 rounded-xl px-3.5 py-2.5 border border-indigo-300 focus:outline-none">
+                    <option value="1">1º de Primaria (Sumas y restas hasta 20)</option>
+                    <option value="2">2º de Primaria (Sumas, restas y tablas 2, 5, 10)</option>
+                    <option value="3" selected>3º de Primaria (Tablas 2 al 9 y divisiones exactas)</option>
+                    <option value="4">4º de Primaria (Operaciones combinadas y dos cifras)</option>
+                    <option value="5">5º de Primaria (Múltiplos, divisores y grandes cifras)</option>
+                    <option value="6">6º de Primaria (Cálculo avanzado y potencias)</option>
+                </select>
+            </div>
+
+            <!-- Selector de Nivel / Dificultad -->
+            <div class="space-y-1.5 bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
+                <label class="block text-xs font-extrabold uppercase text-amber-900">Nivel de Desafío:</label>
+                <select id="modal-select-diff" class="w-full bg-white font-bold text-amber-950 rounded-xl px-3.5 py-2.5 border border-amber-300 focus:outline-none">
+                    <option value="easy">🌱 Fácil / Iniciación (Incluye pistas y menos huecos)</option>
+                    <option value="medium" selected>🧭 Medio / Explorador (Equilibrio de huecos y pistas)</option>
+                    <option value="hard">🔥 Difícil / Maestro (Alta densidad de huecos, sin pistas)</option>
+                </select>
+            </div>
+
+            <!-- Selector de Operaciones (Solo para CruciMates) -->
+            <div id="modal-ops-container" class="space-y-2 bg-sky-50/70 p-4 rounded-2xl border border-sky-200">
+                <label class="block text-xs font-extrabold uppercase text-sky-900">Operaciones Activas en CruciMates:</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
+                        <input type="checkbox" id="modal-chk-add" checked class="w-4 h-4 text-indigo-600 rounded"> + Suma
+                    </label>
+                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
+                        <input type="checkbox" id="modal-chk-sub" checked class="w-4 h-4 text-indigo-600 rounded"> − Resta
+                    </label>
+                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
+                        <input type="checkbox" id="modal-chk-mul" checked class="w-4 h-4 text-indigo-600 rounded"> × Multiplicación
+                    </label>
+                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
+                        <input type="checkbox" id="modal-chk-div" checked class="w-4 h-4 text-indigo-600 rounded"> ÷ División
+                    </label>
+                </div>
+            </div>
+
+            <button onclick="ConfigModal.applyAndRestart()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 w-full py-3.5 rounded-2xl font-display font-bold text-base shadow-md">
+                💾 Aplicar Cambios y Reiniciar Reto
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL DE RETROALIMENTACIÓN ================= -->
+    <div id="modal-overlay" class="no-print fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border-b-8 border-indigo-300">
+            <div id="modal-icon" class="text-6xl mb-3">🎉</div>
+            <h3 id="modal-title" class="text-2xl font-display font-bold text-indigo-950">¡Reto Superado!</h3>
+            <p id="modal-message" class="text-sm text-slate-600 mt-2 mb-5">Has completado todas las casillas correctamente.</p>
+            <div id="modal-stats" class="bg-slate-100 rounded-2xl p-3 mb-5 text-xs font-bold text-slate-700"></div>
+            <button onclick="App.closeModalAndContinue()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 w-full py-3 rounded-2xl font-display font-bold text-base">
+                ¡Continuar!
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= PIE DE PÁGINA ================= -->
+    <footer class="no-print text-center py-2 text-xs font-bold text-slate-500 border-t border-indigo-100 bg-white/60">
+        CEIP El Romeral · Molina de Segura · Aplicación Interactiva de Matemáticas (1º a 6º de Primaria)
+    </footer>
+
+    <!-- ================= CONTENEDOR EXCLUSIVO DE IMPRESIÓN A4 ================= -->
+    <div id="print-area" class="hidden"></div>
+
+    <!-- ================= LÓGICA JAVASCRIPT VANILLA ================= -->
+    <script>
+        const SoundFX = {
+            ctx: null,
+            muted: false,
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+            },
+            toggleMute() {
+                this.muted = !this.muted;
+                document.getElementById('mute-icon').textContent = this.muted ? '🔇' : '🔊';
+                if (!this.muted) this.pop();
+            },
+            playTone(freq, type = 'sine', duration = 0.12, vol = 0.15, slideTo = null) {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, this.ctx.currentTime + duration);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+            pop() { this.playTone(520, 'sine', 0.08, 0.12, 680); },
+            clear() { this.playTone(380, 'triangle', 0.09, 0.12, 240); },
+            hint() {
+                this.playTone(587.33, 'sine', 0.1, 0.15);
+                setTimeout(() => this.playTone(880, 'sine', 0.18, 0.15), 90);
+            },
+            correct() {
+                [523.25, 659.25, 783.99, 1046.50].forEach((n, i) => {
+                    setTimeout(() => this.playTone(n, 'triangle', 0.16, 0.18), i * 80);
+                });
+            },
+            error() { this.playTone(220, 'sawtooth', 0.18, 0.12, 150); },
+            tick(urgent = false) { this.playTone(urgent ? 920 : 620, 'square', 0.035, urgent ? 0.12 : 0.06); },
+            boom() {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 0.65;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(420, this.ctx.currentTime);
+                filter.frequency.linearRampToValueAtTime(60, this.ctx.currentTime + 0.65);
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.65);
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start();
+            }
+        };
+
+        const ConfigModal = {
+            open() {
+                SoundFX.pop();
+                document.getElementById('modal-select-grade').value = App.grade;
+                document.getElementById('modal-select-diff').value = App.difficulty;
+                document.getElementById('modal-chk-add').checked = App.activeOps.includes('+');
+                document.getElementById('modal-chk-sub').checked = App.activeOps.includes('-');
+                document.getElementById('modal-chk-mul').checked = App.activeOps.includes('×');
+                document.getElementById('modal-chk-div').checked = App.activeOps.includes('÷');
+
+                const opsBox = document.getElementById('modal-ops-container');
+                opsBox.style.display = App.currentSection === 'crucimates' ? 'block' : 'none';
+
+                const ov = document.getElementById('config-modal-overlay');
+                ov.classList.remove('hidden');
+                ov.classList.add('flex');
+            },
+            close() {
+                SoundFX.pop();
+                const ov = document.getElementById('config-modal-overlay');
+                ov.classList.add('hidden');
+                ov.classList.remove('flex');
+            },
+            applyAndRestart() {
+                SoundFX.pop();
+                App.grade = parseInt(document.getElementById('modal-select-grade').value, 10);
+                App.difficulty = document.getElementById('modal-select-diff').value;
+
+                if (App.currentSection === 'crucimates') {
+                    const ops = [];
+                    if (document.getElementById('modal-chk-add').checked) ops.push('+');
+                    if (document.getElementById('modal-chk-sub').checked) ops.push('-');
+                    if (document.getElementById('modal-chk-mul').checked) ops.push('×');
+                    if (document.getElementById('modal-chk-div').checked) ops.push('÷');
+                    App.activeOps = ops.length > 0 ? ops : ['+'];
+                }
+
+                this.close();
+                App.onConfigChange();
+            }
+        };
+
+        const CrossMathGenerator = {
+            randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; },
+            evalOp(a, op, b) {
+                switch (op) {
+                    case '+': return a + b;
+                    case '-': return a - b >= 0 ? a - b : null;
+                    case '×': return a * b;
+                    case '÷': return (b !== 0 && a % b === 0) ? (a / b) : null;
+                }
+                return null;
+            },
+            pickValidEquation(grade, fixedA = null, allowedOps = ['+', '-', '×', '÷']) {
+                if (!allowedOps || allowedOps.length === 0) allowedOps = ['+'];
+                for (let attempt = 0; attempt < 100; attempt++) {
+                    const op = allowedOps[this.randInt(0, allowedOps.length - 1)];
+                    let a = fixedA;
+                    let b, res;
+                    const maxAdd = grade === 1 ? 20 : (grade === 2 ? 95 : (grade === 3 ? 250 : (grade === 4 ? 400 : 850)));
+                    const maxMul = grade <= 2 ? 5 : (grade === 3 ? 9 : (grade === 4 ? 12 : 15));
+
+                    if (op === '+') {
+                        if (a === null) a = this.randInt(2, Math.floor(maxAdd * 0.6));
+                        b = this.randInt(2, Math.max(3, maxAdd - a));
+                        res = a + b;
+                        return { a, op, b, res };
+                    } else if (op === '-') {
+                        if (a === null) a = this.randInt(6, maxAdd);
+                        if (a < 2) continue;
+                        b = this.randInt(1, a - 1);
+                        res = a - b;
+                        return { a, op, b, res };
+                    } else if (op === '×') {
+                        if (a === null) a = this.randInt(2, maxMul);
+                        if (a > 20) continue;
+                        b = this.randInt(2, maxMul);
+                        res = a * b;
+                        return { a, op, b, res };
+                    } else if (op === '÷') {
+                        if (a === null) {
+                            b = this.randInt(2, maxMul);
+                            res = this.randInt(2, maxMul);
+                            a = b * res;
+                            return { a, op, b, res };
+                        } else {
+                            const divs = [];
+                            for (let d = 2; d <= Math.min(15, a); d++) {
+                                if (a % d === 0 && a / d >= 1) divs.push(d);
+                            }
+                            if (divs.length === 0) continue;
+                            b = divs[this.randInt(0, divs.length - 1)];
+                            res = a / b;
+                            return { a, op, b, res };
+                        }
+                    }
+                }
+                return { a: 8, op: '+', b: 5, res: 13 };
+            },
+            generate(grade = 3, difficulty = 'medium', allowedOps = ['+', '-', '×', '÷']) {
+                grade = parseInt(grade, 10);
+                const eqH1 = this.pickValidEquation(grade, null, allowedOps);
+                const eqV1 = this.pickValidEquation(grade, eqH1.a, allowedOps);
+                const eqV2 = this.pickValidEquation(grade, eqH1.b, allowedOps);
+
+                const n20 = eqV1.b;
+                const n22 = eqV2.b;
+                let opH2 = allowedOps[0] || '+';
+                let n24 = this.evalOp(n20, opH2, n22);
+
+                const shuffledOps = [...allowedOps].sort(() => Math.random() - 0.5);
+                for (let op of shuffledOps) {
+                    const val = this.evalOp(n20, op, n22);
+                    if (val !== null && val >= 0 && val <= 999) {
+                        opH2 = op;
+                        n24 = val;
+                        break;
+                    }
+                }
+
+                const useRightCol = (difficulty === 'hard' || grade >= 4);
+                let opV3 = '+';
+                let n44 = eqH1.res + n24;
+                if (useRightCol) {
+                    for (let op of shuffledOps) {
+                        const val = this.evalOp(eqH1.res, op, n24);
+                        if (val !== null && val >= 0 && val <= 999) {
+                            opV3 = op;
+                            n44 = val;
+                            break;
+                        }
+                    }
+                }
+
+                const grid = Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => ({ type: 'block' })));
+                const setNum = (r, c, val) => { grid[r][c] = { type: 'num', solution: val, hidden: false, userVal: '' }; };
+                const setOp = (r, c, sym) => { grid[r][c] = { type: 'op', symbol: sym }; };
+
+                setNum(0, 0, eqH1.a); setOp(0, 1, eqH1.op); setNum(0, 2, eqH1.b); setOp(0, 3, '='); setNum(0, 4, eqH1.res);
+                setOp(1, 0, eqV1.op); setOp(1, 2, eqV2.op); if (useRightCol) setOp(1, 4, opV3);
+                setNum(2, 0, n20); setOp(2, 1, opH2); setNum(2, 2, n22); setOp(2, 3, '='); setNum(2, 4, n24);
+                setOp(3, 0, '='); setOp(3, 2, '='); if (useRightCol) setOp(3, 4, '=');
+                setNum(4, 0, eqV1.res); setNum(4, 2, eqV2.res); if (useRightCol) setNum(4, 4, n44);
+
+                if (difficulty === 'easy') {
+                    grid[0][4].hidden = true; grid[2][4].hidden = true; grid[4][0].hidden = true; grid[2][2].hidden = true;
+                } else if (difficulty === 'medium') {
+                    grid[0][2].hidden = true; grid[2][0].hidden = true; grid[2][4].hidden = true; grid[4][2].hidden = true;
+                    if (useRightCol) grid[4][4].hidden = true;
+                } else {
+                    grid[0][0].hidden = true; grid[0][4].hidden = true; grid[2][2].hidden = true; grid[4][0].hidden = true; grid[2][4].hidden = true;
+                    if (useRightCol) grid[4][4].hidden = true;
+                }
+
+                return { section: 'crucimates', size: 5, grade, difficulty, grid };
+            }
+        };
+
+        const CruciNumerosGenerator = {
+            randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; },
+            patterns: {
+                easy: [
+                    [[1,2], [2,1], [2,2], [2,3], [3,2]],
+                    [[1,1], [1,2], [1,3], [2,2], [3,2], [4,2]],
+                    [[1,1], [1,2], [2,2], [2,3], [3,3], [3,4]],
+                    [[1,1], [2,1], [3,1], [3,2], [3,3], [2,3]]
+                ],
+                medium: [
+                    [[0,2], [1,2], [2,0], [2,1], [2,2], [2,3], [2,4], [3,2], [4,2]],
+                    [[1,1], [2,1], [3,1], [2,2], [1,3], [2,3], [3,3], [0,1], [4,3]],
+                    [[0,1], [0,2], [1,2], [2,2], [2,1], [3,1], [4,1], [4,2], [4,3]],
+                    [[0,1], [1,0], [1,1], [1,2], [2,1], [2,3], [3,2], [3,3], [3,4], [4,3]]
+                ],
+                hard: [
+                    [[0,2], [1,1], [1,2], [1,3], [2,0], [2,1], [2,2], [2,3], [2,4], [3,1], [3,2], [3,3], [4,2]],
+                    [[0,1], [0,2], [0,3], [1,1], [1,3], [2,1], [2,2], [2,3], [3,1], [3,3], [4,1], [4,2], [4,3]],
+                    [[0,0], [0,1], [1,1], [1,2], [2,1], [2,2], [2,3], [3,2], [3,3], [3,4], [4,3], [4,4]]
+                ]
+            },
+            generate(grade = 3, difficulty = 'medium') {
+                grade = parseInt(grade, 10);
+                let baseTens = grade === 1 ? this.randInt(0, 4) * 10 : (grade === 2 ? this.randInt(1, 5) * 10 : this.randInt(2, 65) * 10);
+                const baseUnit = grade <= 2 ? this.randInt(1, 5) : this.randInt(1, 6);
+                const originValue = baseTens + baseUnit;
+
+                const patternList = this.patterns[difficulty] || this.patterns.medium;
+                const chosenCoords = patternList[this.randInt(0, patternList.length - 1)];
+
+                const grid = Array.from({ length: 5 }, () => Array.from({ length: 5 }, () => ({ type: 'block' })));
+                chosenCoords.forEach(([r, c]) => {
+                    const val = originValue + (r * 10) + c;
+                    grid[r][c] = { type: 'num', solution: val, hidden: true, userVal: '' };
+                });
+
+                const totalCells = chosenCoords.length;
+                const numGiven = difficulty === 'easy' ? Math.max(2, Math.floor(totalCells * 0.45)) : (difficulty === 'medium' ? Math.max(2, Math.floor(totalCells * 0.25)) : 1);
+                const shuffled = [...chosenCoords].sort(() => Math.random() - 0.5);
+                for (let i = 0; i < numGiven; i++) {
+                    const [gr, gc] = shuffled[i];
+                    grid[gr][gc].hidden = false;
+                }
+
+                return { section: 'crucinumeros', size: 5, grade, difficulty, grid };
+            }
+        };
+
+        const SingleGame = {
+            puzzle: null,
+            selected: null,
+            hintsRemaining: 3,
+            timerInterval: null,
+            secondsElapsed: 0,
+            bombSecondsLeft: 90,
+            bombMaxSeconds: 90,
+            isFinished: false,
+
+            start(mode = 'practice') {
+                this.stopTimers();
+                this.isFinished = false;
+                const diffNames = { easy: 'Iniciación', medium: 'Explorador', hard: 'Maestro' };
+
+                if (App.currentSection === 'crucimates') {
+                    document.getElementById('badge-curriculum').textContent = `${App.grade}º Primaria · ${diffNames[App.difficulty]}`;
+                    document.getElementById('practice-card-title').textContent = '1. CruciMates';
+                    document.getElementById('curriculum-desc').textContent = 'Resuelve las ecuaciones cruzadas.';
+                    document.getElementById('compass-helper').classList.add('hidden');
+                    this.puzzle = CrossMathGenerator.generate(App.grade, App.difficulty, App.activeOps);
+                } else {
+                    document.getElementById('badge-curriculum').textContent = `${App.grade}º Primaria · ${diffNames[App.difficulty]}`;
+                    document.getElementById('practice-card-title').textContent = '2. CruciNúmeros (±1 y ±10)';
+                    document.getElementById('curriculum-desc').textContent = 'Derecha (+1), Izquierda (-1), Arriba (-10), Abajo (+10).';
+                    document.getElementById('compass-helper').classList.remove('hidden');
+                    this.puzzle = CruciNumerosGenerator.generate(App.grade, App.difficulty);
+                }
+
+                this.hintsRemaining = App.difficulty === 'easy' ? 3 : (App.difficulty === 'medium' ? 2 : 1);
+                document.getElementById('hints-left').textContent = this.hintsRemaining;
+                document.getElementById('btn-hint').disabled = this.hintsRemaining === 0;
+                document.getElementById('btn-hint').classList.toggle('opacity-50', this.hintsRemaining === 0);
+
+                this.autoSelectFirstEmpty();
+                this.renderBoard();
+                this.updateProgress();
+
+                if (mode === 'bomb') {
+                    this.bombMaxSeconds = parseInt(document.getElementById('bomb-init-time').value, 10) || 90;
+                    this.bombSecondsLeft = this.bombMaxSeconds;
+                    this.updateBombUI();
+                    this.timerInterval = setInterval(() => this.tickBomb(), 1000);
+                } else {
+                    this.secondsElapsed = 0;
+                    this.updatePracticeTimerUI();
+                    this.timerInterval = setInterval(() => {
+                        this.secondsElapsed++;
+                        this.updatePracticeTimerUI();
+                        if (Tournament.isActiveTurn) Tournament.updateLiveScore(this.secondsElapsed);
+                    }, 1000);
+                }
+            },
+            newGame() { SoundFX.pop(); this.start(App.currentMode === 'bomb' ? 'bomb' : 'practice'); },
+            stopTimers() { if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval = null; } },
+            autoSelectFirstEmpty() {
+                this.selected = null;
+                for (let r = 0; r < this.puzzle.size; r++) {
+                    for (let c = 0; c < this.puzzle.size; c++) {
+                        const cell = this.puzzle.grid[r][c];
+                        if (cell.type === 'num' && cell.hidden && cell.userVal === '') { this.selected = { r, c }; return; }
+                    }
+                }
+            },
+            renderBoard() {
+                const container = document.getElementById('single-board-container');
+                container.innerHTML = '';
+                const gridEl = document.createElement('div');
+                gridEl.className = 'grid grid-cols-5 gap-2 sm:gap-2.5 w-full h-full';
+                const isCruciNum = this.puzzle.section === 'crucinumeros';
+
+                for (let r = 0; r < this.puzzle.size; r++) {
+                    for (let c = 0; c < this.puzzle.size; c++) {
+                        const cell = this.puzzle.grid[r][c];
+                        const el = document.createElement('div');
+                        if (cell.type === 'block') {
+                            el.className = isCruciNum ? 'rounded-2xl bg-teal-50/40' : 'rounded-2xl bg-slate-100/50';
+                        } else if (cell.type === 'op') {
+                            el.className = 'cruci-cell rounded-2xl bg-indigo-100 text-indigo-900 font-display font-bold text-xl sm:text-2xl flex items-center justify-center shadow-xs border-b-4 border-indigo-200';
+                            el.textContent = cell.symbol;
+                        } else if (cell.type === 'num') {
+                            if (!cell.hidden) {
+                                const givenStyle = isCruciNum ? 'bg-teal-600 text-white border-teal-800' : 'bg-slate-200 text-slate-800 border-slate-300';
+                                el.className = `cruci-cell rounded-2xl ${givenStyle} font-display font-bold text-xl sm:text-2xl flex items-center justify-center shadow-sm border-b-4`;
+                                el.textContent = cell.solution;
+                            } else {
+                                const isSel = this.selected && this.selected.r === r && this.selected.c === c;
+                                let statusClass = isCruciNum ? 'bg-white text-teal-950 border-teal-400' : 'bg-white text-indigo-950 border-indigo-300';
+                                if (cell.status === 'correct') statusClass = 'bg-emerald-100 text-emerald-900 border-emerald-400';
+                                if (cell.status === 'wrong') statusClass = 'bg-rose-100 text-rose-900 border-rose-400';
+                                el.className = `cruci-cell cruci-input cursor-pointer rounded-2xl ${statusClass} font-display font-bold text-xl sm:text-2xl flex items-center justify-center shadow-sm border-2 border-b-4 ${isSel ? 'selected' : ''}`;
+                                el.textContent = cell.userVal;
+                                el.onclick = () => { if (this.isFinished) return; SoundFX.pop(); this.selected = { r, c }; this.renderBoard(); };
+                            }
+                        }
+                        gridEl.appendChild(el);
+                    }
+                }
+                container.appendChild(gridEl);
+            },
+            inputDigit(digit) {
+                if (this.isFinished || !this.selected) return;
+                const cell = this.puzzle.grid[this.selected.r][this.selected.c];
+                if (!cell || !cell.hidden || cell.locked) return;
+                const currentStr = String(cell.userVal || '');
+                if (currentStr.length >= 3) return;
+                cell.userVal = currentStr === '0' ? String(digit) : currentStr + String(digit);
+                cell.status = null;
+                SoundFX.pop();
+                this.renderBoard();
+                this.updateProgress();
+            },
+            clearCell() {
+                if (this.isFinished || !this.selected) return;
+                const cell = this.puzzle.grid[this.selected.r][this.selected.c];
+                if (!cell || !cell.hidden || cell.locked) return;
+                cell.userVal = '';
+                cell.status = null;
+                SoundFX.clear();
+                this.renderBoard();
+                this.updateProgress();
+            },
+            onEnterKey() {
+                if (App.currentMode === 'bomb') this.verifyBombStep();
+                else {
+                    if (this.areAllFilled()) this.checkBoard(true);
+                    else { this.autoSelectFirstEmpty(); this.renderBoard(); }
+                }
+            },
+            areAllFilled() {
+                for (let r = 0; r < this.puzzle.size; r++) {
+                    for (let c = 0; c < this.puzzle.size; c++) {
+                        const cell = this.puzzle.grid[r][c];
+                        if (cell.type === 'num' && cell.hidden && cell.userVal === '') return false;
+                    }
+                }
+                return true;
+            },
+            updateProgress() {
+                let total = 0, filled = 0;
+                for (let r = 0; r < this.puzzle.size; r++) {
+                    for (let c = 0; c < this.puzzle.size; c++) {
+                        const cell = this.puzzle.grid[r][c];
+                        if (cell.type === 'num' && cell.hidden) { total++; if (cell.userVal !== '') filled++; }
+                    }
+                }
+                document.getElementById('single-progress-text').textContent = `${filled} / ${total}`;
+            },
+            giveHint() {
+                if (this.isFinished || this.hintsRemaining <= 0) return;
+                let target = null;
+                if (this.selected) {
+                    const c = this.puzzle.grid[this.selected.r][this.selected.c];
+                    if (c.hidden && parseInt(c.userVal, 10) !== c.solution) target = c;
+                }
+                if (!target) {
+                    for (let r = 0; r < this.puzzle.size; r++) {
+                        for (let c = 0; c < this.puzzle.size; c++) {
+                            const cell = this.puzzle.grid[r][c];
+                            if (cell.type === 'num' && cell.hidden && parseInt(cell.userVal, 10) !== cell.solution) { target = cell; break; }
+                        }
+                        if (target) break;
+                    }
+                }
+                if (!target) return;
+                target.userVal = String(target.solution);
+                target.status = 'correct';
+                target.locked = true;
+                this.hintsRemaining--;
+                SoundFX.hint();
+                document.getElementById('hints-left').textContent = this.hintsRemaining;
+                if (this.hintsRemaining <= 0) { document.getElementById('btn-hint').disabled = true; document.getElementById('btn-hint').classList.add('opacity-50'); }
+                this.autoSelectFirstEmpty();
+                this.renderBoard();
+                this.updateProgress();
+                if (this.areAllFilled()) this.checkBoard(true);
+            },
+            checkBoard(showModalOnWin = true) {
+                if (this.isFinished) return;
+                let allCorrect = true, anyEmpty = false;
+                for (let r = 0; r < this.puzzle.size; r++) {
+                    for (let c = 0; c < this.puzzle.size; c++) {
+                        const cell = this.puzzle.grid[r][c];
+                        if (cell.type === 'num' && cell.hidden) {
+                            if (cell.userVal === '') { anyEmpty = true; allCorrect = false; }
+                            else if (parseInt(cell.userVal, 10) === cell.solution) { cell.status = 'correct'; cell.locked = true; }
+                            else { cell.status = 'wrong'; allCorrect = false; }
+                        }
+                    }
+                }
+                this.renderBoard();
+                if (allCorrect && !anyEmpty) {
+                    this.isFinished = true;
+                    this.stopTimers();
+                    SoundFX.correct();
+                    confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                    if (Tournament.isActiveTurn) { Tournament.completeCurrentTurn(this.secondsElapsed); return; }
+                    if (showModalOnWin) App.showModal('🎉', '¡Reto Completado!', 'Todas las casillas son exactas.', `Tiempo: ${this.formatTime(this.secondsElapsed)}`);
+                } else { SoundFX.error(); }
+            },
+            changeBombInitialTime() { if (App.currentMode === 'bomb') this.start('bomb'); },
+            tickBomb() {
+                if (this.isFinished) return;
+                this.bombSecondsLeft--;
+                if (this.bombSecondsLeft <= 10 && this.bombSecondsLeft > 0) SoundFX.tick(true);
+                else if (this.bombSecondsLeft > 10 && this.bombSecondsLeft % 2 === 0) SoundFX.tick(false);
+                this.updateBombUI();
+                if (this.bombSecondsLeft <= 0) this.triggerBombExplosion();
+            },
+            updateBombUI() {
+                const s = Math.max(0, this.bombSecondsLeft);
+                document.getElementById('bomb-timer-display').textContent = this.formatTime(s);
+                const pct = Math.min(100, Math.max(0, (s / this.bombMaxSeconds) * 100));
+                document.getElementById('bomb-fuse-bar').style.width = `${pct}%`;
+            },
+            showBombFloatingBadge(text, isPositive) {
+                const container = document.getElementById('bomb-float-Feedback');
+                const span = document.createElement('span');
+                span.className = `float-badge font-display font-bold text-lg px-2 py-0.5 rounded-full ${isPositive ? 'bg-emerald-500 text-slate-950' : 'bg-rose-600 text-white'}`;
+                span.textContent = text;
+                container.innerHTML = '';
+                container.appendChild(span);
+            },
+            verifyBombStep() {
+                if (this.isFinished) return;
+                let newCorrect = 0, newWrong = 0, remaining = 0;
+                for (let r = 0; r < this.puzzle.size; r++) {
+                    for (let c = 0; c < this.puzzle.size; c++) {
+                        const cell = this.puzzle.grid[r][c];
+                        if (cell.type === 'num' && cell.hidden) {
+                            if (cell.locked) continue;
+                            if (cell.userVal === '') remaining++;
+                            else if (parseInt(cell.userVal, 10) === cell.solution) { cell.status = 'correct'; cell.locked = true; newCorrect++; }
+                            else { cell.status = 'wrong'; newWrong++; remaining++; }
+                        }
+                    }
+                }
+                if (newCorrect > 0) {
+                    const bonus = newCorrect * 5;
+                    this.bombSecondsLeft = Math.min(this.bombMaxSeconds + 30, this.bombSecondsLeft + bonus);
+                    this.showBombFloatingBadge(`+${bonus}s ⚡`, true);
+                    SoundFX.hint();
+                }
+                if (newWrong > 0) {
+                    const penalty = newWrong * 3;
+                    this.bombSecondsLeft = Math.max(0, this.bombSecondsLeft - penalty);
+                    this.showBombFloatingBadge(`-${penalty}s 💥`, false);
+                    SoundFX.error();
+                }
+                this.updateBombUI();
+                this.autoSelectFirstEmpty();
+                this.renderBoard();
+                if (remaining === 0 && newWrong === 0) {
+                    this.isFinished = true;
+                    this.stopTimers();
+                    SoundFX.correct();
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                    App.showModal('✂️💣', '¡Bomba Desactivada!', 'Has resuelto todas las casillas a tiempo.', `Tiempo restante: ${this.formatTime(this.bombSecondsLeft)}`);
+                } else if (this.bombSecondsLeft <= 0) { this.triggerBombExplosion(); }
+            },
+            triggerBombExplosion() {
+                this.isFinished = true;
+                this.stopTimers();
+                SoundFX.boom();
+                confetti({ particleCount: 70, spread: 100, colors: ['#1e293b', '#475569', '#ef4444', '#f97316'] });
+                App.showModal('💥💨', '¡BUM! Casi lo logras...', 'El tiempo llegó a cero.', 'Usa "Cortar Cable" para ganar +5s.');
+            },
+            updatePracticeTimerUI() { document.getElementById('practice-timer').textContent = this.formatTime(this.secondsElapsed); },
+            formatTime(sec) {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }
+        };
+
+        const VersusGame = {
+            basePuzzle: null, p1Grid: null, p2Grid: null, sel1: null, sel2: null, winsP1: 0, winsP2: 0, seconds: 0, timer: null, finished: false,
+            startNewDuel() {
+                if (this.timer) clearInterval(this.timer);
+                this.finished = false;
+                this.seconds = 0;
+                document.getElementById('vs-timer').textContent = '00:00';
+                this.basePuzzle = App.currentSection === 'crucimates' ? CrossMathGenerator.generate(App.grade, App.difficulty, App.activeOps) : CruciNumerosGenerator.generate(App.grade, App.difficulty);
+                this.p1Grid = JSON.parse(JSON.stringify(this.basePuzzle.grid));
+                this.p2Grid = JSON.parse(JSON.stringify(this.basePuzzle.grid));
+                this.sel1 = this.findFirstEmpty(this.p1Grid);
+                this.sel2 = this.findFirstEmpty(this.p2Grid);
+                this.renderPlayerBoard(1);
+                this.renderPlayerBoard(2);
+                this.timer = setInterval(() => { this.seconds++; document.getElementById('vs-timer').textContent = SingleGame.formatTime(this.seconds); }, 1000);
+            },
+            stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } },
+            findFirstEmpty(grid) {
+                for (let r = 0; r < 5; r++) {
+                    for (let c = 0; c < 5; c++) { if (grid[r][c].type === 'num' && grid[r][c].hidden && grid[r][c].userVal === '') return { r, c }; }
+                }
+                return null;
+            },
+            renderPlayerBoard(player) {
+                const grid = player === 1 ? this.p1Grid : this.p2Grid;
+                const sel = player === 1 ? this.sel1 : this.sel2;
+                const container = document.getElementById(player === 1 ? 'vs-board-p1' : 'vs-board-p2');
+                container.innerHTML = '';
+                const boardEl = document.createElement('div');
+                boardEl.className = 'grid grid-cols-5 gap-1.5 w-full h-full';
+                const isCruciNum = this.basePuzzle.section === 'crucinumeros';
+
+                for (let r = 0; r < 5; r++) {
+                    for (let c = 0; c < 5; c++) {
+                        const cell = grid[r][c];
+                        const el = document.createElement('div');
+                        if (cell.type === 'block') {
+                            el.className = 'rounded-xl bg-slate-100/60';
+                        } else if (cell.type === 'op') {
+                            el.className = 'rounded-xl bg-slate-200 text-slate-800 font-display font-bold text-base sm:text-lg flex items-center justify-center';
+                            el.textContent = cell.symbol;
+                        } else if (cell.type === 'num') {
+                            if (!cell.hidden) {
+                                const givenClass = isCruciNum ? 'bg-teal-600 text-white' : 'bg-slate-300/80 text-slate-900';
+                                el.className = `rounded-xl ${givenClass} font-display font-bold text-base sm:text-lg flex items-center justify-center`;
+                                el.textContent = cell.solution;
+                            } else {
+                                const isSel = sel && sel.r === r && sel.c === c;
+                                const selClass = player === 1 ? 'cruci-input' : 'cruci-input-p2';
+                                let st = 'bg-white text-slate-900 border-slate-300';
+                                if (cell.status === 'correct') st = 'bg-emerald-100 text-emerald-900 border-emerald-400';
+                                if (cell.status === 'wrong') st = 'bg-rose-100 text-rose-900 border-rose-400';
+                                el.className = `cruci-cell ${selClass} cursor-pointer rounded-xl ${st} font-display font-bold text-base sm:text-lg flex items-center justify-center border-2 ${isSel ? 'selected' : ''}`;
+                                el.textContent = cell.userVal;
+                                el.onclick = () => { if (this.finished) return; SoundFX.pop(); if (player === 1) this.sel1 = { r, c }; else this.sel2 = { r, c }; this.renderPlayerBoard(player); };
+                            }
+                        }
+                        boardEl.appendChild(el);
+                    }
+                }
+                container.appendChild(boardEl);
+            },
+            input(player, digit) {
+                if (this.finished) return;
+                const grid = player === 1 ? this.p1Grid : this.p2Grid;
+                const sel = player === 1 ? this.sel1 : this.sel2;
+                if (!sel) return;
+                const cell = grid[sel.r][sel.c];
+                if (!cell || !cell.hidden || cell.locked) return;
+                const cur = String(cell.userVal || '');
+                if (cur.length >= 3) return;
+                cell.userVal = cur === '0' ? String(digit) : cur + String(digit);
+                cell.status = null;
+                SoundFX.pop();
+                this.renderPlayerBoard(player);
+            },
+            clear(player) {
+                if (this.finished) return;
+                const grid = player === 1 ? this.p1Grid : this.p2Grid;
+                const sel = player === 1 ? this.sel1 : this.sel2;
+                if (!sel) return;
+                const cell = grid[sel.r][sel.c];
+                if (!cell || !cell.hidden || cell.locked) return;
+                cell.userVal = '';
+                cell.status = null;
+                SoundFX.clear();
+                this.renderPlayerBoard(player);
+            },
+            checkPlayer(player) {
+                if (this.finished) return;
+                const grid = player === 1 ? this.p1Grid : this.p2Grid;
+                let allOk = true;
+                for (let r = 0; r < 5; r++) {
+                    for (let c = 0; c < 5; c++) {
+                        const cell = grid[r][c];
+                        if (cell.type === 'num' && cell.hidden) {
+                            if (parseInt(cell.userVal, 10) === cell.solution) { cell.status = 'correct'; cell.locked = true; }
+                            else { cell.status = 'wrong'; allOk = false; }
+                        }
+                    }
+                }
+                this.renderPlayerBoard(player);
+                if (allOk) {
+                    this.finished = true;
+                    this.stop();
+                    SoundFX.correct();
+                    confetti({ particleCount: 110, spread: 80, origin: { x: player === 1 ? 0.25 : 0.75, y: 0.6 } });
+                    if (player === 1) { this.winsP1++; document.getElementById('vs-score-p1').textContent = this.winsP1; }
+                    else { this.winsP2++; document.getElementById('vs-score-p2').textContent = this.winsP2; }
+                    App.showModal('🏆', `¡Victoria Jugador ${player}!`, 'Panel completado correctamente.', `Tiempo: ${SingleGame.formatTime(this.seconds)}`);
+                } else { SoundFX.error(); }
+            }
+        };
+
+        const Tournament = {
+            teams: [], totalRounds: 3, currentRound: 1, currentTeamIdx: 0, isActiveTurn: false,
+            init() { this.renderTeamInputs(); },
+            renderTeamInputs() {
+                const count = parseInt(document.getElementById('tourney-num-teams').value, 10);
+                const container = document.getElementById('tourney-team-names');
+                const defaultNames = ['Equipo Azul 🔵', 'Equipo Rojo 🔴', 'Equipo Verde 🟢', 'Equipo Amarillo 🟡', 'Equipo Morado 🟣', 'Equipo Naranja 🟠', 'Equipo Turquesa 🩵', 'Equipo Estrella ⭐'];
+                container.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.value = defaultNames[i];
+                    inp.className = 'tourney-team-input bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-800';
+                    container.appendChild(inp);
+                }
+            },
+            start() {
+                const inputs = document.querySelectorAll('.tourney-team-input');
+                this.teams = Array.from(inputs).map((inp, idx) => ({ id: idx, name: inp.value.trim() || `Equipo ${idx + 1}`, roundsPlayed: 0, score: 0 }));
+                this.totalRounds = parseInt(document.getElementById('tourney-num-rounds').value, 10) || 3;
+                this.currentRound = 1; this.currentTeamIdx = 0; this.isActiveTurn = false;
+                SoundFX.correct();
+                document.getElementById('tourney-setup-panel').classList.add('hidden');
+                document.getElementById('tourney-dashboard-panel').classList.remove('hidden');
+                this.updateDashboardUI();
+            },
+            resetSetup() {
+                this.isActiveTurn = false;
+                document.getElementById('tourney-active-banner').classList.add('hidden');
+                document.getElementById('tourney-setup-panel').classList.remove('hidden');
+                document.getElementById('tourney-dashboard-panel').classList.add('hidden');
+            },
+            updateDashboardUI() {
+                const isFinished = this.currentRound > this.totalRounds;
+                const badge = document.getElementById('tourney-status-badge');
+                const nextTitle = document.getElementById('tourney-next-up-title');
+                const playBtn = document.getElementById('btn-tourney-play-turn');
+
+                if (isFinished) {
+                    badge.textContent = '🏁 Torneo Finalizado';
+                    const sorted = [...this.teams].sort((a, b) => b.score - a.score);
+                    nextTitle.textContent = `🥇 ¡Campeón: ${sorted[0].name} con ${sorted[0].score} pts!`;
+                    playBtn.classList.add('hidden');
+                    confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                } else {
+                    badge.textContent = `Ronda ${this.currentRound} de ${this.totalRounds}`;
+                    nextTitle.textContent = `Siguiente turno: ${this.teams[this.currentTeamIdx].name}`;
+                    playBtn.classList.remove('hidden');
+                }
+
+                const tbody = document.getElementById('tourney-leaderboard-body');
+                tbody.innerHTML = '';
+                const sortedTeams = [...this.teams].sort((a, b) => b.score - a.score);
+                const medals = ['🥇', '🥈', '🥉'];
+                sortedTeams.forEach((t, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = i === 0 ? 'bg-amber-50/80 text-amber-950' : 'bg-white text-slate-700';
+                    tr.innerHTML = `<td class="py-3 px-4">${medals[i] || (i + 1) + 'º'}</td><td class="py-3 px-4">${t.name}</td><td class="py-3 px-4 text-center">${t.roundsPlayed}/${this.totalRounds}</td><td class="py-3 px-4 text-right">${t.score} pts</td>`;
+                    tbody.appendChild(tr);
+                });
+            },
+            playNextTurn() {
+                if (this.currentRound > this.totalRounds) return;
+                this.isActiveTurn = true;
+                const team = this.teams[this.currentTeamIdx];
+                document.getElementById('tourney-round-label').textContent = `Ronda ${this.currentRound}/${this.totalRounds}`;
+                document.getElementById('tourney-current-player').textContent = team.name;
+                document.getElementById('tourney-live-pts').textContent = '100';
+                document.getElementById('tourney-active-banner').classList.remove('hidden');
+                document.getElementById('view-tournament').classList.add('hidden');
+                document.getElementById('view-single').classList.remove('hidden');
+                document.getElementById('card-practice-info').classList.remove('hidden');
+                document.getElementById('card-bomb-info').classList.add('hidden');
+                SingleGame.start('practice');
+            },
+            updateLiveScore(seconds) {
+                const pts = Math.max(25, 100 - Math.floor(seconds / 2));
+                document.getElementById('tourney-live-pts').textContent = pts;
+            },
+            completeCurrentTurn(secondsElapsed) {
+                const ptsEarned = Math.max(25, 100 - Math.floor(secondsElapsed / 2));
+                const team = this.teams[this.currentTeamIdx];
+                team.score += ptsEarned;
+                team.roundsPlayed++;
+                this.isActiveTurn = false;
+                this.currentTeamIdx++;
+                if (this.currentTeamIdx >= this.teams.length) { this.currentTeamIdx = 0; this.currentRound++; }
+                App.showModal('🏅', `¡Turno de ${team.name}!`, `Sumáis +${ptsEarned} puntos.`, `Tiempo: ${SingleGame.formatTime(secondsElapsed)}`);
+            },
+            openDashboard() {
+                SingleGame.stopTimers();
+                this.isActiveTurn = false;
+                document.getElementById('tourney-active-banner').classList.add('hidden');
+                App.setMode('tournament');
+            }
+        };
+
+        const PrintModule = {
+            currentPuzzles: [],
+            generatePreview() {
+                const section = document.getElementById('print-section').value;
+                const grade = parseInt(document.getElementById('print-grade').value, 10);
+                const diff = document.getElementById('print-diff').value;
+                const count = parseInt(document.getElementById('print-count').value, 10);
+                const includeSolutions = document.getElementById('print-solutions').checked;
+
+                this.currentPuzzles = [];
+                for (let i = 0; i < count; i++) {
+                    if (section === 'crucimates') this.currentPuzzles.push(CrossMathGenerator.generate(grade, diff, App.activeOps));
+                    else this.currentPuzzles.push(CruciNumerosGenerator.generate(grade, diff));
+                }
+
+                const html = this.buildDocumentHTML(section, grade, diff, count, includeSolutions);
+                document.getElementById('print-area').innerHTML = html;
+                document.getElementById('print-screen-preview').innerHTML = html;
+            },
+            buildDocumentHTML(section, grade, diff, count, includeSolutions) {
+                const diffLabels = { easy: 'Iniciación', medium: 'Explorador', hard: 'Maestro' };
+                const secTitle = section === 'crucimates' ? 'CRUCIMATES (Operaciones)' : 'CRUCINÚMEROS (±1 y ±10)';
+                let pagesHTML = `
+                    <div class="print-page print-Sheet-box p-2">
+                        ${this.buildHeaderHTML(secTitle, grade, diffLabels[diff], false)}
+                        <div class="${this.getGridContainerClass(count)} mt-4">
+                            ${this.currentPuzzles.map((p, idx) => this.buildSinglePuzzlePrintHTML(p, idx + 1, count, false)).join('')}
+                        </div>
+                        <div class="mt-6 pt-2 border-t-2 border-black text-xs flex justify-between font-bold">
+                            <span>CEIP El Romeral · ${grade}º Primaria</span><span>${secTitle}</span>
+                        </div>
+                    </div>
+                `;
+                if (includeSolutions) {
+                    pagesHTML += `
+                        <div class="print-page print-Sheet-box p-2 pt-4">
+                            ${this.buildHeaderHTML(secTitle, grade, diffLabels[diff], true)}
+                            <div class="${this.getGridContainerClass(count)} mt-4">
+                                ${this.currentPuzzles.map((p, idx) => this.buildSinglePuzzlePrintHTML(p, idx + 1, count, true)).join('')}
+                            </div>
+                            <div class="mt-6 pt-2 border-t-2 border-black text-xs flex justify-between font-bold">
+                                <span>SOLUCIONARIO DOCENTE · CEIP El Romeral</span><span>Curso: ${grade}º Primaria</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                return pagesHTML;
+            },
+            buildHeaderHTML(secTitle, grade, diffLabel, isSolutionPage) {
+                if (isSolutionPage) {
+                    return `<div style="border: 2.5px solid #000; background-color: #f1f5f9;" class="rounded-xl p-3 flex items-center justify-between"><div><h2 class="text-lg font-extrabold uppercase">CEIP El Romeral</h2><p class="text-xs font-bold">SOLUCIONARIO · ${secTitle} · ${grade}º (${diffLabel})</p></div><span style="border: 2px solid #000; background: #fff;" class="px-3 py-1 rounded-lg font-extrabold text-xs uppercase">DOCENTE</span></div>`;
+                }
+                return `<div style="border: 2.5px solid #000;" class="rounded-xl p-3"><div style="border-bottom: 2px solid #000;" class="flex items-center justify-between pb-2 mb-2.5"><div><h2 class="text-lg font-extrabold uppercase">CEIP El Romeral</h2><p class="text-xs font-bold">${secTitle} (${diffLabel})</p></div><div class="text-right text-xs font-bold"><span style="border: 2px solid #000;" class="inline-block rounded px-2.5 py-1">Nota: [ &nbsp; ]</span></div></div><div class="grid grid-cols-12 gap-2 text-xs font-bold"><div class="col-span-7">Nombre: _____________________________________________</div><div class="col-span-3">Fecha: ____________</div><div class="col-span-2">Curso: ${grade}º</div></div></div>`;
+            },
+            getGridContainerClass(count) {
+                if (count === 1) return 'grid grid-cols-1 max-w-md mx-auto gap-6 my-6';
+                if (count === 2) return 'grid grid-cols-1 max-w-md mx-auto gap-5 my-3';
+                if (count === 4) return 'grid grid-cols-2 gap-5 my-3';
+                return 'grid grid-cols-2 gap-3.5 my-2';
+            },
+            buildSinglePuzzlePrintHTML(puzzle, numberIdx, totalCount, showSolved) {
+                const isCruciNum = puzzle.section === 'crucinumeros';
+                const boxPx = totalCount === 1 ? 58 : (totalCount === 2 ? 46 : (totalCount === 4 ? 44 : 36));
+                const fontClass = totalCount === 1 ? 'text-2xl' : (totalCount === 2 ? 'text-xl' : (totalCount === 4 ? 'text-lg' : 'text-base'));
+
+                if (isCruciNum) {
+                    let rowsHTML = '';
+                    for (let r = 0; r < puzzle.size; r++) {
+                        let tdsHTML = '';
+                        for (let c = 0; c < puzzle.size; c++) {
+                            const cell = puzzle.grid[r][c];
+                            const sizeStyle = `width:${boxPx}px; height:${boxPx}px;`;
+                            if (cell.type === 'block') tdsHTML += `<td class="cell-empty-space" style="${sizeStyle}"></td>`;
+                            else if (cell.type === 'num') {
+                                if (!cell.hidden) tdsHTML += `<td class="cell-active-given ${fontClass}" style="${sizeStyle} border: 2.5px solid #000 !important; background-color: #e2e8f0 !important; font-weight: 800;">${cell.solution}</td>`;
+                                else {
+                                    const val = showSolved ? `<span style="text-decoration: underline; font-weight: 800;">${cell.solution}</span>` : '';
+                                    tdsHTML += `<td class="cell-active-empty ${fontClass}" style="${sizeStyle} border: 2.5px solid #000 !important; background-color: #ffffff !important;">${val}</td>`;
+                                }
+                            }
+                        }
+                        rowsHTML += `<tr>${tdsHTML}</tr>`;
+                    }
+                    return `<div style="border: 2px solid #000; background: #fff;" class="rounded-2xl p-3"><div style="border-bottom: 1.5px solid #64748b;" class="text-xs font-extrabold uppercase mb-3 pb-1 flex justify-between"><span>CruciNúmero #${numberIdx}</span><span>⬅️ -1 | ➡️ +1 | ⬆️ -10 | ⬇️ +10</span></div><div class="flex justify-center items-center py-1"><table class="crucinum-print-table"><tbody>${rowsHTML}</tbody></table></div></div>`;
+                }
+
+                let cellsHTML = '';
+                for (let r = 0; r < puzzle.size; r++) {
+                    for (let c = 0; c < puzzle.size; c++) {
+                        const cell = puzzle.grid[r][c];
+                        const sizeStyle = `height:${boxPx}px;`;
+                        if (cell.type === 'block') cellsHTML += `<div class="print-cell-block" style="${sizeStyle}"></div>`;
+                        else if (cell.type === 'op') cellsHTML += `<div class="print-cell-op ${fontClass} flex items-center justify-center font-extrabold" style="${sizeStyle} border: 1.5px solid #334155 !important; background-color: #f8fafc !important;">${cell.symbol}</div>`;
+                        else if (cell.type === 'num') {
+                            if (!cell.hidden) cellsHTML += `<div class="print-cell-given ${fontClass} flex items-center justify-center font-extrabold" style="${sizeStyle} border: 2.5px solid #000000 !important; background-color: #e2e8f0 !important;">${cell.solution}</div>`;
+                            else {
+                                const val = showSolved ? `<span style="text-decoration: underline; font-weight: 800;">${cell.solution}</span>` : '';
+                                cellsHTML += `<div class="print-cell-num ${fontClass} flex items-center justify-center" style="${sizeStyle} border: 2.5px solid #000000 !important; background-color: #ffffff !important;">${val}</div>`;
+                            }
+                        }
+                    }
+                }
+                return `<div style="border: 2px solid #000; background: #fff;" class="rounded-2xl p-3"><div style="border-bottom: 1.5px solid #64748b;" class="text-xs font-extrabold uppercase mb-2.5 pb-1 flex justify-between"><span>CruciMates #${numberIdx}</span><span>${showSolved ? 'Solucionado' : 'Completa las casillas'}</span></div><div class="grid grid-cols-5 gap-1.5">${cellsHTML}</div></div>`;
+            }
+        };
+
+        const App = {
+            currentSection: 'crucimates',
+            currentMode: 'practice',
+            grade: 3,
+            difficulty: 'medium',
+            activeOps: ['+', '-', '×', '÷'],
+
+            init() {
+                Tournament.init();
+                this.setMode('practice');
+                window.addEventListener('keydown', (e) => {
+                    if (this.currentMode === 'practice' || this.currentMode === 'bomb' || Tournament.isActiveTurn) {
+                        if (e.key >= '0' && e.key <= '9') SingleGame.inputDigit(parseInt(e.key, 10));
+                        else if (e.key === 'Backspace' || e.key === 'Delete') SingleGame.clearCell();
+                        else if (e.key === 'Enter') SingleGame.onEnterKey();
+                    }
+                });
+            },
+            setSection(sec) {
+                SoundFX.pop();
+                this.currentSection = sec;
+                const btnMates = document.getElementById('btn-sec-crucimates');
+                const btnNum = document.getElementById('btn-sec-crucinumeros');
+                const mainTitle = document.getElementById('main-app-title');
+
+                if (sec === 'crucimates') {
+                    btnMates.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-indigo-600 text-white border-indigo-800';
+                    btnNum.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-white text-slate-700 border-slate-300 hover:bg-teal-50';
+                    mainTitle.innerHTML = `1. CruciMates <span class="text-sky-600 font-normal text-sm">| Operaciones Cruzadas</span>`;
+                } else {
+                    btnNum.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-teal-600 text-white border-teal-800';
+                    btnMates.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-white text-slate-700 border-slate-300 hover:bg-indigo-50';
+                    mainTitle.innerHTML = `2. CruciNúmeros <span class="text-teal-600 font-normal text-sm">| Sentido Numérico (±1 y ±10)</span>`;
+                }
+                document.getElementById('print-section').value = sec;
+                this.onConfigChange();
+            },
+            setMode(mode) {
+                SoundFX.pop();
+                this.currentMode = mode;
+                SingleGame.stopTimers();
+                VersusGame.stop();
+                if (mode !== 'tournament') { Tournament.isActiveTurn = false; document.getElementById('tourney-active-banner').classList.add('hidden'); }
+
+                const tabs = ['practice', 'bomb', 'versus', 'tournament', 'print'];
+                tabs.forEach(t => {
+                    const btn = document.getElementById(`tab-${t}`);
+                    if (t === mode) btn.className = 'mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-800';
+                    else if (t === 'print') btn.className = 'mode-tab btn-3d px-4 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-emerald-500 text-white border-emerald-700 hover:bg-emerald-600';
+                    else btn.className = 'mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-white text-slate-700 border-slate-300 hover:bg-indigo-50';
+                });
+
+                document.getElementById('view-single').classList.toggle('hidden', mode !== 'practice' && mode !== 'bomb');
+                document.getElementById('view-versus').classList.toggle('hidden', mode !== 'versus');
+                document.getElementById('view-tournament').classList.toggle('hidden', mode !== 'tournament');
+                document.getElementById('view-print').classList.toggle('hidden', mode !== 'print');
+
+                if (mode === 'practice') {
+                    document.getElementById('card-practice-info').classList.remove('hidden');
+                    document.getElementById('card-bomb-info').classList.add('hidden');
+                    SingleGame.start('practice');
+                } else if (mode === 'bomb') {
+                    document.getElementById('card-practice-info').classList.add('hidden');
+                    document.getElementById('card-bomb-info').classList.remove('hidden');
+                    SingleGame.start('bomb');
+                } else if (mode === 'versus') {
+                    VersusGame.startNewDuel();
+                } else if (mode === 'print') {
+                    document.getElementById('print-section').value = this.currentSection;
+                    document.getElementById('print-grade').value = this.grade;
+                    document.getElementById('print-diff').value = this.difficulty;
+                    PrintModule.generatePreview();
+                }
+            },
+            onConfigChange() {
+                if (this.currentMode === 'practice' || this.currentMode === 'bomb') SingleGame.start(this.currentMode);
+                else if (this.currentMode === 'versus') VersusGame.startNewDuel();
+                else if (this.currentMode === 'print') PrintModule.generatePreview();
+            },
+            showModal(icon, title, message, statsText) {
+                document.getElementById('modal-icon').textContent = icon;
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-message').textContent = message;
+                document.getElementById('modal-stats').textContent = statsText;
+                const overlay = document.getElementById('modal-overlay');
+                overlay.classList.remove('hidden'); overlay.classList.add('flex');
+            },
+            closeModalAndContinue() {
+                SoundFX.pop();
+                const overlay = document.getElementById('modal-overlay');
+                overlay.classList.add('hidden'); overlay.classList.remove('flex');
+                if (this.currentMode === 'tournament' || !document.getElementById('tourney-active-banner').classList.contains('hidden')) {
+                    document.getElementById('tourney-active-banner').classList.add('hidden');
+                    document.getElementById('view-single').classList.add('hidden');
+                    document.getElementById('view-tournament').classList.remove('hidden');
+                    Tournament.updateDashboardUI();
+                } else if (this.currentMode === 'versus') VersusGame.startNewDuel();
+                else SingleGame.start(this.currentMode);
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
+</body>
+</html>
