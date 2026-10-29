@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Enigma de las Palabras Perdidas - Panel Gimkana</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts: Fredoka & Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            sans: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            lengua: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            accent: {
+              amber: '#f59e0b',
+              emerald: '#10b981',
+              rose: '#f43f5e',
+              violet: '#8b5cf6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .badge-pop {
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .pulse-glow {
+      animation: pulseGlow 2s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(37, 99, 235, 0.8); }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col select-none antialiased">
+
+  <!-- ================= TOP HEADER / STATUS BAR ================= -->
+  <header class="bg-gradient-to-r from-lengua-800 via-lengua-700 to-indigo-800 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Title & Branding -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-400 text-lengua-900 flex items-center justify-center font-fredoka font-bold text-2xl shadow">
+          <i class="fa-solid fa-book-sparkles"></i>
+        </div>
+        <div>
+          <h1 class="font-fredoka text-lg sm:text-xl font-bold tracking-wide leading-tight">El Enigma de las Palabras Perdidas</h1>
+          <p class="text-xs text-blue-200 hidden sm:block">Gimkana de Lengua 3.º Primaria • 6 Retos Cooperativos</p>
+        </div>
+      </div>
+
+      <!-- Live Global Timer Bar -->
+      <div class="flex items-center bg-white/10 backdrop-blur-md rounded-2xl px-4 py-1.5 border border-white/20 gap-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-clock text-amber-300 text-lg"></i>
+          <span id="timerDisplay" class="font-fredoka font-bold text-2xl tracking-wider text-amber-300">50:00</span>
+        </div>
+        <div class="flex items-center gap-1 border-l border-white/20 pl-2">
+          <button id="timerToggleBtn" onclick="toggleTimer()" title="Iniciar/Pausar tiempo" class="w-8 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-play text-xs"></i>
+          </button>
+          <button onclick="resetTimerPrompt()" title="Reiniciar tiempo a 50 min" class="w-8 h-8 rounded-lg bg-white/20 hover:bg-white/30 active:scale-95 text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-rotate-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation & Mode Tabs -->
+      <div class="flex items-center gap-2">
+        <button id="tabLeaderboardBtn" onclick="switchMainTab('leaderboard')" class="px-3.5 py-1.5 rounded-xl font-fredoka text-sm font-semibold transition flex items-center gap-2 bg-white text-lengua-800 shadow">
+          <i class="fa-solid fa-ranking-star text-amber-500"></i>
+          <span>Pizarra General</span>
+        </button>
+        <button id="tabPlayBtn" onclick="switchMainTab('play')" class="px-3.5 py-1.5 rounded-xl font-fredoka text-sm font-semibold transition flex items-center gap-2 bg-lengua-900/50 hover:bg-white/20 text-blue-100">
+          <i class="fa-solid fa-gamepad text-emerald-400"></i>
+          <span>Modo Retos</span>
+        </button>
+        <button onclick="toggleSound()" id="soundBtn" title="Activar/Silenciar efectos" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button onclick="openTeacherModal()" title="Gestión de Equipos y Ajustes" class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= NOTIFICATION BANNER (MODAL-LESS ALERTS) ================= -->
+  <div id="alertBox" class="fixed bottom-5 right-5 z-50 max-w-md w-full px-4 transform transition duration-300 translate-y-24 opacity-0 pointer-events-none">
+    <div id="alertCard" class="bg-white rounded-2xl shadow-2xl p-4 border-2 border-emerald-500 flex items-start gap-3">
+      <div id="alertIcon" class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <div class="flex-1">
+        <h4 id="alertTitle" class="font-fredoka font-bold text-slate-800 text-base">¡Genial!</h4>
+        <p id="alertMsg" class="text-xs text-slate-600 font-semibold mt-0.5">Reto superado correctamente.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP MODAL: FEEDBACK PEDAGÓGICO DETALLADO ================= -->
+  <div id="feedbackModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="feedbackCard" class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border-4 border-emerald-500 animate-in fade-in zoom-in duration-200">
+      <div id="feedbackHeader" class="bg-emerald-600 text-white p-5 text-center relative">
+        <div id="feedbackIconWrapper" class="w-16 h-16 rounded-full bg-white text-emerald-600 mx-auto flex items-center justify-center text-3xl shadow-lg mb-2">
+          <i id="feedbackHeaderIcon" class="fa-solid fa-trophy"></i>
+        </div>
+        <h3 id="feedbackModalTitle" class="font-fredoka font-bold text-2xl">¡Excelente trabajo en equipo!</h3>
+        <p id="feedbackModalSubtitle" class="text-xs text-emerald-100 font-bold uppercase tracking-wider mt-0.5">Reto Superado</p>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <!-- Main explanatory feedback message -->
+        <div id="feedbackMessageBox" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-slate-700 text-sm leading-relaxed">
+          <p id="feedbackMainText" class="font-semibold"></p>
+        </div>
+
+        <!-- Detail or hint box -->
+        <div id="feedbackHintContainer" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-900 flex items-start gap-2.5">
+          <i class="fa-solid fa-lightbulb text-amber-500 text-base shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-bold block" id="feedbackHintLabel">Pista de aprendizaje:</span>
+            <span id="feedbackHintText"></span>
+          </div>
+        </div>
+
+        <!-- Clue Letter Won Banner (only on success) -->
+        <div id="feedbackLetterBanner" class="hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-3 text-center">
+          <span class="text-xs font-bold text-blue-200 uppercase">Nueva letra conseguida para el enigma</span>
+          <div class="font-fredoka font-bold text-3xl text-amber-300 mt-0.5" id="feedbackLetterChar">M</div>
+        </div>
+
+        <button onclick="closeFeedbackModal()" id="feedbackCloseBtn" class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-fredoka font-bold text-base shadow-md active:scale-95 transition">
+          ¡Entendido, continuemos!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MAIN CONTENT WRAPPER ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- ================= TAB 1: PIZARRA DIGITAL & CLASIFICACIÓN ================= -->
+    <section id="tabLeaderboard" class="space-y-6">
+      <!-- Big Screen Banner -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="z-10 text-center md:text-left">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400 text-lengua-900 mb-2">
+            <i class="fa-solid fa-bolt"></i> CLASIFICACIÓN EN DIRECTO
+          </span>
+          <h2 class="font-fredoka text-2xl sm:text-3xl font-bold">Panel de Competición Cooperativa</h2>
+          <p class="text-blue-100 text-sm max-w-2xl mt-1">
+            Todos los equipos inician en el Reto 1. Superad cada prueba de 6-7 minutos para desbloquear las 6 letras clave del enigma.
+          </p>
+        </div>
+        <div class="z-10 flex gap-2">
+          <button onclick="switchMainTab('play')" class="px-5 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-lengua-900 font-fredoka font-bold text-sm shadow-lg active:scale-95 transition flex items-center gap-2">
+            <i class="fa-solid fa-puzzle-piece"></i>
+            <span>Ir a Resolver Retos</span>
+          </button>
+        </div>
+        <!-- Decorative bg icon -->
+        <i class="fa-solid fa-trophy absolute -right-6 -bottom-8 text-9xl text-white/10 pointer-events-none"></i>
+      </div>
+
+      <!-- Live Leaderboard Cards Grid -->
+      <div id="teamsLeaderboardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: MODO RETOS POR EQUIPO ================= -->
+    <section id="tabPlay" class="hidden space-y-6">
+
+      <!-- Active Team Selector Bar -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <label class="font-fredoka text-sm font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-users-viewfinder text-lengua-600"></i>
+            Equipo jugando ahora:
+          </label>
+          <select id="activeTeamSelect" onchange="changeActiveTeam(this.value)" class="bg-slate-100 border-2 border-slate-200 font-fredoka font-semibold text-slate-800 text-base rounded-xl px-3 py-1.5 focus:border-lengua-600 focus:outline-none cursor-pointer">
+            <!-- Dynamic options -->
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wide">Letras descubiertas:</span>
+          <div id="collectedLettersBar" class="flex gap-1.5">
+            <!-- Badges M-A-E-S-T-R -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Challenge Interactive Card -->
+      <div class="bg-white rounded-3xl shadow-md border border-slate-200 overflow-hidden">
+        <!-- Challenge Header -->
+        <div id="challengeHeaderBg" class="bg-gradient-to-r from-lengua-700 to-indigo-700 p-5 sm:p-6 text-white flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3 sm:gap-4">
+            <div id="challengeIconBox" class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl font-fredoka font-bold text-amber-300 shadow">
+              1
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span id="challengeSubLabel" class="text-xs uppercase font-bold tracking-wider text-blue-200 bg-white/10 px-2.5 py-0.5 rounded-full">Sustantivos comunes y propios</span>
+                <span id="challengeStatusBadge" class="text-xs font-bold bg-amber-400 text-lengua-900 px-2 py-0.5 rounded-full hidden sm:inline-block">En curso</span>
+              </div>
+              <h3 id="challengeTitle" class="font-fredoka text-xl sm:text-2xl font-bold mt-1">Reto 1: El Archivador Secreto</h3>
+            </div>
+          </div>
+
+          <!-- Challenge Selector pills -->
+          <div class="flex items-center gap-1.5 bg-black/20 p-1.5 rounded-2xl">
+            <button onclick="jumpToChallenge(1)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white text-lengua-800 shadow" id="pill1">1</button>
+            <button onclick="jumpToChallenge(2)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white/10 text-white hover:bg-white/30" id="pill2">2</button>
+            <button onclick="jumpToChallenge(3)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white/10 text-white hover:bg-white/30" id="pill3">3</button>
+            <button onclick="jumpToChallenge(4)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white/10 text-white hover:bg-white/30" id="pill4">4</button>
+            <button onclick="jumpToChallenge(5)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white/10 text-white hover:bg-white/30" id="pill5">5</button>
+            <button onclick="jumpToChallenge(6)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white/10 text-white hover:bg-white/30" id="pill6">6</button>
+            <button onclick="jumpToChallenge(7)" class="w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-amber-400 text-lengua-900 hover:bg-amber-300" id="pill7" title="Enigma Final">★</button>
+          </div>
+        </div>
+
+        <!-- Challenge Body Container -->
+        <div id="challengeBody" class="p-5 sm:p-8">
+          <!-- Dynamic Form loaded based on active challenge -->
+        </div>
+
+        <!-- Challenge Footer / Action Buttons -->
+        <div class="bg-slate-50 border-t border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="text-xs text-slate-500 font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-lengua-600"></i>
+            <span>¡Recordad consultar con vuestros 4 miembros antes de validar!</span>
+          </div>
+          <div class="flex gap-2">
+            <button id="checkChallengeBtn" onclick="validateCurrentChallenge()" class="px-6 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-fredoka font-bold text-base shadow-md transition flex items-center gap-2">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Comprobar Respuestas</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL: AJUSTES & MAESTRO ================= -->
+  <div id="teacherModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+        <div class="flex items-center gap-2 font-fredoka text-lg font-bold">
+          <i class="fa-solid fa-user-tie text-amber-400"></i>
+          <span>Panel de Gestión Docente</span>
+        </div>
+        <button onclick="closeTeacherModal()" class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto space-y-6 text-sm">
+        <!-- Team Manager -->
+        <div>
+          <h4 class="font-fredoka text-base font-bold text-slate-800 mb-2">Equipos Participantes</h4>
+          <div id="teacherTeamsList" class="space-y-2 mb-3">
+            <!-- Teams dynamically listed -->
+          </div>
+          <div class="flex gap-2">
+            <input type="text" id="newTeamInput" placeholder="Nombre de nuevo equipo (ej: Los Delfines)" class="flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:border-lengua-600 focus:outline-none">
+            <button onclick="addNewTeam()" class="bg-lengua-700 hover:bg-lengua-800 text-white px-4 py-2 rounded-xl font-fredoka font-bold text-sm">
+              <i class="fa-solid fa-plus mr-1"></i> Añadir
+            </button>
+          </div>
+        </div>
+
+        <!-- Timer Setting -->
+        <div class="border-t border-slate-200 pt-4">
+          <h4 class="font-fredoka text-base font-bold text-slate-800 mb-2">Ajustar Tiempo de Gimkana</h4>
+          <div class="flex items-center gap-3">
+            <label class="text-slate-600 font-semibold">Minutos de sesión:</label>
+            <input type="number" id="sessionMinutesInput" value="50" min="5" max="120" class="w-20 bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 font-bold text-center">
+            <button onclick="updateSessionTime()" class="bg-slate-800 hover:bg-black text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+              Aplicar
+            </button>
+          </div>
+        </div>
+
+        <!-- Reset All Data -->
+        <div class="border-t border-slate-200 pt-4 bg-rose-50 p-4 rounded-2xl border border-rose-200">
+          <h4 class="font-fredoka text-base font-bold text-rose-800 mb-1">Zona de Reinicio</h4>
+          <p class="text-xs text-rose-600 mb-3">Borra el progreso de todos los retos y resetea el marcador para una nueva clase.</p>
+          <button onclick="confirmResetAll()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl font-fredoka font-bold text-xs flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Reiniciar Toda la Gimkana</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    /* ================= 1. STATE & DATA INITIALIZATION ================= */
+    const DEFAULT_TEAMS = [
+      { id: "team-1", name: "Equipo 1: Los Halcones", color: "from-sky-500 to-blue-600", currentChallenge: 1, completedChallenges: [], secretUnlocked: false, finishTime: null, startTime: Date.now() },
+      { id: "team-2", name: "Equipo 2: Los Dragones", color: "from-red-500 to-rose-600", currentChallenge: 1, completedChallenges: [], secretUnlocked: false, finishTime: null, startTime: Date.now() },
+      { id: "team-3", name: "Equipo 3: Los Fénix", color: "from-amber-400 to-orange-500", currentChallenge: 1, completedChallenges: [], secretUnlocked: false, finishTime: null, startTime: Date.now() },
+      { id: "team-4", name: "Equipo 4: Los Titanes", color: "from-emerald-500 to-teal-600", currentChallenge: 1, completedChallenges: [], secretUnlocked: false, finishTime: null, startTime: Date.now() },
+      { id: "team-5", name: "Equipo 5: Los Delfines", color: "from-purple-500 to-indigo-600", currentChallenge: 1, completedChallenges: [], secretUnlocked: false, finishTime: null, startTime: Date.now() },
+      { id: "team-6", name: "Equipo 6: Las Águilas", color: "from-cyan-500 to-blue-700", currentChallenge: 1, completedChallenges: [], secretUnlocked: false, finishTime: null, startTime: Date.now() }
+    ];
+
+    const CHALLENGES_INFO = {
+      1: { title: "Reto 1: El Archivador Secreto", sub: "Sustantivos comunes y propios", letter: "M", icon: "1" },
+      2: { title: "Reto 2: El Camaleón de las Palabras", sub: "El género y el número", letter: "A", icon: "2" },
+      3: { title: "Reto 3: El Detective de la Puntuación", sub: "El punto y la mayúscula", letter: "E", icon: "3" },
+      4: { title: "Reto 4: El Cazador de Campanadas", sub: "Sílabas tónicas y átonas", letter: "S", icon: "4" },
+      5: { title: "Reto 5: La Biblioteca Desordenada", sub: "El abecedario y orden alfabético", letter: "T", icon: "5" },
+      6: { title: "Reto 6: El Puzzle del Narrador", sub: "Estructura del cuento: inicio, nudo y desenlace", letter: "R", icon: "6" },
+      7: { title: "Enigma Final: La Palabra Secreta", sub: "Código de honor lingüístico", letter: "★", icon: "★" }
+    };
+
+    let appState = {
+      teams: [],
+      activeTeamId: null,
+      currentChallengeNum: 1,
+      timerTotalSeconds: 50 * 60,
+      timerRemaining: 50 * 60,
+      timerRunning: false,
+      soundEnabled: true
+    };
+
+    let timerInterval = null;
+
+    /* ================= 2. AUDIO SYNTHESIS (NO EXTERNAL FILES) ================= */
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    function playTone(type) {
+      if (!appState.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (type === 'success') {
+          // Cheerful chime: C5 -> E5 -> G5
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
+          osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          osc.start(now);
+          osc.stop(now + 0.5);
+        } else if (type === 'win') {
+          // Grand fanfare
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.frequency.setValueAtTime(freq, now + idx * 0.1);
+            g.gain.setValueAtTime(0.2, now + idx * 0.1);
+            g.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.4);
+            o.start(now + idx * 0.1);
+            o.stop(now + idx * 0.1 + 0.4);
+          });
+        } else if (type === 'error') {
+          // Gentle boing
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(240, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.25);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        }
+      } catch (e) {
+        console.warn('Audio not allowed yet or unavailable', e);
+      }
+    }
+
+    function toggleSound() {
+      appState.soundEnabled = !appState.soundEnabled;
+      const btn = document.getElementById('soundBtn');
+      if (appState.soundEnabled) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        showAlert("Sonido activado", "Efectos sonoros habilitados", "info");
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+        showAlert("Sonido silenciado", "Modo silencioso", "info");
+      }
+      saveState();
+    }
+
+    /* ================= 3. LOCAL STORAGE PERSISTENCE ================= */
+    function loadState() {
+      const saved = localStorage.getItem('lengua_gymkana_state_v1');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          appState = { ...appState, ...parsed };
+        } catch (e) {
+          appState.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+        }
+      } else {
+        appState.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+      }
+
+      if (!appState.activeTeamId && appState.teams.length > 0) {
+        appState.activeTeamId = appState.teams[0].id;
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('lengua_gymkana_state_v1', JSON.stringify({
+        teams: appState.teams,
+        activeTeamId: appState.activeTeamId,
+        timerTotalSeconds: appState.timerTotalSeconds,
+        timerRemaining: appState.timerRemaining,
+        soundEnabled: appState.soundEnabled
+      }));
+    }
+
+    /* ================= 4. TIMER ENGINE ================= */
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateTimerUI() {
+      const display = document.getElementById('timerDisplay');
+      display.textContent = formatTime(appState.timerRemaining);
+      if (appState.timerRemaining <= 300 && appState.timerRemaining > 0) { // Under 5 min
+        display.className = "font-fredoka font-bold text-2xl tracking-wider text-rose-400 animate-pulse";
+      } else {
+        display.className = "font-fredoka font-bold text-2xl tracking-wider text-amber-300";
+      }
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('timerToggleBtn');
+      if (appState.timerRunning) {
+        clearInterval(timerInterval);
+        appState.timerRunning = false;
+        btn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+        btn.className = "w-8 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white flex items-center justify-center transition";
+      } else {
+        appState.timerRunning = true;
+        btn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+        btn.className = "w-8 h-8 rounded-lg bg-amber-500 hover:bg-amber-600 active:scale-95 text-white flex items-center justify-center transition";
+        timerInterval = setInterval(() => {
+          if (appState.timerRemaining > 0) {
+            appState.timerRemaining--;
+            updateTimerUI();
+            if (appState.timerRemaining % 10 === 0) saveState();
+          } else {
+            clearInterval(timerInterval);
+            appState.timerRunning = false;
+            showAlert("¡TIEMPO FINALIZADO!", "Han concluido los 50 minutos de la gimkana.", "error");
+          }
+        }, 1000);
+      }
+      saveState();
+    }
+
+    function resetTimerPrompt() {
+      if (confirm("¿Reiniciar el cronómetro de la sesión a " + Math.floor(appState.timerTotalSeconds / 60) + " minutos?")) {
+        clearInterval(timerInterval);
+        appState.timerRunning = false;
+        appState.timerRemaining = appState.timerTotalSeconds;
+        document.getElementById('timerToggleBtn').innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+        updateTimerUI();
+        saveState();
+      }
+    }
+
+    function updateSessionTime() {
+      const input = document.getElementById('sessionMinutesInput');
+      const val = parseInt(input.value);
+      if (val >= 5 && val <= 120) {
+        appState.timerTotalSeconds = val * 60;
+        appState.timerRemaining = appState.timerTotalSeconds;
+        updateTimerUI();
+        saveState();
+        showAlert("Tiempo modificado", `Duración fijada a ${val} minutos.`, "success");
+      }
+    }
+
+    /* ================= 5. TEAM PROGRESS & RETO LOGIC ================= */
+    function getActiveTeam() {
+      return appState.teams.find(t => t.id === appState.activeTeamId) || appState.teams[0];
+    }
+
+    function changeActiveTeam(teamId) {
+      appState.activeTeamId = teamId;
+      const team = getActiveTeam();
+      // Jump challenge view to team's current challenge or first non-completed
+      appState.currentChallengeNum = team.currentChallenge;
+      renderActiveChallenge();
+      renderCollectedLetters();
+      saveState();
+    }
+
+    function switchMainTab(tab) {
+      const tabLeaderboard = document.getElementById('tabLeaderboard');
+      const tabPlay = document.getElementById('tabPlay');
+      const btnLeaderboard = document.getElementById('tabLeaderboardBtn');
+      const btnPlay = document.getElementById('tabPlayBtn');
+
+      if (tab === 'leaderboard') {
+        tabLeaderboard.classList.remove('hidden');
+        tabPlay.classList.add('hidden');
+        btnLeaderboard.className = "px-3.5 py-1.5 rounded-xl font-fredoka text-sm font-semibold transition flex items-center gap-2 bg-white text-lengua-800 shadow";
+        btnPlay.className = "px-3.5 py-1.5 rounded-xl font-fredoka text-sm font-semibold transition flex items-center gap-2 bg-lengua-900/50 hover:bg-white/20 text-blue-100";
+        renderLeaderboard();
+      } else {
+        tabPlay.classList.remove('hidden');
+        tabLeaderboard.classList.add('hidden');
+        btnPlay.className = "px-3.5 py-1.5 rounded-xl font-fredoka text-sm font-semibold transition flex items-center gap-2 bg-white text-lengua-800 shadow";
+        btnLeaderboard.className = "px-3.5 py-1.5 rounded-xl font-fredoka text-sm font-semibold transition flex items-center gap-2 bg-lengua-900/50 hover:bg-white/20 text-blue-100";
+        renderActiveChallenge();
+      }
+    }
+
+    function jumpToChallenge(num) {
+      appState.currentChallengeNum = num;
+      renderActiveChallenge();
+    }
+
+    /* Renders letters M - A - E - S - T - R in current challenge card */
+    function renderCollectedLetters() {
+      const container = document.getElementById('collectedLettersBar');
+      const team = getActiveTeam();
+      const letters = [
+        { num: 1, char: 'M' },
+        { num: 2, char: 'A' },
+        { num: 3, char: 'E' },
+        { num: 4, char: 'S' },
+        { num: 5, char: 'T' },
+        { num: 6, char: 'R' }
+      ];
+
+      container.innerHTML = letters.map(item => {
+        const hasIt = team.completedChallenges.includes(item.num);
+        return `
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center font-fredoka font-bold text-xs transition ${
+            hasIt 
+              ? 'bg-amber-400 text-lengua-900 shadow badge-pop' 
+              : 'bg-slate-200 text-slate-400 border border-slate-300'
+          }">
+            ${hasIt ? item.char : '?'}
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* Update top challenge pills */
+    function updatePills() {
+      const team = getActiveTeam();
+      for (let i = 1; i <= 7; i++) {
+        const pill = document.getElementById(`pill${i}`);
+        if (!pill) continue;
+        const isCurrent = (appState.currentChallengeNum === i);
+        const isDone = (i <= 6 && team.completedChallenges.includes(i)) || (i === 7 && team.secretUnlocked);
+
+        if (isCurrent) {
+          pill.className = "w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-amber-400 text-lengua-900 ring-2 ring-white shadow-md scale-110";
+        } else if (isDone) {
+          pill.className = "w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-emerald-500 text-white hover:bg-emerald-600";
+        } else {
+          pill.className = "w-8 h-8 rounded-xl font-fredoka font-bold text-xs transition bg-white/20 text-blue-100 hover:bg-white/40";
+        }
+      }
+    }
+
+    /* ================= 6. RENDER SPECIFIC CHALLENGE FORM ================= */
+    function renderActiveChallenge() {
+      const team = getActiveTeam();
+      const cNum = appState.currentChallengeNum;
+      const info = CHALLENGES_INFO[cNum];
+
+      // Update Header Text
+      document.getElementById('challengeIconBox').textContent = info.icon;
+      document.getElementById('challengeTitle').textContent = info.title;
+      document.getElementById('challengeSubLabel').textContent = info.sub;
+
+      const badge = document.getElementById('challengeStatusBadge');
+      const isCompleted = (cNum <= 6 && team.completedChallenges.includes(cNum)) || (cNum === 7 && team.secretUnlocked);
+      if (isCompleted) {
+        badge.textContent = "¡Completado!";
+        badge.className = "text-xs font-bold bg-emerald-400 text-emerald-950 px-2 py-0.5 rounded-full inline-block";
+      } else {
+        badge.textContent = `En curso (${team.name})`;
+        badge.className = "text-xs font-bold bg-amber-400 text-lengua-900 px-2 py-0.5 rounded-full inline-block";
+      }
+
+      updatePills();
+      renderCollectedLetters();
+
+      const body = document.getElementById('challengeBody');
+      const checkBtn = document.getElementById('checkChallengeBtn');
+
+      if (cNum === 7) {
+        checkBtn.innerHTML = '<i class="fa-solid fa-key"></i><span>Descifrar Enigma Final</span>';
+      } else {
+        checkBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>Comprobar Respuestas</span>';
+      }
+
+      switch(cNum) {
+        case 1:
+          renderReto1(body);
+          break;
+        case 2:
+          renderReto2(body);
+          break;
+        case 3:
+          renderReto3(body);
+          break;
+        case 4:
+          renderReto4(body);
+          break;
+        case 5:
+          renderReto5(body);
+          break;
+        case 6:
+          renderReto6(body);
+          break;
+        case 7:
+          renderReto7(body);
+          break;
+      }
+    }
+
+    /* --- RETO 1: SUSTANTIVOS --- */
+    function renderReto1(container) {
+      const words = ["lápiz", "Segura", "colegio", "Sofía", "mochila", "gato", "Murcia", "río"];
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-blue-50 border-l-4 border-lengua-600 p-4 rounded-r-2xl">
+            <p class="text-sm font-semibold text-slate-700">
+              🏷️ <strong>Misión:</strong> Clasificad en equipo las 8 palabras en su caja correspondiente y responded a la pregunta de control para obtener la <strong>Letra M</strong>.
+            </p>
+          </div>
+
+          <!-- Interactive word classification -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Comunes Box -->
+            <div class="bg-slate-50 border-2 border-dashed border-blue-300 rounded-2xl p-4">
+              <h4 class="font-fredoka font-bold text-base text-blue-800 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-box-archive text-blue-600"></i>
+                Sustantivos Comunes (Cosas, animales, lugares generales)
+              </h4>
+              <p class="text-xs text-slate-500 mb-3">Marcad los 4 sustantivos comunes:</p>
+              <div class="grid grid-cols-2 gap-2" id="r1_comunes_group">
+                ${words.map(w => `
+                  <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50 transition">
+                    <input type="checkbox" name="r1_comun" value="${w}" class="w-4 h-4 rounded text-lengua-600 focus:ring-0">
+                    <span class="font-semibold text-sm">${w}</span>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Propios Box -->
+            <div class="bg-slate-50 border-2 border-dashed border-amber-300 rounded-2xl p-4">
+              <h4 class="font-fredoka font-bold text-base text-amber-800 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-signature text-amber-600"></i>
+                Sustantivos Propios (Nombres de personas o lugares)
+              </h4>
+              <p class="text-xs text-slate-500 mb-3">Marcad los 4 sustantivos propios:</p>
+              <div class="grid grid-cols-2 gap-2" id="r1_propios_group">
+                ${words.map(w => `
+                  <label class="flex items-center gap-2 p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:bg-amber-50 transition">
+                    <input type="checkbox" name="r1_propio" value="${w}" class="w-4 h-4 rounded text-amber-500 focus:ring-0">
+                    <span class="font-semibold text-sm">${w}</span>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Question check -->
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="font-fredoka text-sm font-semibold text-slate-700">
+              ❓ <strong>Pregunta clave:</strong> ¿Con qué tipo de letra empieza SIEMPRE un sustantivo propio?
+            </span>
+            <select id="r1_pregunta" class="bg-white border-2 border-slate-300 rounded-xl px-4 py-2 font-bold text-sm focus:border-lengua-600 outline-none">
+              <option value="">-- Elige una opción --</option>
+              <option value="minuscula">Con letra minúscula</option>
+              <option value="mayuscula">Con letra mayúscula</option>
+              <option value="numero">Con un número</option>
+            </select>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- RETO 2: GÉNERO Y NÚMERO --- */
+    function renderReto2(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-blue-50 border-l-4 border-lengua-600 p-4 rounded-r-2xl">
+            <p class="text-sm font-semibold text-slate-700">
+              🦎 <strong>Misión:</strong> El camaleón cambia de forma. Escribid las frases transformadas manteniendo la concordancia con el artículo y determinad la formación del plural para conseguir la <strong>Letra A</strong>.
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-sm font-semibold text-slate-700">
+                1. <em>"El león rápido"</em> ➔ Pásalo a <strong>femenino singular</strong>:
+              </span>
+              <input type="text" id="r2_frase1" placeholder="Ej: la leona rápida" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-sm font-bold md:w-64 focus:border-lengua-600 outline-none">
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-sm font-semibold text-slate-700">
+                2. <em>"Las casas grandes"</em> ➔ Pásalo a <strong>masculino plural</strong> (con la palabra <em>edificios</em>):
+              </span>
+              <input type="text" id="r2_frase2" placeholder="Ej: los edificios grandes" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-sm font-bold md:w-64 focus:border-lengua-600 outline-none">
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-sm font-semibold text-slate-700">
+                3. <em>"La actriz trabajadora"</em> ➔ Pásalo a <strong>femenino plural</strong>:
+              </span>
+              <input type="text" id="r2_frase3" placeholder="Ej: las actrices trabajadoras" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-sm font-bold md:w-64 focus:border-lengua-600 outline-none">
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-2">
+              <span class="text-sm font-semibold text-slate-700">
+                4. <em>"Los árboles secos"</em> ➔ Pásalo a <strong>masculino singular</strong>:
+              </span>
+              <input type="text" id="r2_frase4" placeholder="Ej: el árbol seco" class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-sm font-bold md:w-64 focus:border-lengua-600 outline-none">
+            </div>
+          </div>
+
+          <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="font-fredoka text-sm font-semibold text-amber-900">
+              ❓ ¿Qué terminaciones solemos añadir a las palabras para formar el plural?
+            </span>
+            <div class="flex gap-2">
+              <label class="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-amber-300 text-sm font-bold cursor-pointer">
+                <input type="radio" name="r2_regla" value="s_es" class="text-amber-500"> -s o -es
+              </label>
+              <label class="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-amber-300 text-sm font-bold cursor-pointer">
+                <input type="radio" name="r2_regla" value="m_n" class="text-amber-500"> -m o -n
+              </label>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- RETO 3: DETECTIVE DE LA PUNTUACIÓN --- */
+    function renderReto3(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-blue-50 border-l-4 border-lengua-600 p-4 rounded-r-2xl">
+            <p class="text-sm font-semibold text-slate-700">
+              🔍 <strong>Misión:</strong> Este texto ha perdido sus mayúsculas y sus puntos. Ayudad a Toby el perro reescribiéndolo de forma ortográficamente impecable (recuerda que Toby es un nombre propio) para ganar la <strong>Letra E</strong>.
+            </p>
+          </div>
+
+          <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
+            <span class="text-xs font-bold text-amber-800 uppercase tracking-wide">Texto desordenado sin signos:</span>
+            <p class="font-sans text-base text-slate-700 mt-1 italic">
+              "el perro toby corre por el parque cada tarde lanza la pelota muy lejos siempre vuelve contento con ella en la boca"
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block font-fredoka font-bold text-slate-700 text-sm mb-1">
+                ✍️ Escribid aquí el texto corregido con sus 3 puntos y sus mayúsculas:
+              </label>
+              <textarea id="r3_texto" rows="3" placeholder="El perro Toby corre por el parque. Cada tarde lanza la pelota muy lejos. Siempre vuelve contento con ella en la boca." class="w-full bg-white border-2 border-slate-300 rounded-2xl p-3 text-sm font-medium focus:border-lengua-600 outline-none leading-relaxed"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-600">¿Cuántos puntos tiene en total el párrafo?</span>
+                <select id="r3_num_puntos" class="mt-1 w-full bg-white border border-slate-300 rounded-lg p-1.5 font-bold text-sm">
+                  <option value="">Selecciona</option>
+                  <option value="1">1 punto</option>
+                  <option value="2">2 puntos</option>
+                  <option value="3">3 puntos (2 seguidos y 1 final)</option>
+                  <option value="5">5 puntos</option>
+                </select>
+              </div>
+
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-600">¿Por qué 'Toby' debe escribirse con mayúscula?</span>
+                <select id="r3_toby_razon" class="mt-1 w-full bg-white border border-slate-300 rounded-lg p-1.5 font-bold text-sm">
+                  <option value="">Selecciona</option>
+                  <option value="propio">Porque es un sustantivo propio (nombre de la mascota)</option>
+                  <option value="largo">Porque es una palabra corta</option>
+                  <option value="final">Porque está al final de la oración</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- RETO 4: SÍLABA TÓNICA Y ÁTONAS --- */
+    function renderReto4(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-blue-50 border-l-4 border-lengua-600 p-4 rounded-r-2xl">
+            <p class="text-sm font-semibold text-slate-700">
+              🔔 <strong>Misión:</strong> Dad palmadas para separar las sílabas. Identificad la sílaba con más fuerza (<strong>tónica</strong>) y contad las sílabas débiles (<strong>átonas</strong>) para conseguir la <strong>Letra S</strong>.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Palabra 1: Música -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-fredoka font-bold text-lg text-lengua-800">1. MÚSICA</span>
+                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">3 sílabas</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="font-semibold block mb-1">Sílaba tónica:</label>
+                  <select id="r4_tonica_1" class="w-full bg-white border rounded-lg p-1.5 font-bold">
+                    <option value="">Elegir</option>
+                    <option value="mu">MÚ</option>
+                    <option value="si">SI</option>
+                    <option value="ca">CA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-semibold block mb-1">N.º sílabas átonas:</label>
+                  <input type="number" id="r4_atonas_1" min="0" max="5" placeholder="0" class="w-full bg-white border rounded-lg p-1.5 font-bold text-center">
+                </div>
+              </div>
+            </div>
+
+            <!-- Palabra 2: Caracol -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-fredoka font-bold text-lg text-lengua-800">2. CARACOL</span>
+                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">3 sílabas</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="font-semibold block mb-1">Sílaba tónica:</label>
+                  <select id="r4_tonica_2" class="w-full bg-white border rounded-lg p-1.5 font-bold">
+                    <option value="">Elegir</option>
+                    <option value="ca">CA</option>
+                    <option value="ra">RA</option>
+                    <option value="col">COL</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-semibold block mb-1">N.º sílabas átonas:</label>
+                  <input type="number" id="r4_atonas_2" min="0" max="5" placeholder="0" class="w-full bg-white border rounded-lg p-1.5 font-bold text-center">
+                </div>
+              </div>
+            </div>
+
+            <!-- Palabra 3: Ventana -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-fredoka font-bold text-lg text-lengua-800">3. VENTANA</span>
+                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">3 sílabas</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="font-semibold block mb-1">Sílaba tónica:</label>
+                  <select id="r4_tonica_3" class="w-full bg-white border rounded-lg p-1.5 font-bold">
+                    <option value="">Elegir</option>
+                    <option value="ven">VEN</option>
+                    <option value="ta">TA</option>
+                    <option value="na">NA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-semibold block mb-1">N.º sílabas átonas:</label>
+                  <input type="number" id="r4_atonas_3" min="0" max="5" placeholder="0" class="w-full bg-white border rounded-lg p-1.5 font-bold text-center">
+                </div>
+              </div>
+            </div>
+
+            <!-- Palabra 4: Reloj -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-fredoka font-bold text-lg text-lengua-800">4. RELOJ</span>
+                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">2 sílabas</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="font-semibold block mb-1">Sílaba tónica:</label>
+                  <select id="r4_tonica_4" class="w-full bg-white border rounded-lg p-1.5 font-bold">
+                    <option value="">Elegir</option>
+                    <option value="re">RE</option>
+                    <option value="loj">LOJ</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="font-semibold block mb-1">N.º sílabas átonas:</label>
+                  <input type="number" id="r4_atonas_4" min="0" max="5" placeholder="0" class="w-full bg-white border rounded-lg p-1.5 font-bold text-center">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- RETO 5: EL ABECEDARIO --- */
+    function renderReto5(container) {
+      const books = ["Tortuga", "Ballena", "Delfín", "Cangrejo", "Foca", "Águila"];
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-blue-50 border-l-4 border-lengua-600 p-4 rounded-r-2xl">
+            <p class="text-sm font-semibold text-slate-700">
+              📚 <strong>Misión:</strong> El viento ha tirado estos libros de la biblioteca marina. Ordenadlos alfabéticamente (del 1 al 6) y responded la pregunta del abecedario para desbloquear la <strong>Letra T</strong>.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <span class="text-xs font-bold text-slate-500 uppercase">Libros desordenados:</span>
+            <div class="flex flex-wrap gap-2 mt-2">
+              ${books.map(b => `<span class="bg-white border border-slate-300 font-fredoka font-bold text-sm px-3 py-1.5 rounded-xl shadow-sm text-lengua-800">${b}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            ${[1, 2, 3, 4, 5, 6].map(num => `
+              <div class="bg-white p-2.5 rounded-2xl border-2 border-slate-200 flex flex-col">
+                <span class="font-fredoka font-bold text-xs text-lengua-600 mb-1">Posición ${num}.º:</span>
+                <select id="r5_pos_${num}" class="bg-slate-50 border border-slate-300 rounded-xl p-1.5 font-bold text-xs">
+                  <option value="">-- Elegir libro --</option>
+                  ${books.map(b => `<option value="${b}">${b}</option>`).join('')}
+                </select>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="font-fredoka text-sm font-semibold text-amber-900">
+              ❓ En el abecedario español, ¿qué letra está justo ANTES de la 'M'?
+            </span>
+            <input type="text" id="r5_letra_antes" maxlength="2" placeholder="Letra" class="bg-white border-2 border-amber-300 rounded-xl px-4 py-1.5 font-fredoka font-bold text-center text-lg w-24 uppercase outline-none">
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- RETO 6: EL CUENTO --- */
+    function renderReto6(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-blue-50 border-l-4 border-lengua-600 p-4 rounded-r-2xl">
+            <p class="text-sm font-semibold text-slate-700">
+              📖 <strong>Misión:</strong> Todo cuento tiene <strong>Inicio</strong>, <strong>Nudo</strong> y <strong>Desenlace</strong>. Asignad a cada fragmento del cuento de los ratoncitos su parte correspondiente para conseguir la última <strong>Letra R</strong>.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Fragment A -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <p class="text-sm font-medium text-slate-700 flex-1">
+                🐭 <em>"De repente, una ráfaga de viento cerró la puerta de la torre y quedaron atrapados sin poder salir."</em>
+              </p>
+              <select id="r6_frag_1" class="bg-white border-2 border-slate-300 rounded-xl px-3 py-1.5 font-bold text-xs shrink-0">
+                <option value="">Seleccionar parte</option>
+                <option value="inicio">Inicio</option>
+                <option value="nudo">Nudo (Problema)</option>
+                <option value="desenlace">Desenlace (Final)</option>
+              </select>
+            </div>
+
+            <!-- Fragment B -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <p class="text-sm font-medium text-slate-700 flex-1">
+                🐭 <em>"Había una vez dos ratoncitos exploradores que vivían al pie de un antiguo molino de viento."</em>
+              </p>
+              <select id="r6_frag_2" class="bg-white border-2 border-slate-300 rounded-xl px-3 py-1.5 font-bold text-xs shrink-0">
+                <option value="">Seleccionar parte</option>
+                <option value="inicio">Inicio</option>
+                <option value="nudo">Nudo (Problema)</option>
+                <option value="desenlace">Desenlace (Final)</option>
+              </select>
+            </div>
+
+            <!-- Fragment C -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <p class="text-sm font-medium text-slate-700 flex-1">
+                🐭 <em>"Finalmente, gracias a una pequeña rama que encontraron, hicieron palanca, abrieron el cerrojo y regresaron felices a su madriguera."</em>
+              </p>
+              <select id="r6_frag_3" class="bg-white border-2 border-slate-300 rounded-xl px-3 py-1.5 font-bold text-xs shrink-0">
+                <option value="">Seleccionar parte</option>
+                <option value="inicio">Inicio</option>
+                <option value="nudo">Nudo (Problema)</option>
+                <option value="desenlace">Desenlace (Final)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span class="font-fredoka text-sm font-semibold text-amber-900">
+              ❓ ¿Qué palabra del texto marca el desenlace o resolución de la historia?
+            </span>
+            <input type="text" id="r6_palabra_desenlace" placeholder="Palabra clave" class="bg-white border-2 border-amber-300 rounded-xl px-4 py-1.5 font-fredoka font-bold text-center text-sm w-44 outline-none">
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- RETO 7: ENIGMA FINAL --- */
+    function renderReto7(container) {
+      const team = getActiveTeam();
+      const hasAllLetters = [1, 2, 3, 4, 5, 6].every(num => team.completedChallenges.includes(num));
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-5 rounded-2xl shadow-sm">
+            <h4 class="font-fredoka font-bold text-lg mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-crown"></i>
+              ¡El Gran Enigma de la Palabra Secreta!
+            </h4>
+            <p class="text-xs sm:text-sm text-amber-100">
+              Unid las 6 letras que habéis ganado en cada reto en riguroso orden (1 al 6) y resolved la clave misteriosa.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center space-y-4">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Letras conseguidas por vuestro equipo:</span>
+            
+            <div class="flex justify-center items-center gap-2 sm:gap-3">
+              ${[
+                { num: 1, char: 'M' },
+                { num: 2, char: 'A' },
+                { num: 3, char: 'E' },
+                { num: 4, char: 'S' },
+                { num: 5, char: 'T' },
+                { num: 6, char: 'R' }
+              ].map(item => {
+                const unlocked = team.completedChallenges.includes(item.num);
+                return `
+                  <div class="w-10 h-12 sm:w-12 sm:h-14 rounded-2xl border-2 flex flex-col items-center justify-center font-fredoka font-bold ${
+                    unlocked 
+                      ? 'bg-amber-400 border-amber-500 text-lengua-950 shadow-md scale-105 transition' 
+                      : 'bg-white border-dashed border-slate-300 text-slate-400'
+                  }">
+                    <span class="text-lg sm:text-2xl">${unlocked ? item.char : '?'}</span>
+                    <span class="text-[10px] text-slate-500">R${item.num}</span>
+                  </div>
+                `;
+              }).join('')}
+              <div class="w-10 h-12 sm:w-12 sm:h-14 rounded-2xl border-2 bg-indigo-100 border-indigo-300 text-indigo-900 flex flex-col items-center justify-center font-fredoka font-bold">
+                <span class="text-lg sm:text-2xl">O</span>
+                <span class="text-[10px] text-indigo-600">Pista</span>
+              </div>
+            </div>
+
+            ${!hasAllLetters ? `
+              <p class="text-xs text-amber-700 bg-amber-50 py-2 px-3 rounded-xl inline-block border border-amber-200 font-semibold">
+                ⚠️ Aún os faltan retos por completar para descubrir todas las letras, pero si ya sabéis la palabra podéis intentar descifrarla.
+              </p>
+            ` : ''}
+
+            <div class="pt-2 max-w-sm mx-auto">
+              <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Introducid la Palabra Secreta:</label>
+              <input type="text" id="r7_palabra_secreta" placeholder="PALABRA SECRETA" class="w-full bg-white border-2 border-lengua-600 rounded-2xl px-4 py-3 font-fredoka font-bold text-center text-xl tracking-widest uppercase focus:ring-4 focus:ring-blue-100 outline-none">
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ================= 7. VALIDATION ENGINE & DETAILED PEDAGOGICAL FEEDBACK ================= */
+    function openFeedbackModal({ isSuccess, title, message, hint, letter }) {
+      const modal = document.getElementById('feedbackModal');
+      const card = document.getElementById('feedbackCard');
+      const header = document.getElementById('feedbackHeader');
+      const iconWrapper = document.getElementById('feedbackIconWrapper');
+      const headerIcon = document.getElementById('feedbackHeaderIcon');
+      const modalTitle = document.getElementById('feedbackModalTitle');
+      const modalSubtitle = document.getElementById('feedbackModalSubtitle');
+      const msgBox = document.getElementById('feedbackMessageBox');
+      const mainText = document.getElementById('feedbackMainText');
+      const hintLabel = document.getElementById('feedbackHintLabel');
+      const hintText = document.getElementById('feedbackHintText');
+      const letterBanner = document.getElementById('feedbackLetterBanner');
+      const letterChar = document.getElementById('feedbackLetterChar');
+      const closeBtn = document.getElementById('feedbackCloseBtn');
+
+      modalTitle.textContent = title;
+      mainText.textContent = message;
+      hintText.textContent = hint;
+
+      if (isSuccess) {
+        card.className = "bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border-4 border-emerald-500 animate-in fade-in zoom-in duration-200";
+        header.className = "bg-emerald-600 text-white p-5 text-center relative";
+        iconWrapper.className = "w-16 h-16 rounded-full bg-white text-emerald-600 mx-auto flex items-center justify-center text-3xl shadow-lg mb-2";
+        headerIcon.className = "fa-solid fa-circle-check";
+        modalSubtitle.textContent = "¡RETO SUPERADO CON ÉXITO!";
+        msgBox.className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-emerald-950 text-sm leading-relaxed";
+        hintLabel.textContent = "💡 Recuerda cooperativo:";
+        closeBtn.className = "w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-fredoka font-bold text-base shadow-md active:scale-95 transition";
+        closeBtn.textContent = "¡Avanzar al siguiente reto!";
+        
+        if (letter) {
+          letterBanner.classList.remove('hidden');
+          letterChar.textContent = letter;
+        } else {
+          letterBanner.classList.add('hidden');
+        }
+      } else {
+        card.className = "bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border-4 border-amber-400 animate-in fade-in zoom-in duration-200";
+        header.className = "bg-amber-500 text-white p-5 text-center relative";
+        iconWrapper.className = "w-16 h-16 rounded-full bg-white text-amber-600 mx-auto flex items-center justify-center text-3xl shadow-lg mb-2";
+        headerIcon.className = "fa-solid fa-comments";
+        modalSubtitle.textContent = "¡REVISIÓN EN EQUIPO NECESARIA!";
+        msgBox.className = "bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-950 text-sm leading-relaxed";
+        hintLabel.textContent = "🔍 Pista para solucionar el error:";
+        letterBanner.classList.add('hidden');
+        closeBtn.className = "w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-fredoka font-bold text-base shadow-md active:scale-95 transition";
+        closeBtn.textContent = "¡Vamos a comprobarlo juntos!";
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeFeedbackModal() {
+      const modal = document.getElementById('feedbackModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function validateCurrentChallenge() {
+      const team = getActiveTeam();
+      const cNum = appState.currentChallengeNum;
+
+      let success = false;
+      let successMsg = "";
+      let successHint = "";
+      let errorTitle = "¡Casi lo tenéis!";
+      let errorMsg = "";
+      let errorHint = "";
+
+      if (cNum === 1) {
+        // Reto 1: Sustantivos
+        const comunesChecked = Array.from(document.querySelectorAll('input[name="r1_comun"]:checked')).map(el => el.value);
+        const propiosChecked = Array.from(document.querySelectorAll('input[name="r1_propio"]:checked')).map(el => el.value);
+        const preg = document.getElementById('r1_pregunta').value;
+
+        const correctComunes = ["lápiz", "colegio", "mochila", "gato", "río"];
+        const correctPropios = ["Segura", "Sofía", "Murcia"];
+
+        const comunesValid = comunesChecked.length >= 4 && comunesChecked.every(w => correctComunes.includes(w));
+        const propiosValid = propiosChecked.length >= 3 && propiosChecked.every(w => correctPropios.includes(w));
+        const pregValid = (preg === 'mayuscula');
+
+        if (comunesValid && propiosValid && pregValid) {
+          success = true;
+          successMsg = `¡Magnífico trabajo en equipo, ${team.name}! Habéis clasificado perfectamente las cosas y seres generales frente a los nombres propios de personas y lugares geográficos.`;
+          successHint = "Los sustantivos propios (como Sofía, Murcia o el río Segura) siempre nos dicen el nombre específico y van con MAYÚSCULA inicial.";
+        } else {
+          errorMsg = "Algunas palabras no están en su lugar o la pregunta de control no está respondida con la regla ortográfica correcta.";
+          errorHint = "Revisad juntos: 'Sofía', 'Segura' y 'Murcia' nombran una persona o lugares concretos (sustantivos propios). ¡Y recordad con qué letra empiezan siempre!";
+        }
+
+      } else if (cNum === 2) {
+        // Reto 2: Género y número
+        const f1 = normalizeStr(document.getElementById('r2_frase1').value);
+        const f2 = normalizeStr(document.getElementById('r2_frase2').value);
+        const f3 = normalizeStr(document.getElementById('r2_frase3').value);
+        const f4 = normalizeStr(document.getElementById('r2_frase4').value);
+        const regla = document.querySelector('input[name="r2_regla"]:checked')?.value;
+
+        const ok1 = f1.includes('leona rapida') || f1.includes('leona');
+        const ok2 = f2.includes('edificios grandes') || f2.includes('los edificios');
+        const ok3 = f3.includes('actrices trabajadoras');
+        const ok4 = f4.includes('arbol seco') || f4.includes('el arbol seco');
+        const okRegla = (regla === 's_es');
+
+        if (ok1 && ok2 && ok3 && ok4 && okRegla) {
+          success = true;
+          successMsg = `¡Brillante transformación gramatical, ${team.name}! Habéis logrado que los artículos, sustantivos y adjetivos concuerden en género y número a la perfección.`;
+          successHint = "Para formar el plural en español añadimos -s si acaba en vocal (casas) y -es si acaba en consonante (árboles, actrices).";
+        } else {
+          errorMsg = "Hay algún desajuste en las concordancias o en la regla del plural.";
+          errorHint = "Pistas: 1) femenino de león es 'la leona rápida'; 2) plural masculino con edificios es 'los edificios grandes'; 3) plural de actriz es 'las actrices trabajadoras'; 4) singular de árboles es 'el árbol seco'.";
+        }
+
+      } else if (cNum === 3) {
+        // Reto 3: Punto y mayúscula
+        const txt = document.getElementById('r3_texto').value.trim();
+        const numP = document.getElementById('r3_num_puntos').value;
+        const razon = document.getElementById('r3_toby_razon').value;
+
+        const hasToby = /Toby/.test(txt);
+        const dotsCount = (txt.match(/\./g) || []).length;
+        const hasMayus = /^[E]/.test(txt);
+
+        if (hasToby && dotsCount >= 2 && numP === '3' && razon === 'propio') {
+          success = true;
+          successMsg = `¡Gran labor detectivesca! Habéis devuelto los 3 puntos al texto y respetado las mayúsculas iniciales y en el nombre propio Toby.`;
+          successHint = "Se escribe mayúscula: 1) al empezar un escrito, 2) después de cada punto, y 3) en los nombres propios de personas y mascotas.";
+        } else {
+          errorMsg = "Revisad con lupa ortográfica el texto escrito y las dos preguntas inferiores.";
+          errorHint = "El texto debe tener 3 oraciones separadas por punto. ¡Comprobad que 'Toby' tenga mayúscula por ser el nombre de la mascota y que la primera palabra sea 'El'!";
+        }
+
+      } else if (cNum === 4) {
+        // Reto 4: Sílaba tónica y átonas
+        const t1 = document.getElementById('r4_tonica_1').value;
+        const a1 = parseInt(document.getElementById('r4_atonas_1').value);
+        const t2 = document.getElementById('r4_tonica_2').value;
+        const a2 = parseInt(document.getElementById('r4_atonas_2').value);
+        const t3 = document.getElementById('r4_tonica_3').value;
+        const a3 = parseInt(document.getElementById('r4_atonas_3').value);
+        const t4 = document.getElementById('r4_tonica_4').value;
+        const a4 = parseInt(document.getElementById('r4_atonas_4').value);
+
+        if (t1 === 'mu' && a1 === 2 &&
+            t2 === 'col' && a2 === 2 &&
+            t3 === 'ta' && a3 === 2 &&
+            t4 === 'loj' && a4 === 1) {
+          success = true;
+          successMsg = `¡Oído musical perfecto, ${team.name}! Habéis cazado las campanas de las palabras identificando la fuerza de la sílaba tónica frente a las átonas.`;
+          successHint = "Cada palabra tiene solo UNA sílaba tónica (la fuerte). Todas las demás son sílabas átonas (las suaves).";
+        } else {
+          errorMsg = "Alguna sílaba tónica o el conteo de sílabas átonas no coincide.";
+          errorHint = "Dad una palmada fuerte en la sílaba que suena más potente: MÚ-si-ca (MÚ es tónica, 2 átonas); ca-ra-COL (COL es tónica, 2 átonas); ven-TA-na (TA es tónica, 2 átonas); re-LOJ (LOJ es tónica, 1 átona).";
+        }
+
+      } else if (cNum === 5) {
+        // Reto 5: Abecedario
+        const p1 = document.getElementById('r5_pos_1').value;
+        const p2 = document.getElementById('r5_pos_2').value;
+        const p3 = document.getElementById('r5_pos_3').value;
+        const p4 = document.getElementById('r5_pos_4').value;
+        const p5 = document.getElementById('r5_pos_5').value;
+        const p6 = document.getElementById('r5_pos_6').value;
+        const letraAntes = normalizeStr(document.getElementById('r5_letra_antes').value);
+
+        if (p1 === 'Águila' && p2 === 'Ballena' && p3 === 'Cangrejo' && 
+            p4 === 'Delfín' && p5 === 'Foca' && p6 === 'Tortuga' && 
+            (letraAntes === 'l')) {
+          success = true;
+          successMsg = `¡Biblioteca Marina completamente ordenada! Habéis seguido el abecedario de la A a la Z sin dudar y acertado la letra vecina de la M.`;
+          successHint = "El orden alfabético nos ayuda a encontrar rápidamente palabras en el diccionario y libros en la biblioteca: A - B - C - D - F - T.";
+        } else {
+          errorMsg = "El orden de los 6 libros no es correcto o la letra previa a la M no coincide.";
+          errorHint = "Fijaos en la primera letra de cada animal: Águila (A), Ballena (B), Cangrejo (C), Delfín (D), Foca (F) y Tortuga (T). Y recordad: J, K, L, M...";
+        }
+
+      } else if (cNum === 6) {
+        // Reto 6: El Cuento
+        const f1 = document.getElementById('r6_frag_1').value;
+        const f2 = document.getElementById('r6_frag_2').value;
+        const f3 = document.getElementById('r6_frag_3').value;
+        const pDes = normalizeStr(document.getElementById('r6_palabra_desenlace').value);
+
+        if (f1 === 'nudo' && f2 === 'inicio' && f3 === 'desenlace' && pDes.includes('finalmente')) {
+          success = true;
+          successMsg = `¡Extraordinarios narradores! Habéis identificado a la perfección las tres partes esenciales de toda historia: inicio, problema o nudo y resolución final.`;
+          successHint = "Palabras como 'Había una vez' suelen presentar a los personajes (Inicio), 'De repente' avisa del conflicto (Nudo) y 'Finalmente' nos anuncia el Desenlace.";
+        } else {
+          errorMsg = "Las partes del cuento no están correctamente asignadas o falta la palabra mágica del desenlace.";
+          errorHint = "'Había una vez...' es el INICIO; 'De repente se cerró la puerta...' es el NUDO; y el fragmento que empieza por 'Finalmente...' es el DESENLACE.";
+        }
+
+      } else if (cNum === 7) {
+        // Reto 7: Enigma Final
+        const secret = normalizeStr(document.getElementById('r7_palabra_secreta').value);
+        if (secret.includes('maestro') || secret.includes('maestra')) {
+          team.secretUnlocked = true;
+          if (!team.finishTime) {
+            team.finishTime = Date.now();
+          }
+          saveState();
+          playTone('win');
+          triggerConfetti(1.5);
+          openFeedbackModal({
+            isSuccess: true,
+            title: `¡VICTORIA TOTAL, ${team.name}!`,
+            message: `¡Habéis descifrado la palabra secreta: MAESTRO! Habéis superado los 6 retos demostrando conocimiento lingüístico, respeto de turnos y cooperación de 10.`,
+            hint: "¡Felicidades a los 4 miembros del equipo! Habéis completado la Gimkana dentro del tiempo.",
+            letter: "MAESTRO"
+          });
+          renderActiveChallenge();
+          renderLeaderboard();
+          return;
+        } else {
+          errorMsg = "Esa no es la palabra secreta que se forma con las 6 letras ganadas.";
+          errorHint = "Unid en orden las 6 letras de las pruebas anteriores (M - A - E - S - T - R) y colocad al final la letra O. ¡Piensa en la persona que os enseña cada día en el aula!";
+        }
+      }
+
+      if (success) {
+        playTone('success');
+        triggerConfetti(0.4);
+
+        if (!team.completedChallenges.includes(cNum)) {
+          team.completedChallenges.push(cNum);
+          team.completedChallenges.sort((a,b) => a - b);
+        }
+
+        const letterWon = CHALLENGES_INFO[cNum].letter;
+
+        // Advance to next challenge if currently on highest
+        if (cNum < 6) {
+          team.currentChallenge = Math.max(team.currentChallenge, cNum + 1);
+          appState.currentChallengeNum = cNum + 1;
+        } else if (cNum === 6) {
+          team.currentChallenge = 7;
+          appState.currentChallengeNum = 7;
+        }
+
+        saveState();
+        openFeedbackModal({
+          isSuccess: true,
+          title: `¡Reto ${cNum} Superado con Éxito!`,
+          message: successMsg,
+          hint: successHint,
+          letter: letterWon
+        });
+
+        renderActiveChallenge();
+        renderLeaderboard();
+      } else {
+        playTone('error');
+        openFeedbackModal({
+          isSuccess: false,
+          title: errorTitle,
+          message: errorMsg,
+          hint: errorHint,
+          letter: null
+        });
+      }
+    }
+
+    function normalizeStr(str) {
+      if (!str) return "";
+      return str.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s]/g, "")
+        .trim();
+    }
+
+    /* ================= 8. LIVE LEADERBOARD RENDERING ================= */
+    function renderLeaderboard() {
+      const container = document.getElementById('teamsLeaderboardGrid');
+      if (!container) return;
+
+      // Sort teams: completed count descending, secretUnlocked top, then elapsed time
+      const sorted = [...appState.teams].sort((a, b) => {
+        if (a.secretUnlocked && !b.secretUnlocked) return -1;
+        if (!a.secretUnlocked && b.secretUnlocked) return 1;
+        if (b.completedChallenges.length !== a.completedChallenges.length) {
+          return b.completedChallenges.length - a.completedChallenges.length;
+        }
+        return (a.startTime || 0) - (b.startTime || 0);
+      });
+
+      container.innerHTML = sorted.map((team, index) => {
+        const completedCount = team.completedChallenges.length;
+        const progressPct = Math.round((completedCount / 6) * 100);
+        const isWinner = team.secretUnlocked;
+        const isSelected = team.id === appState.activeTeamId;
+
+        // Current status label
+        let statusText = `En Reto ${team.currentChallenge}: ${CHALLENGES_INFO[team.currentChallenge]?.sub || 'Enigma Final'}`;
+        if (isWinner) {
+          statusText = "🏆 ¡Gimkana Completada! (Palabra MAESTRO)";
+        }
+
+        return `
+          <div class="bg-white rounded-3xl p-5 shadow-md border-2 ${isSelected ? 'border-lengua-600 ring-4 ring-blue-100' : 'border-slate-200'} transition hover:shadow-lg flex flex-col justify-between">
+            <div>
+              <!-- Header with Rank & Name -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-8 h-8 rounded-xl flex items-center justify-center font-fredoka font-bold text-sm ${
+                    index === 0 ? 'bg-amber-400 text-lengua-950 shadow' : 'bg-slate-100 text-slate-700'
+                  }">
+                    #${index + 1}
+                  </span>
+                  <div>
+                    <h3 class="font-fredoka font-bold text-lg text-slate-800 leading-tight">${team.name}</h3>
+                    <span class="text-xs text-slate-400 font-semibold">4 miembros</span>
+                  </div>
+                </div>
+
+                ${isWinner ? `
+                  <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1 badge-pop">
+                    <i class="fa-solid fa-crown text-amber-500"></i> ¡RESUELTO!
+                  </span>
+                ` : `
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold ${
+                    completedCount === 6 ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                  }">
+                    ${completedCount}/6 Retos
+                  </span>
+                `}
+              </div>
+
+              <!-- Status subtext -->
+              <p class="text-xs font-bold text-slate-600 mb-3 truncate" title="${statusText}">
+                ${statusText}
+              </p>
+
+              <!-- Progress bar -->
+              <div class="w-full bg-slate-100 rounded-full h-3 mb-4 overflow-hidden border border-slate-200">
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500" style="width: ${progressPct}%"></div>
+              </div>
+
+              <!-- Badges collected -->
+              <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                <span class="text-xs font-bold text-slate-500">Letras:</span>
+                <div class="flex gap-1">
+                  ${[1,2,3,4,5,6].map(num => {
+                    const hasLetter = team.completedChallenges.includes(num);
+                    const letterChar = CHALLENGES_INFO[num].letter;
+                    return `
+                      <span class="w-6 h-6 rounded-md flex items-center justify-center font-fredoka font-bold text-xs ${
+                        hasLetter ? 'bg-amber-400 text-lengua-950 font-bold shadow-xs' : 'bg-slate-200 text-slate-400'
+                      }">
+                        ${hasLetter ? letterChar : '·'}
+                      </span>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action to Select and Play -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-semibold">
+                ${team.finishTime ? 'Completado' : 'Jugando ahora'}
+              </span>
+              <button onclick="selectAndPlay('${team.id}')" class="px-3.5 py-1.5 rounded-xl bg-lengua-100 hover:bg-lengua-600 hover:text-white text-lengua-700 text-xs font-fredoka font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>Gestionar Reto</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectAndPlay(teamId) {
+      changeActiveTeam(teamId);
+      switchMainTab('play');
+    }
+
+    /* ================= 9. TEACHER MODAL & SETTINGS ================= */
+    function openTeacherModal() {
+      renderTeacherTeamsList();
+      document.getElementById('sessionMinutesInput').value = Math.floor(appState.timerTotalSeconds / 60);
+      document.getElementById('teacherModal').classList.remove('hidden');
+      document.getElementById('teacherModal').classList.add('flex');
+    }
+
+    function closeTeacherModal() {
+      document.getElementById('teacherModal').classList.add('hidden');
+      document.getElementById('teacherModal').classList.remove('flex');
+    }
+
+    function renderTeacherTeamsList() {
+      const list = document.getElementById('teacherTeamsList');
+      list.innerHTML = appState.teams.map((t, idx) => `
+        <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-800 font-bold text-xs flex items-center justify-center">${idx + 1}</span>
+            <span class="font-fredoka font-bold text-slate-800 text-sm">${t.name}</span>
+            <span class="text-xs text-slate-400">(${t.completedChallenges.length}/6 superados)</span>
+          </div>
+          <button onclick="deleteTeam('${t.id}')" class="text-slate-400 hover:text-rose-600 p-1" title="Eliminar equipo">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addNewTeam() {
+      const input = document.getElementById('newTeamInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      const newId = 'team-' + (Date.now());
+      appState.teams.push({
+        id: newId,
+        name: name,
+        color: "from-blue-500 to-indigo-600",
+        currentChallenge: 1,
+        completedChallenges: [],
+        secretUnlocked: false,
+        finishTime: null,
+        startTime: Date.now()
+      });
+
+      input.value = "";
+      saveState();
+      populateTeamSelectDropdown();
+      renderTeacherTeamsList();
+      renderLeaderboard();
+      showAlert("Equipo añadido", `${name} se ha unido a la gimkana.`, "success");
+    }
+
+    function deleteTeam(id) {
+      if (appState.teams.length <= 1) {
+        showAlert("Atención", "Debe haber al menos un equipo en la competición.", "error");
+        return;
+      }
+      if (confirm("¿Seguro que deseas eliminar este equipo?")) {
+        appState.teams = appState.teams.filter(t => t.id !== id);
+        if (appState.activeTeamId === id) {
+          appState.activeTeamId = appState.teams[0].id;
+        }
+        saveState();
+        populateTeamSelectDropdown();
+        renderTeacherTeamsList();
+        renderLeaderboard();
+      }
+    }
+
+    function confirmResetAll() {
+      if (confirm("⚠️ ¿REINICIAR TODA LA GIMKANA? Se borrarán todos los avances y letras desbloqueadas de todos los equipos.")) {
+        appState.teams.forEach(t => {
+          t.currentChallenge = 1;
+          t.completedChallenges = [];
+          t.secretUnlocked = false;
+          t.finishTime = null;
+          t.startTime = Date.now();
+        });
+        appState.currentChallengeNum = 1;
+        appState.timerRemaining = appState.timerTotalSeconds;
+        clearInterval(timerInterval);
+        appState.timerRunning = false;
+        document.getElementById('timerToggleBtn').innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+
+        saveState();
+        closeTeacherModal();
+        updateTimerUI();
+        renderLeaderboard();
+        renderActiveChallenge();
+        showAlert("Gimkana reiniciada", "Todos los equipos comienzan desde el Reto 1.", "info");
+      }
+    }
+
+    function populateTeamSelectDropdown() {
+      const select = document.getElementById('activeTeamSelect');
+      if (!select) return;
+      select.innerHTML = appState.teams.map(t => `
+        <option value="${t.id}" ${t.id === appState.activeTeamId ? 'selected' : ''}>
+          ${t.name} (Reto ${t.currentChallenge})
+        </option>
+      `).join('');
+    }
+
+    /* ================= 10. VISUAL ALERTS & CONFETTI ================= */
+    let alertTimeout = null;
+    function showAlert(title, msg, type = 'success') {
+      const box = document.getElementById('alertBox');
+      const card = document.getElementById('alertCard');
+      const icon = document.getElementById('alertIcon');
+      const titleEl = document.getElementById('alertTitle');
+      const msgEl = document.getElementById('alertMsg');
+
+      titleEl.textContent = title;
+      msgEl.textContent = msg;
+
+      if (type === 'success') {
+        card.className = "bg-white rounded-2xl shadow-2xl p-4 border-2 border-emerald-500 flex items-start gap-3";
+        icon.className = "w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0";
+        icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else if (type === 'error') {
+        card.className = "bg-white rounded-2xl shadow-2xl p-4 border-2 border-rose-500 flex items-start gap-3";
+        icon.className = "w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl shrink-0";
+        icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      } else {
+        card.className = "bg-white rounded-2xl shadow-2xl p-4 border-2 border-blue-500 flex items-start gap-3";
+        icon.className = "w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0";
+        icon.innerHTML = '<i class="fa-solid fa-info"></i>';
+      }
+
+      box.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+      clearTimeout(alertTimeout);
+      alertTimeout = setTimeout(() => {
+        box.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+
+    function triggerConfetti(ratio = 1) {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: Math.floor(70 * ratio),
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    /* ================= 11. INITIALIZATION ON WINDOW LOAD ================= */
+    window.onload = function() {
+      loadState();
+      populateTeamSelectDropdown();
+      updateTimerUI();
+      renderLeaderboard();
+      renderActiveChallenge();
+    };
+  </script>
+</body>
+</html>
