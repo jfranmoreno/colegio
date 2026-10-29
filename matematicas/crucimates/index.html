@@ -173,50 +173,39 @@
 </head>
 <body class="bg-gradient-to-br from-sky-100 via-indigo-50 to-amber-50 min-h-screen text-slate-800 flex flex-col justify-between">
 
-    <!-- ================= CABECERA LIMPIA (NO-PRINT) ================= -->
-    <header class="no-print bg-white/95 backdrop-blur border-b-4 border-indigo-200 px-4 py-3 shadow-sm sticky top-0 z-40">
+    <!-- ================= CABECERA DE JUEGO (OCULTA EN INICIO) ================= -->
+    <header id="app-header" class="no-print bg-white/95 backdrop-blur border-b-4 border-indigo-200 px-4 py-3 shadow-sm sticky top-0 z-40 hidden">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
             
-            <!-- Identidad CEIP El Romeral + Selector Apartados -->
-            <div class="flex items-center gap-4">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 flex items-center justify-center text-white shadow-md border-b-4 border-indigo-800">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Identidad CEIP El Romeral + Botón Volver al Inicio -->
+            <div class="flex items-center gap-3">
+                <button onclick="App.goToStart()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 p-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5" title="Volver a la pantalla de inicio">
+                    <span>🏠</span> Inicio
+                </button>
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 flex items-center justify-center text-white shadow-md border-b-4 border-indigo-800">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l9-5-9-5-9 5 9 5z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
                     </svg>
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-amber-400 text-amber-950 text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase">CEIP El Romeral</span>
-                    </div>
-                    <h1 id="main-app-title" class="text-lg font-bold text-indigo-950 tracking-tight leading-none mt-1">
-                        1. CruciMates <span class="text-sky-600 font-normal text-sm">| Operaciones Cruzadas</span>
-                    </h1>
+                    <span class="bg-amber-400 text-amber-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">CEIP El Romeral</span>
+                    <h1 id="header-game-title" class="text-base font-bold text-indigo-950 tracking-tight leading-none mt-0.5">CruciMates</h1>
                 </div>
             </div>
 
-            <!-- Selector Central de Apartados -->
-            <div class="flex items-center bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-300 shadow-inner gap-1.5">
-                <button id="btn-sec-crucimates" onclick="App.setSection('crucimates')" class="btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-indigo-600 text-white border-indigo-800">
-                    <span>🧮</span> 1. CruciMates
-                </button>
-                <button id="btn-sec-crucinumeros" onclick="App.setSection('crucinumeros')" class="btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-white text-slate-700 border-slate-300 hover:bg-teal-50">
-                    <span>🧭</span> 2. CruciNúmeros
-                </button>
-            </div>
-
-            <!-- Botones de Acción Global (Configuración y Sonido) -->
+            <!-- Accesos Rápidos de Herramientas -->
             <div class="flex items-center gap-2">
-                <button onclick="ConfigModal.open()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-amber-950 border-amber-600 px-4 py-2 rounded-2xl font-display font-bold text-sm flex items-center gap-1.5 shadow-sm">
-                    <span>⚙️</span> Configuración
+                <button onclick="App.toggleFullScreen()" class="btn-3d bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border-indigo-300 px-3 py-2 rounded-2xl font-display font-bold text-xs flex items-center gap-1.5" title="Pantalla completa para pizarra MDI">
+                    <span>⛶</span> Pantalla Completa
                 </button>
-                <button id="btn-mute" onclick="SoundFX.toggleMute()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 px-3 py-2 rounded-2xl font-bold text-sm" title="Silenciar sonido">
-                    <span id="mute-icon" class="text-lg">🔊</span>
+                <button id="btn-mute" onclick="SoundFX.toggleMute()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 p-2.5 rounded-2xl font-bold text-sm" title="Silenciar sonido">
+                    <span id="mute-icon" class="text-base">🔊</span>
                 </button>
             </div>
         </div>
 
-        <!-- Barra Inferior de Modos de Juego -->
+        <!-- Barra de Modos de Juego Activos -->
         <nav class="max-w-7xl mx-auto mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
             <div class="flex flex-wrap items-center gap-1.5">
                 <button onclick="App.setMode('practice')" id="tab-practice" class="mode-tab btn-3d px-3.5 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-indigo-600 text-white border-indigo-800">
@@ -232,23 +221,111 @@
                     <span>🏆</span> Copa El Romeral
                 </button>
             </div>
-
             <button onclick="App.setMode('print')" id="tab-print" class="mode-tab btn-3d px-4 py-1.5 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center gap-1.5 bg-emerald-500 text-white border-emerald-700 hover:bg-emerald-600">
                 <span>🖨️</span> Generador de Fichas PDF
             </button>
         </nav>
     </header>
 
-    <!-- ================= CONTENEDOR PRINCIPAL DE JUEGO (NO-PRINT) ================= -->
+    <!-- ================= CONTENEDOR PRINCIPAL ================= -->
     <main class="no-print flex-grow max-w-7xl w-full mx-auto px-3 py-4 flex flex-col justify-center">
 
+        <!-- ==================== PANTALLA DE INICIO (LAUNCHER) ==================== -->
+        <section id="view-start" class="w-full max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-b-8 border-indigo-300 my-auto">
+            <div class="text-center mb-6">
+                <span class="bg-amber-400 text-amber-950 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">CEIP El Romeral</span>
+                <h2 class="text-3xl sm:text-4xl font-display font-bold text-indigo-950 mt-2">CruciMates & CruciNúmeros</h2>
+                <p class="text-sm text-slate-600 mt-1">Configura tu sesión de cálculo y lógica matemática para Primaria.</p>
+            </div>
+
+            <div class="space-y-5">
+                <!-- 1. Selección de Juego -->
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-slate-500 mb-2">1. Selecciona el Tipo de Juego:</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button type="button" id="card-sel-crucimates" onclick="StartScreen.selectGame('crucimates')" class="btn-3d p-4 rounded-2xl border-2 border-indigo-500 bg-indigo-50 text-left flex items-start gap-3">
+                            <span class="text-3xl">🧮</span>
+                            <div>
+                                <h3 class="font-display font-bold text-indigo-950 text-base">CruciMates</h3>
+                                <p class="text-xs text-slate-600 mt-0.5">Ecuaciones cruzadas con operaciones (+, -, ×, ÷).</p>
+                            </div>
+                        </button>
+                        <button type="button" id="card-sel-crucinumeros" onclick="StartScreen.selectGame('crucinumeros')" class="btn-3d p-4 rounded-2xl border-2 border-slate-200 bg-white text-left flex items-start gap-3">
+                            <span class="text-3xl">🧭</span>
+                            <div>
+                                <h3 class="font-display font-bold text-indigo-950 text-base">CruciNúmeros</h3>
+                                <p class="text-xs text-slate-600 mt-0.5">Sentido numérico y tabla (±1 y ±10).</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Selección de Modo de Juego -->
+                <div>
+                    <label class="block text-xs font-extrabold uppercase text-slate-500 mb-2">2. Selecciona el Modo de Juego:</label>
+                    <select id="start-mode" class="w-full bg-slate-50 font-bold text-slate-800 rounded-2xl px-4 py-3 border-2 border-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="practice">🎯 Práctica Libre (Entrenamiento sin prisa)</option>
+                        <option value="bomb">💣 ¡Desactiva la Bomba! (Contrarreloj de alta tensión)</option>
+                        <option value="versus">⚡ Competición 1 vs 1 (Pantalla dividida para MDI / Tablet)</option>
+                        <option value="tournament">🏆 Copa El Romeral (Torneo de aula por equipos)</option>
+                        <option value="print">🖨️ Generador de Fichas (Imprimir papel A4 o PDF)</option>
+                    </select>
+                </div>
+
+                <!-- 3. Curso y Dificultad -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-2">3. Curso Escolar:</label>
+                        <select id="start-grade" class="w-full bg-slate-50 font-bold text-slate-800 rounded-2xl px-4 py-3 border-2 border-slate-200 focus:outline-none focus:border-indigo-500">
+                            <option value="1">1º de Primaria</option>
+                            <option value="2">2º de Primaria</option>
+                            <option value="3" selected>3º de Primaria ⭐</option>
+                            <option value="4">4º de Primaria</option>
+                            <option value="5">5º de Primaria</option>
+                            <option value="6">6º de Primaria</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-2">4. Nivel de Dificultad:</label>
+                        <select id="start-diff" class="w-full bg-slate-50 font-bold text-slate-800 rounded-2xl px-4 py-3 border-2 border-slate-200 focus:outline-none focus:border-indigo-500">
+                            <option value="easy">🌱 Fácil / Iniciación</option>
+                            <option value="medium" selected>🧭 Medio / Explorador</option>
+                            <option value="hard">🔥 Difícil / Maestro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5. Operaciones (Solo visible si es CruciMates) -->
+                <div id="start-ops-wrapper" class="bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200">
+                    <label class="block text-xs font-extrabold uppercase text-indigo-900 mb-2">5. Operaciones Incluidas en CruciMates:</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <label class="flex items-center gap-2 bg-white px-3 py-2.5 rounded-xl border border-indigo-200 font-bold text-xs cursor-pointer">
+                            <input type="checkbox" id="start-op-add" checked class="w-4 h-4 text-indigo-600 rounded"> + Suma
+                        </label>
+                        <label class="flex items-center gap-2 bg-white px-3 py-2.5 rounded-xl border border-indigo-200 font-bold text-xs cursor-pointer">
+                            <input type="checkbox" id="start-op-sub" checked class="w-4 h-4 text-indigo-600 rounded"> − Resta
+                        </label>
+                        <label class="flex items-center gap-2 bg-white px-3 py-2.5 rounded-xl border border-indigo-200 font-bold text-xs cursor-pointer">
+                            <input type="checkbox" id="start-op-mul" checked class="w-4 h-4 text-indigo-600 rounded"> × Multiplicación
+                        </label>
+                        <label class="flex items-center gap-2 bg-white px-3 py-2.5 rounded-xl border border-indigo-200 font-bold text-xs cursor-pointer">
+                            <input type="checkbox" id="start-op-div" checked class="w-4 h-4 text-indigo-600 rounded"> ÷ División
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botón de Arranque -->
+                <button onclick="StartScreen.launchApp()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 w-full py-4 rounded-2xl font-display font-bold text-xl shadow-lg flex items-center justify-center gap-2">
+                    <span>🚀</span> ¡Comenzar Reto en CEIP El Romeral!
+                </button>
+            </div>
+        </section>
+
         <!-- ==================== MODO 1: PRÁCTICA Y MODO 2: BOMBA ==================== -->
-        <section id="view-single" class="w-full">
+        <section id="view-single" class="hidden w-full">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
                 
-                <!-- Panel Izquierdo: Info + Brújula Crucinúmeros + Controles -->
                 <div class="lg:col-span-4 flex flex-col gap-3.5">
-                    
                     <!-- Banner Torneo Activo -->
                     <div id="tourney-active-banner" class="hidden bg-gradient-to-r from-amber-500 to-orange-500 text-white p-3.5 rounded-3xl shadow-lg border-b-4 border-amber-700">
                         <div class="flex items-center justify-between">
@@ -270,40 +347,32 @@
                     <!-- Tarjeta Práctica -->
                     <div id="card-practice-info" class="bg-white rounded-3xl p-5 shadow-md border-b-4 border-indigo-200 flex flex-col gap-3">
                         <div class="flex items-center justify-between">
-                            <span class="bg-indigo-100 text-indigo-800 font-display font-bold text-xs px-3 py-1 rounded-full" id="badge-curriculum">3º Primaria · Explorador</span>
+                            <span class="bg-indigo-100 text-indigo-800 font-display font-bold text-xs px-3 py-1 rounded-full" id="badge-curriculum">3º Primaria</span>
                             <div class="flex items-center gap-1.5 text-slate-600 font-bold text-sm bg-slate-100 px-3 py-1 rounded-full">
                                 <span>⏱️</span>
                                 <span id="practice-timer">00:00</span>
                             </div>
                         </div>
                         <h2 id="practice-card-title" class="text-xl font-display font-bold text-indigo-950">Reto en Progreso</h2>
-                        <p class="text-sm text-slate-600 leading-snug" id="curriculum-desc">
-                            Completa las casillas vacías.
-                        </p>
+                        <p class="text-sm text-slate-600 leading-snug" id="curriculum-desc">Completa las casillas vacías.</p>
 
-                        <!-- Brújula Visual Crucinúmeros -->
+                        <!-- Brújula Crucinúmeros -->
                         <div id="compass-helper" class="hidden bg-teal-50 border-2 border-teal-200 rounded-2xl p-2.5 text-center">
                             <p class="text-[11px] font-extrabold uppercase text-teal-800 mb-1.5">Rosa de los Vientos Numérica</p>
                             <div class="grid grid-cols-3 gap-1 max-w-[190px] mx-auto text-xs font-display font-bold">
-                                <div></div>
-                                <div class="bg-amber-100 text-amber-900 border border-amber-300 rounded-lg py-1">⬆️ -10</div>
-                                <div></div>
+                                <div></div><div class="bg-amber-100 text-amber-900 border border-amber-300 rounded-lg py-1">⬆️ -10</div><div></div>
                                 <div class="bg-sky-100 text-sky-900 border border-sky-300 rounded-lg py-1">⬅️ -1</div>
                                 <div class="bg-teal-600 text-white rounded-lg py-1">N</div>
                                 <div class="bg-sky-100 text-sky-900 border border-sky-300 rounded-lg py-1">+1 ➡️</div>
-                                <div></div>
-                                <div class="bg-amber-100 text-amber-900 border border-amber-300 rounded-lg py-1">⬇️ +10</div>
-                                <div></div>
+                                <div></div><div class="bg-amber-100 text-amber-900 border border-amber-300 rounded-lg py-1">⬇️ +10</div><div></div>
                             </div>
                         </div>
 
-                        <!-- Progreso -->
                         <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-200 flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-500 uppercase">Casillas completadas:</span>
                             <span id="single-progress-text" class="text-base font-display font-bold text-indigo-600">0 / 0</span>
                         </div>
 
-                        <!-- Botones de Acción -->
                         <div class="grid grid-cols-2 gap-2">
                             <button id="btn-hint" onclick="SingleGame.giveHint()" class="btn-3d bg-amber-400 hover:bg-amber-500 text-amber-950 border-amber-600 py-2.5 px-3 rounded-2xl font-display font-bold text-sm flex items-center justify-center gap-1.5">
                                 <span>💡</span> Pista (<span id="hints-left">3</span>)
@@ -320,15 +389,11 @@
                     <!-- Tarjeta Bomba -->
                     <div id="card-bomb-info" class="hidden bg-slate-900 text-white rounded-3xl p-5 shadow-xl border-b-4 border-rose-700 relative overflow-hidden">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="bg-rose-600 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-                                🔥 ¡Desactiva la Bomba!
-                            </span>
+                            <span class="bg-rose-600 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">🔥 ¡Desactiva la Bomba!</span>
                             <div class="flex items-center gap-1">
                                 <span class="text-xs text-slate-300 font-bold">Reloj:</span>
                                 <select id="bomb-init-time" onchange="SingleGame.changeBombInitialTime()" class="bg-slate-800 text-amber-400 font-bold text-xs rounded-lg px-2 py-1 border border-slate-700">
-                                    <option value="60">60 seg</option>
-                                    <option value="90" selected>90 seg</option>
-                                    <option value="120">120 seg</option>
+                                    <option value="60">60 seg</option><option value="90" selected>90 seg</option><option value="120">120 seg</option>
                                 </select>
                             </div>
                         </div>
@@ -344,7 +409,6 @@
                                 </svg>
                                 <div id="bomb-spark" class="spark absolute -top-1 right-1 text-2xl">✨</div>
                             </div>
-
                             <div class="text-right">
                                 <span class="text-xs uppercase font-bold text-rose-300 tracking-wider block">Detonación en</span>
                                 <div id="bomb-timer-display" class="text-4xl font-display font-bold text-emerald-400 tracking-tight">01:30</div>
@@ -397,7 +461,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -410,12 +473,8 @@
                     <span class="bg-rose-600 text-white font-display font-bold px-3 py-1 rounded-xl text-sm">🔴 Jugador 2: <span id="vs-score-p2">0</span></span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="bg-slate-100 px-3 py-1 rounded-xl font-display font-bold text-slate-700 text-sm">
-                        ⏱️ <span id="vs-timer">00:00</span>
-                    </div>
-                    <button onclick="VersusGame.startNewDuel()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 px-4 py-1.5 rounded-xl font-display font-bold text-xs">
-                        🔄 Nuevo Duelo
-                    </button>
+                    <div class="bg-slate-100 px-3 py-1 rounded-xl font-display font-bold text-slate-700 text-sm">⏱️ <span id="vs-timer">00:00</span></div>
+                    <button onclick="VersusGame.startNewDuel()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 px-4 py-1.5 rounded-xl font-display font-bold text-xs">🔄 Nuevo Duelo</button>
                 </div>
             </div>
 
@@ -476,7 +535,7 @@
             </div>
         </section>
 
-        <!-- ==================== MODO 4: CAMPEONATO / COPA EL ROMERAL ==================== -->
+        <!-- ==================== MODO 4: TORNEO ==================== -->
         <section id="view-tournament" class="hidden w-full max-w-4xl mx-auto">
             <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-amber-300">
                 <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4 mb-5">
@@ -487,9 +546,7 @@
                             <p class="text-sm text-slate-600">Competición por equipos con clasificación general.</p>
                         </div>
                     </div>
-                    <button onclick="Tournament.resetSetup()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 px-3.5 py-2 rounded-2xl font-bold text-xs">
-                        ⚙️ Configurar Torneo
-                    </button>
+                    <button onclick="Tournament.resetSetup()" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 px-3.5 py-2 rounded-2xl font-bold text-xs">⚙️ Configurar Torneo</button>
                 </div>
 
                 <div id="tourney-setup-panel" class="space-y-4">
@@ -497,19 +554,13 @@
                         <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
                             <label class="block text-xs font-extrabold uppercase text-amber-900 mb-2">Equipos / Jugadores (2 a 8):</label>
                             <select id="tourney-num-teams" onchange="Tournament.renderTeamInputs()" class="w-full bg-white font-bold text-slate-800 rounded-xl px-3 py-2 border border-amber-300">
-                                <option value="2">2 Equipos</option>
-                                <option value="3">3 Equipos</option>
-                                <option value="4" selected>4 Equipos Cooperativos (Aula)</option>
-                                <option value="6">6 Equipos</option>
-                                <option value="8">8 Equipos</option>
+                                <option value="2">2 Equipos</option><option value="3">3 Equipos</option><option value="4" selected>4 Equipos Cooperativos (Aula)</option><option value="6">6 Equipos</option><option value="8">8 Equipos</option>
                             </select>
                         </div>
                         <div class="bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200">
                             <label class="block text-xs font-extrabold uppercase text-indigo-900 mb-2">Rondas:</label>
                             <select id="tourney-num-rounds" class="w-full bg-white font-bold text-slate-800 rounded-xl px-3 py-2 border border-indigo-300">
-                                <option value="3" selected>3 Rondas</option>
-                                <option value="4">4 Rondas</option>
-                                <option value="5">5 Rondas</option>
+                                <option value="3" selected>3 Rondas</option><option value="4">4 Rondas</option><option value="5">5 Rondas</option>
                             </select>
                         </div>
                     </div>
@@ -539,10 +590,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-extrabold">
-                                    <th class="py-3 px-4">Pos.</th>
-                                    <th class="py-3 px-4">Equipo / Jugador</th>
-                                    <th class="py-3 px-4 text-center">Rondas</th>
-                                    <th class="py-3 px-4 text-right">Puntos</th>
+                                    <th class="py-3 px-4">Pos.</th><th class="py-3 px-4">Equipo / Jugador</th><th class="py-3 px-4 text-center">Rondas</th><th class="py-3 px-4 text-right">Puntos</th>
                                 </tr>
                             </thead>
                             <tbody id="tourney-leaderboard-body" class="divide-y divide-slate-200 text-sm font-bold"></tbody>
@@ -552,7 +600,7 @@
             </div>
         </section>
 
-        <!-- ==================== MODO 5: GENERADOR DE FICHAS IMPRIMIBLES (PDF / A4) ==================== -->
+        <!-- ==================== MODO 5: GENERADOR DE FICHAS PDF ==================== -->
         <section id="view-print" class="hidden w-full max-w-5xl mx-auto">
             <div class="bg-white rounded-3xl p-6 shadow-xl border-b-8 border-emerald-200 space-y-5">
                 <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
@@ -564,56 +612,8 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="PrintModule.generatePreview()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 px-4 py-2.5 rounded-2xl font-display font-bold text-sm">
-                            <span>🎲</span> Generar Nuevos Retos
-                        </button>
-                        <button onclick="window.print()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 px-5 py-2.5 rounded-2xl font-display font-bold text-sm shadow-md">
-                            <span>🖨️</span> Imprimir / Guardar PDF
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                    <div>
-                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Apartado:</label>
-                        <select id="print-section" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
-                            <option value="crucimates">1. CruciMates</option>
-                            <option value="crucinumeros">2. CruciNúmeros</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Curso:</label>
-                        <select id="print-grade" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
-                            <option value="1">1º de Primaria</option>
-                            <option value="2">2º de Primaria</option>
-                            <option value="3" selected>3º de Primaria</option>
-                            <option value="4">4º de Primaria</option>
-                            <option value="5">5º de Primaria</option>
-                            <option value="6">6º de Primaria</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Dificultad:</label>
-                        <select id="print-diff" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
-                            <option value="easy">Iniciación</option>
-                            <option value="medium" selected>Explorador</option>
-                            <option value="hard">Maestro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-extrabold uppercase text-slate-500 mb-1">Retos / Página:</label>
-                        <select id="print-count" onchange="PrintModule.generatePreview()" class="w-full bg-white font-bold text-sm rounded-xl px-3 py-2 border border-slate-300">
-                            <option value="1">1 Grande</option>
-                            <option value="2">2 Medianos</option>
-                            <option value="4" selected>4 Estándar</option>
-                            <option value="6">6 Rápido</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-col justify-center pt-3">
-                        <label class="inline-flex items-center gap-2 cursor-pointer select-none">
-                            <input type="checkbox" id="print-solutions" onchange="PrintModule.generatePreview()" checked class="w-5 h-5 rounded text-emerald-600">
-                            <span class="text-xs font-extrabold text-slate-700 uppercase">Solucionario</span>
-                        </label>
+                        <button onclick="PrintModule.generatePreview()" class="btn-3d bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 px-4 py-2.5 rounded-2xl font-display font-bold text-sm">🎲 Generar Nuevos Retos</button>
+                        <button onclick="window.print()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 px-5 py-2.5 rounded-2xl font-display font-bold text-sm shadow-md">🖨️ Imprimir / Guardar PDF</button>
                     </div>
                 </div>
 
@@ -624,65 +624,6 @@
         </section>
 
     </main>
-
-    <!-- ================= PANTALLA EXCLUSIVA DE CONFIGURACIÓN (MODAL) ================= -->
-    <div id="config-modal-overlay" class="no-print fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-b-8 border-amber-400 space-y-5 transform transition-all">
-            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-3xl">⚙️</span>
-                    <h3 class="text-2xl font-display font-bold text-indigo-950">Panel de Configuración</h3>
-                </div>
-                <button onclick="ConfigModal.close()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 rounded-full font-bold text-slate-600 flex items-center justify-center">✕</button>
-            </div>
-
-            <!-- Selector de Curso Escolar -->
-            <div class="space-y-1.5 bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200">
-                <label class="block text-xs font-extrabold uppercase text-indigo-900">Curso Escolar (Adaptador Curricular LOMLOE):</label>
-                <select id="modal-select-grade" class="w-full bg-white font-bold text-indigo-950 rounded-xl px-3.5 py-2.5 border border-indigo-300 focus:outline-none">
-                    <option value="1">1º de Primaria (Sumas y restas hasta 20)</option>
-                    <option value="2">2º de Primaria (Sumas, restas y tablas 2, 5, 10)</option>
-                    <option value="3" selected>3º de Primaria (Tablas 2 al 9 y divisiones exactas)</option>
-                    <option value="4">4º de Primaria (Operaciones combinadas y dos cifras)</option>
-                    <option value="5">5º de Primaria (Múltiplos, divisores y grandes cifras)</option>
-                    <option value="6">6º de Primaria (Cálculo avanzado y potencias)</option>
-                </select>
-            </div>
-
-            <!-- Selector de Nivel / Dificultad -->
-            <div class="space-y-1.5 bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
-                <label class="block text-xs font-extrabold uppercase text-amber-900">Nivel de Desafío:</label>
-                <select id="modal-select-diff" class="w-full bg-white font-bold text-amber-950 rounded-xl px-3.5 py-2.5 border border-amber-300 focus:outline-none">
-                    <option value="easy">🌱 Fácil / Iniciación (Incluye pistas y menos huecos)</option>
-                    <option value="medium" selected>🧭 Medio / Explorador (Equilibrio de huecos y pistas)</option>
-                    <option value="hard">🔥 Difícil / Maestro (Alta densidad de huecos, sin pistas)</option>
-                </select>
-            </div>
-
-            <!-- Selector de Operaciones (Solo para CruciMates) -->
-            <div id="modal-ops-container" class="space-y-2 bg-sky-50/70 p-4 rounded-2xl border border-sky-200">
-                <label class="block text-xs font-extrabold uppercase text-sky-900">Operaciones Activas en CruciMates:</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
-                        <input type="checkbox" id="modal-chk-add" checked class="w-4 h-4 text-indigo-600 rounded"> + Suma
-                    </label>
-                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
-                        <input type="checkbox" id="modal-chk-sub" checked class="w-4 h-4 text-indigo-600 rounded"> − Resta
-                    </label>
-                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
-                        <input type="checkbox" id="modal-chk-mul" checked class="w-4 h-4 text-indigo-600 rounded"> × Multiplicación
-                    </label>
-                    <label class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-sky-300 font-bold text-sm cursor-pointer">
-                        <input type="checkbox" id="modal-chk-div" checked class="w-4 h-4 text-indigo-600 rounded"> ÷ División
-                    </label>
-                </div>
-            </div>
-
-            <button onclick="ConfigModal.applyAndRestart()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-700 w-full py-3.5 rounded-2xl font-display font-bold text-base shadow-md">
-                💾 Aplicar Cambios y Reiniciar Reto
-            </button>
-        </div>
-    </div>
 
     <!-- ================= MODAL DE RETROALIMENTACIÓN ================= -->
     <div id="modal-overlay" class="no-print fixed inset-0 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
@@ -699,7 +640,7 @@
 
     <!-- ================= PIE DE PÁGINA ================= -->
     <footer class="no-print text-center py-2 text-xs font-bold text-slate-500 border-t border-indigo-100 bg-white/60">
-        CEIP El Romeral · Molina de Segura · Aplicación Interactiva de Matemáticas (1º a 6º de Primaria)
+        CEIP El Romeral · Molina de Segura · 1. CruciMates y 2. CruciNúmeros
     </footer>
 
     <!-- ================= CONTENEDOR EXCLUSIVO DE IMPRESIÓN A4 ================= -->
@@ -768,52 +709,52 @@
                 const gain = this.ctx.createGain();
                 gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.65);
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.ctx.destination);
+                noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
                 noise.start();
             }
         };
 
-        const ConfigModal = {
-            open() {
+        const StartScreen = {
+            selectedGame: 'crucimates',
+            selectGame(game) {
                 SoundFX.pop();
-                document.getElementById('modal-select-grade').value = App.grade;
-                document.getElementById('modal-select-diff').value = App.difficulty;
-                document.getElementById('modal-chk-add').checked = App.activeOps.includes('+');
-                document.getElementById('modal-chk-sub').checked = App.activeOps.includes('-');
-                document.getElementById('modal-chk-mul').checked = App.activeOps.includes('×');
-                document.getElementById('modal-chk-div').checked = App.activeOps.includes('÷');
+                this.selectedGame = game;
+                const btnMates = document.getElementById('card-sel-crucimates');
+                const btnNum = document.getElementById('card-sel-crucinumeros');
+                const opsWrapper = document.getElementById('start-ops-wrapper');
 
-                const opsBox = document.getElementById('modal-ops-container');
-                opsBox.style.display = App.currentSection === 'crucimates' ? 'block' : 'none';
-
-                const ov = document.getElementById('config-modal-overlay');
-                ov.classList.remove('hidden');
-                ov.classList.add('flex');
+                if (game === 'crucimates') {
+                    btnMates.className = 'btn-3d p-4 rounded-2xl border-2 border-indigo-500 bg-indigo-50 text-left flex items-start gap-3';
+                    btnNum.className = 'btn-3d p-4 rounded-2xl border-2 border-slate-200 bg-white text-left flex items-start gap-3';
+                    opsWrapper.classList.remove('hidden');
+                } else {
+                    btnNum.className = 'btn-3d p-4 rounded-2xl border-2 border-teal-500 bg-teal-50 text-left flex items-start gap-3';
+                    btnMates.className = 'btn-3d p-4 rounded-2xl border-2 border-slate-200 bg-white text-left flex items-start gap-3';
+                    opsWrapper.classList.add('hidden');
+                }
             },
-            close() {
+            launchApp() {
                 SoundFX.pop();
-                const ov = document.getElementById('config-modal-overlay');
-                ov.classList.add('hidden');
-                ov.classList.remove('flex');
-            },
-            applyAndRestart() {
-                SoundFX.pop();
-                App.grade = parseInt(document.getElementById('modal-select-grade').value, 10);
-                App.difficulty = document.getElementById('modal-select-diff').value;
+                App.currentSection = this.selectedGame;
+                App.grade = parseInt(document.getElementById('start-grade').value, 10);
+                App.difficulty = document.getElementById('start-diff').value;
+                const mode = document.getElementById('start-mode').value;
 
-                if (App.currentSection === 'crucimates') {
+                if (this.selectedGame === 'crucimates') {
                     const ops = [];
-                    if (document.getElementById('modal-chk-add').checked) ops.push('+');
-                    if (document.getElementById('modal-chk-sub').checked) ops.push('-');
-                    if (document.getElementById('modal-chk-mul').checked) ops.push('×');
-                    if (document.getElementById('modal-chk-div').checked) ops.push('÷');
+                    if (document.getElementById('start-op-add').checked) ops.push('+');
+                    if (document.getElementById('start-op-sub').checked) ops.push('-');
+                    if (document.getElementById('start-op-mul').checked) ops.push('×');
+                    if (document.getElementById('start-op-div').checked) ops.push('÷');
                     App.activeOps = ops.length > 0 ? ops : ['+'];
+                    document.getElementById('header-game-title').textContent = 'CruciMates';
+                } else {
+                    document.getElementById('header-game-title').textContent = 'CruciNúmeros';
                 }
 
-                this.close();
-                App.onConfigChange();
+                document.getElementById('view-start').classList.add('hidden');
+                document.getElementById('app-header').classList.remove('hidden');
+                App.setMode(mode);
             }
         };
 
@@ -998,13 +939,13 @@
 
                 if (App.currentSection === 'crucimates') {
                     document.getElementById('badge-curriculum').textContent = `${App.grade}º Primaria · ${diffNames[App.difficulty]}`;
-                    document.getElementById('practice-card-title').textContent = '1. CruciMates';
+                    document.getElementById('practice-card-title').textContent = 'CruciMates';
                     document.getElementById('curriculum-desc').textContent = 'Resuelve las ecuaciones cruzadas.';
                     document.getElementById('compass-helper').classList.add('hidden');
                     this.puzzle = CrossMathGenerator.generate(App.grade, App.difficulty, App.activeOps);
                 } else {
                     document.getElementById('badge-curriculum').textContent = `${App.grade}º Primaria · ${diffNames[App.difficulty]}`;
-                    document.getElementById('practice-card-title').textContent = '2. CruciNúmeros (±1 y ±10)';
+                    document.getElementById('practice-card-title').textContent = 'CruciNúmeros (±1 y ±10)';
                     document.getElementById('curriculum-desc').textContent = 'Derecha (+1), Izquierda (-1), Arriba (-10), Abajo (+10).';
                     document.getElementById('compass-helper').classList.remove('hidden');
                     this.puzzle = CruciNumerosGenerator.generate(App.grade, App.difficulty);
@@ -1201,8 +1142,7 @@
                 const span = document.createElement('span');
                 span.className = `float-badge font-display font-bold text-lg px-2 py-0.5 rounded-full ${isPositive ? 'bg-emerald-500 text-slate-950' : 'bg-rose-600 text-white'}`;
                 span.textContent = text;
-                container.innerHTML = '';
-                container.appendChild(span);
+                container.innerHTML = ''; container.appendChild(span);
             },
             verifyBombStep() {
                 if (this.isFinished) return;
@@ -1470,19 +1410,18 @@
         const PrintModule = {
             currentPuzzles: [],
             generatePreview() {
-                const section = document.getElementById('print-section').value;
-                const grade = parseInt(document.getElementById('print-grade').value, 10);
-                const diff = document.getElementById('print-diff').value;
-                const count = parseInt(document.getElementById('print-count').value, 10);
-                const includeSolutions = document.getElementById('print-solutions').checked;
+                const grade = App.grade;
+                const diff = App.difficulty;
+                const count = 4;
+                const includeSolutions = true;
 
                 this.currentPuzzles = [];
                 for (let i = 0; i < count; i++) {
-                    if (section === 'crucimates') this.currentPuzzles.push(CrossMathGenerator.generate(grade, diff, App.activeOps));
+                    if (App.currentSection === 'crucimates') this.currentPuzzles.push(CrossMathGenerator.generate(grade, diff, App.activeOps));
                     else this.currentPuzzles.push(CruciNumerosGenerator.generate(grade, diff));
                 }
 
-                const html = this.buildDocumentHTML(section, grade, diff, count, includeSolutions);
+                const html = this.buildDocumentHTML(App.currentSection, grade, diff, count, includeSolutions);
                 document.getElementById('print-area').innerHTML = html;
                 document.getElementById('print-screen-preview').innerHTML = html;
             },
@@ -1522,15 +1461,12 @@
                 return `<div style="border: 2.5px solid #000;" class="rounded-xl p-3"><div style="border-bottom: 2px solid #000;" class="flex items-center justify-between pb-2 mb-2.5"><div><h2 class="text-lg font-extrabold uppercase">CEIP El Romeral</h2><p class="text-xs font-bold">${secTitle} (${diffLabel})</p></div><div class="text-right text-xs font-bold"><span style="border: 2px solid #000;" class="inline-block rounded px-2.5 py-1">Nota: [ &nbsp; ]</span></div></div><div class="grid grid-cols-12 gap-2 text-xs font-bold"><div class="col-span-7">Nombre: _____________________________________________</div><div class="col-span-3">Fecha: ____________</div><div class="col-span-2">Curso: ${grade}º</div></div></div>`;
             },
             getGridContainerClass(count) {
-                if (count === 1) return 'grid grid-cols-1 max-w-md mx-auto gap-6 my-6';
-                if (count === 2) return 'grid grid-cols-1 max-w-md mx-auto gap-5 my-3';
-                if (count === 4) return 'grid grid-cols-2 gap-5 my-3';
-                return 'grid grid-cols-2 gap-3.5 my-2';
+                return 'grid grid-cols-2 gap-5 my-3';
             },
             buildSinglePuzzlePrintHTML(puzzle, numberIdx, totalCount, showSolved) {
                 const isCruciNum = puzzle.section === 'crucinumeros';
-                const boxPx = totalCount === 1 ? 58 : (totalCount === 2 ? 46 : (totalCount === 4 ? 44 : 36));
-                const fontClass = totalCount === 1 ? 'text-2xl' : (totalCount === 2 ? 'text-xl' : (totalCount === 4 ? 'text-lg' : 'text-base'));
+                const boxPx = 44;
+                const fontClass = 'text-lg';
 
                 if (isCruciNum) {
                     let rowsHTML = '';
@@ -1550,7 +1486,7 @@
                         }
                         rowsHTML += `<tr>${tdsHTML}</tr>`;
                     }
-                    return `<div style="border: 2px solid #000; background: #fff;" class="rounded-2xl p-3"><div style="border-bottom: 1.5px solid #64748b;" class="text-xs font-extrabold uppercase mb-3 pb-1 flex justify-between"><span>CruciNúmero #${numberIdx}</span><span>⬅️ -1 | ➡️ +1 | ⬆️ -10 | ⬇️ +10</span></div><div class="flex justify-center items-center py-1"><table class="crucinum-print-table"><tbody>${rowsHTML}</tbody></table></div></div>`;
+                    return `<div style="border: 2px solid #000; background: #fff;" class="rounded-2xl p-3"><div style="border-bottom: 1.5px solid #64748b;" class="text-xs font-extrabold uppercase mb-3 pb-1 flex justify-between"><span>Reto #${numberIdx}</span><span>±1 y ±10</span></div><div class="flex justify-center items-center py-1"><table class="crucinum-print-table"><tbody>${rowsHTML}</tbody></table></div></div>`;
                 }
 
                 let cellsHTML = '';
@@ -1569,7 +1505,7 @@
                         }
                     }
                 }
-                return `<div style="border: 2px solid #000; background: #fff;" class="rounded-2xl p-3"><div style="border-bottom: 1.5px solid #64748b;" class="text-xs font-extrabold uppercase mb-2.5 pb-1 flex justify-between"><span>CruciMates #${numberIdx}</span><span>${showSolved ? 'Solucionado' : 'Completa las casillas'}</span></div><div class="grid grid-cols-5 gap-1.5">${cellsHTML}</div></div>`;
+                return `<div style="border: 2px solid #000; background: #fff;" class="rounded-2xl p-3"><div style="border-bottom: 1.5px solid #64748b;" class="text-xs font-extrabold uppercase mb-2.5 pb-1 flex justify-between"><span>Reto #${numberIdx}</span><span>${showSolved ? 'Solucionado' : 'Completa'}</span></div><div class="grid grid-cols-5 gap-1.5">${cellsHTML}</div></div>`;
             }
         };
 
@@ -1582,7 +1518,6 @@
 
             init() {
                 Tournament.init();
-                this.setMode('practice');
                 window.addEventListener('keydown', (e) => {
                     if (this.currentMode === 'practice' || this.currentMode === 'bomb' || Tournament.isActiveTurn) {
                         if (e.key >= '0' && e.key <= '9') SingleGame.inputDigit(parseInt(e.key, 10));
@@ -1591,24 +1526,27 @@
                     }
                 });
             },
-            setSection(sec) {
+            goToStart() {
                 SoundFX.pop();
-                this.currentSection = sec;
-                const btnMates = document.getElementById('btn-sec-crucimates');
-                const btnNum = document.getElementById('btn-sec-crucinumeros');
-                const mainTitle = document.getElementById('main-app-title');
-
-                if (sec === 'crucimates') {
-                    btnMates.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-indigo-600 text-white border-indigo-800';
-                    btnNum.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-white text-slate-700 border-slate-300 hover:bg-teal-50';
-                    mainTitle.innerHTML = `1. CruciMates <span class="text-sky-600 font-normal text-sm">| Operaciones Cruzadas</span>`;
+                SingleGame.stopTimers();
+                VersusGame.stop();
+                document.getElementById('app-header').classList.add('hidden');
+                document.getElementById('view-single').classList.add('hidden');
+                document.getElementById('view-versus').classList.add('hidden');
+                document.getElementById('view-tournament').classList.add('hidden');
+                document.getElementById('view-print').classList.add('hidden');
+                document.getElementById('view-start').classList.remove('hidden');
+            },
+            toggleFullScreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Error al activar pantalla completa: ${err.message}`);
+                    });
                 } else {
-                    btnNum.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-teal-600 text-white border-teal-800';
-                    btnMates.className = 'btn-3d px-4 py-2 rounded-xl font-display font-bold text-sm flex items-center gap-2 bg-white text-slate-700 border-slate-300 hover:bg-indigo-50';
-                    mainTitle.innerHTML = `2. CruciNúmeros <span class="text-teal-600 font-normal text-sm">| Sentido Numérico (±1 y ±10)</span>`;
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
                 }
-                document.getElementById('print-section').value = sec;
-                this.onConfigChange();
             },
             setMode(mode) {
                 SoundFX.pop();
@@ -1641,9 +1579,6 @@
                 } else if (mode === 'versus') {
                     VersusGame.startNewDuel();
                 } else if (mode === 'print') {
-                    document.getElementById('print-section').value = this.currentSection;
-                    document.getElementById('print-grade').value = this.grade;
-                    document.getElementById('print-diff').value = this.difficulty;
                     PrintModule.generatePreview();
                 }
             },
