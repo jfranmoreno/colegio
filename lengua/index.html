@@ -145,7 +145,7 @@
           <span>Gestiona recursos, orden en unidades, visibilidad y exportación JSON</span>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button id="btnAddNewResource" type="button" class="px-3.5 py-2 rounded-xl bg-pastel-accent hover:bg-pastel-bluehover text-white font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5" style="background:#3b82f6;">
+          <button id="btnAddNewResource" type="button" class="px-3.5 py-2 rounded-xl bg-pastelblue-blueaccent hover:bg-pastelblue-bluehover text-white font-extrabold text-xs sm:text-sm shadow-sm transition flex items-center gap-1.5">
             <span>➕</span> Añadir Recurso
           </button>
           <button id="btnDownloadJson" type="button" class="px-3 py-2 rounded-xl bg-white hover:bg-pastelblue-soft text-pastelblue-text border border-pastelblue-border font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
@@ -486,7 +486,7 @@
               <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">✍️</button>
               <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">🔤</button>
               <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">📖</button>
-              <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastel-muted border border-pastelblue-border text-lg">🚀</button>
+              <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">🚀</button>
               <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">🏰</button>
               <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">💬</button>
               <button type="button" class="emoji-pick w-9 h-9 rounded-xl bg-pastelblue-soft hover:bg-pastelblue-muted border border-pastelblue-border text-lg">🎭</button>
@@ -1178,6 +1178,14 @@
       return typeof url === "string" && (url.startsWith("http://") || url.startsWith("https://"));
     }
 
+    function findResourceById(id) {
+      for (const u of unidadesData) {
+        const found = u.recursos.find(r => r.id === id);
+        if (found) return { recurso: found, unidad: u };
+      }
+      return null;
+    }
+
     /* =========================================================================
        4. RENDERIZADO DEL MENÚ SUPERIOR Y TARJETAS
        ========================================================================= */
@@ -1816,7 +1824,7 @@
               <div class="flex flex-wrap gap-2 justify-center py-2">
                 ${shuffled.map(w => {
                   const already = picked.includes(w);
-                  return `<button type="button" data-word="${w}" ${already?'disabled':''} class="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm border ${already?'bg-emerald-600 text-white border-emerald-600':'bg-pastel-soft hover:bg-pastelblue-muted text-pastelblue-text border-pastelblue-border'}">${w}</button>`;
+                  return `<button type="button" data-word="${w}" ${already?'disabled':''} class="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm border ${already?'bg-emerald-600 text-white border-emerald-600':'bg-pastelblue-soft hover:bg-pastelblue-muted text-pastelblue-text border-pastelblue-border'}">${w}</button>`;
                 }).join("")}
               </div>
               <div class="bg-pastelblue-bg p-3 rounded-xl border border-pastelblue-border text-xs sm:text-sm font-extrabold">
@@ -1830,20 +1838,25 @@
             btn.addEventListener("click", () => {
               const word = btn.dataset.word;
               const expected = target[picked.length];
-              const fb = document.getElementById("vocFeedback");
               if (word === expected) {
                 picked.push(word);
                 playSound("click");
                 render();
                 if (picked.length === target.length) {
                   playSound("success");
-                  fb.className = "text-sm font-extrabold text-emerald-700";
-                  fb.textContent = "🎉 ¡Orden alfabético perfecto!";
+                  const fbNew = document.getElementById("vocFeedback");
+                  if (fbNew) {
+                    fbNew.className = "text-sm font-extrabold text-emerald-700";
+                    fbNew.textContent = "🎉 ¡Orden alfabético perfecto!";
+                  }
                 }
               } else {
                 playSound("error");
-                fb.className = "text-sm font-extrabold text-rose-600";
-                fb.textContent = `🤔 Antes de «${word}» va otra palabra.`;
+                const fb = document.getElementById("vocFeedback");
+                if (fb) {
+                  fb.className = "text-sm font-extrabold text-rose-600";
+                  fb.textContent = `🤔 Antes de «${word}» va otra palabra.`;
+                }
               }
             });
           });
@@ -1969,8 +1982,11 @@
               render();
               if (chosenOrder.length === current.partes.length) {
                 playSound("success");
-                fb.className = "text-sm font-extrabold text-emerald-700";
-                fb.textContent = "🎉 ¡Texto ordenado a la perfección!";
+                const fbNew = document.getElementById("seqFeedback");
+                if (fbNew) {
+                  fbNew.className = "text-sm font-extrabold text-emerald-700";
+                  fbNew.textContent = "🎉 ¡Texto ordenado a la perfección!";
+                }
               }
             } else {
               playSound("error");
