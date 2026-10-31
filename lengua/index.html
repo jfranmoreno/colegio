@@ -603,511 +603,609 @@
     const STORAGE_KEY = "lengua_3primaria_recursos_v4";
 
     const DEFAULT_UNITS = [
+  {
+    "numero": 1,
+    "titulo": "Unidad 1",
+    "subtitulo": "Cuentos populares, estructura narrativa, sustantivos, sílaba tónica, mayúsculas y abecedario",
+    "oculta": false,
+    "recursos": [
       {
-        numero: 1,
-        titulo: "Unidad 1",
-        subtitulo: "Cuentos populares, estructura narrativa, sustantivos, sílaba tónica, mayúsculas y abecedario",
-        oculta: false,
-        recursos: [
-          {
-            id: "u1-r1",
-            titulo: "Constructor de Cuentos: Inicio, Nudo y Desenlace",
-            descripcion: "Lee las escenas desordenadas de los cuentos populares y ordénalas según su estructura.",
-            tipo: "web",
-            etiqueta: "comunicación y lectura",
-            icono: "🏰",
-            minijuego: "comprension",
-            url: "#cuentos-estructura",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u1-r2",
-            titulo: "Clasificador de Sustantivos: Común/Propio, Género y Número",
-            descripcion: "Juego interactivo sobre las clases de sustantivos y su concordancia en género y número.",
-            tipo: "web",
-            etiqueta: "gramática",
-            icono: "🏷️",
-            minijuego: "gramatica",
-            url: "#sustantivos-u1",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u1-r3",
-            titulo: "Cazadores de la Sílaba Tónica y Mayúsculas",
-            descripcion: "Toca la sílaba que suena más fuerte en cada palabra y repasa el uso del punto y la mayúscula.",
-            tipo: "web",
-            etiqueta: "ortografía",
-            icono: "🔔",
-            minijuego: "silabas",
-            url: "#silaba-tonica",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u1-r4",
-            titulo: "Reto del Abecedario y Orden Alfabético",
-            descripcion: "Ordena palabras alfabéticamente como un auténtico detective del diccionario.",
-            tipo: "web",
-            etiqueta: "vocabulario",
-            icono: "🔤",
-            minijuego: "vocabulario",
-            url: "#abecedario-diccionario",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u1-r5",
-            titulo: "Lámina: Adivinanzas y Canciones Populares",
-            descripcion: "Póster ilustrado con adivinanzas tradicionales y estructura del relato oral.",
-            tipo: "imagen",
-            etiqueta: "literatura y textos",
-            icono: "🎶",
-            url: "recursos/u1-adivinanzas-canciones.png",
-            textoPoster: "Relato Tradicional: Inicio (Presentación) · Nudo (Aventura) · Desenlace (Final)",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u1-r6",
-            titulo: "SA 1: Cuentacuentos de la Convivencia y Ayuda Mutua",
-            descripcion: "Guía PDF para planificar y narrar oralmente vivencias y cuentos en el aula.",
-            tipo: "pdf",
-            etiqueta: "sit. aprendizaje",
-            icono: "🤝",
-            url: "recursos/u1-sa-cuentacuentos.pdf",
-            puntosPdf: [
-              "Planificación y revisión de borradores breves con inicio, nudo y desenlace.",
-              "Uso obligatorio de mayúscula en nombres propios y punto final."
-            ],
-            oculto: false,
-            nuevo: false
-          }
-        ]
+        "id": "lengua-custom-1793440513695",
+        "titulo": "Sustantivos invasores",
+        "descripcion": "Juego arcade para practicar con sustantivos comunes y propios.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🚀",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/sustantivos-invasores/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "ninguno"
       },
       {
-        numero: 2,
-        titulo: "Unidad 2",
-        subtitulo: "Descripción, adjetivos calificativos, palabras con H, prefijos, sufijos y biografía",
-        oculta: false,
-        recursos: [
-          {
-            id: "u2-r1",
-            titulo: "Ficha PDF: Exposición Oral sobre ONG y Descripciones",
-            descripcion: "Plantilla guiada para describir personas, lugares y objetos.",
-            tipo: "pdf",
-            etiqueta: "comunicación y lectura",
-            icono: "🌍",
-            url: "recursos/u2-exposicion-descripcion.pdf",
-            puntosPdf: [
-              "Guion para describir personas (rasgos físicos y carácter), lugares y objetos.",
-              "Comprensión de textos expositivos sobre iniciativas solidarias."
-            ],
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u2-r2",
-            titulo: "Laboratorio del Adjetivo y la Concordancia",
-            descripcion: "Empareja cada sustantivo con el adjetivo calificativo que concuerda en género y número.",
-            tipo: "web",
-            etiqueta: "gramática",
-            icono: "🎨",
-            minijuego: "gramatica",
-            url: "#adjetivo-concordancia",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u2-r3",
-            titulo: "Misión Ortográfica: Palabras con H (hie-, hue-, hum-)",
-            descripcion: "Juego interactivo sobre las reglas ortográficas de la letra H.",
-            tipo: "web",
-            etiqueta: "ortografía",
-            icono: "🕵️",
-            minijuego: "ortografia",
-            url: "#palabras-con-h",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u2-r4",
-            titulo: "Fábrica de Palabras: Prefijos, Sufijos y Antónimos",
-            descripcion: "Forma palabras derivadas y descubre qué significan prefijos y sufijos habituales.",
-            tipo: "web",
-            etiqueta: "vocabulario",
-            icono: "🧩",
-            minijuego: "vocabulario",
-            url: "#prefijos-sufijos-antonimos",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u2-r5",
-            titulo: "Infografía: La Biografía Ilustrada y los Personajes",
-            descripcion: "Esquema visual sobre cómo narrar la vida de una persona y diferenciar protagonistas y secundarios.",
-            tipo: "imagen",
-            etiqueta: "literatura y textos",
-            icono: "🌟",
-            url: "recursos/u2-biografia-personajes.png",
-            textoPoster: "Biografía: Datos de nacimiento e infancia · Personajes: Protagonistas y Secundarios",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u2-r6",
-            titulo: "SA 2: Galería de Biografías Ilustradas y Solidarias",
-            descripcion: "Proyecto PDF: investigamos a personas que mejoran el mundo y creamos su retrato descriptivo.",
-            tipo: "pdf",
-            etiqueta: "sit. aprendizaje",
-            icono: "🖼️",
-            url: "recursos/u2-sa-biografias.pdf",
-            puntosPdf: [
-              "Localización de información descriptiva relevante en diversos soportes.",
-              "Uso rico de adjetivos calificativos en concordancia."
-            ],
-            oculto: false,
-            nuevo: false
-          }
-        ]
+        "id": "u1-r2",
+        "titulo": "Clasificador de Sustantivos: Común/Propio, Género y Número",
+        "descripcion": "Juego interactivo sobre las clases de sustantivos y su concordancia en género y número.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🏷️",
+        "minijuego": "gramatica",
+        "url": "#sustantivos-u1",
+        "oculto": false,
+        "nuevo": false
       },
       {
-        numero: 3,
-        titulo: "Unidad 3",
-        subtitulo: "Fábulas, el resumen, artículos y demostrativos, coma, dos puntos, ¿? ¡! y polisemia",
-        oculta: false,
-        recursos: [
-          {
-            id: "u3-r1",
-            titulo: "Lectura de Fábulas: Idea Global, Resumen y Moraleja",
-            descripcion: "Actividad interactiva para ordenar fábulas tradicionales y descubrir su enseñanza.",
-            tipo: "web",
-            etiqueta: "comunicación y lectura",
-            icono: "🦊",
-            minijuego: "comprension",
-            url: "#fabulas-resumen",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u3-r2",
-            titulo: "Determinantes I: Artículos y Demostrativos",
-            descripcion: "Practica los artículos y los demostrativos de cercanía, distancia media y lejanía.",
-            tipo: "web",
-            etiqueta: "gramática",
-            icono: "📍",
-            minijuego: "gramatica",
-            url: "#articulos-demostrativos",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u3-r3",
-            titulo: "Signos de Entonación (¿? ¡!), Coma y Dos Puntos",
-            descripcion: "Elige el signo de puntuación correcto en enumeraciones, diálogos y preguntas.",
-            tipo: "web",
-            etiqueta: "ortografía",
-            icono: "❗",
-            minijuego: "ortografia",
-            url: "#signos-puntuacion",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u3-r4",
-            titulo: "Póster: Polisémicas, Sinónimos, Diminutivos y Aumentativos",
-            descripcion: "Lámina visual con ejemplos claros de palabras polisémicas y afijos.",
-            tipo: "imagen",
-            etiqueta: "vocabulario",
-            icono: "🔍",
-            url: "recursos/u3-vocabulario-laminas.png",
-            textoPoster: "Sinónimos (igual significado) · Polisémicas (varios significados) · Compuestas",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u3-r5",
-            titulo: "Ficha PDF: La Fábula Narrativa y Relatos con Humor",
-            descripcion: "Cuadernillo para analizar moralejas clásicas y aplicar la técnica del resumen.",
-            tipo: "pdf",
-            etiqueta: "literatura y textos",
-            icono: "🐢",
-            url: "recursos/u3-fabula-moraleja.pdf",
-            puntosPdf: [
-              "Lectura comprensiva y moralejas clásicas.",
-              "Pasos para elaborar un buen resumen sin copiar frases largas."
-            ],
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u3-r6",
-            titulo: "SA 3: Nuestro Libro de Fábulas y Anécdotas Divertidas",
-            descripcion: "Situación de aprendizaje en PDF para narrar anécdotas en público con entonación.",
-            tipo: "pdf",
-            etiqueta: "sit. aprendizaje",
-            icono: "🎙️",
-            url: "recursos/u3-sa-anecdotas.pdf",
-            puntosPdf: [
-              "Escucha activa y narración oral de historias humorísticas.",
-              "Aplicación de comas y signos de interrogación y exclamación."
-            ],
-            oculto: false,
-            nuevo: false
-          }
-        ]
+        "id": "u1-r1",
+        "titulo": "Constructor de Cuentos: Inicio, Nudo y Desenlace",
+        "descripcion": "Lee las escenas desordenadas de los cuentos populares y ordénalas según su estructura.",
+        "tipo": "web",
+        "etiqueta": "comunicación y lectura",
+        "icono": "🏰",
+        "minijuego": "comprension",
+        "url": "#cuentos-estructura",
+        "oculto": false,
+        "nuevo": false
       },
       {
-        numero: 4,
-        titulo: "Unidad 4",
-        subtitulo: "El cómic, leyendas, posesivos, pronombres, mp/mb, r/rr, c/qu/z y onomatopeyas",
-        oculta: false,
-        recursos: [
-          {
-            id: "u4-r1",
-            titulo: "Póster: Elementos del Cómic y Avisos Ambientales",
-            descripcion: "Infografía sobre viñetas, bocadillos (diálogo, pensamiento, grito) y cartelas.",
-            tipo: "imagen",
-            etiqueta: "comunicación y lectura",
-            icono: "💬",
-            url: "recursos/u4-elementos-comic.png",
-            textoPoster: "Cómic: Viñetas · Cartela (voz del narrador) · Bocadillos de diálogo y grito",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u4-r2",
-            titulo: "Determinantes II (Posesivos y Numerales) y Pronombres",
-            descripcion: "Distingue posesivos, numerales y pronombres personales (yo, tú, él...).",
-            tipo: "web",
-            etiqueta: "gramática",
-            icono: "🙋",
-            minijuego: "gramatica",
-            url: "#posesivos-numerales-pronombres",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u4-r3",
-            titulo: "Reto Ortográfico: MP/MB, R/RR, C/QU y Z/C",
-            descripcion: "Completa palabras con campana, tambor, perro, queso y zapato en la pizarra digital.",
-            tipo: "web",
-            etiqueta: "ortografía",
-            icono: "🎯",
-            minijuego: "ortografia",
-            url: "#ortografia-u4",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u4-r4",
-            titulo: "Juego de Refranes Populares y Onomatopeyas",
-            descripcion: "Descubre el significado de refranes tradicionales e identifica onomatopeyas.",
-            tipo: "web",
-            etiqueta: "vocabulario",
-            icono: "💥",
-            minijuego: "vocabulario",
-            url: "#refranes-onomatopeyas",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u4-r5",
-            titulo: "Creador Interactivo de Viñetas de Cómic y Bocadillos",
-            descripcion: "Estudio digital para montar una historieta eligiendo cartela, personajes y bocadillos.",
-            tipo: "web",
-            etiqueta: "literatura y textos",
-            icono: "🦸",
-            minijuego: "creativo",
-            url: "#creador-comic",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u4-r6",
-            titulo: "SA 4: Patrulla Verde en Cómic y Avisos para el Cole",
-            descripcion: "Dossier PDF: transmitimos leyendas populares y creamos historietas de normas ambientales.",
-            tipo: "pdf",
-            etiqueta: "sit. aprendizaje",
-            icono: "🌿",
-            url: "recursos/u4-sa-comic-ambiental.pdf",
-            puntosPdf: [
-              "Plantillas de 4 y 6 viñetas con bocadillos y cartelas.",
-              "Redacción de avisos e instrucciones para cuidar el patio."
-            ],
-            oculto: false,
-            nuevo: false
-          }
-        ]
+        "id": "u1-r3",
+        "titulo": "Cazadores de la Sílaba Tónica y Mayúsculas",
+        "descripcion": "Toca la sílaba que suena más fuerte en cada palabra y repasa el uso del punto y la mayúscula.",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "🔔",
+        "minijuego": "silabas",
+        "url": "#silaba-tonica",
+        "oculto": false,
+        "nuevo": false
       },
       {
-        numero: 5,
-        titulo: "Unidad 5",
-        subtitulo: "La noticia, entrevista, eslogan, metáfora, el verbo y sus tiempos, g/j y diéresis",
-        oculta: false,
-        recursos: [
-          {
-            id: "u5-r1",
-            titulo: "Detective de Noticias: Las 6 Preguntas del Periodista",
-            descripcion: "Ordena las partes de una noticia infantil (Titular, Entrada y Cuerpo).",
-            tipo: "web",
-            etiqueta: "comunicación y lectura",
-            icono: "📰",
-            minijuego: "comprension",
-            url: "#noticia-periodistica",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u5-r2",
-            titulo: "Máquina del Tiempo Verbal: Infinitivo y Tiempos",
-            descripcion: "Identifica la 1.ª, 2.ª y 3.ª conjugación y clasifica verbos en pasado, presente y futuro.",
-            tipo: "web",
-            etiqueta: "gramática",
-            icono: "⏳",
-            minijuego: "gramatica",
-            url: "#verbos-tiempos",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u5-r3",
-            titulo: "Desafío G / J y la Diéresis (güe / güi)",
-            descripcion: "Practica palabras con ga, go, gu, gue, gui, güe, güi (cigüeña, pingüino) y ge, gi.",
-            tipo: "web",
-            etiqueta: "ortografía",
-            icono: "🐧",
-            minijuego: "ortografia",
-            url: "#ortografia-g-j-dieresis",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u5-r4",
-            titulo: "Ruleta de Gentilicios y Frases Hechas",
-            descripcion: "Relaciona localidades con su gentilicio e interpreta el sentido figurado de frases hechas.",
-            tipo: "web",
-            etiqueta: "vocabulario",
-            icono: "🗺️",
-            minijuego: "vocabulario",
-            url: "#gentilicios-frases-hechas",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u5-r5",
-            titulo: "Infografía: Comparación, Metáfora y El Eslogan Publicitario",
-            descripcion: "Lámina visual con ejemplos de comparaciones y metáforas literarias.",
-            tipo: "imagen",
-            etiqueta: "literatura y textos",
-            icono: "✨",
-            url: "recursos/u5-comparacion-metafora.png",
-            textoPoster: "Comparación (usa «como») · Metáfora (identifica directamente)",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u5-r6",
-            titulo: "SA 5: Radio Escolar, Entrevistas y Carteles con Eslogan",
-            descripcion: "Guía PDF para dramatizar entrevistas periodísticas y diseñar carteles publicitarios.",
-            tipo: "pdf",
-            etiqueta: "sit. aprendizaje",
-            icono: "🎤",
-            url: "recursos/u5-sa-periodistas.pdf",
-            puntosPdf: [
-              "Guion de entrevista con presentación, preguntas y cierre.",
-              "Diseño en equipo de un cartel con eslogan y metáforas."
-            ],
-            oculto: false,
-            nuevo: false
-          }
-        ]
+        "id": "u1-r4",
+        "titulo": "Reto del Abecedario y Orden Alfabético",
+        "descripcion": "Ordena palabras alfabéticamente como un auténtico detective del diccionario.",
+        "tipo": "web",
+        "etiqueta": "vocabulario",
+        "icono": "🔤",
+        "minijuego": "vocabulario",
+        "url": "#abecedario-diccionario",
+        "oculto": false,
+        "nuevo": false
       },
       {
-        numero: 6,
-        titulo: "Unidad 6",
-        subtitulo: "El poema, teatro, sujeto y predicado, lenguas de España, ll/y, -d/-z y familia de palabras",
-        oculta: false,
-        recursos: [
-          {
-            id: "u6-r1",
-            titulo: "Ficha PDF: Normas del Debate, Cortesía Verbal y Recitado",
-            descripcion: "Guía práctica para participar en tertulias respetando el turno de palabra.",
-            tipo: "pdf",
-            etiqueta: "comunicación y lectura",
-            icono: "🗣️",
-            url: "recursos/u6-debate-recitado.pdf",
-            puntosPdf: [
-              "Pautas de cortesía verbal: escuchar, pedir la palabra y argumentar.",
-              "Consejos de voz y ritmo para la declamación poética."
-            ],
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u6-r2",
-            titulo: "Analizador de Oraciones: Sujeto, Predicado y Lenguas",
-            descripcion: "Identifica el Sujeto y el Predicado y conoce la riqueza plurilingüe de España.",
-            tipo: "web",
-            etiqueta: "gramática",
-            icono: "🧩",
-            minijuego: "gramatica",
-            url: "#sujeto-predicado-lenguas",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u6-r3",
-            titulo: "Reto Final de Ortografía: LL/Y, Final en -D/-Z y BL/BR",
-            descripcion: "Completa palabras con llave, yema, pared, pez, blanco y bruja con feedback.",
-            tipo: "web",
-            etiqueta: "ortografía",
-            icono: "🏆",
-            minijuego: "ortografia",
-            url: "#ortografia-u6",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u6-r4",
-            titulo: "Familias de Palabras, Campo Semántico y Extranjerismos",
-            descripcion: "Agrupa palabras por su raíz y encuentra la alternativa en castellano.",
-            tipo: "web",
-            etiqueta: "vocabulario",
-            icono: "🌳",
-            minijuego: "vocabulario",
-            url: "#familia-campo-semantico",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u6-r5",
-            titulo: "Póster: La Poesía (Verso, Estrofa, Rima) y el Teatro",
-            descripcion: "Lámina comparativa entre la estructura de un poema y un guion teatral.",
-            tipo: "imagen",
-            etiqueta: "literatura y textos",
-            icono: "🎭",
-            url: "recursos/u6-poesia-teatro.png",
-            textoPoster: "Poesía: Versos, Estrofas y Rima · Teatro: Personajes, Diálogos y Acotaciones",
-            oculto: false,
-            nuevo: false
-          },
-          {
-            id: "u6-r6",
-            titulo: "SA 6: Gran Certamen de Poesía y Teatro de 3.º",
-            descripcion: "Situación de Aprendizaje para ensayar acotaciones teatrales y rimas en la pizarra.",
-            tipo: "web",
-            etiqueta: "sit. aprendizaje",
-            icono: "🎬",
-            minijuego: "creativo",
-            url: "#sa-teatro-poesia",
-            oculto: false,
-            nuevo: false
-          }
-        ]
+        "id": "u1-r5",
+        "titulo": "Lámina: Adivinanzas y Canciones Populares",
+        "descripcion": "Póster ilustrado con adivinanzas tradicionales y estructura del relato oral.",
+        "tipo": "imagen",
+        "etiqueta": "literatura y textos",
+        "icono": "🎶",
+        "url": "recursos/u1-adivinanzas-canciones.png",
+        "textoPoster": "Relato Tradicional: Inicio (Presentación) · Nudo (Aventura) · Desenlace (Final)",
+        "oculto": true,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u1-r6",
+        "titulo": "SA 1: Cuentacuentos de la Convivencia y Ayuda Mutua",
+        "descripcion": "Guía PDF para planificar y narrar oralmente vivencias y cuentos en el aula.",
+        "tipo": "pdf",
+        "etiqueta": "sit. aprendizaje",
+        "icono": "🤝",
+        "url": "recursos/u1-sa-cuentacuentos.pdf",
+        "puntosPdf": [
+          "Planificación y revisión de borradores breves con inicio, nudo y desenlace.",
+          "Uso obligatorio de mayúscula en nombres propios y punto final."
+        ],
+        "oculto": true,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "lengua-custom-1793440007297",
+        "titulo": "La aventura del ABECEDARIO",
+        "descripcion": "Practica con juegos el abecedario y cómo ordenar palabras para buscar en el diccionario",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "🔤",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/abecedario/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "ninguno"
+      },
+      {
+        "id": "lengua-custom-1793440130779",
+        "titulo": "Sustantivos Piratas",
+        "descripcion": "Busca en la playa pirata sustantivos, adjetivos y verbos.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🏴‍☠",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/abecedario/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "ninguno"
+      },
+      {
+        "id": "lengua-custom-1793440228879",
+        "titulo": "Laboratorio de palabras",
+        "descripcion": "Juega con tipos de palabras, ordenar, clasificar, y otros juegos más",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "📖",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/laboratorio-de-palabras/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "lengua-custom-1793440286062",
+        "titulo": "El taller de las palabras",
+        "descripcion": "Trabajamos las letras, sonidos, sílabas y palabras",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "✍️",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/letra-silaba-palabra/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "lengua-custom-1793440388612",
+        "titulo": "Relevo de palabras",
+        "descripcion": "Discrimina sustantivos comunes y propios lo más rápidamente posible.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🧩",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/letra-silaba-palabra/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "ninguno"
+      },
+      {
+        "id": "lengua-custom-1793440457662",
+        "titulo": "Sílabas",
+        "descripcion": "Trabajo con sílabas tónicas, átonas. Clasificación en agudas, llanas y esdrújulas.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🏷️",
+        "url": "https://jfranmoreno.github.io/colegio/lengua/silabas/",
+        "oculto": false,
+        "nuevo": true,
+        "minijuego": "ninguno"
       }
-    ];
+    ]
+  },
+  {
+    "numero": 2,
+    "titulo": "Unidad 2",
+    "subtitulo": "Descripción, adjetivos calificativos, palabras con H, prefijos, sufijos y biografía",
+    "oculta": true,
+    "recursos": [
+      {
+        "id": "u2-r1",
+        "titulo": "Ficha PDF: Exposición Oral sobre ONG y Descripciones",
+        "descripcion": "Plantilla guiada para describir personas, lugares y objetos.",
+        "tipo": "pdf",
+        "etiqueta": "comunicación y lectura",
+        "icono": "🌍",
+        "url": "recursos/u2-exposicion-descripcion.pdf",
+        "puntosPdf": [
+          "Guion para describir personas (rasgos físicos y carácter), lugares y objetos.",
+          "Comprensión de textos expositivos sobre iniciativas solidarias."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u2-r2",
+        "titulo": "Laboratorio del Adjetivo y la Concordancia",
+        "descripcion": "Empareja cada sustantivo con el adjetivo calificativo que concuerda en género y número.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🎨",
+        "minijuego": "gramatica",
+        "url": "#adjetivo-concordancia",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u2-r3",
+        "titulo": "Misión Ortográfica: Palabras con H (hie-, hue-, hum-)",
+        "descripcion": "Juego interactivo sobre las reglas ortográficas de la letra H.",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "🕵️",
+        "minijuego": "ortografia",
+        "url": "#palabras-con-h",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u2-r4",
+        "titulo": "Fábrica de Palabras: Prefijos, Sufijos y Antónimos",
+        "descripcion": "Forma palabras derivadas y descubre qué significan prefijos y sufijos habituales.",
+        "tipo": "web",
+        "etiqueta": "vocabulario",
+        "icono": "🧩",
+        "minijuego": "vocabulario",
+        "url": "#prefijos-sufijos-antonimos",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u2-r5",
+        "titulo": "Infografía: La Biografía Ilustrada y los Personajes",
+        "descripcion": "Esquema visual sobre cómo narrar la vida de una persona y diferenciar protagonistas y secundarios.",
+        "tipo": "imagen",
+        "etiqueta": "literatura y textos",
+        "icono": "🌟",
+        "url": "recursos/u2-biografia-personajes.png",
+        "textoPoster": "Biografía: Datos de nacimiento e infancia · Personajes: Protagonistas y Secundarios",
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u2-r6",
+        "titulo": "SA 2: Galería de Biografías Ilustradas y Solidarias",
+        "descripcion": "Proyecto PDF: investigamos a personas que mejoran el mundo y creamos su retrato descriptivo.",
+        "tipo": "pdf",
+        "etiqueta": "sit. aprendizaje",
+        "icono": "🖼️",
+        "url": "recursos/u2-sa-biografias.pdf",
+        "puntosPdf": [
+          "Localización de información descriptiva relevante en diversos soportes.",
+          "Uso rico de adjetivos calificativos en concordancia."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      }
+    ]
+  },
+  {
+    "numero": 3,
+    "titulo": "Unidad 3",
+    "subtitulo": "Fábulas, el resumen, artículos y demostrativos, coma, dos puntos, ¿? ¡! y polisemia",
+    "oculta": true,
+    "recursos": [
+      {
+        "id": "u3-r1",
+        "titulo": "Lectura de Fábulas: Idea Global, Resumen y Moraleja",
+        "descripcion": "Actividad interactiva para ordenar fábulas tradicionales y descubrir su enseñanza.",
+        "tipo": "web",
+        "etiqueta": "comunicación y lectura",
+        "icono": "🦊",
+        "minijuego": "comprension",
+        "url": "#fabulas-resumen",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u3-r2",
+        "titulo": "Determinantes I: Artículos y Demostrativos",
+        "descripcion": "Practica los artículos y los demostrativos de cercanía, distancia media y lejanía.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "📍",
+        "minijuego": "gramatica",
+        "url": "#articulos-demostrativos",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u3-r3",
+        "titulo": "Signos de Entonación (¿? ¡!), Coma y Dos Puntos",
+        "descripcion": "Elige el signo de puntuación correcto en enumeraciones, diálogos y preguntas.",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "❗",
+        "minijuego": "ortografia",
+        "url": "#signos-puntuacion",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u3-r4",
+        "titulo": "Póster: Polisémicas, Sinónimos, Diminutivos y Aumentativos",
+        "descripcion": "Lámina visual con ejemplos claros de palabras polisémicas y afijos.",
+        "tipo": "imagen",
+        "etiqueta": "vocabulario",
+        "icono": "🔍",
+        "url": "recursos/u3-vocabulario-laminas.png",
+        "textoPoster": "Sinónimos (igual significado) · Polisémicas (varios significados) · Compuestas",
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u3-r5",
+        "titulo": "Ficha PDF: La Fábula Narrativa y Relatos con Humor",
+        "descripcion": "Cuadernillo para analizar moralejas clásicas y aplicar la técnica del resumen.",
+        "tipo": "pdf",
+        "etiqueta": "literatura y textos",
+        "icono": "🐢",
+        "url": "recursos/u3-fabula-moraleja.pdf",
+        "puntosPdf": [
+          "Lectura comprensiva y moralejas clásicas.",
+          "Pasos para elaborar un buen resumen sin copiar frases largas."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u3-r6",
+        "titulo": "SA 3: Nuestro Libro de Fábulas y Anécdotas Divertidas",
+        "descripcion": "Situación de aprendizaje en PDF para narrar anécdotas en público con entonación.",
+        "tipo": "pdf",
+        "etiqueta": "sit. aprendizaje",
+        "icono": "🎙️",
+        "url": "recursos/u3-sa-anecdotas.pdf",
+        "puntosPdf": [
+          "Escucha activa y narración oral de historias humorísticas.",
+          "Aplicación de comas y signos de interrogación y exclamación."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      }
+    ]
+  },
+  {
+    "numero": 4,
+    "titulo": "Unidad 4",
+    "subtitulo": "El cómic, leyendas, posesivos, pronombres, mp/mb, r/rr, c/qu/z y onomatopeyas",
+    "oculta": true,
+    "recursos": [
+      {
+        "id": "u4-r1",
+        "titulo": "Póster: Elementos del Cómic y Avisos Ambientales",
+        "descripcion": "Infografía sobre viñetas, bocadillos (diálogo, pensamiento, grito) y cartelas.",
+        "tipo": "imagen",
+        "etiqueta": "comunicación y lectura",
+        "icono": "💬",
+        "url": "recursos/u4-elementos-comic.png",
+        "textoPoster": "Cómic: Viñetas · Cartela (voz del narrador) · Bocadillos de diálogo y grito",
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u4-r2",
+        "titulo": "Determinantes II (Posesivos y Numerales) y Pronombres",
+        "descripcion": "Distingue posesivos, numerales y pronombres personales (yo, tú, él...).",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🙋",
+        "minijuego": "gramatica",
+        "url": "#posesivos-numerales-pronombres",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u4-r3",
+        "titulo": "Reto Ortográfico: MP/MB, R/RR, C/QU y Z/C",
+        "descripcion": "Completa palabras con campana, tambor, perro, queso y zapato en la pizarra digital.",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "🎯",
+        "minijuego": "ortografia",
+        "url": "#ortografia-u4",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u4-r4",
+        "titulo": "Juego de Refranes Populares y Onomatopeyas",
+        "descripcion": "Descubre el significado de refranes tradicionales e identifica onomatopeyas.",
+        "tipo": "web",
+        "etiqueta": "vocabulario",
+        "icono": "💥",
+        "minijuego": "vocabulario",
+        "url": "#refranes-onomatopeyas",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u4-r5",
+        "titulo": "Creador Interactivo de Viñetas de Cómic y Bocadillos",
+        "descripcion": "Estudio digital para montar una historieta eligiendo cartela, personajes y bocadillos.",
+        "tipo": "web",
+        "etiqueta": "literatura y textos",
+        "icono": "🦸",
+        "minijuego": "creativo",
+        "url": "#creador-comic",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u4-r6",
+        "titulo": "SA 4: Patrulla Verde en Cómic y Avisos para el Cole",
+        "descripcion": "Dossier PDF: transmitimos leyendas populares y creamos historietas de normas ambientales.",
+        "tipo": "pdf",
+        "etiqueta": "sit. aprendizaje",
+        "icono": "🌿",
+        "url": "recursos/u4-sa-comic-ambiental.pdf",
+        "puntosPdf": [
+          "Plantillas de 4 y 6 viñetas con bocadillos y cartelas.",
+          "Redacción de avisos e instrucciones para cuidar el patio."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      }
+    ]
+  },
+  {
+    "numero": 5,
+    "titulo": "Unidad 5",
+    "subtitulo": "La noticia, entrevista, eslogan, metáfora, el verbo y sus tiempos, g/j y diéresis",
+    "oculta": true,
+    "recursos": [
+      {
+        "id": "u5-r1",
+        "titulo": "Detective de Noticias: Las 6 Preguntas del Periodista",
+        "descripcion": "Ordena las partes de una noticia infantil (Titular, Entrada y Cuerpo).",
+        "tipo": "web",
+        "etiqueta": "comunicación y lectura",
+        "icono": "📰",
+        "minijuego": "comprension",
+        "url": "#noticia-periodistica",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u5-r2",
+        "titulo": "Máquina del Tiempo Verbal: Infinitivo y Tiempos",
+        "descripcion": "Identifica la 1.ª, 2.ª y 3.ª conjugación y clasifica verbos en pasado, presente y futuro.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "⏳",
+        "minijuego": "gramatica",
+        "url": "#verbos-tiempos",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u5-r3",
+        "titulo": "Desafío G / J y la Diéresis (güe / güi)",
+        "descripcion": "Practica palabras con ga, go, gu, gue, gui, güe, güi (cigüeña, pingüino) y ge, gi.",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "🐧",
+        "minijuego": "ortografia",
+        "url": "#ortografia-g-j-dieresis",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u5-r4",
+        "titulo": "Ruleta de Gentilicios y Frases Hechas",
+        "descripcion": "Relaciona localidades con su gentilicio e interpreta el sentido figurado de frases hechas.",
+        "tipo": "web",
+        "etiqueta": "vocabulario",
+        "icono": "🗺️",
+        "minijuego": "vocabulario",
+        "url": "#gentilicios-frases-hechas",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u5-r5",
+        "titulo": "Infografía: Comparación, Metáfora y El Eslogan Publicitario",
+        "descripcion": "Lámina visual con ejemplos de comparaciones y metáforas literarias.",
+        "tipo": "imagen",
+        "etiqueta": "literatura y textos",
+        "icono": "✨",
+        "url": "recursos/u5-comparacion-metafora.png",
+        "textoPoster": "Comparación (usa «como») · Metáfora (identifica directamente)",
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u5-r6",
+        "titulo": "SA 5: Radio Escolar, Entrevistas y Carteles con Eslogan",
+        "descripcion": "Guía PDF para dramatizar entrevistas periodísticas y diseñar carteles publicitarios.",
+        "tipo": "pdf",
+        "etiqueta": "sit. aprendizaje",
+        "icono": "🎤",
+        "url": "recursos/u5-sa-periodistas.pdf",
+        "puntosPdf": [
+          "Guion de entrevista con presentación, preguntas y cierre.",
+          "Diseño en equipo de un cartel con eslogan y metáforas."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      }
+    ]
+  },
+  {
+    "numero": 6,
+    "titulo": "Unidad 6",
+    "subtitulo": "El poema, teatro, sujeto y predicado, lenguas de España, ll/y, -d/-z y familia de palabras",
+    "oculta": true,
+    "recursos": [
+      {
+        "id": "u6-r1",
+        "titulo": "Ficha PDF: Normas del Debate, Cortesía Verbal y Recitado",
+        "descripcion": "Guía práctica para participar en tertulias respetando el turno de palabra.",
+        "tipo": "pdf",
+        "etiqueta": "comunicación y lectura",
+        "icono": "🗣️",
+        "url": "recursos/u6-debate-recitado.pdf",
+        "puntosPdf": [
+          "Pautas de cortesía verbal: escuchar, pedir la palabra y argumentar.",
+          "Consejos de voz y ritmo para la declamación poética."
+        ],
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u6-r2",
+        "titulo": "Analizador de Oraciones: Sujeto, Predicado y Lenguas",
+        "descripcion": "Identifica el Sujeto y el Predicado y conoce la riqueza plurilingüe de España.",
+        "tipo": "web",
+        "etiqueta": "gramática",
+        "icono": "🧩",
+        "minijuego": "gramatica",
+        "url": "#sujeto-predicado-lenguas",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u6-r3",
+        "titulo": "Reto Final de Ortografía: LL/Y, Final en -D/-Z y BL/BR",
+        "descripcion": "Completa palabras con llave, yema, pared, pez, blanco y bruja con feedback.",
+        "tipo": "web",
+        "etiqueta": "ortografía",
+        "icono": "🏆",
+        "minijuego": "ortografia",
+        "url": "#ortografia-u6",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u6-r4",
+        "titulo": "Familias de Palabras, Campo Semántico y Extranjerismos",
+        "descripcion": "Agrupa palabras por su raíz y encuentra la alternativa en castellano.",
+        "tipo": "web",
+        "etiqueta": "vocabulario",
+        "icono": "🌳",
+        "minijuego": "vocabulario",
+        "url": "#familia-campo-semantico",
+        "oculto": false,
+        "nuevo": false
+      },
+      {
+        "id": "u6-r5",
+        "titulo": "Póster: La Poesía (Verso, Estrofa, Rima) y el Teatro",
+        "descripcion": "Lámina comparativa entre la estructura de un poema y un guion teatral.",
+        "tipo": "imagen",
+        "etiqueta": "literatura y textos",
+        "icono": "🎭",
+        "url": "recursos/u6-poesia-teatro.png",
+        "textoPoster": "Poesía: Versos, Estrofas y Rima · Teatro: Personajes, Diálogos y Acotaciones",
+        "oculto": false,
+        "nuevo": false,
+        "minijuego": "gramatica"
+      },
+      {
+        "id": "u6-r6",
+        "titulo": "SA 6: Gran Certamen de Poesía y Teatro de 3.º",
+        "descripcion": "Situación de Aprendizaje para ensayar acotaciones teatrales y rimas en la pizarra.",
+        "tipo": "web",
+        "etiqueta": "sit. aprendizaje",
+        "icono": "🎬",
+        "minijuego": "creativo",
+        "url": "#sa-teatro-poesia",
+        "oculto": false,
+        "nuevo": false
+      }
+    ]
+  }
+];
 
     let unidadesData = [];
 
