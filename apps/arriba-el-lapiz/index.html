@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Arriba el Lápiz! - Educación Primaria (MDI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e5eeff 100%);
+      --card-bg: #ffffff;
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #0ea5e9;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --danger-dark: #b91c1c;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.12), 0 8px 10px -6px rgba(79, 70, 229, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================
+       CABECERA Y BARRA SUPERIOR (MODO PANTALLA)
+       ========================================================== */
+    .app-header {
+      background: #ffffff;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border-bottom: 3px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      font-size: 2.4rem;
+      background: #fef3c7;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      border: 3px solid #f59e0b;
+      box-shadow: 0 4px 0 #d97706;
+    }
+
+    .brand-title h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .brand-title span {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #e0e7ff;
+      padding: 2px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* ==========================================================
+       BOTONES MDI (TÁCTILES GRANDES)
+       ========================================================== */
+    .btn {
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 12px 22px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      min-height: 56px;
+    }
+
+    .btn:active {
+      transform: scale(0.96) translateY(2px);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 5px 0 #3730a3;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+      box-shadow: 0 5px 0 #0369a1;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 5px 0 #b45309;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 5px 0 #047857;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 6px 0 var(--danger-dark);
+    }
+
+    .btn-outline {
+      background: #f8fafc;
+      color: var(--text-main);
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 4px 0 #cbd5e1;
+    }
+    .btn-outline:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-sm {
+      min-height: 42px;
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      border-radius: 12px;
+    }
+
+    /* ==========================================================
+       CONTENEDOR PRINCIPAL Y VISTAS
+       ========================================================== */
+    .main-container {
+      max-width: 1440px;
+      margin: 24px auto;
+      padding: 0 24px 40px;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================
+       MÓDULO 1: PANTALLA DE CONFIGURACIÓN (SETUP)
+       ========================================================== */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .setup-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 2px solid #eef2ff;
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Cuadrícula del Abecedario */
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .letter-toggle {
+      height: 58px;
+      border-radius: 14px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      border: 3px solid #cbd5e1;
+      background: #f8fafc;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .letter-toggle.active {
+      background: #e0e7ff;
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 4px 0 #c7d2fe;
+      transform: translateY(-2px);
+    }
+
+    /* Gestor de Categorías */
+    .preset-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .category-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .cat-chip {
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      color: #166534;
+      padding: 10px 16px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 3px 0 #bbf7d0;
+    }
+
+    .cat-chip button {
+      background: #dcfce7;
+      border: none;
+      color: #15803d;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+    .cat-chip button:hover {
+      background: #fecaca;
+      color: #b91c1c;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-text {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: 3px solid #cbd5e1;
+      border-radius: 14px;
+      outline: none;
+    }
+    .input-text:focus {
+      border-color: var(--primary);
+    }
+
+    /* Parámetros de Partida */
+    .params-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 640px) {
+      .params-grid { grid-template-columns: 1fr; }
+    }
+
+    .param-box {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      padding: 14px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .param-box label {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .param-select {
+      padding: 10px 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background: white;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    /* Gestor de Equipos / Jugadores (Hasta 25) */
+    .json-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 10px 12px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      border: 2px dashed #cbd5e1;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .teams-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 6px;
+      margin-bottom: 8px;
+    }
+
+    .team-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+    }
+
+    .team-index-badge {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      width: 26px;
+      text-align: center;
+    }
+
+    .team-avatar-btn {
+      font-size: 1.55rem;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Acciones Principales de Inicio e Impresión */
+    .setup-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 20px 28px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      border: 3px solid #e0e7ff;
+    }
+
+    .btn-xl {
+      font-size: 1.35rem;
+      padding: 18px 32px;
+      min-height: 68px;
+      border-radius: 20px;
+    }
+
+    /* ==========================================================
+       MÓDULO 3: PANTALLA PRINCIPAL DE JUEGO (MODO MDI)
+       ========================================================== */
+    .game-layout {
+      display: grid;
+      grid-template-columns: 1fr 390px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1150px) {
+      .game-layout { grid-template-columns: 1fr; }
+    }
+
+    .board-stage {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      border: 3px solid #e0e7ff;
+    }
+
+    .round-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 2px dashed var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .round-badge {
+      background: #e0e7ff;
+      color: var(--primary);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .used-letters-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .used-letter-pill {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 800;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #cbd5e1;
+    }
+
+    /* Zona de Ruleta de Letra + Reloj Gigante */
+    .hero-hud {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+
+    @media (max-width: 850px) {
+      .hero-hud { grid-template-columns: 1fr; }
+    }
+
+    .letter-roulette-box {
+      background: linear-gradient(145deg, #4f46e5, #3730a3);
+      border-radius: 26px;
+      padding: 20px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 0 #1e1b4b;
+      position: relative;
+      min-height: 240px;
+    }
+
+    .letter-roulette-label {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 800;
+      opacity: 0.9;
+    }
+
+    .big-letter-display {
+      font-size: 7.2rem;
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 8px 0 14px;
+      text-shadow: 0 6px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .big-letter-display.spinning {
+      animation: pulseSpin 0.12s infinite alternate;
+      color: #fde047;
+    }
+
+    @keyframes pulseSpin {
+      from { transform: scale(0.92); }
+      to { transform: scale(1.08); }
+    }
+
+    /* Temporizador Gigante */
+    .timer-hud-box {
+      background: #f8fafc;
+      border: 3px solid var(--border);
+      border-radius: 26px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .timer-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .timer-digits {
+      font-size: 5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-digits.warning { color: #d97706; }
+    .timer-digits.danger {
+      color: var(--danger);
+      animation: blinkFast 0.5s infinite alternate;
+    }
+
+    @keyframes blinkFast {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0.65; transform: scale(1.05); }
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 26px;
+      background: #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 16px 0;
+      border: 2px solid #cbd5e1;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--success);
+      transition: width 0.3s linear, background-color 0.3s ease;
+    }
+
+    /* Botón Gigante STOP ¡ARRIBA EL LÁPIZ! */
+    .btn-stop-giant {
+      width: 100%;
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: 4px solid #fecaca;
+      border-radius: 22px;
+      padding: 18px 24px;
+      font-size: 1.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 9px 0 #991b1b, 0 12px 20px rgba(239, 68, 68, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      transition: all 0.12s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-stop-giant:hover:not(:disabled) {
+      filter: brightness(1.06);
+    }
+
+    .btn-stop-giant:active:not(:disabled) {
+      transform: translateY(6px);
+      box-shadow: 0 3px 0 #991b1b;
+    }
+
+    .btn-stop-giant:disabled {
+      background: #cbd5e1;
+      border-color: #e2e8f0;
+      box-shadow: 0 5px 0 #94a3b8;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    /* Tarjetas de Categorías Activas en Pantalla */
+    .categories-board-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .categories-live-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .live-cat-card {
+      background: #fefce8;
+      border: 3px solid #fde047;
+      border-radius: 20px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 5px 0 #eab308;
+      transition: transform 0.2s ease;
+    }
+
+    .live-cat-num {
+      background: #eab308;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .live-cat-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #713f12;
+      line-height: 1.2;
+    }
+
+    /* Clasificación Lateral en Tiempo Real */
+    .ranking-sidebar {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 3px solid #e0e7ff;
+    }
+
+    .ranking-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      max-height: 470px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .rank-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .rank-card.first-place {
+      background: #fef9c3;
+      border-color: #facc15;
+      box-shadow: 0 4px 0 #eab308;
+    }
+
+    .rank-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .rank-pos {
+      font-weight: 800;
+      font-size: 1.1rem;
+      width: 28px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .rank-avatar {
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank-name {
+      font-weight: 800;
+      font-size: 1.08rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-score {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: #e0e7ff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================
+       MÓDULO 4: MODAL DE RECUENTO DE PUNTOS Y MODAL JSON
+       ========================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .scoring-modal {
+      background: #ffffff;
+      width: 100%;
+      max-width: 1240px;
+      max-height: 92vh;
+      border-radius: 28px;
+      padding: 26px;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+      border: 4px solid var(--primary);
+    }
+
+    .stop-alert-banner {
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      color: white;
+      padding: 14px 22px;
+      border-radius: 20px;
+      text-align: center;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 0 #991b1b;
+    }
+
+    .stop-alert-banner h2 {
+      font-size: 1.95rem;
+      font-weight: 800;
+    }
+
+    .scoring-teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .score-team-card {
+      background: #f8fafc;
+      border: 3px solid var(--border);
+      border-radius: 20px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .score-team-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .score-team-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .round-delta-badge {
+      background: #dcfce7;
+      color: #15803d;
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 2px solid #86efac;
+    }
+
+    .quick-points-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .btn-pts {
+      padding: 10px 6px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: transform 0.1s;
+    }
+    .btn-pts:active { transform: scale(0.95); }
+
+    .btn-pts-10 {
+      background: #dcfce7;
+      color: #166534;
+      border: 2px solid #4ade80;
+      box-shadow: 0 3px 0 #86efac;
+    }
+    .btn-pts-5 {
+      background: #fef9c3;
+      color: #854d0e;
+      border: 2px solid #facc15;
+      box-shadow: 0 3px 0 #fde047;
+    }
+    .btn-pts-minus {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #f87171;
+      box-shadow: 0 3px 0 #fca5a5;
+    }
+
+    .bonus-badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .btn-bonus {
+      flex: 1;
+      background: #ede9fe;
+      color: #5b21b6;
+      border: 2px solid #c4b5fd;
+      padding: 7px 8px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-bonus.awarded {
+      background: #7c3aed;
+      color: white;
+      border-color: #5b21b6;
+    }
+
+    /* ==========================================================
+       PANTALLA DE PODIO FINAL Y CONFETI
+       ========================================================== */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+    }
+
+    .podium-stage {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 22px;
+      margin: 40px 0 36px;
+      min-height: 320px;
+      flex-wrap: wrap;
+    }
+
+    .podium-pillar {
+      width: 240px;
+      border-radius: 24px 24px 12px 12px;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .podium-1 {
+      background: linear-gradient(180deg, #fbbf24, #d97706);
+      height: 310px;
+      border: 4px solid #fef08a;
+      z-index: 2;
+    }
+    .podium-2 {
+      background: linear-gradient(180deg, #94a3b8, #475569);
+      height: 255px;
+      border: 4px solid #e2e8f0;
+    }
+    .podium-3 {
+      background: linear-gradient(180deg, #fb923c, #b45309);
+      height: 220px;
+      border: 4px solid #fed7aa;
+    }
+
+    .podium-medal {
+      font-size: 3.6rem;
+      margin-bottom: 6px;
+    }
+
+    .podium-team-name {
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .podium-pts {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 6px 18px;
+      border-radius: 20px;
+    }
+
+    /* ==========================================================
+       MÓDULO 2: FICHA IMPRIMIBLE A4 HORIZONTAL (@media print)
+       ========================================================== */
+    #printableSheet {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        min-height: auto;
+      }
+
+      /* Ocultar absolutamente toda la interfaz interactiva */
+      .app-header,
+      .main-container,
+      .modal-overlay,
+      #confettiCanvas {
+        display: none !important;
+      }
+
+      /* Mostrar únicamente la ficha escolar en blanco y negro de alto contraste */
+      #printableSheet {
+        display: block !important;
+        width: 100%;
+        color: #000 !important;
+        font-family: 'Quicksand', Arial, sans-serif;
+      }
+
+      .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 2.5px solid #000;
+        border-radius: 10px;
+        padding: 8px 14px;
+        margin-bottom: 8px;
+      }
+
+      .print-title-block h1 {
+        font-size: 18pt;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .print-title-block p {
+        font-size: 9.5pt;
+        font-weight: 700;
+      }
+
+      .print-student-fields {
+        display: flex;
+        gap: 18px;
+        font-size: 10.5pt;
+        font-weight: 700;
+      }
+
+      .print-field-line {
+        display: inline-block;
+        border-bottom: 1.5px solid #000;
+        min-width: 180px;
+        height: 18px;
+      }
+
+      .print-field-line.short {
+        min-width: 95px;
+      }
+
+      .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        margin-bottom: 8px;
+      }
+
+      .print-table th,
+      .print-table td {
+        border: 1.8px solid #000;
+        padding: 4px 6px;
+        text-align: center;
+        vertical-align: middle;
+        word-wrap: break-word;
+      }
+
+      .print-table thead th {
+        background-color: #e5e7eb !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 10pt;
+        font-weight: 800;
+        text-transform: uppercase;
+        height: 11mm;
+      }
+
+      .print-table .col-round {
+        width: 16mm;
+        font-weight: 800;
+        font-size: 10pt;
+        background-color: #f3f4f6 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .print-table .col-letter {
+        width: 20mm;
+        font-weight: 800;
+      }
+
+      .print-table .col-points {
+        width: 24mm;
+      }
+
+      .print-footer-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 2px solid #000;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 9.5pt;
+        font-weight: 700;
+      }
+
+      .print-total-box {
+        font-size: 12pt;
+        font-weight: 800;
+        border: 2px solid #000;
+        padding: 4px 16px;
+        border-radius: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LIENZO DE CONFETI PARA PODIO FINAL -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- CABECERA MDI -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">✏️</div>
+      <div class="brand-title">
+        <h1>¡ARRIBA EL LÁPIZ!</h1>
+        <span>Educación Primaria • Pizarra Digital Interactiva</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button id="btnPrintTop" class="btn btn-outline btn-sm" onclick="printStudentSheet()" title="Imprimir o guardar PDF de la ficha para los alumnos">
+        📄 Ficha Alumnos (PDF)
+      </button>
+      <button id="btnMute" class="btn btn-outline btn-sm" onclick="toggleMute()">
+        🔊 Sonido: ON
+      </button>
+      <button id="btnBackSetup" class="btn btn-outline btn-sm" onclick="confirmReturnToSetup()" style="display:none;">
+        ⚙️ Configuración
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="main-container">
+
+    <!-- ==========================================================
+         VISTA 1: CONFIGURACIÓN INICIAL (SETUP)
+         ========================================================== -->
+    <section id="viewSetup" class="view-section active">
+      <div class="setup-grid">
+
+        <!-- Columna Izquierda: Letras y Categorías -->
+        <div>
+          <!-- 1. Selector de Letras -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🔤 1. Letras del Sorteo (<span id="activeLettersCount">21</span> activas)</div>
+              <div class="preset-bar" style="margin-bottom:0;">
+                <button class="btn btn-outline btn-sm" onclick="setLetterPreset('all')">Todas (27)</button>
+                <button class="btn btn-outline btn-sm" onclick="setLetterPreset('noHard')">Sin Ñ, K, W, X, Y, Z</button>
+                <button class="btn btn-outline btn-sm" onclick="setLetterPreset('easy')">Solo Fáciles (Primaria)</button>
+              </div>
+            </div>
+            <p style="color: var(--text-muted); font-weight: 700; font-size: 0.95rem;">
+              Toca las letras para activarlas o desactivarlas en la ruleta:
+            </p>
+            <div id="alphabetGrid" class="alphabet-grid"></div>
+          </div>
+
+          <!-- 2. Gestor de Categorías -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🗂️ 2. Categorías de la Tabla (<span id="activeCatsCount">6</span>)</div>
+            </div>
+
+            <div class="preset-bar">
+              <button class="btn btn-outline btn-sm" onclick="loadCategoryPreset('default')">⭐ Primaria (Por defecto)</button>
+              <button class="btn btn-outline btn-sm" onclick="loadCategoryPreset('clasico')">🎲 Clásico</button>
+              <button class="btn btn-outline btn-sm" onclick="loadCategoryPreset('lengua')">📚 Lengua Castellana</button>
+              <button class="btn btn-outline btn-sm" onclick="loadCategoryPreset('ciencias')">🌿 Ciencias</button>
+            </div>
+
+            <div id="categoryTags" class="category-tags"></div>
+
+            <div class="input-row">
+              <input type="text" id="newCategoryInput" class="input-text" placeholder="Escribe otra categoría (ej. Deporte, Profesión...)" maxlength="28" onkeydown="if(event.key==='Enter') addCategory()">
+              <button class="btn btn-secondary" onclick="addCategory()">➕ Añadir</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Parámetros y Equipos/Jugadores -->
+        <div>
+          <!-- 3. Parámetros de Partida -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">⏱️ 3. Reglas y Tiempos de Partida</div>
+            </div>
+            <div class="params-grid">
+              <div class="param-box">
+                <label for="selectTime">Tiempo por Ronda</label>
+                <select id="selectTime" class="param-select">
+                  <option value="60">60 segundos (Rápido)</option>
+                  <option value="90">90 segundos (Normal)</option>
+                  <option value="120" selected>120 segundos (2 min)</option>
+                  <option value="180">180 segundos (3 min)</option>
+                </select>
+              </div>
+
+              <div class="param-box">
+                <label for="selectRounds">Número de Rondas</label>
+                <select id="selectRounds" class="param-select" onchange="buildPrintableSheet()">
+                  <option value="3">3 Rondas</option>
+                  <option value="4">4 Rondas</option>
+                  <option value="5" selected>5 Rondas</option>
+                  <option value="6">6 Rondas</option>
+                  <option value="7">7 Rondas</option>
+                  <option value="8">8 Rondas</option>
+                  <option value="10">10 Rondas</option>
+                </select>
+              </div>
+
+              <div class="param-box">
+                <label for="selectStopMode">Modo "¡Arriba el Lápiz!"</label>
+                <select id="selectStopMode" class="param-select">
+                  <option value="both" selected>Reloj + Botón STOP</option>
+                  <option value="timer">Solo al acabar tiempo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Gestor de Equipos / Jugadores (Hasta 25 + Importación JSON) -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🏆 4. Equipos / Jugadores (<span id="teamsCountLabel">4</span>/25)</div>
+              <button class="btn btn-secondary btn-sm" onclick="addTeam()">➕ Añadir</button>
+            </div>
+
+            <!-- Barra de Importación JSON -->
+            <div class="json-toolbar">
+              <span style="font-size: 0.9rem; font-weight: 800; color: var(--text-muted);">
+                📥 Lista de clase (máx. 25):
+              </span>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <input type="file" id="jsonFileInput" accept=".json,application/json" style="display:none;" onchange="handleJsonFileUpload(event)">
+                <button class="btn btn-outline btn-sm" onclick="document.getElementById('jsonFileInput').click()" title="Subir un archivo .json con los nombres">
+                  📂 Importar JSON
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="openJsonPasteModal()" title="Pegar texto JSON directamente">
+                  📋 Pegar JSON
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="downloadSampleJson()" title="Descargar ejemplo de archivo JSON">
+                  ⬇️ Plantilla JSON
+                </button>
+              </div>
+            </div>
+
+            <div id="teamsList" class="teams-list"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Barra Inferior de Lanzamiento e Impresión -->
+      <div class="setup-actions">
+        <button class="btn btn-accent btn-xl" onclick="printStudentSheet()">
+          📄 Generar / Imprimir Ficha PDF para Alumnos
+        </button>
+
+        <button class="btn btn-primary btn-xl" onclick="startGameSession()">
+          🚀 ¡EMPEZAR PARTIDA EN PIZARRA!
+        </button>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         VISTA 2: PANTALLA PRINCIPAL DE JUEGO (MODO MDI)
+         ========================================================== -->
+    <section id="viewGame" class="view-section">
+      <div class="game-layout">
+
+        <!-- Escenario Principal -->
+        <div class="board-stage">
+          <div class="round-banner">
+            <div id="roundBadge" class="round-badge">Ronda 1 de 5</div>
+            <div class="used-letters-bar">
+              <span style="font-weight:800; color:var(--text-muted); font-size:0.95rem;">Letras jugadas:</span>
+              <div id="usedLettersContainer" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+            </div>
+          </div>
+
+          <!-- HUD: Ruleta de Letra + Temporizador Gigante -->
+          <div class="hero-hud">
+            <!-- Sorteador de Letra -->
+            <div class="letter-roulette-box">
+              <span class="letter-roulette-label">Letra de la Ronda</span>
+              <div id="bigLetterDisplay" class="big-letter-display">?</div>
+              <button id="btnSpinLetter" class="btn btn-accent" style="width:100%;" onclick="spinLetterRoulette()">
+                🎰 Sortear Letra
+              </button>
+            </div>
+
+            <!-- Temporizador y Botón STOP -->
+            <div class="timer-hud-box">
+              <div>
+                <div class="timer-top-row">
+                  <span style="font-weight:800; color:var(--text-muted); font-size:1.1rem;">TIEMPO RESTANTE</span>
+                  <div style="display:flex; gap:8px;">
+                    <button id="btnPauseResume" class="btn btn-outline btn-sm" onclick="togglePauseTimer()" disabled>⏸️ Pausar</button>
+                    <button id="btnResetClock" class="btn btn-outline btn-sm" onclick="resetCurrentRoundTimer()" disabled>🔄 Reiniciar Reloj</button>
+                  </div>
+                </div>
+
+                <div id="timerDigits" class="timer-digits">02:00</div>
+
+                <div class="progress-track">
+                  <div id="timerProgressBar" class="progress-fill"></div>
+                </div>
+              </div>
+
+              <button id="btnGiantStop" class="btn-stop-giant" onclick="triggerStopRound('manual')" disabled>
+                ✋ ¡ARRIBA EL LÁPIZ! (STOP)
+              </button>
+            </div>
+          </div>
+
+          <!-- Visor de Categorías Activas -->
+          <div>
+            <div class="categories-board-title">
+              📝 Categorías que debemos escribir con la letra <strong id="currentLetterHint" style="color:var(--primary); font-size:1.4rem;">?</strong>:
+            </div>
+            <div id="liveCategoriesGrid" class="categories-live-grid"></div>
+          </div>
+        </div>
+
+        <!-- Barra Lateral: Clasificación en Vivo -->
+        <aside class="ranking-sidebar">
+          <div class="card-title" style="justify-content: space-between;">
+            <span>🏅 Clasificación (<span id="sidebarTeamsCount">4</span>)</span>
+            <button class="btn btn-outline btn-sm" onclick="openScoringModal(false)" title="Ajustar puntos manualmente">✏️ Puntos</button>
+          </div>
+          <div id="liveRankingList" class="ranking-list"></div>
+
+          <div style="margin-top: 18px; background: #f8fafc; border-radius: 16px; padding: 14px; border: 2px dashed #cbd5e1;">
+            <div style="font-weight:800; color:var(--primary); margin-bottom:6px; font-size:0.98rem;">📌 Sistema de Puntos:</div>
+            <ul style="list-style:none; font-size:0.92rem; font-weight:700; color:var(--text-muted); line-height:1.6;">
+              <li>🌟 <strong>Palabra no repetida:</strong> +10 pts</li>
+              <li>🤝 <strong>Palabra repetida:</strong> +5 pts</li>
+              <li>✨ <strong>Bonus Ortografía / Velocidad:</strong> +5 pts</li>
+            </ul>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         VISTA 3: PANTALLA DE PODIO FINAL
+         ========================================================== -->
+    <section id="viewPodium" class="view-section">
+      <div class="card" style="text-align: center; padding: 38px 24px;">
+        <h2 style="font-size: 2.6rem; font-weight: 800; color: var(--primary);">🎉 ¡FIN DE LA PARTIDA! 🎉</h2>
+        <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-muted); margin-top: 6px;">
+          ¡Gran trabajo de vocabulario y ortografía de todos los participantes!
+        </p>
+
+        <!-- Podio 1º, 2º y 3º -->
+        <div id="podiumStage" class="podium-stage"></div>
+
+        <!-- Tabla Completa de Resultados -->
+        <div style="max-width: 760px; margin: 0 auto 32px; text-align: left;">
+          <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">📊 Clasificación General:</h3>
+          <div id="finalStandingsList" class="ranking-list" style="max-height: 420px;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-xl" onclick="playAgainSameConfig()">
+            🔄 Jugar Otra Partida
+          </button>
+          <button class="btn btn-secondary btn-xl" onclick="exportResultsTxt()">
+            📥 Exportar Resultados (.TXT)
+          </button>
+          <button class="btn btn-outline btn-xl" onclick="returnToSetupScreen()">
+            ⚙️ Cambiar Configuración
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================
+       MODAL DE RECUENTO DE PUNTOS DE LA RONDA
+       ========================================================== -->
+  <div id="scoringModal" class="modal-overlay">
+    <div class="scoring-modal">
+      <div id="stopAlertBanner" class="stop-alert-banner">
+        <h2 id="stopBannerTitle">✋ ¡MANOS ARRIBA, SOLTAD LOS LÁPICES!</h2>
+        <p id="stopBannerSub" style="font-size: 1.15rem; font-weight: 700; margin-top: 4px;">
+          Revisamos las palabras escritas con la letra <span id="modalLetterBadge" style="background:white; color:#dc2626; padding:2px 12px; border-radius:10px; font-weight:800;">A</span>
+        </p>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom: 14px;">
+        <div style="font-size:1.05rem; font-weight:800; color:var(--text-muted);">
+          💡 Suma los puntos de cada jugador o equipo en esta ronda:
+        </div>
+        <div style="font-size:0.95rem; font-weight:800; background:#fef3c7; color:#92400e; padding:8px 14px; border-radius:12px;">
+          Única = +10 pts | Repetida = +5 pts | Bonus = +5 pts
+        </div>
+      </div>
+
+      <div id="scoringTeamsGrid" class="scoring-teams-grid"></div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; border-top: 2px solid var(--border); padding-top: 16px;">
+        <button class="btn btn-outline" onclick="closeScoringModalOnly()">
+          🔙 Volver al Tablero
+        </button>
+        <button id="btnNextRoundAction" class="btn btn-success btn-xl" onclick="confirmRoundAndAdvance()">
+          ✅ Guardar Puntos y Siguiente Ronda ➡️
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MODAL PARA PEGAR JSON DE JUGADORES DIRECTAMENTE
+       ========================================================== -->
+  <div id="jsonPasteModal" class="modal-overlay">
+    <div class="scoring-modal" style="max-width: 680px;">
+      <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">
+        📋 Importar Jugadores / Equipos en JSON
+      </h2>
+      <p style="font-size: 0.98rem; font-weight: 700; color: var(--text-muted); margin-bottom: 14px;">
+        Pega aquí tu lista en formato JSON (máximo 25 nombres). Se admite tanto una lista simple de nombres como objetos con propiedad <code>"nombre"</code> o <code>"name"</code>:
+      </p>
+      <textarea id="jsonPasteTextarea" rows="8" style="width:100%; padding:14px; border-radius:14px; border:3px solid #cbd5e1; font-family:monospace; font-size:0.98rem; margin-bottom:16px;" placeholder='[
+  "Lucía",
+  "Mateo",
+  "Sofía",
+  "Daniel",
+  "Valeria"
+]'></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button class="btn btn-outline" onclick="closeJsonPasteModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="importPlayersFromText()">✅ Cargar Jugadores</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       MÓDULO 2: CONTENEDOR DE IMPRESIÓN A4 HORIZONTAL (@media print)
+       ========================================================== -->
+  <section id="printableSheet" aria-hidden="true"></section>
+
+  <!-- ==========================================================
+       LÓGICA JAVASCRIPT VANILLA (AUTOCONTENIDA)
+       ========================================================== -->
+  <script>
+    /**************************************************************
+     * 1. CONFIGURACIÓN EDITABLE POR EL DOCENTE Y ESTADO GLOBAL
+     **************************************************************/
+    const MAX_PLAYERS = 25;
+
+    const ALL_LETTERS = [
+      'A','B','C','D','E','F','G','H','I','J','K','L','M',
+      'N','Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z'
+    ];
+
+    // Preajustes de categorías para Educación Primaria
+    const CATEGORY_PRESETS = {
+      default: [
+        'Nombre o Personaje',
+        'Animal',
+        'Objeto o Cosa',
+        'Lugar o Ciudad',
+        'Comida o Alimento',
+        'Verbo o Acción'
+      ],
+      clasico: [
+        'Nombre',
+        'Animal',
+        'Cosa',
+        'Lugar',
+        'Comida',
+        'Color o Fruta'
+      ],
+      lengua: [
+        'Sustantivo Común',
+        'Sustantivo Propio',
+        'Adjetivo (¿Cómo es?)',
+        'Verbo (Acción)',
+        'Palabra Polisémica o Sinónimo'
+      ],
+      ciencias: [
+        'Ser Vivo (Animal/Planta)',
+        'Elemento del Paisaje',
+        'Profesión u Oficio',
+        'Objeto o Máquina',
+        'Alimento Saludable'
+      ]
+    };
+
+    const TEAM_AVATARS = [
+      '🦁', '🚀', '🐬', '🦄', '🦖', '🦉', '🦊', '⚡', '🌈', '🐼',
+      '🐯', '🐙', '🦋', '🐢', '🐝', '🐳', '🦒', '🦘', '🦩', '🦔',
+      '🌟', '🔥', '🍀', '🎨', '🎸'
+    ];
+
+    const TEAM_COLORS = [
+      '#fef3c7', '#e0e7ff', '#cffafe', '#dcfce7', '#f3e8ff',
+      '#fee2e2', '#ffedd5', '#fce7f3', '#ecfccb', '#e0f2fe'
+    ];
+
+    let state = {
+      activeLetters: new Set(['A','B','C','D','E','F','G','H','I','J','L','M','N','O','P','Q','R','S','T','U','V']),
+      categories: [...CATEGORY_PRESETS.default],
+      roundTimeSec: 120,
+      totalRounds: 5,
+      stopMode: 'both',
+      teams: [
+        { id: 1, name: 'Equipo Leones', avatar: '🦁', color: '#fef3c7', score: 0, roundDelta: 0, bonusOrtho: false, bonusSpeed: false },
+        { id: 2, name: 'Equipo Cohetes', avatar: '🚀', color: '#e0e7ff', score: 0, roundDelta: 0, bonusOrtho: false, bonusSpeed: false },
+        { id: 3, name: 'Equipo Delfines', avatar: '🐬', color: '#cffafe', score: 0, roundDelta: 0, bonusOrtho: false, bonusSpeed: false },
+        { id: 4, name: 'Equipo Dinosaurios', avatar: '🦖', color: '#dcfce7', score: 0, roundDelta: 0, bonusOrtho: false, bonusSpeed: false }
+      ],
+      // Estado en partida
+      currentRound: 1,
+      currentLetter: null,
+      usedLetters: [],
+      remainingSec: 120,
+      timerInterval: null,
+      isTimerRunning: false,
+      isPaused: false,
+      isMuted: false
+    };
+
+    /**************************************************************
+     * 2. SINTETIZADOR DE SONIDO (WEB AUDIO API SIN ARCHIVOS MP3)
+     **************************************************************/
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleMute() {
+      state.isMuted = !state.isMuted;
+      const btn = document.getElementById('btnMute');
+      btn.textContent = state.isMuted ? '🔇 Sonido: OFF' : '🔊 Sonido: ON';
+    }
+
+    function playSound(type) {
+      if (state.isMuted) return;
+      initAudio();
+      const now = audioCtx.currentTime;
+
+      if (type === 'tick') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(520, now);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+      else if (type === 'urgentTick') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.09);
+      }
+      else if (type === 'letterChosen') {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+          gain.gain.setValueAtTime(0.2, now + idx * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.07);
+          osc.stop(now + idx * 0.07 + 0.25);
+        });
+      }
+      else if (type === 'stopHorn') {
+        [0, 0.22].forEach((offset, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(i === 0 ? 440 : 349.23, now + offset);
+          gain.gain.setValueAtTime(0.24, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.35);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.35);
+        });
+      }
+      else if (type === 'pointUp') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, now);
+        osc.frequency.setValueAtTime(880, now + 0.07);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.22);
+      }
+      else if (type === 'fanfare') {
+        const melody = [
+          { f: 523.25, t: 0, d: 0.14 },
+          { f: 523.25, t: 0.16, d: 0.14 },
+          { f: 523.25, t: 0.32, d: 0.14 },
+          { f: 659.25, t: 0.48, d: 0.32 },
+          { f: 587.33, t: 0.82, d: 0.20 },
+          { f: 659.25, t: 1.04, d: 0.20 },
+          { f: 783.99, t: 1.26, d: 0.55 }
+        ];
+        melody.forEach(n => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(n.f, now + n.t);
+          gain.gain.setValueAtTime(0.25, now + n.t);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + n.t);
+          osc.stop(now + n.t + n.d);
+        });
+      }
+    }
+
+    /**************************************************************
+     * 3. MÓDULO 1: CONFIGURACIÓN INICIAL (LETRAS, CATEGORÍAS, EQUIPOS/JSON)
+     **************************************************************/
+    function renderAlphabetSetup() {
+      const grid = document.getElementById('alphabetGrid');
+      grid.innerHTML = '';
+      ALL_LETTERS.forEach(letter => {
+        const btn = document.createElement('button');
+        const isActive = state.activeLetters.has(letter);
+        btn.className = 'letter-toggle' + (isActive ? ' active' : '');
+        btn.textContent = letter;
+        btn.onclick = () => {
+          if (state.activeLetters.has(letter)) {
+            if (state.activeLetters.size <= 3) {
+              alert('Debes dejar al menos 3 letras activas para jugar.');
+              return;
+            }
+            state.activeLetters.delete(letter);
+          } else {
+            state.activeLetters.add(letter);
+          }
+          playSound('tick');
+          renderAlphabetSetup();
+        };
+        grid.appendChild(btn);
+      });
+      document.getElementById('activeLettersCount').textContent = state.activeLetters.size;
+    }
+
+    function setLetterPreset(preset) {
+      if (preset === 'all') {
+        state.activeLetters = new Set(ALL_LETTERS);
+      } else if (preset === 'noHard') {
+        const hard = new Set(['Ñ','K','W','X','Y','Z']);
+        state.activeLetters = new Set(ALL_LETTERS.filter(l => !hard.has(l)));
+      } else if (preset === 'easy') {
+        state.activeLetters = new Set(['A','B','C','D','E','F','G','I','L','M','N','O','P','R','S','T','V']);
+      }
+      playSound('tick');
+      renderAlphabetSetup();
+    }
+
+    function renderCategoriesSetup() {
+      const container = document.getElementById('categoryTags');
+      container.innerHTML = '';
+      state.categories.forEach((cat, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'cat-chip';
+        chip.innerHTML = `
+          <span>${idx + 1}. ${escapeHtml(cat)}</span>
+          <button onclick="removeCategory(${idx})" title="Eliminar categoría">✕</button>
+        `;
+        container.appendChild(chip);
+      });
+      document.getElementById('activeCatsCount').textContent = state.categories.length;
+      buildPrintableSheet();
+    }
+
+    function loadCategoryPreset(key) {
+      if (CATEGORY_PRESETS[key]) {
+        state.categories = [...CATEGORY_PRESETS[key]];
+        playSound('tick');
+        renderCategoriesSetup();
+      }
+    }
+
+    function addCategory() {
+      const input = document.getElementById('newCategoryInput');
+      const val = input.value.trim();
+      if (!val) return;
+      if (state.categories.length >= 8) {
+        alert('Se recomienda un máximo de 8 categorías para que la ficha A4 tenga celdas amplias.');
+        return;
+      }
+      state.categories.push(val);
+      input.value = '';
+      playSound('tick');
+      renderCategoriesSetup();
+    }
+
+    function removeCategory(index) {
+      if (state.categories.length <= 2) {
+        alert('Debe haber al menos 2 categorías activas.');
+        return;
+      }
+      state.categories.splice(index, 1);
+      renderCategoriesSetup();
+    }
+
+    // Gestión de Equipos / Jugadores (Hasta 25)
+    function renderTeamsSetup() {
+      const list = document.getElementById('teamsList');
+      list.innerHTML = '';
+      state.teams.forEach((team, idx) => {
+        const row = document.createElement('div');
+        row.className = 'team-row';
+        row.innerHTML = `
+          <span class="team-index-badge">${idx + 1}.</span>
+          <button class="team-avatar-btn" style="background:${team.color}" onclick="cycleTeamAvatar(${idx})" title="Cambiar icono">
+            ${team.avatar}
+          </button>
+          <input type="text" class="input-text" value="${escapeHtml(team.name)}" maxlength="28"
+            oninput="updateTeamName(${idx}, this.value)" style="padding: 8px 12px; font-size:1rem;">
+          ${state.teams.length > 2 ? `<button class="btn btn-outline btn-sm" onclick="removeTeam(${idx})" title="Eliminar">🗑️</button>` : ''}
+        `;
+        list.appendChild(row);
+      });
+      document.getElementById('teamsCountLabel').textContent = state.teams.length;
+    }
+
+    function cycleTeamAvatar(idx) {
+      const currentAvatarIdx = TEAM_AVATARS.indexOf(state.teams[idx].avatar);
+      const nextIdx = (currentAvatarIdx + 1) % TEAM_AVATARS.length;
+      state.teams[idx].avatar = TEAM_AVATARS[nextIdx];
+      state.teams[idx].color = TEAM_COLORS[nextIdx % TEAM_COLORS.length];
+      playSound('tick');
+      renderTeamsSetup();
+    }
+
+    function updateTeamName(idx, newName) {
+      state.teams[idx].name = newName.trim() || `Jugador ${idx + 1}`;
+    }
+
+    function addTeam() {
+      if (state.teams.length >= MAX_PLAYERS) {
+        alert(`El número máximo permitido es de ${MAX_PLAYERS} jugadores o equipos.`);
+        return;
+      }
+      const nextNum = state.teams.length + 1;
+      const avatar = TEAM_AVATARS[(nextNum - 1) % TEAM_AVATARS.length];
+      const color = TEAM_COLORS[(nextNum - 1) % TEAM_COLORS.length];
+      state.teams.push({
+        id: Date.now() + nextNum,
+        name: `Jugador / Equipo ${nextNum}`,
+        avatar,
+        color,
+        score: 0,
+        roundDelta: 0,
+        bonusOrtho: false,
+        bonusSpeed: false
+      });
+      playSound('tick');
+      renderTeamsSetup();
+    }
+
+    function removeTeam(idx) {
+      if (state.teams.length <= 2) return;
+      state.teams.splice(idx, 1);
+      renderTeamsSetup();
+    }
+
+    // Importación de Jugadores por JSON (Archivo o Texto pegado)
+    function parseAndApplyPlayersJson(rawJsonText) {
+      try {
+        const parsed = JSON.parse(rawJsonText);
+        let rawList = [];
+
+        if (Array.isArray(parsed)) {
+          rawList = parsed;
+        } else if (parsed && Array.isArray(parsed.jugadores)) {
+          rawList = parsed.jugadores;
+        } else if (parsed && Array.isArray(parsed.players)) {
+          rawList = parsed.players;
+        } else if (parsed && Array.isArray(parsed.alumnos)) {
+          rawList = parsed.alumnos;
+        } else {
+          alert('El formato JSON debe ser un array de nombres (ej. ["Ana", "Luis"]) o un objeto con la propiedad "jugadores".');
+          return false;
+        }
+
+        const cleanEntries = rawList
+          .map((item, idx) => {
+            if (typeof item === 'string') {
+              return { name: item.trim(), avatar: null };
+            } else if (item && typeof item === 'object') {
+              const nameVal = (item.nombre || item.name || item.jugador || item.alumno || ''). String ? String(item.nombre || item.name || item.jugador || item.alumno || '').trim() : '';
+              const avatarVal = item.avatar || item.icono || null;
+              return { name: nameVal, avatar: avatarVal };
+            }
+            return { name: '', avatar: null };
+          })
+          .filter(entry => entry.name.length > 0);
+
+        if (cleanEntries.length < 2) {
+          alert('El archivo JSON debe incluir al menos 2 nombres válidos.');
+          return false;
+        }
+
+        const limitedEntries = cleanEntries.slice(0, MAX_PLAYERS);
+        if (cleanEntries.length > MAX_PLAYERS) {
+          alert(`Se han detectado ${cleanEntries.length} nombres. Se han importado los primeros ${MAX_PLAYERS} jugadores (máximo permitido).`);
+        }
+
+        state.teams = limitedEntries.map((entry, idx) => ({
+          id: Date.now() + idx,
+          name: entry.name.slice(0, 28),
+          avatar: entry.avatar || TEAM_AVATARS[idx % TEAM_AVATARS.length],
+          color: TEAM_COLORS[idx % TEAM_COLORS.length],
+          score: 0,
+          roundDelta: 0,
+          bonusOrtho: false,
+          bonusSpeed: false
+        }));
+
+        playSound('letterChosen');
+        renderTeamsSetup();
+        return true;
+      } catch (err) {
+        alert('Error al leer el JSON. Verifica que las comillas y los corchetes estén bien cerrados.\n\nEjemplo válido:\n["Lucía", "Mateo", "Sofía"]');
+        return false;
+      }
+    }
+
+    function handleJsonFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        parseAndApplyPlayersJson(e.target.result);
+        event.target.value = '';
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function openJsonPasteModal() {
+      const currentNames = state.teams.map(t => t.name);
+      document.getElementById('jsonPasteTextarea').value = JSON.stringify(currentNames, null, 2);
+      document.getElementById('jsonPasteModal').classList.add('open');
+    }
+
+    function closeJsonPasteModal() {
+      document.getElementById('jsonPasteModal').classList.remove('open');
+    }
+
+    function importPlayersFromText() {
+      const raw = document.getElementById('jsonPasteTextarea').value.trim();
+      if (parseAndApplyPlayersJson(raw)) {
+        closeJsonPasteModal();
+      }
+    }
+
+    function downloadSampleJson() {
+      const sample = [
+        "Alejandro", "Beatriz", "Carlos", "Daniela", "Enzo",
+        "Fátima", "Hugo", "Indira", "Javier", "Lucía",
+        "Mario", "Naiara", "Pablo", "Sofía", "Valeria"
+      ];
+      const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'jugadores-primaria.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /**************************************************************
+     * 4. MÓDULO 2: GENERADOR DE FICHA IMPRIMIBLE A4 HORIZONTAL
+     **************************************************************/
+    function buildPrintableSheet() {
+      const roundsCount = parseInt(document.getElementById('selectRounds')?.value || state.totalRounds, 10);
+      const cats = state.categories;
+      const container = document.getElementById('printableSheet');
+
+      const rowHeightMm = Math.max(11, Math.min(24, Math.floor(122 / roundsCount)));
+
+      let headersHtml = `
+        <th class="col-round">RONDA</th>
+        <th class="col-letter">LETRA</th>
+      `;
+      cats.forEach(c => {
+        headersHtml += `<th>${escapeHtml(c)}</th>`;
+      });
+      headersHtml += `<th class="col-points">PUNTOS RONDA</th>`;
+
+      let rowsHtml = '';
+      for (let r = 1; r <= roundsCount; r++) {
+        rowsHtml += `<tr style="height:${rowHeightMm}mm;">`;
+        rowsHtml += `<td class="col-round">${r}ª</td>`;
+        rowsHtml += `<td class="col-letter"></td>`;
+        cats.forEach(() => {
+          rowsHtml += `<td></td>`;
+        });
+        rowsHtml += `<td class="col-points"></td>`;
+        rowsHtml += `</tr>`;
+      }
+
+      container.innerHTML = `
+        <div class="print-header">
+          <div class="print-title-block">
+            <h1>✏️ ¡ARRIBA EL LÁPIZ!</h1>
+            <p>Educación Primaria • Vocabulario, Agilidad Mental y Ortografía</p>
+          </div>
+          <div class="print-student-fields">
+            <div>Nombre / Equipo: <span class="print-field-line"></span></div>
+            <div>Fecha: <span class="print-field-line short"></span></div>
+          </div>
+        </div>
+
+        <table class="print-table">
+          <thead>
+            <tr>${headersHtml}</tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+
+        <div class="print-footer-bar">
+          <div>
+            <strong>📏 REGLAS DE PUNTUACIÓN:</strong>
+            🌟 Palabra NO repetida = <strong>10 pts</strong> &nbsp;|&nbsp;
+            🤝 Palabra repetida = <strong>5 pts</strong> &nbsp;|&nbsp;
+            ✨ Bonus Ortografía / Velocidad = <strong>+5 pts</strong> &nbsp;|&nbsp;
+            ❌ Vacía = <strong>0 pts</strong>
+          </div>
+          <div class="print-total-box">
+            PUNTUACIÓN TOTAL: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pts
+          </div>
+        </div>
+      `;
+    }
+
+    function printStudentSheet() {
+      buildPrintableSheet();
+      window.print();
+    }
+
+    /**************************************************************
+     * 5. MÓDULO 3: PANTALLA PRINCIPAL DE JUEGO (MODO MDI)
+     **************************************************************/
+    function startGameSession() {
+      state.roundTimeSec = parseInt(document.getElementById('selectTime').value, 10);
+      state.totalRounds = parseInt(document.getElementById('selectRounds').value, 10);
+      state.stopMode = document.getElementById('selectStopMode').value;
+
+      if (state.activeLetters.size < state.totalRounds) {
+        alert(`Has elegido ${state.totalRounds} rondas pero solo hay ${state.activeLetters.size} letras activas. Activa más letras o reduce el número de rondas.`);
+        return;
+      }
+
+      state.currentRound = 1;
+      state.usedLetters = [];
+      state.teams.forEach(t => {
+        t.score = 0;
+        t.roundDelta = 0;
+        t.bonusOrtho = false;
+        t.bonusSpeed = false;
+      });
+
+      buildPrintableSheet();
+      switchView('viewGame');
+      document.getElementById('btnBackSetup').style.display = 'inline-flex';
+      prepareRoundUI();
+    }
+
+    function prepareRoundUI() {
+      stopTimerInterval();
+      state.currentLetter = null;
+      state.remainingSec = state.roundTimeSec;
+      state.isTimerRunning = false;
+      state.isPaused = false;
+
+      document.getElementById('roundBadge').textContent = `Ronda ${state.currentRound} de ${state.totalRounds}`;
+      renderUsedLettersBar();
+
+      const letterDisplay = document.getElementById('bigLetterDisplay');
+      letterDisplay.textContent = '?';
+      letterDisplay.classList.remove('spinning');
+      document.getElementById('currentLetterHint').textContent = '?';
+
+      const btnSpin = document.getElementById('btnSpinLetter');
+      btnSpin.disabled = false;
+      btnSpin.textContent = '🎰 Sortear Letra';
+
+      updateTimerDisplay();
+      document.getElementById('btnPauseResume').disabled = true;
+      document.getElementById('btnPauseResume').textContent = '⏸️ Pausar';
+      document.getElementById('btnResetClock').disabled = true;
+      document.getElementById('btnGiantStop').disabled = true;
+
+      renderLiveCategories();
+      renderLiveRanking();
+    }
+
+    function renderUsedLettersBar() {
+      const container = document.getElementById('usedLettersContainer');
+      if (state.usedLetters.length === 0) {
+        container.innerHTML = `<span style="color:#94a3b8; font-weight:700; font-size:0.9rem;">Ninguna todavía</span>`;
+        return;
+      }
+      container.innerHTML = state.usedLetters
+        .map(l => `<span class="used-letter-pill">${l}</span>`)
+        .join('');
+    }
+
+    function renderLiveCategories() {
+      const grid = document.getElementById('liveCategoriesGrid');
+      grid.innerHTML = state.categories.map((cat, idx) => `
+        <div class="live-cat-card">
+          <div class="live-cat-num">${idx + 1}</div>
+          <div class="live-cat-name">${escapeHtml(cat)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderLiveRanking() {
+      document.getElementById('sidebarTeamsCount').textContent = state.teams.length;
+      const list = document.getElementById('liveRankingList');
+      const sorted = [...state.teams].sort((a, b) => b.score - a.score);
+      list.innerHTML = sorted.map((t, i) => `
+        <div class="rank-card ${i === 0 && t.score > 0 ? 'first-place' : ''}">
+          <div class="rank-left">
+            <span class="rank-pos">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + 'º'}</span>
+            <div class="rank-avatar" style="background:${t.color}">${t.avatar}</div>
+            <span class="rank-name" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</span>
+          </div>
+          <div class="rank-score">${t.score} pts</div>
+        </div>
+      `).join('');
+    }
+
+    function spinLetterRoulette() {
+      const available = Array.from(state.activeLetters).filter(l => !state.usedLetters.includes(l));
+      if (available.length === 0) {
+        alert('Ya han salido todas las letras activas. Reiniciando bolsa de letras.');
+        state.usedLetters = [];
+        return spinLetterRoulette();
+      }
+
+      const btnSpin = document.getElementById('btnSpinLetter');
+      const letterDisplay = document.getElementById('bigLetterDisplay');
+      btnSpin.disabled = true;
+      letterDisplay.classList.add('spinning');
+
+      let ticks = 0;
+      const totalTicks = 22;
+      const spinInterval = setInterval(() => {
+        const randomPreview = available[Math.floor(Math.random() * available.length)];
+        letterDisplay.textContent = randomPreview;
+        playSound('tick');
+        ticks++;
+
+        if (ticks >= totalTicks) {
+          clearInterval(spinInterval);
+          const chosen = available[Math.floor(Math.random() * available.length)];
+          state.currentLetter = chosen;
+          state.usedLetters.push(chosen);
+
+          letterDisplay.classList.remove('spinning');
+          letterDisplay.textContent = chosen;
+          document.getElementById('currentLetterHint').textContent = `"${chosen}"`;
+          btnSpin.textContent = `✅ Letra "${chosen}" en juego`;
+
+          renderUsedLettersBar();
+          playSound('letterChosen');
+
+          setTimeout(() => {
+            startRoundCountdown();
+          }, 450);
+        }
+      }, 75);
+    }
+
+    function startRoundCountdown() {
+      stopTimerInterval();
+      state.isTimerRunning = true;
+      state.isPaused = false;
+
+      document.getElementById('btnPauseResume').disabled = false;
+      document.getElementById('btnResetClock').disabled = false;
+      document.getElementById('btnGiantStop').disabled = (state.stopMode === 'timer');
+
+      state.timerInterval = setInterval(() => {
+        if (state.isPaused) return;
+
+        state.remainingSec--;
+        updateTimerDisplay();
+
+        if (state.remainingSec <= 10 && state.remainingSec > 0) {
+          playSound('urgentTick');
+        }
+
+        if (state.remainingSec <= 0) {
+          triggerStopRound('timeout');
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(state.remainingSec / 60);
+      const secs = state.remainingSec % 60;
+      const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      const digits = document.getElementById('timerDigits');
+      const bar = document.getElementById('timerProgressBar');
+      digits.textContent = formatted;
+
+      const pct = Math.max(0, (state.remainingSec / state.roundTimeSec) * 100);
+      bar.style.width = `${pct}%`;
+
+      digits.classList.remove('warning', 'danger');
+      if (state.remainingSec <= 10) {
+        digits.classList.add('danger');
+        bar.style.backgroundColor = 'var(--danger)';
+      } else if (pct <= 45) {
+        digits.classList.add('warning');
+        bar.style.backgroundColor = 'var(--accent)';
+      } else {
+        bar.style.backgroundColor = 'var(--success)';
+      }
+    }
+
+    function togglePauseTimer() {
+      if (!state.isTimerRunning) return;
+      state.isPaused = !state.isPaused;
+      const btn = document.getElementById('btnPauseResume');
+      btn.textContent = state.isPaused ? '▶️ Reanudar' : '⏸️ Pausar';
+    }
+
+    function resetCurrentRoundTimer() {
+      state.remainingSec = state.roundTimeSec;
+      state.isPaused = false;
+      document.getElementById('btnPauseResume').textContent = '⏸️ Pausar';
+      updateTimerDisplay();
+    }
+
+    function stopTimerInterval() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+      state.isTimerRunning = false;
+    }
+
+    function triggerStopRound(reason) {
+      stopTimerInterval();
+      playSound('stopHorn');
+
+      state.teams.forEach(t => {
+        t.roundDelta = 0;
+        t.bonusOrtho = false;
+        t.bonusSpeed = false;
+      });
+
+      const titleEl = document.getElementById('stopBannerTitle');
+      if (reason === 'timeout') {
+        titleEl.textContent = '⏰ ¡TIEMPO TERMINADO! ¡SOLTAD LOS LÁPICES!';
+      } else {
+        titleEl.textContent = '✋ ¡ARRIBA EL LÁPIZ! ¡MANOS ARRIBA!';
+      }
+
+      document.getElementById('modalLetterBadge').textContent = state.currentLetter || '?';
+      openScoringModal(true);
+    }
+
+    /**************************************************************
+     * 6. MÓDULO 4: RECUENTO DE PUNTOS, GAMIFICACIÓN Y PODIO FINAL
+     **************************************************************/
+    function openScoringModal(isEndOfRound) {
+      renderScoringModalCards();
+      const btnNext = document.getElementById('btnNextRoundAction');
+      if (state.currentRound >= state.totalRounds && isEndOfRound) {
+        btnNext.textContent = '🏆 Ver Podio Final de Ganadores';
+      } else if (isEndOfRound) {
+        btnNext.textContent = `✅ Guardar y Pasar a la Ronda ${state.currentRound + 1} ➡️`;
+      } else {
+        btnNext.textContent = '✅ Guardar Cambios';
+      }
+      btnNext.dataset.advance = isEndOfRound ? 'true' : 'false';
+      document.getElementById('scoringModal').classList.add('open');
+    }
+
+    function closeScoringModalOnly() {
+      document.getElementById('scoringModal').classList.remove('open');
+      renderLiveRanking();
+    }
+
+    function renderScoringModalCards() {
+      const grid = document.getElementById('scoringTeamsGrid');
+      grid.innerHTML = state.teams.map((t, idx) => `
+        <div class="score-team-card">
+          <div class="score-team-header">
+            <div class="score-team-title">
+              <span style="background:${t.color}; width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center;">
+                ${t.avatar}
+              </span>
+              <div>
+                <div>${escapeHtml(t.name)}</div>
+                <div style="font-size:0.84rem; color:var(--text-muted);">Total: <strong>${t.score} pts</strong></div>
+              </div>
+            </div>
+            <div class="round-delta-badge">${t.roundDelta >= 0 ? '+' + t.roundDelta : t.roundDelta} pts</div>
+          </div>
+
+          <div class="quick-points-grid">
+            <button class="btn-pts btn-pts-10" onclick="addTeamPoints(${idx}, 10)">
+              <span style="font-size:1.2rem;">+10</span>
+              <span>Única</span>
+            </button>
+            <button class="btn-pts btn-pts-5" onclick="addTeamPoints(${idx}, 5)">
+              <span style="font-size:1.2rem;">+5</span>
+              <span>Repetida</span>
+            </button>
+            <button class="btn-pts btn-pts-minus" onclick="addTeamPoints(${idx}, -5)">
+              <span style="font-size:1.2rem;">-5</span>
+              <span>Corregir</span>
+            </button>
+          </div>
+
+          <div class="bonus-badges-row">
+            <button class="btn-bonus ${t.bonusOrtho ? 'awarded' : ''}" onclick="toggleTeamBonus(${idx}, 'ortho')">
+              ✨ Ortografía (+5)
+            </button>
+            <button class="btn-bonus ${t.bonusSpeed ? 'awarded' : ''}" onclick="toggleTeamBonus(${idx}, 'speed')">
+              ⚡ Velocidad (+5)
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addTeamPoints(teamIdx, pts) {
+      const team = state.teams[teamIdx];
+      if (team.score + pts < 0) return;
+      team.score += pts;
+      team.roundDelta += pts;
+      playSound('pointUp');
+      renderScoringModalCards();
+      renderLiveRanking();
+    }
+
+    function toggleTeamBonus(teamIdx, type) {
+      const team = state.teams[teamIdx];
+      if (type === 'ortho') {
+        team.bonusOrtho = !team.bonusOrtho;
+        const delta = team.bonusOrtho ? 5 : -5;
+        team.score += delta;
+        team.roundDelta += delta;
+      } else if (type === 'speed') {
+        team.bonusSpeed = !team.bonusSpeed;
+        const delta = team.bonusSpeed ? 5 : -5;
+        team.score += delta;
+        team.roundDelta += delta;
+      }
+      playSound('pointUp');
+      renderScoringModalCards();
+      renderLiveRanking();
+    }
+
+    function confirmRoundAndAdvance() {
+      const shouldAdvance = document.getElementById('btnNextRoundAction').dataset.advance === 'true';
+      document.getElementById('scoringModal').classList.remove('open');
+
+      if (!shouldAdvance) {
+        renderLiveRanking();
+        return;
+      }
+
+      if (state.currentRound >= state.totalRounds) {
+        showFinalPodium();
+      } else {
+        state.currentRound++;
+        prepareRoundUI();
+      }
+    }
+
+    // Podio Final y Animación de Confeti
+    function showFinalPodium() {
+      switchView('viewPodium');
+      playSound('fanfare');
+      launchConfetti();
+
+      const sorted = [...state.teams].sort((a, b) => b.score - a.score);
+      const podiumStage = document.getElementById('podiumStage');
+
+      const second = sorted[1];
+      const first  = sorted[0];
+      const third  = sorted[2];
+
+      let podiumHtml = '';
+      if (second) {
+        podiumHtml += `
+          <div class="podium-pillar podium-2">
+            <div class="podium-medal">🥈 ${second.avatar}</div>
+            <div class="podium-team-name">${escapeHtml(second.name)}</div>
+            <div class="podium-pts">${second.score} pts</div>
+          </div>
+        `;
+      }
+      if (first) {
+        podiumHtml += `
+          <div class="podium-pillar podium-1">
+            <div class="podium-medal">👑 ${first.avatar}</div>
+            <div class="podium-team-name">${escapeHtml(first.name)}</div>
+            <div class="podium-pts">${first.score} pts</div>
+          </div>
+        `;
+      }
+      if (third) {
+        podiumHtml += `
+          <div class="podium-pillar podium-3">
+            <div class="podium-medal">🥉 ${third.avatar}</div>
+            <div class="podium-team-name">${escapeHtml(third.name)}</div>
+            <div class="podium-pts">${third.score} pts</div>
+          </div>
+        `;
+      }
+      podiumStage.innerHTML = podiumHtml;
+
+      const standings = document.getElementById('finalStandingsList');
+      standings.innerHTML = sorted.map((t, i) => `
+        <div class="rank-card ${i === 0 ? 'first-place' : ''}">
+          <div class="rank-left">
+            <span class="rank-pos">${i + 1}º</span>
+            <div class="rank-avatar" style="background:${t.color}">${t.avatar}</div>
+            <span class="rank-name">${escapeHtml(t.name)}</span>
+          </div>
+          <div class="rank-score">${t.score} puntos</div>
+        </div>
+      `).join('');
+    }
+
+    function playAgainSameConfig() {
+      stopConfetti();
+      startGameSession();
+    }
+
+    function returnToSetupScreen() {
+      stopConfetti();
+      stopTimerInterval();
+      document.getElementById('btnBackSetup').style.display = 'none';
+      switchView('viewSetup');
+    }
+
+    function confirmReturnToSetup() {
+      if (confirm('¿Quieres volver a la pantalla de configuración? Se reiniciará la partida actual.')) {
+        returnToSetupScreen();
+      }
+    }
+
+    function exportResultsTxt() {
+      const sorted = [...state.teams].sort((a, b) => b.score - a.score);
+      const dateStr = new Date().toLocaleDateString('es-ES');
+      let content = `=========================================\n`;
+      content += `   RESULTADOS: ¡ARRIBA EL LÁPIZ! (PRIMARIA)\n`;
+      content += `   Fecha: ${dateStr}\n`;
+      content += `   Letras jugadas: ${state.usedLetters.join(', ')}\n`;
+      content += `   Categorías: ${state.categories.join(' | ')}\n`;
+      content += `=========================================\n\n`;
+      sorted.forEach((t, idx) => {
+        content += `${idx + 1}º Puesto: ${t.avatar} ${t.name} — ${t.score} puntos\n`;
+      });
+
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resultados-arriba-el-lapiz-${dateStr.replace(/\//g, '-')}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /**************************************************************
+     * 7. MOTOR DE CONFETI EN CANVAS Y UTILIDADES
+     **************************************************************/
+    let confettiAnimId = null;
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const pieces = Array.from({ length: 110 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 6,
+        h: Math.random() * 14 + 8,
+        color: ['#f59e0b', '#10b981', '#4f46e5', '#ec4899', '#0ea5e9'][Math.floor(Math.random() * 5)],
+        vy: Math.random() * 3 + 2,
+        vx: (Math.random() - 0.5) * 2,
+        angle: Math.random() * 360,
+        vAngle: (Math.random() - 0.5) * 6
+      }));
+
+      function frame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.vy;
+          p.x += p.vx;
+          p.angle += p.vAngle;
+          if (p.y > canvas.height) p.y = -20;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        confettiAnimId = requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    function stopConfetti() {
+      if (confettiAnimId) {
+        cancelAnimationFrame(confettiAnimId);
+        confettiAnimId = null;
+      }
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAlphabetSetup();
+      renderCategoriesSetup();
+      renderTeamsSetup();
+      buildPrintableSheet();
+    });
+  </script>
+</body>
+</html>
