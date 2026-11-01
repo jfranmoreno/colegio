@@ -55,6 +55,25 @@
       background: #94a3b8;
     }
 
+
+
+    .problem-context { font-weight:800; }
+    .problem-data { text-decoration:underline; text-decoration-color:#dc2626; text-decoration-thickness:2px; text-underline-offset:3px; }
+    .problem-question { color:#1d4ed8; text-decoration:underline; text-decoration-color:#1d4ed8; text-decoration-thickness:2px; text-underline-offset:3px; font-weight:800; }
+    .problem-question .problem-data { border-bottom:2px solid #dc2626; }
+    @media print {
+      .problem-data,.problem-question { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+    }
+
+    #stamp-layer { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .stamp-source { border:2px solid #94a3b8; border-radius:8px; min-width:44px; min-height:44px; padding:6px; font-weight:800; cursor:grab; touch-action:none; }
+    .stamp-source[hidden] { display:none; }
+    .board-stamp { position:absolute; display:flex; align-items:center; justify-content:center; border:1px solid #334155; box-sizing:border-box; font:700 13px sans-serif; pointer-events:auto; touch-action:none; cursor:grab; user-select:none; max-width:100%; }
+    .board-stamp.selected { outline:3px solid #6366f1; outline-offset:2px; z-index:2; }
+    .board-stamp:active { cursor:grabbing; }
+    .stamp-ghost { position:fixed; z-index:100; pointer-events:none; padding:10px; border-radius:8px; border:2px solid #6366f1; transform:translate(-50%,-50%); opacity:.85; }
+    #delete-stamp:disabled { opacity:.4; cursor:default; }
+
     /* Fondos del Canvas de Pizarra Digital */
     .canvas-bg-grid {
       background-color: #ffffff;
@@ -94,6 +113,11 @@
       margin-bottom: var(--print-card-mb);
     }
 
+    /* El contenido ocupa el 95 % del ancho útil, también en la vista previa. */
+    .print-page { width:95%; margin-left:auto; margin-right:auto; }
+    .print-header-blank { height:32px; margin-bottom:10px; }
+    .problem-heading-emoji { font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; font-size:15px; margin-right:4px; }
+
     /* ESTILOS DE IMPRESIÓN A4 EXACTOS */
     @media print {
       @page {
@@ -115,10 +139,10 @@
       .print-page {
         page-break-after: always;
         break-after: page;
-        width: 100%;
+        width: 95%;
         box-sizing: border-box;
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
         border: none !important;
         box-shadow: none !important;
       }
@@ -126,11 +150,55 @@
         page-break-after: auto;
         break-after: auto;
       }
+      #print-area .problem-card-print p { font-size:12px; line-height:1.3; }
+      #print-area .problem-card-print .text-xs { font-size:11px; line-height:1.3; }
+      #print-area .problem-card-print .work-box { margin-top:3px; }
       .problem-card-print {
         page-break-inside: avoid;
         break-inside: avoid;
       }
     }
+    .guided-panel { background:#fff; border:1px solid #e2e8f0; border-radius:24px; padding:24px; }
+    .guided-topline,.guided-actions,.guided-tools,.guided-navigation { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .guided-topline,.guided-navigation { justify-content:space-between; }
+    .guided-context { font-size:14px; font-weight:800; color:#475569; }
+    .guided-panel button { min-height:44px; padding:8px 14px; border-radius:12px; background:#f1f5f9; color:#334155; font-weight:700; }
+    .guided-panel button:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
+    .guided-panel button:disabled { opacity:.4; cursor:default; }
+    .guided-heading { margin:20px 0 16px; }
+    .guided-progress { color:#4f46e5; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+    #guided-title { font-size:clamp(24px,3vw,36px); font-weight:800; line-height:1.2; margin-top:6px; }
+    .guided-main,.guided-answer { font-size:clamp(20px,2.2vw,30px); line-height:1.55; font-weight:700; max-width:1100px; }
+    .guided-prompt { font-size:16px; color:#475569; margin-top:12px; }
+    .guided-operation { font-size:clamp(22px,3vw,38px); font-weight:800; color:#4338ca; overflow-wrap:anywhere; }
+    .guided-answer { color:#047857; }
+    .guided-data-grid { display:flex; flex-wrap:wrap; gap:12px; }
+    .guided-data-card { border:1px solid #e2e8f0; padding:16px 20px; border-radius:14px; font-size:clamp(18px,2vw,26px); font-weight:700; }
+    .guided-reference-details { margin-top:14px; font-size:16px; }
+    .guided-reference-details summary { cursor:pointer; color:#475569; font-weight:700; }
+    #guided-reference { padding:12px; background:#f8fafc; border-radius:12px; margin-top:8px; }
+    .guided-canvas-area { position:relative; width:100%; height:clamp(260px,40vh,520px); margin-top:20px; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden; background:white; }
+    #guided-canvas { width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+    .guided-tools { margin-top:12px; }
+    .guided-tools button { font-size:13px; }
+    .guided-tools [aria-pressed="true"] { background:#dbeafe; box-shadow:inset 0 0 0 2px #2563eb; }
+    .guided-tools-label { color:#64748b; font-size:13px; margin-right:6px; }
+    .guided-navigation { margin-top:24px; border-top:1px solid #e2e8f0; padding-top:16px; }
+    #guided-next { background:#4f46e5; color:white; }
+    #guided-step-buttons { display:flex; gap:6px; }
+    .guided-panel .guided-step-dot { padding:8px; min-width:40px; }
+    .guided-step-dot[aria-current="step"] { background:#e0e7ff; color:#3730a3; box-shadow:inset 0 0 0 2px #6366f1; }
+    .guided-footnote { color:#64748b; font-size:12px; margin-top:12px; }
+    .guided-focus-active { overflow:hidden; }
+    .guided-panel.guided-focus { position:fixed; inset:0; z-index:100; border:0; border-radius:0; overflow-y:auto; padding:24px clamp(16px,4vw,64px); }
+    .guided-focus .guided-canvas-area { height:clamp(260px,44vh,650px); }
+    @media(max-width:600px) {
+      .guided-panel { padding:16px; }
+      .guided-navigation { gap:12px; }
+      #guided-step-buttons { order:3; width:100%; justify-content:center; }
+      .guided-tools-label { display:none; }
+    }
+
   </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
@@ -238,22 +306,26 @@
         <button onclick="openMenuScreen()" class="btn-touch bg-white/15 hover:bg-white/25 text-white font-extrabold px-4 py-2.5 rounded-2xl border border-white/20 flex items-center gap-2 text-sm">
           <span>🏁</span> <span>Ver Todos los Niveles</span>
         </button>
+        <button onclick="changeProblemContext()" class="btn-touch bg-sky-600 hover:bg-sky-500 text-white font-extrabold px-5 py-2.5 rounded-2xl">🌍 Cambiar contexto</button>
         <button onclick="generateNewInteractiveProblem(); switchTab('practica');" class="btn-touch bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold px-5 py-2.5 rounded-2xl text-sm md:text-base flex items-center gap-2 shadow">
           <span>🎲</span> <span>Nuevo Problema</span>
         </button>
       </div>
     </div>
 
-    <!-- BARRA DE PESTAÑAS DE LOS 3 MÓDULOS A ANCHO COMPLETO -->
-    <div class="bg-white rounded-3xl p-2 shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <!-- BARRA DE PESTAÑAS DE LOS 4 MÓDULOS A ANCHO COMPLETO -->
+    <div class="bg-white rounded-3xl p-2 shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2">
       <button onclick="switchTab('teoria')" id="tab-teoria" class="btn-touch rounded-2xl font-extrabold text-base md:text-lg py-3.5 px-4 flex items-center justify-center gap-2.5 bg-indigo-600 text-white shadow">
         <span>📘</span> <span>1. ¿Cómo lo resuelvo? (Teoría)</span>
       </button>
+      <button onclick="switchTab('pasos')" id="tab-pasos" class="btn-touch rounded-2xl font-extrabold text-base md:text-lg py-3.5 px-4 flex items-center justify-center gap-2.5 text-slate-600 hover:bg-slate-100">
+        <span>🪜</span> <span>2. Resolución paso a paso</span>
+      </button>
       <button onclick="switchTab('practica')" id="tab-practica" class="btn-touch rounded-2xl font-extrabold text-base md:text-lg py-3.5 px-4 flex items-center justify-center gap-2.5 text-slate-600 hover:bg-slate-100">
-        <span>🎯</span> <span>2. Práctica Interactiva + Pizarra</span>
+        <span>🎯</span> <span>3. Práctica Interactiva + Pizarra</span>
       </button>
       <button onclick="switchTab('pdf')" id="tab-pdf" class="btn-touch rounded-2xl font-extrabold text-base md:text-lg py-3.5 px-4 flex items-center justify-center gap-2.5 text-slate-600 hover:bg-slate-100">
-        <span>🖨️</span> <span>3. Generar Fichas A4 (A-B-C-D)</span>
+        <span>🖨️</span> <span>4. Generar Fichas A4 (A-B-C-D)</span>
       </button>
     </div>
 
@@ -329,6 +401,41 @@
     <!-- =======================================================================
          MÓDULO 2: PARTE PRÁCTICA INTERACTIVA + PIZARRA DIGITAL (MDI) - FULL WIDTH
          ======================================================================= -->
+    <section id="panel-pasos" class="hidden guided-panel" aria-label="Resolución paso a paso">
+      <div class="guided-topline">
+        <span id="guided-context" class="guided-context"></span>
+        <div class="guided-actions">
+          <button type="button" onclick="generateNewInteractiveProblem()">🎲 Nuevo problema</button>
+          <button type="button" id="guided-focus-btn" aria-pressed="false" onclick="setGuidedFocus(!document.getElementById('panel-pasos').classList.contains('guided-focus'))">Vista despejada</button>
+        </div>
+      </div>
+      <div class="guided-heading" aria-live="polite" aria-atomic="true">
+        <span id="guided-progress" class="guided-progress"></span>
+        <h3 id="guided-title"></h3>
+      </div>
+      <div id="guided-content"></div>
+      <details id="guided-reference-details" class="guided-reference-details">
+        <summary>Consultar el problema</summary><div id="guided-reference"></div>
+      </details>
+      <div class="guided-canvas-area">
+        <canvas id="guided-canvas" aria-label="Lienzo para explicar este paso. Dibuja con ratón, lápiz digital o dedo."></canvas>
+      </div>
+      <div class="guided-tools" role="group" aria-label="Herramientas del lienzo">
+        <span class="guided-tools-label">Tu explicación</span>
+        <button type="button" data-guided-tool="#1d4ed8" aria-label="Lápiz azul" aria-pressed="true" onclick="selectGuidedTool('#1d4ed8')">🔵 Azul</button>
+        <button type="button" data-guided-tool="#dc2626" aria-label="Lápiz rojo" aria-pressed="false" onclick="selectGuidedTool('#dc2626')">🔴 Rojo</button>
+        <button type="button" data-guided-tool="eraser" aria-pressed="false" onclick="selectGuidedTool('eraser')">Goma</button>
+        <button type="button" onclick="undoGuidedStroke()">Deshacer</button>
+        <button type="button" onclick="clearGuidedCanvas()">Borrar pizarra</button>
+      </div>
+      <div class="guided-navigation">
+        <button type="button" id="guided-prev" onclick="goGuidedStep(guidedStep-1)">← Anterior</button>
+        <nav id="guided-step-buttons" aria-label="Pasos de resolución"></nav>
+        <button type="button" id="guided-next" onclick="nextGuidedStep()">Siguiente →</button>
+      </div>
+      <p class="guided-footnote">El mismo problema que en la práctica. La pizarra se comparte entre todos los pasos. Conserva tus dibujos al avanzar o retroceder; se limpia al generar otro problema o cambiar de nivel.</p>
+    </section>
+
     <div id="panel-practica" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
         <div class="flex items-center gap-3">
@@ -336,6 +443,7 @@
           <span class="text-sm font-bold text-slate-400">Generador dinámico de problemas</span>
         </div>
         <div class="flex flex-wrap items-center gap-3">
+          <button onclick="changeProblemContext()" class="btn-touch bg-sky-600 hover:bg-sky-500 text-white font-extrabold px-5 py-3 rounded-2xl">🌍 Cambiar contexto</button>
           <button onclick="generateNewInteractiveProblem()" class="btn-touch bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-6 py-3 rounded-2xl shadow flex items-center gap-2 text-base md:text-lg">
             <span>🔄</span> <span>Nuevo Problema</span>
           </button>
@@ -417,9 +525,23 @@
             </div>
           </div>
 
+
+          <div class="bg-slate-700 rounded-xl p-3 text-white space-y-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <label for="stamp-category" class="font-bold text-sm">Sellos rápidos</label>
+              <select id="stamp-category" onchange="filterStamps()" class="bg-white text-slate-900 rounded-lg p-2 font-bold text-sm">
+                <option value="fraction">Barras de fracción</option><option value="money">Euros y céntimos</option><option value="rod">Regletas (1–10)</option>
+              </select>
+              <button id="delete-stamp" onclick="removeSelectedStamp()" disabled class="bg-rose-600 rounded-lg px-3 py-2 text-sm font-bold">Eliminar sello</button>
+            </div>
+            <div id="stamp-palette" class="flex flex-wrap gap-2" aria-label="Paleta de sellos"></div>
+            <p class="text-xs text-slate-200">Pulsa para añadir o arrastra a la pizarra. Mueve los sellos con el dedo o el ratón. Las fracciones comparten un entero de referencia; las regletas, una misma unidad. Dinero didáctico.</p>
+          </div>
+
           <!-- Contenedor del Lienzo (Canvas) -->
           <div id="canvas-wrapper" class="relative w-full h-[320px] md:h-[360px] rounded-2xl overflow-hidden canvas-bg-grid border-2 border-slate-300 shadow-inner">
             <canvas id="whiteboard-canvas" class="w-full h-full cursor-crosshair touch-none block"></canvas>
+            <div id="stamp-layer" aria-label="Sellos de la pizarra"></div>
           </div>
         </div>
 
@@ -671,6 +793,422 @@
     /*************************************************************************
      * 3. BASE DE DATOS ÍNTEGRA DEL DOCUMENTO BASE (1.º A 6.º + TRANSVERSALES)
      *************************************************************************/
+
+    // Cada familia contiene seis situaciones reales. Las sustituciones se aplican
+    // simultáneamente a enunciado, pregunta, datos, operación y respuesta.
+    const SCENARIO_BANK = {};
+    function registerScenarios(group, titles, rows) {
+      SCENARIO_BANK[group] = titles.split('|').map((title, variant) => ({
+        id:group+'-'+variant, group, variant, title, replacements:{}
+      }));
+      for (const [original, alternatives] of rows) {
+        const words=alternatives.split('|');
+        if(words.length!==6) throw Error('Se requieren seis variantes: '+original);
+        SCENARIO_BANK[group].forEach((s,i)=>s.replacements[original]=words[i]);
+      }
+    }
+    registerScenarios('collections','Taller de construcción|Museo de miniaturas|Club de juegos|Taller de mosaicos|Feria de manualidades|Colección de recuerdos',[
+      ['piezas de construcción','piezas de construcción|figuras en miniatura|fichas de juego|teselas de mosaico|cuentas de collar|postales'],
+      ['piezas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['fichas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['pinzas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['pegatinas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['cromos','bloques|modelos|dados|azulejos|abalorios|sellos'],
+      ['canicas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['coches','bloques|modelos|dados|azulejos|abalorios|sellos'],
+      ['lápices','bloques|modelos|dados|azulejos|abalorios|sellos'],
+      ['ceras','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['rojas','rojas|doradas|blancas|negras|verdes|azules'],['azules','azules|plateadas|negras|blancas|rojas|verdes'],
+      ['amarillas','amarillas|doradas|blancas|negras|rojas|azules'],['verdes','verdes|plateadas|negras|blancas|azules|rojas'],
+      ['álbum','cajón|expositor|estuche|armario|joyero|álbum'],
+      ['en una caja','en un cajón|en una vitrina|en una bolsa|en una bandeja|en un estuche|en un álbum'],
+      ['En una caja','En un cajón|En una vitrina|En una bolsa|En una bandeja|En un estuche|En un álbum'],
+      ['En una mesa del aula','En el taller|En la sala del museo|En la mesa de juego|En el estudio|En el puesto de la feria|En la mesa de intercambio'],
+      ['Hay','Hay|Se han reunido|Tenemos|Se han preparado|Contamos con|Se han guardado'],
+      ['Tenemos','Tenemos|Se han reunido|Contamos con|Se han preparado|Hay|Se han guardado'],
+      ['Guardamos','Guardamos|Organizamos|Distribuimos|Colocamos|Empaquetamos|Clasificamos'],
+      ['Ponemos','Añadimos|Incorporamos|Colocamos|Agregamos|Ponemos|Guardamos'],
+      ['Me regalaron','Me regalaron|Conseguí|Gané|Recibí|Me entregaron|Me enviaron'],
+      ['Perdí','Perdí|Retiré|Entregué|Utilicé|Vendí|Regalé'],
+      ['jugando','durante el montaje|al preparar la muestra|durante la partida|al decorar una pared|en la feria|durante un intercambio'],
+      ['me han dado','he conseguido|me han entregado|he ganado|he recibido|he comprado|me han enviado'],
+      ['tenía','tenía|guardaba|conservaba|había reunido|había comprado|había recibido'],
+      ['tiene','tiene|guarda|conserva|ha reunido|ha preparado|ha recibido'],
+      ['dio','dio|entregó|cedió|pasó|regaló|envió'],
+      ['plantas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['cuentos','bloques|modelos|dados|azulejos|abalorios|sellos'],
+      ['mandarinas','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['flores','piezas|figuras|fichas|teselas|cuentas|postales'],
+      ['vaso','cajón|expositor|estuche|marco|bote|sobre'],['vasos','cajones|expositores|estuches|marcos|botes|sobres'],
+      ['rotuladores','bloques|modelos|dados|azulejos|abalorios|sellos'],
+      ['estuche','cajón|expositor|estuche|armario|joyero|álbum']
+    ]);
+    registerScenarios('food','Comedor escolar|Pastelería|Puesto de fruta|Picnic familiar|Merienda del campamento|Cocina del albergue',[
+      ['mandarinas','mandarinas|magdalenas|ciruelas|fresas|galletas|tostadas'],
+      ['galletas','mandarinas|magdalenas|ciruelas|fresas|galletas|tostadas'],
+      ['fresas','mandarinas|magdalenas|ciruelas|fresas|galletas|tostadas'],
+      ['naranjas','mandarinas|magdalenas|ciruelas|fresas|galletas|tostadas'],
+      ['En una bandeja hay','En una bandeja hay|La pastelera ha preparado|En el puesto se ofrecen|La familia ha traído|Para merendar tenemos|En la cocina quedan'],
+      ['En el paquete tenía','Antes del almuerzo tenía|En una caja había guardado|En mi cesta tenía|Para el picnic había traído|En mi mochila llevaba|En mi plato tenía'],
+      ['En el recreo nos comemos','En el almuerzo nos comemos|Durante la merienda nos comemos|Para probarlas nos comemos|En el picnic nos comemos|Al terminar la ruta nos comemos|En el desayuno nos comemos'],
+      ['Después de merendar','Después de comer|Tras la fiesta|Al terminar la degustación|Después del picnic|Al volver de la excursión|Al acabar el desayuno'],
+      ['platos','platos|bandejas|cestas|bolsas|paquetes|fuentes'],
+      ['bolsas','platos|bandejas|cestas|bolsas|paquetes|fuentes'],
+      ['En la mesa','En el comedor|En el mostrador|En el puesto|Sobre el mantel|En el campamento|En la cocina'],
+      ['empanada','empanada|tarta|sandía|tortilla|pizza|quiche']
+    ]);
+    registerScenarios('books','Biblioteca escolar|Ludoteca|Vivero municipal|Banco de alimentos|Almacén deportivo|Tienda de instrumentos',[
+      ['La biblioteca del colegio prestó','La biblioteca del colegio prestó|La ludoteca entregó|El vivero vendió|El banco de alimentos repartió|El almacén envió|La tienda alquiló'],
+      ['la biblioteca','la biblioteca|la ludoteca|el vivero|el banco de alimentos|el almacén|la tienda'],
+      ['La biblioteca presta','La biblioteca presta|La ludoteca entrega|El vivero vende|El banco de alimentos reparte|El almacén envía|La tienda alquila'],
+      ['biblioteca','biblioteca|ludoteca|vivero|banco de alimentos|almacén|tienda'],
+      ['libros informativos','libros informativos|juguetes de madera|plantones de hortalizas|alimentos en conserva|balones de voleibol|instrumentos de percusión'],
+      ['libros de animales','libros de animales|juguetes de madera|plantones de hortalizas|alimentos en conserva|balones de voleibol|instrumentos de percusión'],
+      ['libros','libros|juguetes|plantones|alimentos|balones|instrumentos'],
+      ['libro','libro|juguete|plantón|alimento|balón|instrumento'],
+      ['cuentos','cuentos|juguetes de tela|plantones de árboles|alimentos frescos|balones de fútbol|instrumentos de viento'],
+      ['cómics','cómics|juguetes de plástico|plantones de flores|alimentos congelados|balones de baloncesto|instrumentos de cuerda'],
+      ['prestados','prestados|entregados|vendidos|repartidos|enviados|alquilados'],
+      ['préstamo','préstamo|reparto|venta|reparto|envío|alquiler'],
+      ['presta','presta|entrega|vende|reparte|envía|alquila'],
+      ['prestar','prestar|entregar|vender|repartir|enviar|alquilar'],
+      ['devolver','devolver|recibir|reponer|recuperar|recibir|devolver'],
+      ['leídos','consultados|prestados|vendidos|repartidos|enviados|alquilados'],
+      ['leído','consultado|prestado|vendido|repartido|enviado|alquilado'],
+      ['en las estanterías','en las estanterías|en los armarios|en las bandejas|en los estantes|en las cajas|en los expositores'],
+      ['En una estantería','En la sala de lectura|En el almacén de juegos|En una zona del vivero|En la despensa|En el almacén|En el escaparate'],
+      ['El colegio reúne','La biblioteca reúne|La ludoteca reúne|El vivero reúne|El banco de alimentos reúne|El club reúne|La escuela de música reúne'],
+      ['aulas del colegio','clases|salas de juego|jardines|comedores|equipos|aulas de música']
+    ]);
+    registerScenarios('plants','Huerto escolar|Jardín botánico|Vivero de aromáticas|Parque municipal|Invernadero|Finca frutícola',[
+      ['huerto escolar','huerto escolar|jardín botánico|vivero|parque municipal|invernadero|campo de cultivo'],
+      ['huerto','huerto|jardín botánico|vivero|parque|invernadero|campo'],
+      ['bancal','bancal|parterre|expositor|jardín|semillero|sector'],
+      ['plantas','lechugas|margaritas|lavandas|petunias|tomateras|fresas'],
+      ['lechugas','lechugas rojas|margaritas blancas|lavandas pequeñas|petunias rosas|tomateras tempranas|fresas silvestres'],
+      ['tomateras','lechugas rojas|margaritas blancas|lavandas pequeñas|petunias rosas|tomateras tempranas|fresas silvestres'],
+      ['plantones','plantones de lechuga|plantones de margarita|plantones de lavanda|plantones de petunia|plantones de tomate|plantones de fresa'],
+      ['árboles frutales','árboles frutales|árboles ornamentales|árboles pequeños|árboles urbanos|árboles tropicales|árboles frutales'],
+      ['árboles','árboles frutales|árboles ornamentales|árboles pequeños|árboles urbanos|árboles tropicales|árboles de secano'],
+      ['limoneros','limoneros|magnolios|olivos|plátanos de sombra|mangos|almendros'],
+      ['pinos','limoneros|magnolios|olivos|plátanos de sombra|mangos|almendros'],
+      ['una finca','una huerta|un jardín|un vivero|una zona verde|una plantación|una finca'],
+      ['un parque','una huerta|un jardín|un vivero|una zona verde|una plantación|una finca'],
+      ['invernadero','huerto|jardín|vivero|parque|invernadero|campo']
+    ]);
+    registerScenarios('shopping','Papelería|Tienda de juguetes|Tienda de jardinería|Mercado de artesanía|Tienda de deportes|Librería',[
+      ['un cuento infantil','un cuaderno|un juguete|un macetero|un monedero|un balón|un libro'],
+      ['cuento','cuaderno|juguete|macetero|monedero|balón|libro'],
+      ['cuaderno de trabajo','cuaderno de trabajo|rompecabezas|macetero|monedero|silbato|libro de bolsillo'],
+      ['cuadernos','cuadernos|rompecabezas|maceteros|monederos|silbatos|libros'],
+      ['cuaderno','cuaderno|rompecabezas|macetero|monedero|silbato|libro'],
+      ['estuche sencillo','estuche|coche de juguete|rastrillo|llavero|silbato|marcapáginas'],
+      ['estuche','estuche|coche de juguete|rastrillo|llavero|silbato|marcapáginas'],
+      ['caja de pinturas','caja de piezas|pelota|maceta|pulsera|gorra|revista'],
+      ['carpetas','carpetas|pelotas|macetas|pulseras|gorras|revistas'],
+      ['mochila de montaña','mochila escolar|muñeca articulada|manguera de riego|bolsa artesanal|raqueta de tenis|enciclopedia'],
+      ['mochila','mochila|muñeca|manguera|bolsa|raqueta|enciclopedia'],
+      ['artículo','material escolar|juguete|utensilio de jardinería|objeto artesanal|accesorio deportivo|libro ilustrado'],
+      ['yogures','lápices|globos|bulbos|abalorios|volantes de bádminton|marcapáginas'],
+      ['libros iguales','cuadernos iguales|juguetes iguales|maceteros iguales|monederos iguales|balones iguales|libros iguales'],
+      ['libros','cuadernos|juguetes|maceteros|monederos|balones|libros'],
+      ['libro','cuaderno|juguete|macetero|monedero|balón|libro'],
+      ['Compras','Compras|Eliges|Te llevas|Adquieres|Compras|Reservas'],
+      ['Compramos','Compramos|Elegimos|Nos llevamos|Adquirimos|Compramos|Reservamos'],
+      ['Tenemos','Tenemos|Hemos ahorrado|Disponemos de|Contamos con|Llevamos|Guardamos']
+    ]);
+    registerScenarios('length','Taller de costura|Preparación de regalos|Decoración del teatro|Taller de cometas|Taller de pulseras|Montaje de una exposición',[
+      ['cinta','cinta|cinta de regalo|tela|cuerda|goma elástica|tira de papel'],
+      ['cuerda','cinta de algodón|cinta de regalo|tela|cuerda de cometa|goma elástica|tira de papel'],
+      ['decorar el mural','rematar un disfraz|envolver una caja|decorar el escenario|montar una cometa|hacer una pulsera|decorar un panel'],
+      ['para un trabajo','para un disfraz|para un paquete|para el decorado|para una cometa|para una pulsera|para un panel'],
+      ['bloques','bloques|clips|palillos|cubos|cuentas|tapones'],
+      ['Se cortan','Para coser se cortan|Para envolver regalos se cortan|Para decorar se cortan|Para montar cometas se cortan|Para hacer pulseras se cortan|Para montar la muestra se cortan']
+    ]);
+    registerScenarios('geometry','Huerto escolar|Zona de acampada|Pista deportiva|Parque infantil|Jardín municipal|Patio del museo',[
+      ['huerto rectangular','huerto rectangular|terreno de acampada rectangular|campo de juego rectangular|recinto rectangular|jardín rectangular|patio rectangular'],
+      ['bancal rectangular','bancal rectangular|terreno rectangular|campo rectangular|recinto rectangular|parterre rectangular|patio rectangular'],
+      ['huerto','huerto|campamento|campo de juego|recinto|jardín|patio'],
+      ['bancal','bancal|terreno|campo|recinto|parterre|patio'],
+      ['zona de juegos','zona de cultivo|zona de acampada|pista de entrenamiento|zona de juegos|zona de césped|zona de exposición'],
+      ['patio rectangular','huerto rectangular|campamento rectangular|campo rectangular|parque rectangular|jardín rectangular|patio rectangular'],
+      ['jardín rectangular','estanque rectangular|almacén rectangular|vestuario rectangular|arenero rectangular|estanque rectangular|jardín rectangular'],
+      ['patio','huerto|campamento|campo de juego|parque|jardín|patio'],
+      ['jardín','estanque|almacén|vestuario|arenero|estanque|jardín'],
+      ['plano del colegio','plano del huerto|plano del campamento|plano del polideportivo|plano del parque|plano del jardín|plano del museo'],
+      ['mural rectangular','mural de semillas|mosaico del campamento|panel deportivo|mosaico del parque|panel floral|mural del museo'],
+      ['banderín triangular','banderín triangular|toldo triangular|banderín deportivo triangular|panel triangular|adorno triangular|cartel triangular'],
+      ['banderín','banderín|toldo|banderín deportivo|panel|adorno|cartel']
+    ]);
+    registerScenarios('liquids','Puesto de limonada|Taller de pintura|Cocina escolar|Laboratorio|Taller de jabones|Puesto de zumos',[
+      ['litros de zumo natural','litros de limonada|litros de pintura|litros de caldo|litros de agua destilada|litros de jabón líquido|litros de zumo'],
+      ['litros de zumo','litros de limonada|litros de pintura|litros de caldo|litros de agua destilada|litros de jabón líquido|litros de zumo'],
+      ['litros de agua','litros de limonada|litros de pintura|litros de caldo|litros de agua destilada|litros de jabón líquido|litros de zumo'],
+      ['litros de líquido','litros de limonada|litros de pintura|litros de caldo|litros de agua destilada|litros de jabón líquido|litros de zumo'],
+      ['de zumo','de limonada|de pintura|de caldo|de agua destilada|de jabón líquido|de zumo'],
+      ['botellas','botellas|latas|botellas|botellas|botellas|botellas'],
+      ['vasos','vasos|botes|cuencos|frascos|botes|vasos'],
+      ['recipientes','jarras|botes|ollas|frascos|envases|recipientes'],
+      ['iguales','de igual capacidad|idénticos|de igual capacidad|idénticos|iguales|de igual capacidad'],
+      ['una garrafa','una jarra grande|una lata grande|una olla grande|una garrafa|una garrafa|una jarra grande']
+    ]);
+    registerScenarios('time','Club de lectura|Taller de dibujo|Clase de baile|Club de ajedrez|Taller de cocina|Escuela de música',[
+      ['actividad de lectura','sesión de lectura|clase de dibujo|clase de baile|partida de ajedrez|sesión de cocina|clase de música'],
+      ['taller de música','taller de lectura|taller de dibujo|ensayo de baile|torneo de ajedrez|taller de cocina|ensayo musical'],
+      ['taller','taller de lectura|taller de dibujo|ensayo|torneo|taller de cocina|ensayo musical'],
+      ['clase','sesión|clase|clase|partida|sesión|clase'],
+      ['comienza','comienza|empieza|se inicia|comienza|empieza|se inicia'],
+      ['termina','termina|acaba|finaliza|termina|acaba|finaliza']
+    ]);
+    registerScenarios('travel','Excursión a la granja|Visita al museo|Salida al teatro|Viaje al acuario|Visita al castillo|Salida al parque natural',[
+      ['En el autobús van','En el autobús hacia la granja van|En el autobús del museo viajan|En el autocar del teatro van|En el autobús del acuario viajan|En el autocar del castillo van|En el autobús del parque viajan'],
+      ['Viajan','A la granja viajan|Para visitar el museo viajan|Al teatro van|Para conocer el acuario viajan|Al castillo van|Para visitar el parque viajan'],
+      ['entradas iguales para el teatro','entradas para la granja|entradas para el museo|entradas para el teatro|entradas para el acuario|entradas para el castillo|entradas para el parque'],
+      ['entradas','entradas para la granja|entradas para el museo|entradas para el teatro|entradas para el acuario|entradas para el castillo|entradas para el parque'],
+      ['La Oferta A','El transporte a la granja ofrece dos tarifas. La Oferta A|Para ir al museo hay dos tarifas. La Oferta A|El viaje al teatro tiene dos tarifas. La Oferta A|Para visitar el acuario se comparan dos tarifas. La Oferta A|La visita al castillo ofrece dos tarifas. La Oferta A|Para ir al parque hay dos tarifas. La Oferta A']
+    ]);
+    registerScenarios('routes','Ruta de senderismo|Carrera de orientación|Marcha ciclista|Paseo por la costa|Ruta por el bosque|Recorrido urbano',[
+      ['una excursión','una caminata|una carrera de orientación|una marcha ciclista|un paseo costero|una ruta forestal|un recorrido urbano'],
+      ['una marcha ciclista','una caminata|una carrera de orientación|una marcha ciclista|un paseo costero|una ruta forestal|un recorrido urbano'],
+      ['ruta','ruta de montaña|carrera|ruta ciclista|senda costera|ruta forestal|ruta urbana'],
+      ['camino','sendero|circuito|camino|paseo|sendero del bosque|recorrido'],
+      ['el robot','el excursionista|la corredora|la ciclista|el paseante|la exploradora|el mensajero'],
+      ['una alfombra cuadriculada','un mapa cuadriculado|un plano cuadriculado|un tablero cuadriculado|un croquis cuadriculado|un mapa del bosque cuadriculado|un plano urbano cuadriculado']
+    ]);
+    registerScenarios('patterns','Taller de collares|Decoración de fiestas|Mosaico de colores|Taller de bordado|Diseño de pulseras|Taller de estampación',[
+      ['guirnalda','tira de cuentas|guirnalda|fila de azulejos|cenefa bordada|pulsera|secuencia de sellos'],
+      ['piezas','cuentas|banderitas|teselas|puntadas|piezas|marcas'],
+      ['palillos','bastoncillos|pajitas|varillas|tiras|palillos|listones'],
+      ['Con palillos formamos','Con bastoncillos construimos|Con pajitas montamos|Con varillas diseñamos|Con tiras componemos|Con palillos formamos|Con listones construimos'],
+      ['En el 1.º grupo','En el 1.º collar|En la 1.ª guirnalda|En el 1.º mosaico|En el 1.º bordado|En la 1.ª pulsera|En la 1.ª estampación'],
+      ['grupo','grupo|grupo decorativo|mosaico|bordado|grupo de pulseras|estampación']
+    ]);
+    registerScenarios('sports','Club de fútbol|Escuela de baloncesto|Club de atletismo|Escuela de natación|Club de patinaje|Escuela de tenis',[
+      ['niños','futbolistas|jugadores|atletas|nadadores|patinadores|tenistas'],
+      ['jugadores','futbolistas|jugadores|atletas|nadadores|patinadores|tenistas'],
+      ['alumnos','futbolistas|jugadores|atletas|nadadores|patinadores|tenistas'],
+      ['nuestra clase','nuestro club|nuestro equipo|nuestro grupo|nuestro equipo|nuestro club|nuestro grupo'],
+      ['del colegio','del club|de la escuela deportiva|del club|de la escuela de natación|del club|de la escuela de tenis'],
+      ['taller de teatro','taller de pases|taller de tiro|taller de salto|taller de buceo|taller de giros|taller de saque'],
+      ['torneo de atletismo','torneo de fútbol|torneo de baloncesto|torneo de atletismo|torneo de natación|torneo de patinaje|torneo de tenis'],
+      ['puntuaciones','puntuaciones de tiros a puerta|puntuaciones de lanzamientos|puntuaciones de saltos|puntuaciones de estilo|puntuaciones de giros|puntuaciones de saques'],
+      ['pelotas','balones de fútbol|balones de baloncesto|pelotas de entrenamiento|pelotas acuáticas|pelotas de ejercicios|pelotas de tenis'],
+      ['Una caja','Una caja|Una cesta|Una bolsa|Una red|Una caja|Una cesta'],
+      ['cajas','cajas|cestas|bolsas|redes|cajas|cestas']
+    ]);
+    registerScenarios('recycling','Campaña de tapones|Recogida de corchos|Reciclaje de envases|Recogida de cartones|Campaña de plásticos|Reciclaje de periódicos',[
+      ['tapones','tapones|corchos|envases|cartones|plásticos|periódicos'],
+      ['pilas usadas','botellas usadas|cajas de corcho|latas usadas|cajas de cartón|bolsas de plástico|revistas usadas'],
+      ['papel','tapones|corcho|envases|cartón|plástico|periódicos'],
+      ['recogió','recogió|reunió|recuperó|juntó|recogió|reunió'],
+      ['recoge','recoge|reúne|recupera|junta|recoge|reúne']
+    ]);
+    registerScenarios('choices','Menú escolar|Taller de disfraces|Diseño de tarjetas|Tienda de helados|Taller de bisutería|Estudio de diseño',[
+      ['camisetas','camisetas|camisas|tarjetas|tarrinas|cadenas|láminas'],
+      ['pantalones','pantalones|sombreros|sobres|sabores|colgantes|marcos'],
+      ['primeros platos','primeros platos|tipos de disfraz|tipos de tarjeta|tipos de recipiente|tipos de cadena|tipos de lámina'],
+      ['segundos platos','segundos platos|sombreros|sobres|sabores|colgantes|marcos'],
+      ['En el comedor','En el comedor|En el taller de disfraces|En la imprenta|En la heladería|En el taller de bisutería|En el estudio'],
+      ['tipos de pan','tipos de pan|tipos de traje|tipos de tarjeta|tipos de cono|tipos de cordón|tipos de papel'],
+      ['rellenos saludables','rellenos saludables|sombreros|sobres|sabores de helado|colgantes|marcos'],
+      ['rellenos','rellenos|sombreros|sobres|sabores|colgantes|marcos'],
+      ['bocadillos','bocadillos|conjuntos|diseños|helados|collares|cuadros'],
+      ['bocadillo','bocadillo|conjunto|diseño|helado|collar|cuadro']
+    ]);
+    registerScenarios('survey','Encuesta de frutas|Elección de talleres|Encuesta de juegos|Votación de excursiones|Preferencias de lectura|Elección de mascotas',[
+      ['manzana','manzana|pintura|ajedrez|granja|aventuras|gato'],
+      ['pera','pera|música|dominó|museo|fantasía|perro'],
+      ['fruta','fruta|actividad|opción|excursión|lectura|mascota'],
+      ['sobre deportes','sobre frutas|sobre talleres|sobre juegos|sobre excursiones|sobre libros|sobre mascotas'],
+      ['fútbol','manzana|pintura|ajedrez|granja|aventuras|gato'],
+      ['baloncesto','pera|música|dominó|museo|fantasía|perro']
+    ]);
+    registerScenarios('reading','Club de aventuras|Club de misterio|Club de ciencia ficción|Club de fantasía|Club de viajes|Club de historia',[
+      ['una novela','una novela de aventuras|una novela de misterio|una novela de ciencia ficción|una novela fantástica|una novela de viajes|una novela histórica'],
+      ['un libro','un libro de aventuras|un libro de misterio|un libro de ciencia ficción|un libro de fantasía|un libro de viajes|un libro de historia'],
+      ['libro','libro de aventuras|libro de misterio|libro de ciencia ficción|libro de fantasía|libro de viajes|libro de historia']
+    ]);
+    registerScenarios('signals','Faro del puerto|Riego automático|Avisos de la estación|Taller de robots|Iluminación del escenario|Alarmas del laboratorio',[
+      ['Dos luces automáticas se encienden','Dos luces del faro se encienden|Dos aspersores se activan|Dos avisos sonoros se emiten|Dos robots se ponen en marcha|Dos focos se encienden|Dos alarmas suenan'],
+      ['luces','luces|señales de riego|señales sonoras|señales de robots|señales luminosas|alarmas'],
+      ['se encienden','se encienden|se activan|se emiten|se activan|se encienden|suenan']
+    ]);
+    registerScenarios('coins','Compra de un cuento|Entrada a la piscina|Ahorro para un regalo|Pago de una merienda|Compra de semillas|Entrada a una exposición',[
+      ['Queremos pagar exactamente','Un cuento cuesta|La entrada a la piscina cuesta|Un regalo cuesta|Una merienda cuesta|Un sobre de semillas cuesta|La entrada a la exposición cuesta'],
+      ['utilizando solo monedas de','y queremos pagarlo solo con monedas de|y queremos pagarla solo con monedas de|y queremos pagarlo solo con monedas de|y queremos pagarla solo con monedas de|y queremos pagarlo solo con monedas de|y queremos pagarla solo con monedas de']
+    ]);
+    registerScenarios('water','Riego del huerto|Limpieza del patio|Riego del jardín|Vivero de plantas|Lavado de bicicletas|Limpieza de herramientas',[
+      ['Un depósito del huerto','Un depósito de riego|Un depósito de limpieza|Un depósito del jardín|Un depósito del vivero|Un depósito de lavado|Un depósito del taller'],
+      ['litros de lluvia','litros de lluvia|litros de agua|litros de lluvia|litros de agua|litros de agua|litros de agua'],
+      ['para regar','para regar|para limpiar el patio|para regar flores|para regar plantones|para lavar bicicletas|para limpiar herramientas']
+    ]);
+    registerScenarios('recipe','Arroz para una comida|Sopa para el albergue|Pasta para el campamento|Cuscús para una fiesta|Lentejas para el comedor|Avena para el desayuno',[
+      ['arroz','arroz|sopa|pasta|cuscús|lentejas|avena'],
+      ['vasos','vasos|tazas|tazas|vasos|tazas|tazas']
+    ]);
+    registerScenarios('bottles','Carrera solidaria|Fiesta del colegio|Encuentro deportivo|Excursión escolar|Festival de música|Jornada de voluntariado',[
+      ['Para la carrera escolar llegan','Para la carrera llegan|Para la fiesta se reciben|Para el torneo se compran|Para la excursión se preparan|Para el festival se encargan|Para la jornada se entregan'],
+      ['botellas de agua','botellas de agua|botellas de zumo|botellas de agua|botellas de limonada|botellas de agua|botellas de zumo'],
+      ['Se reparten','Se reparten|Se sirven|Se entregan|Se distribuyen|Se venden|Se consumen']
+    ]);
+    const LEVEL_SCENARIO_GROUPS = {
+      collections:'1-1 1-3 1-4 1-5 1-7 1-8 1-9 1-10 1-11 1-12 1-14 1-15 2-1 2-2 2-5 2-6 2-7 2-8 2-9 2-11 2-12 2-13 2-14 3-3 3-4 3-5 3-6 3-15 4-4 4-5 4-6 4-8 T-1 T-2',
+      food:'1-2 1-6 1-13 2-10 3-20', books:'2-3 3-1 3-8 3-9 3-26 4-1 4-20 5-8 6-4',
+      plants:'3-7 3-10 3-11 3-12 3-16 3-19 4-11 5-5 5-6 6-7',
+      shopping:'1-16 2-18 3-22 4-15 5-2 5-9 5-11 5-17 6-1 6-6',
+      length:'1-17 2-20 4-13 6-2', geometry:'3-24 3-25 4-17 4-18 5-12 5-15 6-9',
+      liquids:'4-9 4-16 5-3 5-4',time:'2-19 3-23',travel:'2-17 3-18 4-14 5-10 5-13 6-11',
+      routes:'1-18 4-12 5-7',patterns:'1-19 2-21 4-19',sports:'2-4 3-17 4-10 6-5 6-8 6-10',
+      recycling:'3-2 4-2 4-3',choices:'2-16 3-13 3-14',survey:'1-20 2-22',reading:'5-16 6-3',signals:'5-14',coins:'T-3',water:'5-1',recipe:'3-21',bottles:'4-7'
+    };
+    // La disposición rectangular dispone de situaciones con filas reales de objetos.
+    registerScenarios('rows','Salón de actos|Huerto en hileras|Exposición de maquetas|Almacén de paquetes|Taller de mosaicos|Sala de ordenadores',[
+      ['En el salón de actos','En el salón de actos|En el huerto|En la exposición|En el almacén|En el taller|En la sala de informática'],
+      ['sillas','sillas|plantas|maquetas|cajas|teselas|pantallas']
+    ]);
+    LEVEL_SCENARIO_GROUPS.rows='2-15';
+    function refine(group,key,values){const words=values.split('|');if(words.length!==6)throw Error(key);SCENARIO_BANK[group].forEach((s,i)=>s.replacements[key]=words[i]);}
+    refine('collections','No tiene solución','No tiene solución|No tiene solución|No tiene solución|No tiene solución|No tiene solución|No tiene solución');
+    refine('collections','antes de jugar','antes del montaje|antes de preparar la muestra|antes de la partida|antes de decorar|antes de la feria|antes del intercambio');
+    refine('collections','Me han dado','He conseguido|Me han entregado|He ganado|He recibido|He comprado|Me han enviado');
+    refine('collections','mesas del aula','mesas del taller|mesas del museo|mesas de juego|mesas del estudio|mesas de la feria|mesas de intercambio');
+    refine('food','platos','bandejas|cajas|cestas|bolsas|paquetes|fuentes');
+    refine('food','en cada uno','en cada recipiente|en cada recipiente|en cada recipiente|en cada recipiente|en cada recipiente|en cada recipiente');
+    refine('choices','camiseta','camiseta|camisa|tarjeta|tarrina|cadena|lámina');
+    refine('choices','pantalón','pantalón|sombrero|sobre|sabor|colgante|marco');
+    refine('choices','un primero y un segundo','un primero y un segundo|un disfraz y un sombrero|una tarjeta y un sobre|un recipiente y un sabor|una cadena y un colgante|una lámina y un marco');
+    refine('choices','menús','menús|conjuntos|diseños|helados|collares|cuadros');
+    refine('patterns','En el 1.º grupo','En el 1.º grupo de cuentas|En el 1.º grupo de banderitas|En el 1.º mosaico|En el 1.º bordado|En el 1.º grupo de piezas|En el 1.º grupo de marcas');
+    refine('patterns','grupo','grupo de cuentas|grupo de banderitas|mosaico|bordado|grupo de piezas|grupo de marcas');
+    refine('patterns','palillos','bastoncillos|tubos|listones|cordones|palillos|lápices');
+    refine('patterns','Con palillos formamos','Con bastoncillos construimos|Con tubos montamos|Con listones diseñamos|Con cordones componemos|Con palillos formamos|Con lápices construimos');
+    refine('books','cada aula','cada clase|cada sala de juego|cada jardín|cada comedor|cada equipo|cada aula de música');
+    refine('books','Cada aula','Cada clase|Cada sala de juego|Cada jardín|Cada comedor|Cada equipo|Cada aula de música');
+    refine('books','en la estantería','en la biblioteca|en la ludoteca|en el vivero|en la despensa|en el almacén|en la tienda');
+    refine('books','informativos','informativos|de madera|de hortalizas|en conserva|de voleibol|de percusión');
+    refine('books','Presta','Presta|Entrega|Vende|Reparte|Envía|Alquila');
+    refine('recycling','pilas','botellas|cajas de corcho|latas|cajas de cartón|bolsas de plástico|revistas');
+    refine('recycling','Recoge','Recoge|Reúne|Recupera|Junta|Recoge|Reúne');
+    refine('recipe','vasos','vasos|cuencos|cuencos|vasos|cuencos|cuencos');
+    refine('liquids','recipientes','recipientes|botes|cuencos|frascos|envases|recipientes');
+    refine('liquids','recipiente','recipiente|bote|cuenco|frasco|envase|recipiente');
+    refine('plants','en el parque','en la huerta|en el jardín|en el vivero|en la zona verde|en la plantación|en la finca');
+    refine('shopping','yogur','lápiz|globo|bulbo|abalorio|volante de bádminton|marcapáginas');
+    refine('shopping','Un cuento infantil','Un cuaderno|Un juguete|Un macetero|Un monedero|Un balón|Un libro');
+    refine('sports','pelotas','pelotas de fútbol|pelotas de baloncesto|pelotas de entrenamiento|pelotas acuáticas|pelotas de ejercicios|pelotas de tenis');
+    refine('sports','caja','caja|cesta|bolsa|red|caja|cesta');
+
+    refine('books','del préstamo','del préstamo|del reparto|de la venta|del reparto|del envío|del alquiler');
+    refine('books','son informativos','son informativos|son de madera|son de hortalizas|están en conserva|son de voleibol|son de percusión');
+    refine('books','Son informativos','Son informativos|Son de madera|Son de hortalizas|Están en conserva|Son de voleibol|Son de percusión');
+    refine('food','bolsas','bandejas|cajas|cestas|bolsas|cestas|fuentes');
+    refine('patterns','pieza','cuenta|banderita|tesela|puntada|pieza|marca');
+    const GROUP_BY_LEVEL = Object.fromEntries(Object.entries(LEVEL_SCENARIO_GROUPS).flatMap(([g,ids])=>ids.split(' ').map(id=>[id,g])));
+    // Cuatro ubicaciones por situación permiten 24 contextos distintos por lote A–D.
+    const CONTEXT_DB = Object.values(SCENARIO_BANK).flat().flatMap(scene=>[
+      {...scene,id:scene.id+'-0'},
+      {...scene,id:scene.id+'-1',title:scene.title+' · barrio Norte'},
+      {...scene,id:scene.id+'-2',title:scene.title+' · barrio Sur'},
+      {...scene,id:scene.id+'-3',title:scene.title+' · barrio Centro'}
+    ]);
+    function shuffled(arr) {
+      const result=[...arr];for(let i=result.length-1;i>0;i--){const j=randInt(0,i);[result[i],result[j]]=[result[j],result[i]];}return result;
+    }
+    function contextsForLevel(level) {return CONTEXT_DB.filter(c=>c.group===GROUP_BY_LEVEL[level.id]);}
+    const contextHistory=new Map();
+    function nextInteractiveContext(level=currentLevelObj) {
+      let history=contextHistory.get(level.id)||[];
+      let available=contextsForLevel(level).filter(c=>!history.includes(c.id) && c.variant!==currentInteractiveProblem?.variant);
+      if(!available.length){history=[];available=contextsForLevel(level).filter(c=>c.variant!==currentInteractiveProblem?.variant);}
+      const context=pick(available);history.push(context.id);contextHistory.set(level.id,history);return context;
+    }
+    function replaceNarrative(text,replacements) {
+      const escape=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const pattern=new RegExp('(?<![\\p{L}\\p{N}])('+Object.keys(replacements).sort((a,b)=>b.length-a.length).map(escape).join('|')+')(?![\\p{L}\\p{N}])','gu');
+      return text.replace(pattern,word=>replacements[word]);
+    }
+    function contextualizeProblem(base,context) {
+      const result={...base,ctx:context.title,contextId:context.id,variant:context.variant};
+      for(const key of ['stmt','q','prompt','datos','op','ans'])result[key]=replaceNarrative(base[key],context.replacements);
+      if(base.levelId==='1-1') {
+        const [a,b]=base.stmt.match(/\d+/g).map(Number);
+        const objects=['bloques','modelos','dados','azulejos','abalorios','sellos'];
+        const object=objects[context.variant];
+        const stories=[
+          `En el taller había ${a} bloques. Una familia dona ${b} bloques más.`,
+          `El museo exponía ${a} modelos y acaba de recibir otros ${b} para su colección.`,
+          `El club disponía de ${a} dados. Para las nuevas partidas compra ${b} más.`,
+          `Una artesana había colocado ${a} azulejos en el mosaico. Hoy añade otros ${b}.`,
+          `Una caja contiene ${a} abalorios. Se incorporan ${b} que estaban en otra bolsa.`,
+          `Una colección tenía ${a} sellos. Tras un regalo, se suman ${b} nuevos.`
+        ];
+        result.stmt=stories[context.variant];result.q=`¿Cuántos ${object} hay ahora en total?`;
+        result.datos=`Al principio: ${a} ${object}. Se añaden: ${b}.`;
+        result.ans=`Ahora hay ${base.numAns} ${object}.`;
+      }
+      if(base.levelId==='3-1') {
+        const [sent,left]=base.stmt.match(/\d+/g).map(Number);
+        const nouns=['libros','juguetes','plantones','alimentos','balones','instrumentos'];
+        const item=nouns[context.variant];
+        const stories=[
+          `La biblioteca prestó ${sent} libros y quedaron ${left} en sus estanterías.`,
+          `Tras entregar ${sent} juguetes a las familias, la ludoteca conserva ${left} en sus armarios.`,
+          `Esta semana se vendieron ${sent} plantones de un lote del vivero; otros ${left} continúan a la venta.`,
+          `De las reservas del banco de alimentos se repartieron ${sent} alimentos. Al terminar, el inventario registra ${left}.`,
+          `Un almacén preparó un envío de ${sent} balones. Después de despacharlo, mantiene ${left} en sus cajas.`,
+          `La tienda tiene ${left} instrumentos disponibles y otros ${sent} alquilados. Antes de los alquileres estaban todos en la tienda.`
+        ];
+        const questions=[
+          '¿Cuántos libros había antes del préstamo?',
+          '¿Con cuántos juguetes contaba la ludoteca antes de entregarlos?',
+          '¿Cuántos plantones formaban el lote al principio?',
+          '¿Cuántos alimentos había en las reservas antes del reparto?',
+          '¿Cuántos balones tenía el almacén antes del envío?',
+          '¿Cuántos instrumentos había en la tienda antes de alquilarlos?'
+        ];
+        result.stmt=stories[context.variant];result.q=questions[context.variant];
+        result.datos=`Salieron: ${sent} ${item}. Quedan: ${left} ${item}.`;
+        result.ans=`Al principio había ${base.numAns} ${item}.`;
+      }
+      result.body=result.stmt;
+      result.stmt=context.title+'. '+result.body;
+      return result;
+    }
+    function changeProblemContext() { generateNewInteractiveProblem(true);switchTab('practica'); }
+    function narrativeFingerprint(p) {
+      // No cuentan el encabezado, los números ni los nombres personales como variedad.
+      return (p.body+' '+p.q).replace(/\d+(?:[.,:/]\d+)*/g,'#').replace(new RegExp(NAMES.join('|'),'g'),'PERSONA').toLowerCase();
+    }
+
+    function escapeHTML(text) {return String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    // Cantidades, unidades y relaciones dadas también cuando se escriben con palabras.
+    const GIVEN_DATA_PATTERN = /\d+(?:[.,]\d+)*(?:\s*[/:×]\s*\d+(?:[.,]\d+)*)*(?:\s*(?:%|€|euros?\b|céntimos?\b|kg\b|cm\b|mm\b|ml\b|m²|cm²|m\b|L\b|litros?\b|metros?\b|minutos?\b|horas?\b))?|\b(?:tres cuartas partes|tres quintas partes|un cuarto|medio litro|la mitad|mitad|el doble|doble|el triple|triple|sexta|quinto|cuarto|tercio|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|rojo|roja|rojos|rojas|azul|azules|amarillo|amarilla|amarillos|amarillas|verde|verdes|blanco|blanca|blancos|blancas|negro|negra|negros|negras|doradas|plateadas|por igual|partes iguales|sin superponerse|sin cuota fija)\b/giu;
+    function formatGivenData(text) {
+      let html='',last=0;
+      for(const match of text.matchAll(GIVEN_DATA_PATTERN)){
+        html+=escapeHTML(text.slice(last,match.index))+'<span class="problem-data">'+escapeHTML(match[0])+'</span>';
+        last=match.index+match[0].length;
+      }
+      return html+escapeHTML(text.slice(last));
+    }
+    function formatQuestion(text) {return '<span class="problem-question">'+formatGivenData(text)+'</span>';}
+    function formatStatement(problem) {
+      const body=problem.body??problem.stmt.replace(problem.ctx+'. ','');
+      return '<strong class="problem-context">'+escapeHTML(problem.ctx)+'.</strong> '+formatGivenData(body);
+    }
+    function formatFullProblem(problem) {return formatStatement(problem)+' '+formatQuestion(problem.q);}
+    function formatPrintableProblem(problem) {
+      const body=problem.body??problem.stmt.replace(problem.ctx+'. ','');
+      return formatGivenData(body)+' '+formatQuestion(problem.q);
+    }
+    function formatOfficialExample(level) {
+      const text=level.officialEx+(level.id==='T-2'?' ¿Es posible esta situación?':level.id==='T-3'?' ¿Qué combinaciones son posibles?':'');
+      const start=text.indexOf('¿');
+      const context=level.exampleContext;
+      const body=start<0?text:text.slice(0,start).trim();
+      return formatStatement({ctx:context,body})+(start<0?'':' '+formatQuestion(text.slice(start)));
+    }
+
     const CURRICULUM_DB = {
       "1": {
         title: "1.º Primaria",
@@ -3540,17 +4078,26 @@
       }
     };
 
+    for(const grade of Object.values(CURRICULUM_DB)) {
+      for(const level of grade.levels) {
+        level.exampleContext=level.gen().ctx;
+        const original=level.gen;level.gen=()=>({...original(),levelId:level.id});
+      }
+    }
+
     /*************************************************************************
      * 4. ESTADO DE LA APLICACIÓN Y NAVEGACIÓN A PANTALLA COMPLETA
      *************************************************************************/
     let currentGradeKey = "3";
     let currentLevelObj = null;
     let currentInteractiveProblem = null;
+    let currentBaseProblem = null;
     let solutionVisible = false;
     let generatedSheetsData = [];
 
     function initApp() {
       initWhiteboard();
+      initStamps();
       renderGradeButtons();
       selectGrade("3", false);
     }
@@ -3635,7 +4182,7 @@
               <span class="text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 truncate max-w-[160px]">${lvl.family}</span>
             </div>
             <h3 class="font-extrabold text-base md:text-lg text-slate-900 leading-snug mb-1.5">${lvl.name}</h3>
-            <p class="text-xs font-medium text-slate-500 line-clamp-2">«${lvl.officialEx}»</p>
+            <p class="text-xs font-medium text-slate-600">${formatOfficialExample(lvl)}</p>
           </div>
           <div class="flex items-center justify-between pt-2 border-t border-slate-200/80 text-xs font-extrabold">
             <span class="text-emerald-700">🔢 ${lvl.range}</span>
@@ -3688,7 +4235,7 @@
 
     function switchTab(tabName) {
       playSound('click');
-      ['teoria', 'practica', 'pdf'].forEach(t => {
+      ['teoria', 'pasos', 'practica', 'pdf'].forEach(t => {
         const btn = document.getElementById('tab-' + t);
         const panel = document.getElementById('panel-' + t);
         if (t === tabName) {
@@ -3699,6 +4246,8 @@
           panel.classList.add('hidden');
         }
       });
+      if(tabName!=='pasos')setGuidedFocus(false);
+      if(tabName==='pasos'){initGuidedCanvas();renderGuidedStep();}
       if (tabName === 'practica') {
         setTimeout(resizeWhiteboardCanvas, 50);
       }
@@ -3719,7 +4268,7 @@
 
       document.getElementById('theory-meaning').textContent = lvl.meaning;
       document.getElementById('theory-strategy').textContent = lvl.strategy;
-      document.getElementById('theory-official-example').textContent = '«' + lvl.officialEx + '»';
+      document.getElementById('theory-official-example').innerHTML = formatOfficialExample(lvl);
 
       document.getElementById('theory-step-1').textContent =
         'Comprendemos qué ocurre en la situación y representamos cómo se conectan las cantidades conocidas con la incógnita.';
@@ -3788,7 +4337,7 @@
       wbCanvas.addEventListener('pointerdown', startDraw);
       wbCanvas.addEventListener('pointermove', moveDraw);
       wbCanvas.addEventListener('pointerup', endDraw);
-      wbCanvas.addEventListener('pointerCancel', endDraw);
+      wbCanvas.addEventListener('pointercancel', endDraw);
       wbCanvas.addEventListener('pointerleave', endDraw);
 
       window.addEventListener('resize', resizeWhiteboardCanvas);
@@ -3827,6 +4376,8 @@
     function startDraw(e) {
       e.preventDefault();
       if (wbCanvas.width === 0) resizeWhiteboardCanvas();
+      selectStamp(null);
+      wbCanvas.setPointerCapture(e.pointerId);
       isDrawing = true;
       const pos = getPointerPos(e);
       wbCtx.beginPath();
@@ -3905,18 +4456,20 @@
 
     function clearWhiteboard(withSound = false) {
       if (withSound) playSound('click');
+      clearStamps();
       if (!wbCanvas || !wbCtx) return;
       wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
     }
 
-    function generateNewInteractiveProblem() {
+    function generateNewInteractiveProblem(keepNumbers = false) {
       if (!currentLevelObj) return;
-      currentInteractiveProblem = currentLevelObj.gen();
+      if (!keepNumbers || !currentBaseProblem) currentBaseProblem = currentLevelObj.gen();
+      currentInteractiveProblem = contextualizeProblem(currentBaseProblem, nextInteractiveContext());
       solutionVisible = false;
 
       document.getElementById('practice-context-tag').textContent = 'Contexto: ' + currentInteractiveProblem.ctx;
-      document.getElementById('practice-statement').textContent = currentInteractiveProblem.stmt;
-      document.getElementById('practice-question').textContent = currentInteractiveProblem.q;
+      document.getElementById('practice-statement').innerHTML = formatStatement(currentInteractiveProblem);
+      document.getElementById('practice-question').innerHTML = formatQuestion(currentInteractiveProblem.q);
       document.getElementById('practice-thinking-prompt').textContent = currentInteractiveProblem.prompt;
 
       document.getElementById('sol-datos').textContent = currentInteractiveProblem.datos;
@@ -3929,6 +4482,7 @@
       document.getElementById('user-feedback-box').classList.add('hidden');
 
       clearWhiteboard(false);
+      resetGuidedProblem();
     }
 
     function toggleSolution() {
@@ -3994,17 +4548,32 @@
 
       adjustPrintBoxHeights(numProblems);
       generatedSheetsData = [];
+      const usedContexts = new Set();
 
       for (let v = 0; v < numVersions; v++) {
         const letter = modelLetters[v];
         const problems = [];
+        const usedVariants = new Map();
+        const usedNarratives = new Set();
 
         for (let i = 0; i < numProblems; i++) {
           let chosenLevel = currentLevelObj;
           if (mode === 'mixed') {
             chosenLevel = gradeData.levels[(i + v * 2) % gradeData.levels.length];
           }
-          const genProb = chosenLevel.gen();
+          const group=GROUP_BY_LEVEL[chosenLevel.id];
+          const variants=usedVariants.get(group)||new Set();
+          const candidates=shuffled(contextsForLevel(chosenLevel)).filter(c=>!usedContexts.has(c.id) && !variants.has(c.variant));
+          const base=chosenLevel.gen();
+          let genProb=null;
+          for(const context of candidates) {
+            const candidate=contextualizeProblem(base,context);
+            if(!usedNarratives.has(narrativeFingerprint(candidate))) {genProb=candidate;break;}
+          }
+          if(!genProb) throw new Error('No hay suficientes enunciados distintos para esta ficha.');
+          usedContexts.add(genProb.contextId);
+          variants.add(genProb.variant);usedVariants.set(group,variants);
+          usedNarratives.add(narrativeFingerprint(genProb));
           problems.push({
             num: i + 1,
             levelName: chosenLevel.name,
@@ -4016,12 +4585,35 @@
           model: letter,
           numProblems,
           courseTitle: gradeData.title,
+          levelLabel: mode === 'current'
+            ? 'Nivel ' + (gradeData.levels.findIndex(level => level.id === currentLevelObj.id) + 1)
+            : 'Niveles variados',
           levelTitle: mode === 'current' ? currentLevelObj.name : 'Práctica Variada del Curso',
           problems
         });
       }
 
       renderPrintableContent();
+    }
+
+    function formatProblemHeading(problem) {
+      const icons = {
+        collections:'🧱|🏛️|🎲|🧩|📿|📮', food:'🍽️|🧁|🍑|🧺|🍪|🍳',
+        books:'📚|🧸|🌱|🥫|⚽|🎺', plants:'🥬|🌼|🌿|🌷|🍅|🍓',
+        shopping:'✏️|🧸|🪴|🧶|🏀|📚', length:'🧵|🎁|🎭|🪁|📿|🖼️',
+        geometry:'🌱|⛺|🏟️|🛝|🌳|🏛️', liquids:'🍋|🎨|🍲|🧪|🧼|🧃',
+        time:'📖|🎨|💃|♟️|🍳|🎵', travel:'🐄|🏛️|🎭|🐠|🏰|🌲',
+        routes:'🥾|🧭|🚲|🌊|🌲|🏙️', patterns:'📿|🎉|🧩|🪡|📿|🎨',
+        sports:'⚽|🏀|🏃|🏊|🛼|🎾', recycling:'♻️|♻️|🥫|📦|♻️|📰',
+        choices:'🍽️|🎭|💌|🍦|📿|🖼️', survey:'🍎|🎨|🎲|🚌|📚|🐾',
+        reading:'📖|🔎|🚀|🐉|🗺️|🏛️', signals:'💡|💧|🚉|🤖|🎭|⏰',
+        coins:'📖|🏊|🎁|🥪|🌱|🖼️', water:'🥬|🧹|🌷|🌱|🚲|🛠️',
+        recipe:'🍚|🍲|🍝|🥣|🍲|🥣', bottles:'🏃|🎉|🏅|🚌|🎵|🤝',
+        rows:'🪑|🌱|🏛️|📦|🧩|💻'
+      };
+      const group=GROUP_BY_LEVEL[problem.levelId];
+      const emoji=(icons[group]||'🧮').split('|')[problem.variant||0]||'🧮';
+      return '<span class="problem-heading-emoji" aria-hidden="true">'+emoji+'</span>PROBLEMA '+problem.num+' · '+escapeHTML(problem.ctx.toLocaleUpperCase('es'));
     }
 
     function renderPrintableContent() {
@@ -4037,9 +4629,9 @@
         const probsHTML = sheet.problems.map(p => `
           <div class="problem-card-print bg-white">
             <div class="flex items-baseline justify-between gap-2 mb-0.5">
-              <span class="font-extrabold text-xs uppercase text-slate-700">Problema ${p.num} <span class="font-semibold text-slate-400">(${p.levelName})</span></span>
+              <span class="font-extrabold text-xs uppercase text-slate-700">${formatProblemHeading(p)}</span>
             </div>
-            <p class="text-sm font-semibold text-slate-900 leading-snug">${p.stmt} <strong class="text-indigo-950 underline decoration-indigo-400">${p.q}</strong></p>
+            <p class="text-sm font-semibold text-slate-900 leading-snug">${formatPrintableProblem(p)}</p>
             <div class="grid grid-cols-12 gap-2 mt-1 text-[11px] font-bold text-slate-600">
               <div class="col-span-4">
                 <span>1. Datos / Esquema:</span>
@@ -4062,16 +4654,13 @@
             <div class="border-b-2 border-slate-800 pb-1.5 mb-2.5 flex items-center justify-between">
               <div>
                 <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Taller de Resolución de Problemas Matemáticos</div>
-                <h2 class="text-base font-extrabold text-slate-900">${sheet.courseTitle} — ${sheet.levelTitle}</h2>
+                <h2 class="text-base font-extrabold text-slate-900">${sheet.courseTitle} — ${sheet.levelLabel} — ${sheet.levelTitle}</h2>
               </div>
               <div class="border-2 border-slate-900 px-3 py-1 rounded-lg font-extrabold text-sm bg-slate-100">
                 MODELO ${sheet.model}
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-4 text-xs font-bold text-slate-700 mb-2.5">
-              <div class="col-span-2 border-b border-slate-400 pb-1">Nombre y Apellidos: _____________________________________________</div>
-              <div class="border-b border-slate-400 pb-1">Fecha: ____ / ____ / 202__</div>
-            </div>
+            <div class="print-header-blank" aria-hidden="true"></div>
             <div>${probsHTML}</div>
           </div>
         `;
@@ -4082,10 +4671,10 @@
         const solProbsHTML = sheet.problems.map(p => `
           <div class="problem-card-print bg-emerald-50/30">
             <div class="text-xs font-extrabold text-slate-800 mb-1">
-              ${p.num}. [ Tipología: ${p.levelName} ]
+              ${formatProblemHeading(p)}
             </div>
             <p class="text-xs font-semibold text-slate-800 mb-1.5">
-              <strong>Enunciado:</strong> ${p.stmt} <strong>Pregunta:</strong> ${p.q}
+              ${formatPrintableProblem(p)}
             </p>
             <div class="grid grid-cols-3 gap-2 text-xs bg-white p-2 rounded border border-slate-300">
               <div><strong class="text-sky-800">Datos:</strong> ${p.datos}</div>
@@ -4100,7 +4689,7 @@
             <div class="border-b-2 border-emerald-800 pb-1.5 mb-2.5 flex items-center justify-between">
               <div>
                 <div class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700">SOLUCIONARIO DEL DOCENTE • RESPUESTAS Y ESTRATEGIAS</div>
-                <h2 class="text-base font-extrabold text-slate-900">${sheet.courseTitle} — ${sheet.levelTitle}</h2>
+                <h2 class="text-base font-extrabold text-slate-900">${sheet.courseTitle} — ${sheet.levelLabel} — ${sheet.levelTitle}</h2>
               </div>
               <div class="bg-emerald-700 text-white px-3 py-1 rounded-lg font-extrabold text-sm">
                 SOLUCIONES MODELO ${sheet.model}
@@ -4122,7 +4711,7 @@
       const totalPages = (target === 'both') ? generatedSheetsData.length * 2 : generatedSheetsData.length;
       const probsCount = generatedSheetsData[0] ? generatedSheetsData[0].numProblems : 5;
       document.getElementById('pdf-pages-summary').textContent =
-        `${generatedSheetsData.length} modelos (${generatedSheetsData.map(s => s.model).join(', ')}) × ${probsCount} problemas • ${totalPages} páginas A4 listas`;
+        `${generatedSheetsData.length} modelos (${generatedSheetsData.map(s => s.model).join(', ')}) × ${probsCount} problemas • ${totalPages} páginas A4 listas • Enunciados distintos en cada ficha · Contextos sin repetir entre modelos`;
     }
 
     function updatePrintViewMode() {
@@ -4137,6 +4726,212 @@
         window.print();
       }, 150);
     }
+
+    const STAMP_TYPES = [
+      ...[1,2,3,4,6,8,10].map(n => ({id:'fraction-'+n, group:'fraction', label:n===1?'1 entero':'1/'+n, value:n, width:240/n, height:38, color:'#bfdbfe'})),
+      ...[1,2,5,10,20,50].map(n => ({id:'cent-'+n, group:'money', label:n+' c', value:n/100, width:44, height:44, color:n<10?'#edb58f':'#fde68a', coin:true})),
+      ...[1,2,5,10,20,50,100,200,500].map(n => ({id:'euro-'+n, group:'money', label:n+' €', value:n, width:n<5?48:88, height:n<5?48:44, color:n<5?'#fde68a':({'5':'#e2e8f0','10':'#fecaca','20':'#bfdbfe','50':'#fed7aa','100':'#bbf7d0','200':'#fef08a','500':'#e9d5ff'})[n], coin:n<5})),
+      ...['#fff','#ef4444','#86efac','#e879f9','#fde047','#15803d','#171717','#92400e','#2563eb','#fb923c'].map((color,i)=>({id:'rod-'+(i+1),group:'rod',label:String(i+1),value:i+1,width:24*(i+1),height:30,color}))
+    ];
+    let selectedStamp = null;
+    let stampDrag = null;
+    function initStamps() {
+      const palette = document.getElementById('stamp-palette');
+      STAMP_TYPES.forEach(type => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'stamp-source';
+        button.dataset.group = type.group;
+        button.dataset.stamp = type.id;
+        button.textContent = type.label;
+        button.title = (type.group==='fraction'?'Barra de fracción ':type.group==='rod'?'Regleta de ':'Euro didáctico ') + type.label + '. Pulsa o arrastra a la pizarra.';
+        button.style.background = type.color;
+        button.style.color = ['#15803d','#171717','#92400e','#2563eb'].includes(type.color)?'white':'#0f172a';
+        button.addEventListener('pointerdown', e => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          button.setPointerCapture(e.pointerId);
+          const ghost = button.cloneNode(true);
+          ghost.className = 'stamp-ghost';
+          ghost.style.cssText += `;left:${e.clientX}px;top:${e.clientY}px`;
+          document.body.appendChild(ghost);
+          stampDrag = {source:button,type,startX:e.clientX,startY:e.clientY,pointerId:e.pointerId,ghost};
+        });
+        button.addEventListener('pointermove', e => {
+          if (!stampDrag || stampDrag.source!==button || e.pointerId!==stampDrag.pointerId) return;
+          stampDrag.ghost.style.left=e.clientX+'px'; stampDrag.ghost.style.top=e.clientY+'px';
+        });
+        button.addEventListener('pointerup', e => {
+          if (!stampDrag || stampDrag.source!==button || e.pointerId!==stampDrag.pointerId) return;
+          const rect=document.getElementById('stamp-layer').getBoundingClientRect();
+          const moved=Math.hypot(e.clientX-stampDrag.startX,e.clientY-stampDrag.startY)>8;
+          if (!moved) addStamp(type);
+          else if(e.clientX>=rect.left && e.clientX<=rect.right && e.clientY>=rect.top && e.clientY<=rect.bottom) addStamp(type,e.clientX-rect.left-type.width/2,e.clientY-rect.top-type.height/2);
+          cancelStampDrag();
+        });
+        button.addEventListener('pointercancel',cancelStampDrag);
+        button.addEventListener('lostpointercapture',cancelStampDrag);
+        button.addEventListener('click',e=>{if(e.detail===0) addStamp(type);});
+        palette.appendChild(button);
+      });
+      filterStamps();
+      new ResizeObserver(clampAllStamps).observe(document.getElementById('canvas-wrapper'));
+    }
+    function cancelStampDrag() { if(stampDrag) stampDrag.ghost.remove(); stampDrag=null; }
+    function filterStamps() {
+      const group=document.getElementById('stamp-category').value;
+      document.querySelectorAll('.stamp-source').forEach(b=>b.hidden=b.dataset.group!==group);
+    }
+    function positionStamp(el,x,y) {
+      const layer=document.getElementById('stamp-layer');
+      el.style.left=Math.max(0,Math.min(x,layer.clientWidth-el.offsetWidth))+'px';
+      el.style.top=Math.max(0,Math.min(y,layer.clientHeight-el.offsetHeight))+'px';
+    }
+    function clampAllStamps() {
+      const layer=document.getElementById('stamp-layer');
+      if (!layer.clientWidth) return;
+      layer.querySelectorAll('.board-stamp').forEach(el=>positionStamp(el,parseFloat(el.style.left)||0,parseFloat(el.style.top)||0));
+    }
+    function selectStamp(el) {
+      if(selectedStamp) selectedStamp.classList.remove('selected');
+      selectedStamp=el;
+      if(el) el.classList.add('selected');
+      document.getElementById('delete-stamp').disabled=!el;
+    }
+    function addStamp(type,x,y) {
+      const layer=document.getElementById('stamp-layer');
+      const el=document.createElement('div');
+      el.className='board-stamp'; el.tabIndex=0; el.setAttribute('role','button');
+      el.setAttribute('aria-label',(type.group==='rod'?'Regleta ':type.group==='fraction'?'Fracción ':'Dinero didáctico ')+type.label+'. Mover con flechas; Suprimir para eliminar.');
+      el.dataset.type=type.id;
+      el.style.cssText=`width:${type.width}px;height:${type.height}px;background:${type.color};color:${['#15803d','#171717','#92400e','#2563eb'].includes(type.color)?'white':'#0f172a'};border-radius:${type.coin?'50%':'5px'}`;
+      if(type.group==='rod') el.style.backgroundImage='repeating-linear-gradient(to right,transparent 0,transparent 23px,#0004 23px,#0004 24px)';
+      el.textContent=type.label;
+      if(type.width<32) el.style.fontSize='10px';
+      layer.appendChild(el);
+      const n=layer.children.length-1;
+      positionStamp(el,x??(16+n*17)%Math.max(24,layer.clientWidth-type.width),y??(20+n*13)%Math.max(24,layer.clientHeight-type.height));
+      selectStamp(el);
+      let drag=null;
+      el.addEventListener('pointerdown',e=>{
+        if(e.button!==0) return;
+        e.preventDefault(); e.stopPropagation(); selectStamp(el); el.focus({preventScroll:true});
+        if(isEraser){removeSelectedStamp();return;}
+        drag={x:e.clientX,y:e.clientY,left:parseFloat(el.style.left),top:parseFloat(el.style.top),id:e.pointerId};
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener('pointermove',e=>{if(drag && e.pointerId===drag.id){e.preventDefault();positionStamp(el,drag.left+e.clientX-drag.x,drag.top+e.clientY-drag.y);}});
+      ['pointerup','pointercancel','lostpointercapture'].forEach(event=>el.addEventListener(event,()=>drag=null));
+      el.addEventListener('focus',()=>selectStamp(el));
+      el.addEventListener('keydown',e=>{
+        if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();selectStamp(el);removeSelectedStamp();}
+        const delta={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+        if(delta){e.preventDefault(); const step=e.shiftKey?1:10; positionStamp(el,parseFloat(el.style.left)+delta[0]*step,parseFloat(el.style.top)+delta[1]*step);}
+      });
+      // Selecting a stamp returns to movement, even if the eraser was previously active.
+      isEraser=false;
+      document.getElementById('btn-eraser').classList.remove('bg-amber-400','text-slate-900');
+      document.getElementById('btn-eraser').classList.add('bg-slate-700','text-white');
+    }
+    function removeSelectedStamp(){if(selectedStamp) selectedStamp.remove();selectStamp(null);}
+    function clearStamps(){document.getElementById('stamp-layer').replaceChildren();selectStamp(null);}
+
+    const GUIDED_STEPS = ['Leemos el problema','Buscamos los datos','Identificamos la pregunta','Representamos y pensamos','Calculamos','Respondemos y comprobamos'];
+    let guidedStep=0;
+    let guidedStrokes=[];
+    let guidedStroke=null;
+    let guidedPointer=null;
+    let guidedColor='#1d4ed8';
+    let guidedEraser=false;
+    let guidedInitialized=false;
+    function resetGuidedProblem(){
+      guidedStep=0;guidedStrokes=[];guidedStroke=null;guidedPointer=null;
+      renderGuidedStep();
+    }
+    function renderGuidedStep(){
+      const p=currentInteractiveProblem;if(!p)return;
+      const content=document.getElementById('guided-content');if(!content)return;
+      document.getElementById('guided-title').textContent=GUIDED_STEPS[guidedStep];
+      document.getElementById('guided-progress').textContent=`Paso ${guidedStep+1} de ${GUIDED_STEPS.length}`;
+      document.getElementById('guided-context').textContent=p.ctx;
+      const cards=p.datos.split(/\s*\|\s*/).map(d=>`<div class="guided-data-card">${formatGivenData(d)}</div>`).join('');
+      const screens=[
+        `<p class="guided-main">${formatFullProblem(p)}</p><p class="guided-prompt">Lee despacio. Cuenta con tus palabras qué sucede.</p>`,
+        `<div class="guided-data-grid">${cards}</div><p class="guided-prompt">¿Qué sabemos? Rodea las cantidades y explica qué representa cada una.</p>`,
+        `<p class="guided-main">${formatQuestion(p.q)}</p><p class="guided-prompt">¿Qué tenemos que averiguar? Explica qué significa la incógnita.</p>`,
+        `<p class="guided-main">${escapeHTML(p.prompt)}</p><p class="guided-prompt">Dibuja los datos y su relación: objetos, barras, grupos, una recta o un esquema. Marca lo que falta con «?».</p>`,
+        `<p class="guided-operation">${escapeHTML(p.op)}</p><p class="guided-prompt">Explica por qué sirve esta operación. Desarrolla los cálculos en el lienzo, paso a paso.</p>`,
+        `<p class="guided-answer">${escapeHTML(p.ans)}</p><p class="guided-prompt">Vuelve a la pregunta: ¿la respuesta contesta lo que se pide? Revisa los datos, el cálculo y las unidades.</p>`
+      ];
+      content.innerHTML=screens[guidedStep];
+      const reference=document.getElementById('guided-reference');
+      reference.innerHTML=formatFullProblem(p);
+      document.getElementById('guided-reference-details').hidden=guidedStep===0;
+      document.getElementById('guided-reference-details').open=false;
+      document.getElementById('guided-prev').disabled=guidedStep===0;
+      document.getElementById('guided-next').textContent=guidedStep===5?'Ir a la práctica →':'Siguiente →';
+      const steps=document.getElementById('guided-step-buttons');
+      steps.innerHTML=GUIDED_STEPS.map((label,i)=>`<button type="button" class="guided-step-dot" aria-label="Paso ${i+1}: ${label}" ${i===guidedStep?'aria-current="step"':''} onclick="goGuidedStep(${i})">${i+1}</button>`).join('');
+      requestAnimationFrame(resizeGuidedCanvas);
+    }
+    function goGuidedStep(index){
+      finishGuidedStroke();guidedStep=Math.max(0,Math.min(5,index));renderGuidedStep();
+    }
+    function nextGuidedStep(){if(guidedStep===5){setGuidedFocus(false);switchTab('practica');}else goGuidedStep(guidedStep+1);}
+    function setGuidedFocus(focus){
+      document.getElementById('panel-pasos').classList.toggle('guided-focus',focus);
+      document.body.classList.toggle('guided-focus-active',focus);
+      const button=document.getElementById('guided-focus-btn');
+      button.textContent=focus?'Salir de vista despejada':'Vista despejada';button.setAttribute('aria-pressed',String(focus));
+      requestAnimationFrame(resizeGuidedCanvas);
+    }
+    function selectGuidedTool(color){
+      guidedEraser=color==='eraser';if(!guidedEraser)guidedColor=color;
+      document.querySelectorAll('[data-guided-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.guidedTool===color)));
+    }
+    function guidedPoint(e){const r=document.getElementById('guided-canvas').getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};}
+    function initGuidedCanvas(){
+      if(guidedInitialized)return;guidedInitialized=true;
+      const canvas=document.getElementById('guided-canvas');
+      canvas.addEventListener('pointerdown',e=>{
+        if(e.button!==0||guidedPointer!==null)return;e.preventDefault();
+        guidedPointer=e.pointerId;canvas.setPointerCapture(e.pointerId);
+        guidedStroke={color:guidedColor,eraser:guidedEraser,points:[guidedPoint(e)]};redrawGuidedCanvas();
+      });
+      canvas.addEventListener('pointermove',e=>{
+        if(e.pointerId!==guidedPointer||!guidedStroke)return;e.preventDefault();
+        guidedStroke.points.push(guidedPoint(e));redrawGuidedCanvas();
+      });
+      ['pointerup','pointercancel','lostpointercapture'].forEach(event=>canvas.addEventListener(event,e=>{if(e.pointerId===guidedPointer)finishGuidedStroke();}));
+      new ResizeObserver(resizeGuidedCanvas).observe(canvas.parentElement);
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')setGuidedFocus(false);});
+    }
+    function finishGuidedStroke(){
+      if(guidedStroke){guidedStrokes.push(guidedStroke);guidedStroke=null;}
+      guidedPointer=null;redrawGuidedCanvas();
+    }
+    function resizeGuidedCanvas(){
+      const canvas=document.getElementById('guided-canvas');if(!canvas||!canvas.clientWidth||!canvas.clientHeight)return;
+      const dpr=window.devicePixelRatio||1;
+      const width=Math.round(canvas.clientWidth*dpr),height=Math.round(canvas.clientHeight*dpr);
+      if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+      redrawGuidedCanvas();
+    }
+    function redrawGuidedCanvas(){
+      const canvas=document.getElementById('guided-canvas');if(!canvas||!canvas.clientWidth)return;
+      const ctx=canvas.getContext('2d'),w=canvas.clientWidth,h=canvas.clientHeight;
+      ctx.setTransform(canvas.width/w,0,0,canvas.height/h,0,0);ctx.clearRect(0,0,w,h);
+      for(const stroke of [...guidedStrokes,...(guidedStroke?[guidedStroke]:[])]){
+        ctx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';ctx.strokeStyle=stroke.color;ctx.fillStyle=stroke.color;
+        ctx.lineWidth=stroke.eraser?26:4;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();
+        const first=stroke.points[0];ctx.moveTo(first.x*w,first.y*h);
+        if(stroke.points.length===1){ctx.arc(first.x*w,first.y*h,ctx.lineWidth/2,0,Math.PI*2);ctx.fill();}
+        else{stroke.points.slice(1).forEach(p=>ctx.lineTo(p.x*w,p.y*h));ctx.stroke();}
+      }
+      ctx.globalCompositeOperation='source-over';
+    }
+    function undoGuidedStroke(){finishGuidedStroke();guidedStrokes.pop();redrawGuidedCanvas();}
+    function clearGuidedCanvas(){guidedStroke=null;guidedPointer=null;guidedStrokes=[];redrawGuidedCanvas();}
 
     window.addEventListener('DOMContentLoaded', initApp);
   </script>
