@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mates Divertidas - 3º Primaria (Cálculo Mental ABN)</title>
+    <title>Cálculo Mental — 3º de Primaria - Progresión LOMLOE-ABN</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Quicksand -->
@@ -33,7 +33,7 @@
         /* Pestañas */
         .tab-active {
             background-color: #ffffff;
-            color: #7c3aed; /* violet-600 */
+            color: #7c3aed;
             border-bottom: 4px solid #7c3aed;
             transform: translateY(2px);
             z-index: 10;
@@ -106,7 +106,7 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            #app-container, #print-modal, #print-toolbar, .no-print {
+            #course-screen, #app-container, #print-modal, #print-toolbar, .no-print {
                 display: none !important;
             }
             #print-view-wrapper {
@@ -142,44 +142,51 @@
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-2 md:p-6 text-slate-800">
-    
-    <!-- CONTENEDOR PRINCIPAL DE LA APP INTERACTIVA -->
-    <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl border-4 border-white overflow-hidden relative">
+
+    <!-- APLICACIÓN DE CÁLCULO MENTAL — TERCERO DE PRIMARIA -->
+    <div id="app-container" class="hidden w-full max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl border-4 border-white overflow-hidden relative">
         
-        <!-- Cabecera -->
-        <header class="text-center p-5 md:p-8 bg-gradient-to-b from-[#8b5cf6] to-[#7c3aed] text-white relative border-b-8 border-violet-800 shadow-sm z-20">
-            <!-- Botón de Sonido Flotante -->
-            <button id="sound-toggle-btn" title="Activar/Desactivar sonido" class="absolute top-4 right-4 bg-violet-700 hover:bg-violet-600 text-white p-3 rounded-2xl border-2 border-violet-400 shadow transition-transform active:scale-95">
+        <!-- Cabecera Dinámica -->
+        <header id="app-header" class="text-center p-5 md:p-8 bg-gradient-to-b from-[#8b5cf6] to-[#7c3aed] text-white relative border-b-8 border-violet-800 shadow-sm z-20 transition-colors">
+<!-- Botón de Sonido Flotante -->
+            <button id="sound-toggle-btn" title="Activar/Desactivar sonido" class="absolute top-4 right-4 bg-black/20 hover:bg-black/30 text-white p-2.5 md:p-3 rounded-2xl border-2 border-white/40 shadow transition-transform active:scale-95">
                 🔊
             </button>
 
-            <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-2 drop-shadow-md">
-                ⚡ Desafíos de Cálculo: 3º Primaria
-            </h1>
-            <p class="text-lg md:text-xl font-semibold text-violet-200 mb-6 drop-shadow">Estrategias ABN y agilidad mental paso a paso</p>
+            <div class="mt-8 sm:mt-2">
+                <span id="course-cycle-badge" class="inline-block bg-white/20 text-white font-bold px-3 py-0.5 rounded-full text-xs uppercase tracking-wider mb-1">
+                    Segundo Ciclo
+                </span>
+                <h1 id="course-main-title" class="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-1 drop-shadow-md">
+                    ⚡ Desafíos de Cálculo: 3º Primaria
+                </h1>
+                <p id="course-main-subtitle" class="text-base md:text-xl font-semibold text-white/90 mb-5 drop-shadow">
+                    Consolidación aditiva y bases multiplicativas
+                </p>
+            </div>
             
             <!-- Selector de Niveles con Botones Anterior/Siguiente -->
             <div class="max-w-2xl mx-auto flex items-center gap-2">
-                <button id="prev-level-btn" title="Nivel anterior" class="bg-violet-700 hover:bg-violet-600 text-white font-bold p-4 rounded-2xl border-b-4 border-violet-900 active:translate-y-1 active:border-b-0 transition-all">
+                <button id="prev-level-btn" title="Nivel anterior" class="bg-black/25 hover:bg-black/35 text-white font-bold p-4 rounded-2xl border-b-4 border-black/40 active:translate-y-1 active:border-b-0 transition-all">
                     ◀
                 </button>
                 <div class="relative flex-1">
-                    <select id="level-selector" aria-label="Seleccionar nivel de cálculo" class="w-full p-4 pr-12 text-lg md:text-xl font-bold text-violet-950 bg-white rounded-2xl shadow-inner border-4 border-violet-300 focus:ring-4 focus:ring-amber-400 focus:outline-none appearance-none cursor-pointer">
+                    <select id="level-selector" aria-label="Seleccionar nivel de cálculo" class="w-full p-4 pr-12 text-base md:text-xl font-bold text-slate-900 bg-white rounded-2xl shadow-inner border-4 border-white/60 focus:ring-4 focus:ring-amber-400 focus:outline-none appearance-none cursor-pointer">
                         <!-- Opciones inyectadas por JS -->
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-violet-600">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-700">
                         <svg class="fill-current h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                     </div>
                 </div>
-                <button id="next-level-btn" title="Siguiente nivel" class="bg-violet-700 hover:bg-violet-600 text-white font-bold p-4 rounded-2xl border-b-4 border-violet-900 active:translate-y-1 active:border-b-0 transition-all">
+                <button id="next-level-btn" title="Siguiente nivel" class="bg-black/25 hover:bg-black/35 text-white font-bold p-4 rounded-2xl border-b-4 border-black/40 active:translate-y-1 active:border-b-0 transition-all">
                     ▶
                 </button>
             </div>
 
             <!-- Botón Principal de Impresión -->
-            <div class="mt-6 flex flex-wrap justify-center gap-4">
+            <div class="mt-5 flex flex-wrap justify-center gap-4">
                 <button id="open-print-modal-btn" class="bg-[#fbbf24] text-amber-950 font-bold py-3 px-8 rounded-2xl shadow-lg border-b-4 border-[#d97706] hover:bg-[#f59e0b] transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-lg active:translate-y-1 active:border-b-0">
-                    🖨️ Crear Fichas Imprimibles / PDF
+                    🖨️ Crear Prueba Escrita / PDF
                 </button>
             </div>
         </header>
@@ -200,7 +207,7 @@
         <!-- PESTAÑA 2: Reto / Juego -->
         <div id="content-reto" class="p-5 md:p-8 min-h-[480px] bg-slate-50 hidden flex-col justify-between">
             
-            <!-- Barra Superior del Reto: Progreso, Modo PRO y Selector Pizarra/Teclado -->
+            <!-- Barra Superior del Reto -->
             <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
                     <div class="bg-violet-100 text-violet-800 font-bold px-4 py-1.5 rounded-full border-2 border-violet-200 shadow-sm text-base md:text-lg">
@@ -237,7 +244,7 @@
                 
                 <!-- Pizarra Principal -->
                 <div id="problem-container" class="bg-white p-6 md:p-10 rounded-[2rem] mb-4 shadow-md border-4 border-slate-200 relative min-h-[160px] md:min-h-[200px] flex flex-col items-center justify-center transition-colors">
-                    <p class="text-4xl sm:text-6xl md:text-7xl font-bold text-slate-700 tracking-tight select-none" id="problem-text">300 + 700</p>
+                    <div class="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-700 tracking-tight select-none" id="problem-text">300 + 700</div>
                     
                     <!-- Pista rápida desplegable -->
                     <button id="toggle-hint-btn" class="mt-4 text-sm font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1 rounded-full transition-colors">
@@ -262,7 +269,7 @@
                     </div>
                 </div>
 
-                <!-- MODO 2: Práctica con Teclado Numérico -->
+                <!-- MODO 2: Práctica con Teclado Numérico (Soporta negativos y decimales) -->
                 <div id="keypad-controls" class="hidden flex-col items-center w-full max-w-lg mx-auto">
                     <div class="flex items-center gap-3 w-full mb-3">
                         <div id="user-input-display" class="flex-1 bg-white border-4 border-violet-400 rounded-2xl py-3 px-6 text-4xl font-bold text-violet-900 min-h-[68px] flex items-center justify-center shadow-inner">
@@ -278,13 +285,14 @@
 
                     <p id="keypad-feedback" class="h-7 font-bold text-lg mb-2"></p>
 
-                    <!-- Botonera numérica táctil -->
-                    <div class="grid grid-cols-6 sm:grid-cols-6 gap-2 w-full">
+                    <!-- Botonera numérica táctil extendida -->
+                    <div class="grid grid-cols-7 gap-2 w-full">
                         <button data-key="1" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">1</button>
                         <button data-key="2" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">2</button>
                         <button data-key="3" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">3</button>
                         <button data-key="4" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">4</button>
                         <button data-key="5" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">5</button>
+                        <button data-key="," class="num-key bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold py-3 rounded-xl text-2xl border-2 border-indigo-300 btn-3d" title="Coma decimal">,</button>
                         <button data-key="DEL" class="num-key bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-3 rounded-xl text-xl border-2 border-amber-300 btn-3d" title="Borrar">⌫</button>
                         
                         <button data-key="6" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">6</button>
@@ -292,6 +300,7 @@
                         <button data-key="8" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">8</button>
                         <button data-key="9" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">9</button>
                         <button data-key="0" class="num-key bg-white hover:bg-violet-50 text-slate-800 font-bold py-3 rounded-xl text-2xl border-2 border-slate-300 btn-3d">0</button>
+                        <button data-key="-" class="num-key bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold py-3 rounded-xl text-xl border-2 border-indigo-300 btn-3d" title="Signo negativo / positivo">±</button>
                         <button data-key="CLR" class="num-key bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold py-3 rounded-xl text-lg border-2 border-rose-300 btn-3d" title="Limpiar todo">C</button>
                     </div>
                 </div>
@@ -315,10 +324,10 @@
             
             <div class="p-5 md:p-7 border-b-4 border-slate-100 bg-violet-50 flex justify-between items-start">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-violet-900 flex items-center gap-3">
-                        🖨️ Generador de Fichas en PDF (3º EP)
+                    <h2 id="print-modal-title" class="text-2xl md:text-3xl font-bold text-violet-900 flex items-center gap-3">
+                        🖨️ Generador de Pruebas en PDF
                     </h2>
-                    <p class="text-slate-600 mt-1 font-semibold text-base md:text-lg">Configura e imprime fichas A4 listas para el aula.</p>
+                    <p class="text-slate-600 mt-1 font-semibold text-base md:text-lg">Configura e imprime pruebas escritas A4 listas para el aula.</p>
                 </div>
                 <button id="close-modal-x" class="text-slate-400 hover:text-slate-700 text-3xl font-bold leading-none px-2">&times;</button>
             </div>
@@ -342,7 +351,7 @@
 
                     <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200">
                         <label for="print-custom-title" class="block font-bold text-blue-950 mb-2 text-base">Título del encabezado:</label>
-                        <input type="text" id="print-custom-title" value="CÁLCULO MENTAL - 3º PRIMARIA" maxlength="40" class="w-full p-3 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-slate-800 font-bold text-base bg-white" placeholder="Ej: Control Cálculo 3ºA">
+                        <input type="text" id="print-custom-title" value="CÁLCULO MENTAL - 3º PRIMARIA" maxlength="45" class="w-full p-3 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-slate-800 font-bold text-base bg-white">
                     </div>
                 </div>
 
@@ -350,7 +359,7 @@
                 <div>
                     <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
                         <h3 class="font-bold text-slate-700 text-lg flex items-center gap-2">
-                            <span>📝</span> <span>Estrategias a incluir (20 operaciones por ficha):</span>
+                            <span>📝</span> <span>Estrategias del curso a incluir (20 operaciones por prueba):</span>
                         </h3>
                         <div class="flex gap-2">
                             <button type="button" id="select-current-level-btn" class="text-xs md:text-sm bg-violet-100 hover:bg-violet-200 text-violet-800 font-bold px-3 py-1.5 rounded-lg border border-violet-300 transition">
@@ -365,7 +374,7 @@
                         </div>
                     </div>
 
-                    <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 bg-white p-4 rounded-2xl border-2 border-slate-200">
+                    <div id="print-levels-container" class="grid grid-cols-1 md:grid-cols-2 gap-2 bg-white p-4 rounded-2xl border-2 border-slate-200 max-h-64 overflow-y-auto">
                         <!-- Checkboxes generados dinámicamente -->
                     </div>
                 </div>
@@ -399,16 +408,15 @@
         </div>
     </div>
 
-    <!-- VISOR DE FICHAS E IMPRESIÓN INTEGRADO (Evita bloqueos de Pop-ups y garantiza carga de estilos) -->
+    <!-- VISOR DE FICHAS E IMPRESIÓN INTEGRADO -->
     <div id="print-view-wrapper" class="hidden fixed inset-0 bg-slate-800/95 z-50 overflow-y-auto">
-        <!-- Barra superior flotante (No se imprime) -->
         <div id="print-toolbar" class="no-print sticky top-0 z-50 bg-slate-900 text-white border-b-4 border-violet-500 px-4 py-3 shadow-xl">
             <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <span class="text-2xl">📄</span>
                     <div>
-                        <h3 class="font-bold text-lg leading-tight">Vista Previa de Impresión / PDF</h3>
-                        <p class="text-xs text-slate-300">En el cuadro de impresión elige <strong>"Guardar como PDF"</strong> o tu impresora.</p>
+                        <h3 class="font-bold text-lg leading-tight">Vista Previa de Prueba Escrita / PDF</h3>
+                        <p class="text-xs text-slate-300">En la ventana de impresión elige <strong>"Guardar como PDF"</strong> o tu impresora.</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -435,7 +443,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- SISTEMA DE AUDIO ---
+            // --- SISTEMA DE AUDIO (Web Audio API) ---
             let soundEnabled = true;
             let audioCtx = null;
 
@@ -460,15 +468,13 @@
                     osc.connect(gain);
                     gain.connect(ctx.destination);
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.22); // C6
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.22);
                     gain.gain.setValueAtTime(0.25, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
                     osc.start();
                     osc.stop(ctx.currentTime + 0.35);
-                } catch (e) {
-                    // Ignorar si el navegador bloquea audio sin interacción
-                }
+                } catch (e) {}
             }
 
             function playErrorSound() {
@@ -492,19 +498,20 @@
 
             // --- UTILIDADES MATEMÁTICAS ---
             const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            const pick = (arr) => arr[rand(0, arr.length - 1)];
+            const fmtDec = (n) => Number(n.toFixed(3)).toString().replace('.', ',');
+            const fmtSigned = (n) => (n >= 0 ? `(+${n})` : `(${n})`);
+            const diceFaces = ['', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
 
-            // Genera 20 problemas evitando repeticiones consecutivas o excesivas
             function buildProblemSet(generatorFn, count = 20) {
                 const results = [];
                 const seen = new Set();
                 let safety = 0;
-
-                while (results.length < count && safety < 300) {
+                while (results.length < count && safety < 350) {
                     safety++;
                     const item = generatorFn();
-                    // Si aún no se ha visto o ya agotamos combinaciones únicas, evitar al menos que sea igual al inmediatamente anterior
-                    if (!seen.has(item.text) || safety > 120) {
-                        if (results.length === 0 || results[results.length - 1].text !== item.text || safety > 250) {
+                    if (!seen.has(item.text) || safety > 140) {
+                        if (results.length === 0 || results[results.length - 1].text !== item.text || safety > 260) {
                             results.push(item);
                             seen.add(item.text);
                         }
@@ -512,8 +519,7 @@
                 }
                 return results;
             }
-            
-            // Generador de Interfaz de Teoría
+
             function buildTheoryUI(title, subtitle, operation, steps, tip) {
                 return `
                     <div class="bg-white rounded-3xl p-6 md:p-10 shadow-sm border-4 border-violet-100">
@@ -529,7 +535,7 @@
 
                         <div class="bg-emerald-50 rounded-3xl p-6 md:p-8 border-4 border-emerald-200 mb-8 relative">
                             <div class="absolute -top-4 left-6 bg-emerald-600 text-white font-bold px-5 py-1.5 rounded-xl shadow-sm text-sm tracking-wider uppercase">PASO A PASO</div>
-                            <h3 class="text-3xl md:text-5xl font-bold text-emerald-950 mb-6 mt-2 text-center tracking-wide bg-white py-4 px-6 rounded-2xl border-2 border-emerald-200 shadow-inner">${operation}</h3>
+                            <h3 class="text-2xl sm:text-3xl md:text-5xl font-bold text-emerald-950 mb-6 mt-2 text-center tracking-wide bg-white py-4 px-6 rounded-2xl border-2 border-emerald-200 shadow-inner">${operation}</h3>
                             <ul class="space-y-3.5">
                                 ${steps.map((s, i) => `
                                     <li class="flex items-center bg-white p-4 rounded-2xl shadow-sm border-2 border-emerald-100">
@@ -542,7 +548,7 @@
                         <div class="bg-amber-50 rounded-3xl p-6 border-4 border-amber-300 flex flex-col sm:flex-row gap-5 items-center">
                             <div class="text-5xl sm:text-6xl select-none">💡</div>
                             <div>
-                                <h3 class="font-bold text-amber-950 text-xl md:text-2xl mb-1">El truco mental</h3>
+                                <h3 class="font-bold text-amber-950 text-xl md:text-2xl mb-1">El truco mental ABN</h3>
                                 <p class="text-lg md:text-xl text-amber-900 font-medium">${tip}</p>
                             </div>
                         </div>
@@ -550,290 +556,159 @@
                 `;
             }
 
-            // --- CURRÍCULO 3º PRIMARIA (10 PASOS ABN) ---
-            const levels = [
-                {
-                    title: "3.1 Amigos del 1000",
-                    subtitle: "Traslación del patrón del 10 y 100 al millar.",
-                    tip: "Si conoces las parejas que suman 10 (1+9, 2+8, 3+7, 4+6, 5+5), ¡ya conoces las que suman 1000!",
-                    practicoHTML: buildTheoryUI(
-                        "Los Amigos del 1000", 
-                        "Centenas completas que se juntan para formar una unidad de millar.",
-                        "300 + 700 = 1000",
-                        [
-                            "Piensa en los amigos del 10: <strong class='text-emerald-700'>3 + 7 = 10</strong>.",
-                            "Como hablamos de centenas, le añadimos dos ceros.",
-                            "¡Es el mismo patrón! <strong class='text-emerald-700'>300 + 700 = 1000</strong>."
-                        ],
-                        "Si conoces las parejas que suman 10 (1+9, 2+8, 4+6...), ¡ya conoces las que suman 1000!"
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let c1 = rand(1, 9) * 100;
-                        if (Math.random() > 0.5) return {text: `${c1} + ${1000-c1}`, answer: 1000};
-                        return {text: `${c1} + _ = 1000`, answer: 1000-c1};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        // PRO: Amigos del 1000 con decenas (ej. 350 + 650) o amigos del 10.000
-                        if (Math.random() > 0.4) {
-                            let n1 = rand(1, 8) * 100 + 50;
-                            return {text: `${n1} + _ = 1000`, answer: 1000 - n1};
-                        } else {
-                            let c1 = rand(1, 9) * 1000;
-                            return {text: `${c1} + _ = 10000`, answer: 10000 - c1};
-                        }
-                    })
-                },
-                {
-                    title: "3.2 Decenas que cruzan la centena",
-                    subtitle: "Traspaso del límite del 100 sumando decenas completas.",
-                    tip: "Tapa los ceros, suma las cifras principales y devuelve el cero al final.",
-                    practicoHTML: buildTheoryUI(
-                        "Cruzar el 100", 
-                        "Sumar decenas redondas grandes que superan la centena.",
-                        "80 + 50 = 130",
-                        [
-                            "Tapa los ceros mentalmente.",
-                            "Suma los números: <strong class='text-emerald-700'>8 + 5 = 13</strong>.",
-                            "Devuelve el cero al resultado: <strong class='text-emerald-700'>130</strong>."
-                        ],
-                        "Sumar decenas es igual que sumar unidades, solo tienes que acordarte de poner el cero al final."
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let d1 = rand(4, 9);
-                        let d2 = rand(11 - d1, 9);
-                        return {text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let d1 = rand(12, 19);
-                        let d2 = rand(5, 14); 
-                        return {text: `${d1*10} + ${d2*10}`, answer: (d1+d2)*10};
-                    })
-                },
-                {
-                    title: "3.3 Sumar centenas a nº 3 cifras",
-                    subtitle: "Acumulación directa en la posición de las centenas.",
-                    tip: "Fíjate solo en la cifra de las centenas. ¡Las decenas y unidades se copian igual!",
-                    practicoHTML: buildTheoryUI(
-                        "Sumar solo al jefe", 
-                        "Al sumar centenas exactas, las decenas y unidades no cambian.",
-                        "342 + 200 = 542",
-                        [
-                            "El 200 tiene ceros en las decenas y unidades.",
-                            "Así que el <strong class='text-emerald-700'>42</strong> del primer número baja directo al resultado.",
-                            "Solo sumamos las centenas: <strong class='text-emerald-700'>3 + 2 = 5</strong>.",
-                            "Juntamos todo: <strong class='text-emerald-700'>542</strong>."
-                        ],
-                        "Enfócate solo en el primer número (las centenas). ¡La cola del número se copia igual!"
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let n = rand(111, 799);
-                        let maxC = 9 - Math.floor(n/100);
-                        let c = rand(1, Math.max(1, maxC)) * 100;
-                        return {text: `${n} + ${c}`, answer: n+c};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let n = rand(215, 899);
-                        let c = rand(3, 9) * 100;
-                        return {text: `${n} + ${c}`, answer: n+c};
-                    })
-                },
-                {
-                    title: "3.4 Restar centenas a nº 3 cifras",
-                    subtitle: "Detracción directa en las centenas.",
-                    tip: "¡Las decenas y unidades están a salvo! Resta las centenas y mantén el final.",
-                    practicoHTML: buildTheoryUI(
-                        "Restar solo al jefe", 
-                        "Igual que la suma, al restar centenas exactas (acabadas en 00), la parte de atrás se salva.",
-                        "857 - 400 = 457",
-                        [
-                            "El 400 tiene ceros, así que al <strong class='text-emerald-700'>57</strong> no le quitamos nada.",
-                            "Restamos solo las centenas: <strong class='text-emerald-700'>800 - 400 = 400</strong>.",
-                            "Pegamos el 57 que guardamos: <strong class='text-emerald-700'>457</strong>."
-                        ],
-                        "¡Las decenas y unidades están a salvo! Pásalas directamente al resultado."
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let n = rand(311, 999);
-                        let maxC = Math.floor(n/100) - 1;
-                        let c = rand(1, maxC > 0 ? maxC : 1) * 100;
-                        return {text: `${n} - ${c}`, answer: n-c};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let n = rand(1115, 1899);
-                        let c = rand(4, 9) * 100;
-                        return {text: `${n} - ${c}`, answer: n-c};
-                    })
-                },
-                {
-                    title: "3.5 Sumar con cambio (2 cifras)",
-                    subtitle: "Suma ABN acumulativa en dos pasos.",
-                    tip: "Rompe el segundo número: suma primero las decenas completas y luego las unidades.",
-                    practicoHTML: buildTheoryUI(
-                        "Suma en dos saltos", 
-                        "Partimos el segundo número para sumarlo poco a poco.",
-                        "47 + 28 = 75",
-                        [
-                            "Descomponemos el 28 en <strong class='text-emerald-700'>20 y 8</strong>.",
-                            "Primer salto (sumamos decenas): <strong class='text-emerald-700'>47 + 20 = 67</strong>.",
-                            "Segundo salto (sumamos unidades): <strong class='text-emerald-700'>67 + 8 = 75</strong>."
-                        ],
-                        "El cerebro suma mejor si le damos la comida en trozos pequeños. ¡Suma primero las decenas!"
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let u1 = rand(3, 9); let d1 = rand(1, 6);
-                        let u2 = rand(11-u1, 9);
-                        let d2 = rand(1, 8-d1);
-                        let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                        return {text: `${n1} + ${n2}`, answer: n1+n2};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let n1 = rand(54, 148); let n2 = rand(26, 89);
-                        if((n1%10)+(n2%10) < 10) n2 += 6;
-                        return {text: `${n1} + ${n2}`, answer: n1+n2};
-                    })
-                },
-                {
-                    title: "3.6 Restar con cambio (2 cifras)",
-                    subtitle: "Resta progresiva por descomposición del sustraendo.",
-                    tip: "Baja primero las decenas completas (de 10 en 10) y al final quita las unidades.",
-                    practicoHTML: buildTheoryUI(
-                        "Resta en dos saltos", 
-                        "Descomponemos el número que restamos para bajar como por una escalera.",
-                        "62 - 27 = 35",
-                        [
-                            "Rompemos el 27 en <strong class='text-emerald-700'>20 y 7</strong>.",
-                            "Bajón grande (decenas): <strong class='text-emerald-700'>62 - 20 = 42</strong>.",
-                            "Bajón pequeño (unidades): <strong class='text-emerald-700'>42 - 7 = 35</strong>."
-                        ],
-                        "Bajar de 10 en 10 primero es mucho más fácil. Deja las unidades sueltas para el final."
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let u1 = rand(1, 7); let d1 = rand(4, 9);
-                        let u2 = rand(u1+1, 9);
-                        let d2 = rand(1, d1-2);
-                        let n1 = d1*10 + u1; let n2 = d2*10 + u2;
-                        return {text: `${n1} - ${n2}`, answer: n1-n2};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let n1 = rand(112, 186);
-                        let u1 = n1 % 10;
-                        let u2 = u1 < 8 ? rand(u1+1, 9) : 9;
-                        let d2 = rand(2, 7);
-                        let n2 = d2*10 + u2;
-                        return {text: `${n1} - ${n2}`, answer: n1-n2};
-                    })
-                },
-                {
-                    title: "3.7 Tablas extendidas ABN",
-                    subtitle: "Se multiplica el dígito y se aplica el patrón posicional.",
-                    tip: "Multiplica los números sin ceros y añade los ceros al final del resultado.",
-                    practicoHTML: buildTheoryUI(
-                        "Multiplicar con ceros", 
-                        "Usamos las tablas normales y luego añadimos los ceros del patrón.",
-                        "4 × 30 = 120",
-                        [
-                            "Olvídate del cero por un momento.",
-                            "Aplica la tabla básica: <strong class='text-emerald-700'>4 × 3 = 12</strong>.",
-                            "Recupera el cero del 30 y ponlo al final: <strong class='text-emerald-700'>120</strong>."
-                        ],
-                        "El cero es como un vagón de tren; apártalo para multiplicar y engánchalo al final."
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let u = rand(2, 9); let d = rand(2, 9)*10;
-                        if (Math.random() > 0.5) return {text: `${u} × ${d}`, answer: u*d};
-                        return {text: `${d} × ${u}`, answer: u*d};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let u = rand(3, 9); let c = rand(2, 9)*100;
-                        if (Math.random() > 0.5) return {text: `${u} × ${c}`, answer: u*c};
-                        return {text: `${c} × ${u}`, answer: u*c};
-                    })
-                },
-                {
-                    title: "3.8 Producto por 1 cifra (Descomp.)",
-                    subtitle: "Aplicación mental de la propiedad distributiva.",
-                    tip: "Multiplica primero las decenas, luego las unidades y suma ambos resultados.",
-                    practicoHTML: buildTheoryUI(
-                        "Multiplicar por partes", 
-                        "Rompemos el número de dos cifras para multiplicar más fácil.",
-                        "14 × 3 = 42",
-                        [
-                            "Rompemos el 14 en <strong class='text-emerald-700'>10 y 4</strong>.",
-                            "Multiplicamos la decena: <strong class='text-emerald-700'>10 × 3 = 30</strong>.",
-                            "Multiplicamos la unidad: <strong class='text-emerald-700'>4 × 3 = 12</strong>.",
-                            "Sumamos los dos resultados: <strong class='text-emerald-700'>30 + 12 = 42</strong>."
-                        ],
-                        "Es la propiedad distributiva: repartimos el trabajo en dos multiplicaciones sencillas."
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        let n = rand(12, 29);
-                        if (n % 10 === 0) n += rand(1, 5);
-                        let u = rand(2, 5);
-                        return {text: `${n} × ${u}`, answer: n*u};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        let n = rand(32, 79);
-                        if (n % 10 === 0) n += rand(2, 7);
-                        let u = rand(3, 8);
-                        return {text: `${n} × ${u}`, answer: n*u};
-                    })
-                },
-                {
-                    title: "3.9 Mitades de centenas y decenas pares",
-                    subtitle: "Asociación directa con la mitad básica.",
-                    tip: "Saca la mitad de cada cifra par por separado y mantén los ceros.",
-                    practicoHTML: buildTheoryUI(
-                        "Partir centenas por la mitad", 
-                        "Si las cifras son pares, su mitad es directa y rapidísima.",
-                        "Mitad de 640 = 320",
-                        [
-                            "Fíjate en las centenas: <strong class='text-emerald-700'>la mitad de 600 es 300</strong>.",
-                            "Fíjate en las decenas: <strong class='text-emerald-700'>la mitad de 40 es 20</strong>.",
-                            "Júntalo todo: <strong class='text-emerald-700'>320</strong>."
-                        ],
-                        "¡Solo tienes que saberte las mitades del 2, 4, 6 y 8!"
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        const pool = [200, 400, 600, 800, 1000, 220, 240, 260, 280, 420, 440, 460, 480, 620, 640, 660, 680, 820, 840, 860, 880];
-                        let n = pool[rand(0, pool.length - 1)];
-                        return {text: `Mitad de ${n}`, answer: n/2};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        const pool = [1200, 1400, 1600, 1800, 2200, 2400, 2600, 2800, 1240, 1460, 1680, 2480, 4620];
-                        let n = pool[rand(0, pool.length - 1)];
-                        return {text: `Mitad de ${n}`, answer: n/2};
-                    })
-                },
-                {
-                    title: "3.10 Mitades de 3 cifras (con centenas impares)",
-                    subtitle: "Descomposición cuando la centena o decena es impar.",
-                    tip: "Recuerda siempre: la mitad de 100 es 50, la de 300 es 150, la de 500 es 250...",
-                    practicoHTML: buildTheoryUI(
-                        "Mitad por descomposición", 
-                        "Partimos el número en centena y decenas para calcular la mitad de cada parte.",
-                        "Mitad de 150 = 75",
-                        [
-                            "Descomponemos el 150 en <strong class='text-emerald-700'>100 y 50</strong>.",
-                            "Mitad de 100 = <strong class='text-emerald-700'>50</strong>.",
-                            "Mitad de 50 = <strong class='text-emerald-700'>25</strong>.",
-                            "Sumamos las dos mitades: <strong class='text-emerald-700'>50 + 25 = 75</strong>."
-                        ],
-                        "Aprende de memoria que la mitad de 100 es 50, y la mitad de 50 es 25. ¡Aparecen muchísimo!"
-                    ),
-                    gen: () => buildProblemSet(() => {
-                        const targets = [120, 140, 150, 160, 180, 250, 300, 320, 340, 350, 360, 450, 500, 520, 540, 550, 650, 700, 750, 900];
-                        let n = targets[rand(0, targets.length - 1)];
-                        return {text: `Mitad de ${n}`, answer: n/2};
-                    }),
-                    genPro: () => buildProblemSet(() => {
-                        const targets = [130, 170, 190, 310, 330, 370, 390, 510, 530, 570, 590, 730, 750, 770, 930, 950, 970, 1100, 1300, 1500];
-                        let n = targets[rand(0, targets.length - 1)];
-                        return {text: `Mitad de ${n}`, answer: n/2};
-                    })
+            // Helper compacto para crear niveles rápidamente
+            function createLevel(title, subtitle, exampleOp, steps, tip, genFn, genProFn) {
+                return {
+                    title,
+                    subtitle,
+                    tip,
+                    practicoHTML: buildTheoryUI(title, subtitle, exampleOp, steps, tip),
+                    gen: () => buildProblemSet(genFn),
+                    genPro: () => buildProblemSet(genProFn || genFn)
+                };
+            }
+
+            // =========================================================================
+            // TERCERO DE PRIMARIA: 20 NIVELES LOMLOE-ABN
+            // =========================================================================
+            const coursesData = {
+                3: {
+                    name: "3º de Primaria",
+                    cycle: "Segundo Ciclo · Representación Mental y Millares",
+                    subtitle: "Consolidación aditiva y bases multiplicativas",
+                    headerClass: "from-[#8b5cf6] to-[#7c3aed] border-violet-900",
+                    levels: [
+                        createLevel("3.1 Amigos del 1.000 con centenas completas", "Parejas de centenas que completan el millar.", "300 + 700 = 1000",
+                            ["Piensa en los amigos del 10: 3 + 7 = 10.", "Como son centenas, añadimos dos ceros a cada uno.", "300 + 700 = 1000."],
+                            "Si dominas los amigos del 10, ya te sabes los amigos del 1.000.",
+                            () => { let c = rand(1, 9)*100; return Math.random() > 0.5 ? {text: `${c} + _ = 1000`, answer: 1000-c} : {text: `${c} + ${1000-c}`, answer: 1000}; },
+                            () => { let c = rand(1, 9)*100; return {text: `1000 - ${c}`, answer: 1000-c}; }
+                        ),
+                        createLevel("3.2 Amigos del 1.000 con decenas completas", "Completar el millar con números acabados en 50 o decenas.", "450 + 550 = 1000",
+                            ["Completa primero la centena siguiente: 450 + 50 = 500.", "De 500 hasta 1.000 faltan otros 500.", "Junta ambos saltos: 500 + 50 = 550."],
+                            "Las centenas deben sumar 900 y los picos de decenas deben sumar 100.",
+                            () => { let c = rand(1, 8)*100 + 50; return {text: `${c} + _ = 1000`, answer: 1000-c}; },
+                            () => { let c = rand(1, 8)*100 + rand(1, 9)*10; return {text: `${c} + _ = 1000`, answer: 1000-c}; }
+                        ),
+                        createLevel("3.3 Sumar 100 a cualquier número", "Incrementar en 1 la cifra de las centenas.", "456 + 100 = 556",
+                            ["El 100 tiene ceros en decenas y unidades.", "El 56 queda intacto.", "Sumamos 1 a las centenas: 4 + 1 = 5 -> 556."],
+                            "Cambia solo la primera cifra (las centenas) y copia el resto igual.",
+                            () => { let n = rand(105, 899); return {text: `${n} + 100`, answer: n+100}; },
+                            () => { let n = rand(901, 999); return {text: `${n} + 100`, answer: n+100}; }
+                        ),
+                        createLevel("3.4 Restar 100 a cualquier número", "Disminuir en 1 la cifra de las centenas.", "892 - 100 = 792",
+                            ["Las decenas y unidades (92) no sufren ningún cambio.", "Restamos 1 centena a las 8 centenas: 8 - 1 = 7.", "Resultado directo: 792."],
+                            "Quita 1 al jefe de las centenas y deja los demás igual.",
+                            () => { let n = rand(205, 999); return {text: `${n} - 100`, answer: n-100}; },
+                            () => { let n = rand(1005, 1199); return {text: `${n} - 100`, answer: n-100}; }
+                        ),
+                        createLevel("3.5 Sumar decenas y centenas a nº de 3 cifras", "Identificar el orden de magnitud que cambia.", "345 + 40 = 385  |  612 + 200 = 812",
+                            ["Observa si sumas decenas (un cero) o centenas (dos ceros).", "Si sumas 40, cambia la decena: 40 + 40 = 80 -> 385.", "Si sumas 200, cambia la centena: 600 + 200 = 800 -> 812."],
+                            "Cada oveja con su pareja: decenas con decenas y centenas con centenas.",
+                            () => { if (Math.random() > 0.5) { let c = rand(1, 8)*100, d = rand(1, 5)*10, u = rand(1, 9), addD = rand(1, 9 - d/10)*10; return {text: `${c+d+u} + ${addD}`, answer: c+d+u+addD}; } let c = rand(1, 6)*100, du = rand(11, 99), addC = rand(1, 9 - c/100)*100; return {text: `${c+du} + ${addC}`, answer: c+du+addC}; },
+                            () => { let n = rand(250, 790), add = pick([50, 60, 70, 300, 400]); return {text: `${n} + ${add}`, answer: n+add}; }
+                        ),
+                        createLevel("3.6 Restar decenas y centenas a nº de 3 cifras", "Detraer directamente en la posición correspondiente.", "584 - 30 = 554  |  945 - 500 = 445",
+                            ["Fíjate bien en cuántos ceros tiene el número que restas.", "En 584 - 30 restamos a las decenas: 80 - 30 = 50 -> 554.", "En 945 - 500 restamos a las centenas: 900 - 500 = 400 -> 445."],
+                            "Localiza la cifra del mismo valor posicional y réstale a ella.",
+                            () => { if (Math.random() > 0.5) { let c = rand(1, 9)*100, d = rand(4, 9)*10, u = rand(1, 9), subD = rand(1, d/10 - 1)*10; return {text: `${c+d+u} - ${subD}`, answer: c+d+u-subD}; } let c = rand(4, 9)*100, du = rand(11, 99), subC = rand(1, c/100 - 1)*100; return {text: `${c+du} - ${subC}`, answer: c+du-subC}; },
+                            () => { let n = rand(510, 950), sub = pick([40, 60, 300, 400]); return {text: `${n} - ${sub}`, answer: n-sub}; }
+                        ),
+                        createLevel("3.7 Multiplicar por 10, 100 y 1.000", "Desplazamiento posicional añadiendo ceros.", "7 × 100 = 700",
+                            ["Multiplicar por 10, 100 o 1.000 convierte el número en decenas, centenas o millares.", "Cuenta cuántos ceros acompañan al 1.", "Escribe el número y añade esos mismos ceros a su derecha."],
+                            "Un cero si es ×10, dos ceros si es ×100, tres ceros si es ×1.000.",
+                            () => { let n = rand(2, 19), f = pick([10, 100, 1000]); return {text: `${n} × ${f}`, answer: n*f}; },
+                            () => { let n = rand(12, 95), f = pick([10, 100]); return {text: `${n} × _ = ${n*f}`, answer: f}; }
+                        ),
+                        createLevel("3.8 Multiplicar decenas completas por un dígito", "Tablas extendidas a las decenas.", "30 × 4 = 120",
+                            ["Tapa el cero del 30 un momento.", "Multiplica las cifras: 3 × 4 = 12.", "Coloca de nuevo el cero al final: 120."],
+                            "Si sabes que 3 × 4 son 12, entonces 30 × 4 son 12 decenas (120).",
+                            () => { let d = rand(2, 9)*10, u = rand(2, 9); return Math.random() > 0.5 ? {text: `${d} × ${u}`, answer: d*u} : {text: `${u} × ${d}`, answer: d*u}; },
+                            () => { let d = rand(2, 9)*10, u = rand(3, 9); return {text: `${d} × _ = ${d*u}`, answer: u}; }
+                        ),
+                        createLevel("3.9 Multiplicar centenas completas por un dígito", "Tablas extendidas a las centenas.", "400 × 5 = 2000",
+                            ["Aparta los dos ceros del 400.", "Multiplica: 4 × 5 = 20.", "Añade los dos ceros que guardaste: 2000."],
+                            "¡Cuidado cuando el producto básico ya termina en cero (como 4×5=20): tendrá un cero extra!",
+                            () => { let c = rand(2, 9)*100, u = rand(2, 9); return Math.random() > 0.5 ? {text: `${c} × ${u}`, answer: c*u} : {text: `${u} × ${c}`, answer: c*u}; },
+                            () => { let c = rand(3, 9)*100, u = rand(3, 9); return {text: `${c} × _ = ${c*u}`, answer: u}; }
+                        ),
+                        createLevel("3.10 Dividir decenas completas entre un dígito", "Reparto exacto usando las tablas de multiplicar al revés.", "150 : 3 = 50",
+                            ["150 son 15 decenas.", "Divide 15 entre 3 buscando en la tabla del 3: 15 : 3 = 5.", "Como eran decenas, el resultado son 5 decenas: 50."],
+                            "Tapa un cero, divide con la tabla y pon el cero en el resultado.",
+                            () => { let d = rand(2, 9), q = rand(2, 9)*10; return {text: `${d*q} : ${d}`, answer: q}; },
+                            () => { let d = rand(3, 9), q = rand(2, 9)*100; return {text: `${d*q} : ${d}`, answer: q}; }
+                        ),
+                        createLevel("3.11 Sumas de tres cifras sin rebase", "Suma por órdenes de magnitud de izquierda a derecha.", "423 + 251 = 674",
+                            ["Centenas: 400 + 200 = 600.", "Decenas: 20 + 50 = 70.", "Unidades: 3 + 1 = 4. Total: 674."],
+                            "Ve diciendo el resultado de izquierda a derecha conforme miras cada pareja de cifras.",
+                            () => { let c1 = rand(1, 5), c2 = rand(1, 9-c1), d1 = rand(1, 5), d2 = rand(1, 9-d1), u1 = rand(1, 5), u2 = rand(1, 9-u1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} + ${n2}`, answer: n1+n2}; },
+                            () => { let c1 = rand(2, 5), c2 = rand(2, 9-c1), d1 = rand(1, 5), d2 = rand(1, 9-d1), u1 = rand(1, 5), u2 = rand(1, 9-u1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} + _ = ${n1+n2}`, answer: n2}; }
+                        ),
+                        createLevel("3.12 Restas de tres cifras sin rebase", "Resta posicional directa centena, decena y unidad.", "785 - 432 = 353",
+                            ["Centenas: 700 - 400 = 300.", "Decenas: 80 - 30 = 50.", "Unidades: 5 - 2 = 3. Total: 353."],
+                            "Como ninguna cifra de abajo supera a la de arriba, puedes restar de izquierda a derecha sin problema.",
+                            () => { let c1 = rand(4, 9), c2 = rand(1, c1-1), d1 = rand(4, 9), d2 = rand(1, d1-1), u1 = rand(4, 9), u2 = rand(1, u1-1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} - ${n2}`, answer: n1-n2}; },
+                            () => { let c1 = rand(5, 9), c2 = rand(1, c1-1), d1 = rand(4, 9), d2 = rand(1, d1-1), u1 = rand(4, 9), u2 = rand(1, u1-1); let n1 = c1*100+d1*10+u1, n2 = c2*100+d2*10+u2; return {text: `${n1} - _ = ${n1-n2}`, answer: n2}; }
+                        ),
+                        createLevel("3.13 Dobles de 2 cifras con rebase", "Duplicar descomponiendo cuando las unidades pasan de 5.", "Doble de 36 -> 60 + 12 = 72",
+                            ["Rompemos el 36 en 30 + 6.", "Doble de 30 = 60.", "Doble de 6 = 12. Sumamos ambos: 60 + 12 = 72."],
+                            "Guarda el doble de la decena en la cabeza y súmale el doble de la unidad.",
+                            () => { let d = rand(1, 4)*10, u = rand(5, 9); return {text: `Doble de ${d+u}`, answer: (d+u)*2}; },
+                            () => { let d = rand(5, 9)*10, u = rand(5, 9); return {text: `Doble de ${d+u}`, answer: (d+u)*2}; }
+                        ),
+                        createLevel("3.14 Mitades de pares con decenas impares", "Descomponer en decena impar + unidad par.", "Mitad de 54 -> 25 + 2 = 27",
+                            ["Rompemos el 54 en 50 + 4.", "Sabemos que la mitad de 50 es 25.", "La mitad de 4 es 2. Sumamos: 25 + 2 = 27."],
+                            "Recuerda las mitades clave: de 30 es 15, de 50 es 25, de 70 es 35 y de 90 es 45.",
+                            () => { let d = pick([30, 50, 70, 90]), u = pick([2, 4, 6, 8]); return {text: `Mitad de ${d+u}`, answer: (d+u)/2}; },
+                            () => { let d = pick([110, 130, 150, 170]), u = pick([2, 4, 6, 8]); return {text: `Mitad de ${d+u}`, answer: (d+u)/2}; }
+                        ),
+                        createLevel("3.15 Dobles de centenas completas", "Duplicar centenas exactas cruzando o no el millar.", "Doble de 400 = 800",
+                            ["Multiplicamos por 2 la cifra de las centenas: doble de 4 es 8.", "Añadimos los dos ceros: 800.", "Si duplicamos 600, el doble de 6 es 12 -> 1.200."],
+                            "Es exactamente igual que el doble de un número de 1 cifra pero con dos ceros.",
+                            () => { let c = rand(1, 9)*100; return {text: `Doble de ${c}`, answer: c*2}; },
+                            () => { let c = rand(5, 9)*100 + 50; return {text: `Doble de ${c}`, answer: c*2}; }
+                        ),
+                        createLevel("3.16 Mitades de centenas completas", "Mitad de centenas pares e impares.", "Mitad de 700 = 350",
+                            ["Si la centena es par (800), su mitad es directa (400).", "Si es impar (700), la partimos en 600 + 100.", "Mitad de 600 es 300 y mitad de 100 es 50 -> 350."],
+                            "Toda centena impar tiene una mitad que termina en 50 (150, 250, 350, 450).",
+                            () => { let c = rand(1, 10)*100; return {text: `Mitad de ${c}`, answer: c/2}; },
+                            () => { let c = rand(11, 19)*100; return {text: `Mitad de ${c}`, answer: c/2}; }
+                        ),
+                        createLevel("3.17 Sumar 19, 29, 39... (Compensación)", "Sumar la decena superior completa y restar 1.", "45 + 29 -> 45 + 30 - 1 = 74",
+                            ["El 29 es casi 30 (le falta 1).", "Sumamos 30 porque es muy fácil: 45 + 30 = 75.", "Quitamos 1 para compensar: 75 - 1 = 74."],
+                            "Redondea siempre hacia arriba (+20, +30, +40) y quita 1 al final.",
+                            () => { let n = rand(21, 65), add = pick([19, 29, 39, 49]); return {text: `${n} + ${add}`, answer: n+add}; },
+                            () => { let n = rand(120, 350), add = pick([29, 39, 49, 59]); return {text: `${n} + ${add}`, answer: n+add}; }
+                        ),
+                        createLevel("3.18 Restar 19, 29, 39... (Compensación)", "Restar la decena superior completa y sumar 1.", "82 - 39 -> 82 - 40 + 1 = 43",
+                            ["En vez de quitar 39, quitamos 40 de golpe: 82 - 40 = 42.", "Como hemos quitado 1 de más, lo devolvemos sumando 1.", "42 + 1 = 43."],
+                            "Quita la decena redonda superior y acuérdate de devolver 1 (+1).",
+                            () => { let sub = pick([19, 29, 39, 49]), n = rand(sub+12, 98); return {text: `${n} - ${sub}`, answer: n-sub}; },
+                            () => { let sub = pick([29, 39, 49, 59]), n = rand(120, 250); return {text: `${n} - ${sub}`, answer: n-sub}; }
+                        ),
+                        createLevel("3.19 Sumar rebasando el millar", "Cruzar la barrera del 1.000 completando centenas.", "650 + 400 = 1050",
+                            ["De 650 para llegar a 1.000 necesitamos 350 (o piensa 600 + 400 = 1.000).", "600 + 400 son 1.000.", "Añadimos el pico de 50: 1.050."],
+                            "Suma primero las centenas aunque pasen de 10 (6+4=10 centenas = 1.000).",
+                            () => { let c1 = rand(5, 9)*100 + pick([0, 20, 50]), c2 = rand(11 - Math.floor(c1/100), 8)*100; return {text: `${c1} + ${c2}`, answer: c1+c2}; },
+                            () => { let c1 = rand(6, 9)*100 + rand(1, 9)*10, c2 = rand(3, 7)*100 + 50; return {text: `${c1} + ${c2}`, answer: c1+c2}; }
+                        ),
+                        createLevel("3.20 Multiplicar por descomposición (Distributiva)", "Descomponer el número de 2 cifras en decenas y unidades.", "15 × 3 -> (10 × 3) + (5 × 3) = 45",
+                            ["Partimos el 15 en 10 + 5.", "Multiplicamos las decenas: 10 × 3 = 30.", "Multiplicamos las unidades: 5 × 3 = 15. Sumamos: 30 + 15 = 45."],
+                            "Multiplica primero la decena, guárdala en la memoria y súmale el producto de la unidad.",
+                            () => { let n = rand(12, 26), u = rand(2, 5); if (n%10===0) n+=2; return {text: `${n} × ${u}`, answer: n*u}; },
+                            () => { let n = rand(24, 58), u = rand(3, 6); if (n%10===0) n+=3; return {text: `${n} × ${u}`, answer: n*u}; }
+                        )
+                    ]
                 }
-            ];
+            };
 
             // --- ELEMENTOS DEL DOM ---
+            const appContainer = document.getElementById('app-container');
+            const appHeader = document.getElementById('app-header');
+            const courseCycleBadge = document.getElementById('course-cycle-badge');
+            const courseMainTitle = document.getElementById('course-main-title');
+            const courseMainSubtitle = document.getElementById('course-main-subtitle');
+
             const levelSelector = document.getElementById('level-selector');
             const prevLevelBtn = document.getElementById('prev-level-btn');
             const nextLevelBtn = document.getElementById('next-level-btn');
@@ -867,6 +742,8 @@
             const scoreCountEl = document.getElementById('score-count');
 
             // Estado de la sesión
+            let currentGrade = 3;
+            let levels = coursesData[3].levels;
             let currentProblems = [];
             let currentProblemIndex = 0;
             let isProMode = false;
@@ -875,8 +752,27 @@
             let score = 0;
             let problemSolved = false;
 
-            // --- INICIALIZACIÓN ---
-            function init() {
+            // --- SELECCIÓN DE CURSO ---
+            function openThirdGrade() {
+                const grade = 3;
+                currentGrade = grade;
+                const course = coursesData[grade];
+                levels = course.levels;
+
+                // Actualizar cabecera y estilos del curso
+                appHeader.className = `text-center p-5 md:p-8 bg-gradient-to-b ${course.headerClass} text-white relative border-b-8 shadow-sm z-20 transition-colors`;
+                courseCycleBadge.textContent = course.cycle;
+                courseMainTitle.textContent = `⚡ Cálculo Mental: ${course.name}`;
+                courseMainSubtitle.textContent = course.subtitle;
+
+                // Actualizar título por defecto del modal de impresión
+                document.getElementById('print-modal-title').innerHTML = `🖨️ Generador de Pruebas en PDF (${grade}º EP)`;
+                document.getElementById('print-custom-title').value = `CÁLCULO MENTAL - ${grade}º PRIMARIA`;
+
+                // Poblar selector de niveles y checkboxes del generador PDF
+                levelSelector.innerHTML = '';
+                printLevelsContainer.innerHTML = '';
+
                 levels.forEach((level, index) => {
                     const opt = document.createElement('option');
                     opt.value = index;
@@ -887,11 +783,20 @@
                     cbWrap.className = 'flex items-center cursor-pointer p-2.5 hover:bg-violet-50 rounded-xl transition-colors border-2 border-slate-100 hover:border-violet-200';
                     cbWrap.innerHTML = `
                         <input type="checkbox" value="${index}" class="print-level-cb h-5 w-5 text-violet-600 rounded focus:ring-violet-500 cursor-pointer">
-                        <span class="ml-3 text-slate-700 font-bold text-base truncate" title="${level.title}">${level.title}</span>
+                        <span class="ml-3 text-slate-700 font-bold text-sm md:text-base truncate" title="${level.title}">${level.title}</span>
                     `;
                     printLevelsContainer.appendChild(cbWrap);
                 });
 
+                appContainer.classList.remove('hidden');
+
+                loadLevel(0);
+                showPractico();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // --- INICIALIZACIÓN DE EVENTOS ---
+            function init() {
                 // Listeners de nivel
                 levelSelector.addEventListener('change', () => loadLevel(parseInt(levelSelector.value)));
                 prevLevelBtn.addEventListener('click', () => {
@@ -943,7 +848,7 @@
                 document.getElementById('new-challenge-btn').addEventListener('click', () => startNewChallenge(false));
                 document.getElementById('pro-challenge-btn').addEventListener('click', () => startNewChallenge(true));
 
-                // Soporte de teclado físico para mayor agilidad en pizarra digital u ordenador
+                // Soporte de teclado físico
                 document.addEventListener('keydown', (e) => {
                     const isModalOpen = !document.getElementById('print-modal').classList.contains('hidden');
                     const isPrintViewOpen = !document.getElementById('print-view-wrapper').classList.contains('hidden');
@@ -959,6 +864,10 @@
                     } else {
                         if (e.key >= '0' && e.key <= '9') {
                             handleNumKey(e.key);
+                        } else if (e.key === ',' || e.key === '.') {
+                            handleNumKey(',');
+                        } else if (e.key === '-') {
+                            handleNumKey('-');
                         } else if (e.key === 'Backspace') {
                             handleNumKey('DEL');
                         } else if (e.key === 'Escape') {
@@ -999,9 +908,6 @@
                 document.getElementById('close-print-view-btn').addEventListener('click', () => {
                     document.getElementById('print-view-wrapper').classList.add('hidden');
                 });
-
-                loadLevel(0);
-                showPractico();
             }
 
             // --- LÓGICA DEL JUEGO ---
@@ -1053,6 +959,10 @@
                 showReto();
             }
 
+            function formatAnswerString(ans) {
+                return String(ans).replace('.', ',');
+            }
+
             function displayProblem() {
                 problemSolved = false;
                 currentUserInput = '';
@@ -1064,8 +974,10 @@
 
                 if (currentProblemIndex < currentProblems.length) {
                     const p = currentProblems[currentProblemIndex];
+                    const ansStr = formatAnswerString(p.answer);
+
                     if (p.text.includes('_')) {
-                        problemText.innerHTML = p.text.replace('_', '<span class="text-violet-400 border-b-4 border-dashed border-violet-400 px-3">?</span>');
+                        problemText.innerHTML = p.text.replace('_', '<span class="text-violet-500 border-b-4 border-dashed border-violet-400 px-3">?</span>');
                     } else {
                         problemText.textContent = p.text;
                     }
@@ -1075,7 +987,7 @@
                     
                     answerText.classList.remove('answer-reveal');
                     answerText.classList.add('opacity-0');
-                    answerText.textContent = p.text.includes('_') ? `${p.answer}` : `= ${p.answer}`;
+                    answerText.textContent = p.text.includes('_') ? `${ansStr}` : `= ${ansStr}`;
                     
                     showAnswerBtn.classList.remove('hidden');
                     nextProblemBtn.classList.add('hidden');
@@ -1095,8 +1007,9 @@
             function showAnswer() {
                 if (currentProblemIndex >= currentProblems.length) return;
                 const p = currentProblems[currentProblemIndex];
+                const ansStr = formatAnswerString(p.answer);
                 if (p.text.includes('_')) {
-                    problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${p.answer}</span>`);
+                    problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${ansStr}</span>`);
                 }
                 answerText.classList.remove('opacity-0');
                 answerText.classList.add('answer-reveal');
@@ -1111,7 +1024,17 @@
                     currentUserInput = currentUserInput.slice(0, -1);
                 } else if (key === 'CLR') {
                     currentUserInput = '';
-                } else if (currentUserInput.length < 6) {
+                } else if (key === '-') {
+                    if (currentUserInput.startsWith('-')) {
+                        currentUserInput = currentUserInput.slice(1);
+                    } else {
+                        currentUserInput = '-' + currentUserInput;
+                    }
+                } else if (key === ',') {
+                    if (!currentUserInput.includes(',')) {
+                        currentUserInput = (currentUserInput === '' || currentUserInput === '-') ? currentUserInput + '0,' : currentUserInput + ',';
+                    }
+                } else if (currentUserInput.length < 8) {
                     currentUserInput += key;
                 }
                 updateUserInputDisplay();
@@ -1128,11 +1051,12 @@
             }
 
             function checkUserAnswer() {
-                if (currentProblemIndex >= currentProblems.length || currentUserInput === '') return;
+                if (currentProblemIndex >= currentProblems.length || currentUserInput === '' || currentUserInput === '-') return;
                 const p = currentProblems[currentProblemIndex];
-                const userVal = parseInt(currentUserInput, 10);
+                const userVal = parseFloat(currentUserInput.replace(',', '.'));
+                const targetVal = Number(p.answer);
 
-                if (userVal === p.answer) {
+                if (Math.abs(userVal - targetVal) < 0.0001) {
                     problemSolved = true;
                     score++;
                     scoreCountEl.textContent = score;
@@ -1141,7 +1065,7 @@
                     keypadFeedback.className = 'h-7 font-bold text-lg mb-2 text-emerald-600';
                     userInputDisplay.className = 'flex-1 bg-emerald-50 border-4 border-emerald-500 rounded-2xl py-3 px-6 text-4xl font-bold text-emerald-800 min-h-[68px] flex items-center justify-center';
                     if (p.text.includes('_')) {
-                        problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${p.answer}</span>`);
+                        problemText.innerHTML = p.text.replace('_', `<span class="text-emerald-600 underline">${formatAnswerString(p.answer)}</span>`);
                     }
                     checkAnswerBtn.classList.add('hidden');
                     keypadNextBtn.classList.remove('hidden');
@@ -1150,7 +1074,7 @@
                     keypadFeedback.textContent = '¡Casi! Revisa la estrategia e inténtalo de nuevo 💪';
                     keypadFeedback.className = 'h-7 font-bold text-lg mb-2 text-rose-600';
                     userInputDisplay.classList.remove('shake-anim');
-                    void userInputDisplay.offsetWidth; // Reflow para reiniciar animación
+                    void userInputDisplay.offsetWidth;
                     userInputDisplay.classList.add('shake-anim', 'border-rose-400');
                     currentUserInput = '';
                     setTimeout(updateUserInputDisplay, 350);
@@ -1185,7 +1109,6 @@
             // --- GENERADOR DE FICHAS IMPRIMIBLES / PDF ---
             function openPrintModal() {
                 document.getElementById('print-error-msg').classList.add('hidden');
-                // Si no hay ninguno seleccionado, pre-seleccionar el nivel actual para facilitar el uso
                 const checkedCount = document.querySelectorAll('.print-level-cb:checked').length;
                 if (checkedCount === 0) {
                     const cur = levelSelector.value;
@@ -1200,30 +1123,29 @@
                 document.getElementById('print-modal').classList.add('hidden');
             }
 
-            // Formateador inteligente de expresiones para la ficha impresa
             function formatProblemForWorksheet(p) {
                 if (p.text.includes('_')) {
-                    // Ej: "300 + _ = 1000" -> línea de respuesta en el hueco, sin añadir otro "=" al final
                     const parts = p.text.split('_');
                     return `
                         <span class="font-bold text-slate-800">${parts[0]}</span>
-                        <span class="inline-block w-20 border-b-2 border-slate-500 mx-1"></span>
+                        <span class="inline-block w-16 border-b-2 border-slate-500 mx-1"></span>
                         <span class="font-bold text-slate-800">${parts[1]}</span>
                     `;
                 } else {
                     return `
                         <span class="font-bold text-slate-800">${p.text} =</span>
-                        <span class="inline-block w-24 border-b-2 border-slate-500 ml-2"></span>
+                        <span class="inline-block w-20 border-b-2 border-slate-500 ml-2"></span>
                     `;
                 }
             }
 
             function formatSolutionItem(p) {
+                const ansStr = formatAnswerString(p.answer);
                 if (p.text.includes('_')) {
-                    const solved = p.text.replace('_', `<strong class="text-emerald-700 underline">${p.answer}</strong>`);
+                    const solved = p.text.replace('_', `<strong class="text-emerald-700 underline">${ansStr}</strong>`);
                     return `<span class="text-slate-700">${solved}</span>`;
                 } else {
-                    return `<span class="text-slate-700">${p.text} = <strong class="text-emerald-700">${p.answer}</strong></span>`;
+                    return `<span class="text-slate-700">${p.text} = <strong class="text-emerald-700">${ansStr}</strong></span>`;
                 }
             }
 
@@ -1240,7 +1162,7 @@
                 const isPro = document.getElementById('print-pro-cb').checked;
                 const includeSolutions = document.getElementById('print-solutions-cb').checked;
                 const numVersions = parseInt(document.getElementById('print-versions').value);
-                const customTitle = document.getElementById('print-custom-title').value.trim() || 'CÁLCULO MENTAL - 3º PRIMARIA';
+                const customTitle = document.getElementById('print-custom-title').value.trim() || `CÁLCULO MENTAL - ${currentGrade}º PRIMARIA`;
                 
                 const selectedIndices = Array.from(checks).map(cb => parseInt(cb.value));
                 const titles = selectedIndices.map(idx => levels[idx].title);
@@ -1252,7 +1174,6 @@
                 for (let v = 0; v < numVersions; v++) {
                     const modelLabel = numVersions > 1 ? `Modelo ${modelLetters[v]}` : 'Ficha de Cálculo';
                     
-                    // Generar pool equilibrado de los niveles marcados
                     let pools = selectedIndices.map(idx => {
                         const lvl = levels[idx];
                         const problems = isPro ? lvl.genPro() : lvl.gen();
@@ -1264,12 +1185,12 @@
                     let pIdx = 0;
                     let safety = 0;
 
-                    while (worksheetProblems.length < 20 && safety < 200) {
+                    while (worksheetProblems.length < 20 && safety < 250) {
                         safety++;
                         let curPool = pools[pIdx % pools.length];
                         if (curPool.length > 0) {
                             let candidate = curPool.pop();
-                            if (!seenInSheet.has(candidate.text) || safety > 80) {
+                            if (!seenInSheet.has(candidate.text) || safety > 90) {
                                 worksheetProblems.push(candidate);
                                 seenInSheet.add(candidate.text);
                             }
@@ -1277,12 +1198,10 @@
                         pIdx++;
                     }
 
-                    // Mezclar el orden final de las 20 preguntas si hay varios niveles seleccionados
                     if (selectedIndices.length > 1) {
                         worksheetProblems.sort(() => Math.random() - 0.5);
                     }
 
-                    // Construir las 20 filas en 2 columnas (1-10 a la izquierda, 11-20 a la derecha)
                     let leftColHTML = '';
                     let rightColHTML = '';
 
@@ -1290,7 +1209,7 @@
                         const rowHTML = `
                             <div class="flex items-baseline py-2.5 border-b border-slate-100">
                                 <span class="w-8 font-bold text-slate-400 text-base shrink-0">${i + 1}.</span>
-                                <div class="flex-1 text-xl flex items-baseline justify-between pr-2">
+                                <div class="flex-1 text-lg flex items-baseline justify-between pr-2">
                                     ${formatProblemForWorksheet(p)}
                                 </div>
                             </div>
@@ -1299,7 +1218,10 @@
                         else rightColHTML += rowHTML;
                     });
 
-                    // Hoja A4 del Alumno
+                    const summaryTitles = titles.length > 5
+                        ? `${titles.slice(0, 5).join(' · ')} y ${titles.length - 5} más`
+                        : titles.join(' · ');
+
                     sheetsHTML += `
                         <div class="a4-sheet">
                             <div>
@@ -1308,7 +1230,7 @@
                                     <div>
                                         <h1 class="text-2xl font-bold text-violet-950 uppercase tracking-tight">${customTitle}</h1>
                                         <p class="text-xs text-slate-600 font-semibold mt-1 max-w-xl leading-snug">
-                                            <strong>Estrategias:</strong> ${titles.join(' · ')} ${isPro ? ' (🔥 Nivel PRO)' : ''}
+                                            <strong>Estrategias:</strong> ${summaryTitles} ${isPro ? ' (🔥 Nivel PRO)' : ''}
                                         </p>
                                     </div>
                                     <div class="shrink-0 bg-violet-100 text-violet-900 font-bold px-3.5 py-1.5 rounded-xl border-2 border-violet-300 text-sm">
@@ -1332,7 +1254,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Cuerpo de 20 operaciones en 2 columnas ordenadas -->
+                                <!-- Cuerpo de 20 operaciones en 2 columnas -->
                                 <div class="grid grid-cols-2 gap-x-10 mt-2">
                                     <div class="space-y-1">${leftColHTML}</div>
                                     <div class="space-y-1">${rightColHTML}</div>
@@ -1341,13 +1263,12 @@
 
                             <!-- Pie de ficha -->
                             <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-500 font-semibold">
-                                <span>💡 Recuerda descomponer y usar los trucos ABN antes de escribir.</span>
-                                <span>3º Educación Primaria · ${modelLabel}</span>
+                                <span>💡 Recuerda descomponer y usar las estrategias ABN antes de escribir.</span>
+                                <span>${currentGrade}º Educación Primaria · ${modelLabel}</span>
                             </div>
                         </div>
                     `;
 
-                    // Bloque de soluciones para este modelo
                     let solItemsHTML = '';
                     worksheetProblems.forEach((p, i) => {
                         solItemsHTML += `
@@ -1371,7 +1292,6 @@
                     `;
                 }
 
-                // Añadir Hoja A4 de Solucionario al final si está marcado
                 if (includeSolutions) {
                     sheetsHTML += `
                         <div class="a4-sheet">
@@ -1380,7 +1300,7 @@
                                     <div>
                                         <h1 class="text-2xl font-bold text-emerald-900 uppercase">✅ SOLUCIONARIO DOCENTE</h1>
                                         <p class="text-xs text-slate-600 font-semibold mt-1">
-                                            ${customTitle} · Estrategias: ${titles.join(' · ')}
+                                            ${customTitle} · ${currentGrade}º Educación Primaria
                                         </p>
                                     </div>
                                     <span class="bg-emerald-100 text-emerald-900 font-bold px-3 py-1 rounded-lg text-xs border border-emerald-300">
@@ -1395,7 +1315,7 @@
 
                             <div class="mt-6 pt-3 border-t-2 border-slate-200 flex justify-between items-center text-xs text-slate-400 font-semibold">
                                 <span>Documento de corrección para el docente</span>
-                                <span>3º Educación Primaria</span>
+                                <span>${currentGrade}º Educación Primaria</span>
                             </div>
                         </div>
                     `;
@@ -1408,6 +1328,7 @@
             }
 
             init();
+            openThirdGrade();
         });
     </script>
 </body>
