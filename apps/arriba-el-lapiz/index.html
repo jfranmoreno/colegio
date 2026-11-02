@@ -34,7 +34,9 @@
       user-select: none;
     }
 
+    input, textarea { user-select: text; min-width: 0; }
     body {
+      overscroll-behavior-y: contain;
       background: var(--bg-gradient);
       color: var(--text-main);
       min-height: 100vh;
@@ -94,7 +96,9 @@
       margin-top: 2px;
     }
 
+    .app-header { flex-wrap: wrap; gap: 14px; }
     .header-controls {
+      flex-wrap: wrap;
       display: flex;
       gap: 12px;
       align-items: center;
@@ -1024,6 +1028,7 @@
       }
 
       /* Ocultar absolutamente toda la interfaz interactiva */
+      #saveStatus,
       .app-header,
       .main-container,
       .modal-overlay,
@@ -1160,6 +1165,9 @@
     </div>
 
     <div class="header-controls">
+      <button class="btn btn-success btn-sm" onclick="exportSessionJson()" title="Descargar una copia de la partida actual sin terminarla">💾 Guardar partida JSON</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('sessionFileInput').click()" title="Continuar una partida guardada">📂 Cargar partida JSON</button>
+      <input id="sessionFileInput" type="file" accept=".json,application/json" hidden onchange="importSessionJson(event)">
       <button id="btnPrintTop" class="btn btn-outline btn-sm" onclick="printStudentSheet()" title="Imprimir o guardar PDF de la ficha para los alumnos">
         📄 Ficha Alumnos (PDF)
       </button>
@@ -1173,6 +1181,7 @@
   </header>
 
   <!-- CONTENEDOR PRINCIPAL -->
+  <p id="saveStatus" role="status" style="padding:10px 24px; font-weight:700;">Guardado local preparado.</p>
   <main class="main-container">
 
     <!-- ==========================================================
@@ -1449,6 +1458,7 @@
         <button class="btn btn-outline" onclick="closeScoringModalOnly()">
           🔙 Volver al Tablero
         </button>
+        <button class="btn btn-outline" onclick="exportSessionJson()">💾 Guardar partida JSON</button>
         <button id="btnNextRoundAction" class="btn btn-success btn-xl" onclick="confirmRoundAndAdvance()">
           ✅ Guardar Puntos y Siguiente Ronda ➡️
         </button>
@@ -1565,7 +1575,9 @@
       timerInterval: null,
       isTimerRunning: false,
       isPaused: false,
-      isMuted: false
+      isMuted: false,
+      roundEnded: false,
+      view: 'viewSetup'
     };
 
     /**************************************************************
@@ -1576,10 +1588,11 @@
     function initAudio() {
       if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContext();
+        if (!AudioContext) return;
+        try { audioCtx = new AudioContext(); } catch { return; }
       }
       if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+        audioCtx.resume().catch(() => {});
       }
     }
 
@@ -1592,6 +1605,7 @@
     function playSound(type) {
       if (state.isMuted) return;
       initAudio();
+      if (!audioCtx) return;
       const now = audioCtx.currentTime;
 
       if (type === 'tick') {
@@ -1784,7 +1798,7 @@
         row.innerHTML = `
           <span class="team-index-badge">${idx + 1}.</span>
           <button class="team-avatar-btn" style="background:${team.color}" onclick="cycleTeamAvatar(${idx})" title="Cambiar icono">
-            ${team.avatar}
+            ${escapeHtml(team.avatar)}
           </button>
           <input type="text" class="input-text" value="${escapeHtml(team.name)}" maxlength="28"
             oninput="updateTeamName(${idx}, this.value)" style="padding: 8px 12px; font-size:1rem;">
@@ -1860,8 +1874,10 @@
             if (typeof item === 'string') {
               return { name: item.trim(), avatar: null };
             } else if (item && typeof item === 'object') {
-              const nameVal = (item.nombre || item.name || item.jugador || item.alumno || ''). String ? String(item.nombre || item.name || item.jugador || item.alumno || '').trim() : '';
-              const avatarVal = item.avatar || item.icono || null;
+              const rawName = item.nombre ?? item.name ?? item.jugador ?? item.alumno;
+              const nameVal = typeof rawName === 'string' ? rawName.trim() : '';
+              const rawAvatar = item.avatar ?? item.icono;
+              const avatarVal = typeof rawAvatar === 'string' ? rawAvatar.slice(0, 32) : null;
               return { name: nameVal, avatar: avatarVal };
             }
             return { name: '', avatar: null };
@@ -1891,6 +1907,7 @@
 
         playSound('letterChosen');
         renderTeamsSetup();
+        saveSession();
         return true;
       } catch (err) {
         alert('Error al leer el JSON. Verifica que las comillas y los corchetes estén bien cerrados.\n\nEjemplo válido:\n["Lucía", "Mateo", "Sofía"]');
@@ -1906,6 +1923,7 @@
         parseAndApplyPlayersJson(e.target.result);
         event.target.value = '';
       };
+      reader.onerror = () => { alert('No se ha podido leer el archivo.'); event.target.value = ''; };
       reader.readAsText(file, 'UTF-8');
     }
 
@@ -2042,7 +2060,10 @@
     }
 
     function prepareRoundUI() {
+      cancelRoulette();
       stopTimerInterval();
+      state.roundEnded = false;
+      state.teams.forEach(t => { t.roundDelta = 0; t.bonusOrtho = false; t.bonusSpeed = false; });
       state.currentLetter = null;
       state.remainingSec = state.roundTimeSec;
       state.isTimerRunning = false;
@@ -2068,6 +2089,7 @@
 
       renderLiveCategories();
       renderLiveRanking();
+      saveSession();
     }
 
     function renderUsedLettersBar() {
@@ -2099,7 +2121,7 @@
         <div class="rank-card ${i === 0 && t.score > 0 ? 'first-place' : ''}">
           <div class="rank-left">
             <span class="rank-pos">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + 'º'}</span>
-            <div class="rank-avatar" style="background:${t.color}">${t.avatar}</div>
+            <div class="rank-avatar" style="background:${t.color}">${escapeHtml(t.avatar)}</div>
             <span class="rank-name" title="${escapeHtml(t.name)}">${escapeHtml(t.name)}</span>
           </div>
           <div class="rank-score">${t.score} pts</div>
@@ -2107,12 +2129,23 @@
       `).join('');
     }
 
+    let spinInterval = null;
+    let countdownTimeout = null;
+    let timerDeadline = null;
+
+    function cancelRoulette() {
+      clearInterval(spinInterval);
+      clearTimeout(countdownTimeout);
+      spinInterval = null;
+      countdownTimeout = null;
+    }
+
     function spinLetterRoulette() {
+      if (state.view !== 'viewGame' || state.currentLetter || spinInterval) return;
       const available = Array.from(state.activeLetters).filter(l => !state.usedLetters.includes(l));
       if (available.length === 0) {
-        alert('Ya han salido todas las letras activas. Reiniciando bolsa de letras.');
-        state.usedLetters = [];
-        return spinLetterRoulette();
+        alert('No quedan letras disponibles. Vuelve a configuración para iniciar otra partida.');
+        return;
       }
 
       const btnSpin = document.getElementById('btnSpinLetter');
@@ -2122,7 +2155,7 @@
 
       let ticks = 0;
       const totalTicks = 22;
-      const spinInterval = setInterval(() => {
+      spinInterval = setInterval(() => {
         const randomPreview = available[Math.floor(Math.random() * available.length)];
         letterDisplay.textContent = randomPreview;
         playSound('tick');
@@ -2130,6 +2163,7 @@
 
         if (ticks >= totalTicks) {
           clearInterval(spinInterval);
+          spinInterval = null;
           const chosen = available[Math.floor(Math.random() * available.length)];
           state.currentLetter = chosen;
           state.usedLetters.push(chosen);
@@ -2142,7 +2176,9 @@
           renderUsedLettersBar();
           playSound('letterChosen');
 
-          setTimeout(() => {
+          saveSession();
+          countdownTimeout = setTimeout(() => {
+            countdownTimeout = null;
             startRoundCountdown();
           }, 450);
         }
@@ -2150,18 +2186,21 @@
     }
 
     function startRoundCountdown() {
+      if (state.view !== 'viewGame' || state.roundEnded || !state.currentLetter) return;
       stopTimerInterval();
       state.isTimerRunning = true;
-      state.isPaused = false;
+      state.isPaused = document.visibilityState === 'hidden';
+      document.getElementById('btnPauseResume').textContent = state.isPaused ? '▶️ Reanudar' : '⏸️ Pausar';
 
       document.getElementById('btnPauseResume').disabled = false;
       document.getElementById('btnResetClock').disabled = false;
       document.getElementById('btnGiantStop').disabled = (state.stopMode === 'timer');
 
+      timerDeadline = Date.now() + state.remainingSec * 1000;
       state.timerInterval = setInterval(() => {
         if (state.isPaused) return;
 
-        state.remainingSec--;
+        state.remainingSec = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
         updateTimerDisplay();
 
         if (state.remainingSec <= 10 && state.remainingSec > 0) {
@@ -2171,7 +2210,9 @@
         if (state.remainingSec <= 0) {
           triggerStopRound('timeout');
         }
+        saveSession();
       }, 1000);
+      saveSession();
     }
 
     function updateTimerDisplay() {
@@ -2200,13 +2241,22 @@
 
     function togglePauseTimer() {
       if (!state.isTimerRunning) return;
+      if (!state.isPaused) {
+        state.remainingSec = Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000));
+        if (!state.remainingSec) { triggerStopRound('timeout'); return; }
+      } else {
+        timerDeadline = Date.now() + state.remainingSec * 1000;
+      }
       state.isPaused = !state.isPaused;
+      updateTimerDisplay();
       const btn = document.getElementById('btnPauseResume');
       btn.textContent = state.isPaused ? '▶️ Reanudar' : '⏸️ Pausar';
     }
 
     function resetCurrentRoundTimer() {
+      if (!state.isTimerRunning || state.roundEnded) return;
       state.remainingSec = state.roundTimeSec;
+      timerDeadline = Date.now() + state.remainingSec * 1000;
       state.isPaused = false;
       document.getElementById('btnPauseResume').textContent = '⏸️ Pausar';
       updateTimerDisplay();
@@ -2221,14 +2271,14 @@
     }
 
     function triggerStopRound(reason) {
+      if (state.roundEnded || !state.isTimerRunning) return;
+      if (reason === 'manual' && state.stopMode === 'timer') return;
+      state.roundEnded = true;
       stopTimerInterval();
+      document.getElementById('btnGiantStop').disabled = true;
+      document.getElementById('btnPauseResume').disabled = true;
+      document.getElementById('btnResetClock').disabled = true;
       playSound('stopHorn');
-
-      state.teams.forEach(t => {
-        t.roundDelta = 0;
-        t.bonusOrtho = false;
-        t.bonusSpeed = false;
-      });
 
       const titleEl = document.getElementById('stopBannerTitle');
       if (reason === 'timeout') {
@@ -2239,12 +2289,18 @@
 
       document.getElementById('modalLetterBadge').textContent = state.currentLetter || '?';
       openScoringModal(true);
+      saveSession();
     }
 
     /**************************************************************
      * 6. MÓDULO 4: RECUENTO DE PUNTOS, GAMIFICACIÓN Y PODIO FINAL
      **************************************************************/
     function openScoringModal(isEndOfRound) {
+      isEndOfRound = state.roundEnded;
+      if (state.isTimerRunning && !state.isPaused) togglePauseTimer();
+      document.getElementById('modalLetterBadge').textContent = state.currentLetter || '?';
+      document.getElementById('stopBannerTitle').textContent = isEndOfRound
+        ? '✋ RONDA TERMINADA: RECUENTO DE PUNTOS' : '✏️ AJUSTAR PUNTOS (RELOJ EN PAUSA)';
       renderScoringModalCards();
       const btnNext = document.getElementById('btnNextRoundAction');
       if (state.currentRound >= state.totalRounds && isEndOfRound) {
@@ -2270,7 +2326,7 @@
           <div class="score-team-header">
             <div class="score-team-title">
               <span style="background:${t.color}; width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center;">
-                ${t.avatar}
+                ${escapeHtml(t.avatar)}
               </span>
               <div>
                 <div>${escapeHtml(t.name)}</div>
@@ -2309,7 +2365,8 @@
 
     function addTeamPoints(teamIdx, pts) {
       const team = state.teams[teamIdx];
-      if (team.score + pts < 0) return;
+      const reservedBonus = (Number(team.bonusOrtho) + Number(team.bonusSpeed)) * 5;
+      if (team.score + pts < reservedBonus) return;
       team.score += pts;
       team.roundDelta += pts;
       playSound('pointUp');
@@ -2336,6 +2393,7 @@
     }
 
     function confirmRoundAndAdvance() {
+      if (!document.getElementById('scoringModal').classList.contains('open')) return;
       const shouldAdvance = document.getElementById('btnNextRoundAction').dataset.advance === 'true';
       document.getElementById('scoringModal').classList.remove('open');
 
@@ -2369,7 +2427,7 @@
       if (second) {
         podiumHtml += `
           <div class="podium-pillar podium-2">
-            <div class="podium-medal">🥈 ${second.avatar}</div>
+            <div class="podium-medal">🥈 ${escapeHtml(second.avatar)}</div>
             <div class="podium-team-name">${escapeHtml(second.name)}</div>
             <div class="podium-pts">${second.score} pts</div>
           </div>
@@ -2378,7 +2436,7 @@
       if (first) {
         podiumHtml += `
           <div class="podium-pillar podium-1">
-            <div class="podium-medal">👑 ${first.avatar}</div>
+            <div class="podium-medal">👑 ${escapeHtml(first.avatar)}</div>
             <div class="podium-team-name">${escapeHtml(first.name)}</div>
             <div class="podium-pts">${first.score} pts</div>
           </div>
@@ -2387,7 +2445,7 @@
       if (third) {
         podiumHtml += `
           <div class="podium-pillar podium-3">
-            <div class="podium-medal">🥉 ${third.avatar}</div>
+            <div class="podium-medal">🥉 ${escapeHtml(third.avatar)}</div>
             <div class="podium-team-name">${escapeHtml(third.name)}</div>
             <div class="podium-pts">${third.score} pts</div>
           </div>
@@ -2400,7 +2458,7 @@
         <div class="rank-card ${i === 0 ? 'first-place' : ''}">
           <div class="rank-left">
             <span class="rank-pos">${i + 1}º</span>
-            <div class="rank-avatar" style="background:${t.color}">${t.avatar}</div>
+            <div class="rank-avatar" style="background:${t.color}">${escapeHtml(t.avatar)}</div>
             <span class="rank-name">${escapeHtml(t.name)}</span>
           </div>
           <div class="rank-score">${t.score} puntos</div>
@@ -2414,6 +2472,8 @@
     }
 
     function returnToSetupScreen() {
+      cancelRoulette();
+      document.getElementById('scoringModal').classList.remove('open');
       stopConfetti();
       stopTimerInterval();
       document.getElementById('btnBackSetup').style.display = 'none';
@@ -2436,7 +2496,7 @@
       content += `   Categorías: ${state.categories.join(' | ')}\n`;
       content += `=========================================\n\n`;
       sorted.forEach((t, idx) => {
-        content += `${idx + 1}º Puesto: ${t.avatar} ${t.name} — ${t.score} puntos\n`;
+        content += `${idx + 1}º Puesto: ${escapeHtml(t.avatar)} ${t.name} — ${t.score} puntos\n`;
       });
 
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -2454,6 +2514,7 @@
     let confettiAnimId = null;
 
     function launchConfetti() {
+      stopConfetti();
       const canvas = document.getElementById('confettiCanvas');
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
@@ -2502,6 +2563,7 @@
     }
 
     function switchView(viewId) {
+      state.view = viewId;
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
     }
@@ -2514,7 +2576,170 @@
         .replace(/"/g, '&quot;');
     }
 
+    const STORAGE_KEY = 'arriba-el-lapiz.session.v1';
+
+    function createSessionSnapshot() {
+      const { timerInterval, ...data } = state;
+      // Capture the clock at the instant of export, even between timer ticks.
+      const remainingSec = state.isTimerRunning && !state.isPaused && timerDeadline !== null
+        ? Math.max(0, Math.ceil((timerDeadline - Date.now()) / 1000)) : state.remainingSec;
+      return {
+        format: 'arriba-el-lapiz-session',
+        version: 1,
+        savedAt: new Date().toISOString(),
+        state: { ...data, remainingSec, activeLetters: [...state.activeLetters] },
+        settings: ['selectTime', 'selectRounds', 'selectStopMode'].map(id => document.getElementById(id).value),
+        drafts: ['newCategoryInput', 'jsonPasteTextarea'].map(id => document.getElementById(id).value),
+        scoringOpen: document.getElementById('scoringModal').classList.contains('open')
+      };
+    }
+
+    function saveSession() {
+      const status = document.getElementById('saveStatus');
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(createSessionSnapshot()));
+        status.textContent = '✓ Guardado automático en este navegador. Usa «Guardar partida JSON» para descargar una copia y continuar otro día.';
+      } catch {
+        status.textContent = '⚠ No se puede guardar en este navegador. Usa «Guardar partida JSON» antes de salir.';
+      }
+    }
+
+    function exportSessionJson() {
+      const snapshot = createSessionSnapshot();
+      const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `partida-arriba-el-lapiz-ronda-${state.currentRound}-${snapshot.savedAt.replace(/[:.]/g, '-')}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function importSessionJson(event) {
+      const input = event.target;
+      const file = input.files[0];
+      if (!file) return;
+      try {
+        if (file.size > 1024 * 1024) throw new Error('El archivo es demasiado grande (máximo 1 MB).');
+        const snapshot = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
+        validateSessionSnapshot(snapshot);
+        if (!confirm('¿Cargar esta partida y sustituir la que tienes abierta? Si quieres conservar la actual, cancela y usa «Guardar partida JSON» primero.')) return;
+        applySessionSnapshot(snapshot);
+        saveSession();
+      } catch (error) {
+        alert('No se ha podido cargar la partida. Selecciona un JSON generado con «Guardar partida JSON», no una lista de jugadores.\n\n' + error.message);
+      } finally {
+        input.value = '';
+      }
+    }
+
+    function validateSessionSnapshot(saved) {
+        if (!saved || typeof saved !== 'object' || (saved.format && saved.format !== 'arriba-el-lapiz-session')) throw new Error('Formato de partida no válido.');
+        const d = saved.state;
+        const integer = (n, min, max) => Number.isInteger(n) && n >= min && n <= max;
+        if (saved.version !== 1 || !d ||
+            !Array.isArray(d.activeLetters) || d.activeLetters.length < 3 || new Set(d.activeLetters).size !== d.activeLetters.length ||
+            !d.activeLetters.every(l => ALL_LETTERS.includes(l)) ||
+            !Array.isArray(d.categories) || d.categories.length < 2 || d.categories.length > 8 ||
+            !d.categories.every(c => typeof c === 'string' && c.length <= 100) ||
+            !Array.isArray(d.teams) || d.teams.length < 2 || d.teams.length > MAX_PLAYERS ||
+            !d.teams.every(t => t && typeof t.name === 'string' && t.name.length <= 28 &&
+              typeof t.avatar === 'string' && t.avatar.length <= 32 && TEAM_COLORS.includes(t.color) &&
+              integer(t.score, 0, 1000000) && integer(t.roundDelta, -1000000, 1000000) &&
+              typeof t.bonusOrtho === 'boolean' && typeof t.bonusSpeed === 'boolean' &&
+              t.score >= 5 * (Number(t.bonusOrtho) + Number(t.bonusSpeed))) ||
+            ![60,90,120,180].includes(d.roundTimeSec) || ![3,4,5,6,7,8,10].includes(d.totalRounds) ||
+            !integer(d.currentRound, 1, d.totalRounds) || !integer(d.remainingSec, 0, d.roundTimeSec) ||
+            !['both','timer'].includes(d.stopMode) || !['viewSetup','viewGame','viewPodium'].includes(d.view) ||
+            typeof d.isMuted !== 'boolean' || typeof d.roundEnded !== 'boolean' ||
+            !Array.isArray(d.usedLetters) || new Set(d.usedLetters).size !== d.usedLetters.length || !d.usedLetters.every(l => d.activeLetters.includes(l)) ||
+            !(d.currentLetter === null || d.usedLetters.includes(d.currentLetter)) ||
+            !Array.isArray(saved.settings) || saved.settings.length !== 3 ||
+            !saved.settings.every((v, i) => [...document.getElementById(['selectTime','selectRounds','selectStopMode'][i]).options].some(o => o.value === v))) {
+          throw new Error('Datos guardados no válidos');
+        }
+    }
+
+    function applySessionSnapshot(saved) {
+      validateSessionSnapshot(saved);
+      const d = saved.state;
+      cancelRoulette();
+      stopTimerInterval();
+      stopConfetti();
+      ['scoringModal', 'jsonPasteModal'].forEach(id => document.getElementById(id).classList.remove('open'));
+      document.getElementById('bigLetterDisplay').classList.remove('spinning');
+      ['btnPauseResume', 'btnResetClock', 'btnGiantStop'].forEach(id => document.getElementById(id).disabled = true);
+      document.getElementById('btnPauseResume').textContent = '⏸️ Pausar';
+        state = { ...d, activeLetters: new Set(d.activeLetters), timerInterval: null,
+          isTimerRunning: false, isPaused: false, roundEnded: d.roundEnded === true };
+        ['selectTime','selectRounds','selectStopMode'].forEach((id, i) => document.getElementById(id).value = saved.settings[i]);
+        ['newCategoryInput','jsonPasteTextarea'].forEach((id, i) => {
+          document.getElementById(id).value = typeof saved.drafts?.[i] === 'string' ? saved.drafts[i] : '';
+        });
+        document.getElementById('btnMute').textContent = state.isMuted ? '🔇 Sonido: OFF' : '🔊 Sonido: ON';
+        switchView(state.view);
+        document.getElementById('btnBackSetup').style.display = state.view === 'viewSetup' ? 'none' : 'inline-flex';
+        if (state.view === 'viewPodium') {
+          // Rebuild the podium without sound after restoring.
+          const muted = state.isMuted;
+          state.isMuted = true;
+          showFinalPodium();
+          state.isMuted = muted;
+        } else if (state.view === 'viewGame') {
+          document.getElementById('roundBadge').textContent = `Ronda ${state.currentRound} de ${state.totalRounds}`;
+          document.getElementById('bigLetterDisplay').textContent = state.currentLetter || '?';
+          document.getElementById('currentLetterHint').textContent = state.currentLetter || '?';
+          document.getElementById('btnSpinLetter').disabled = Boolean(state.currentLetter);
+          document.getElementById('btnSpinLetter').textContent = state.currentLetter ? `✅ Letra ${state.currentLetter} en juego` : '🎰 Sortear Letra';
+          renderUsedLettersBar();
+          renderLiveCategories();
+          renderLiveRanking();
+          updateTimerDisplay();
+          if (state.currentLetter && !state.roundEnded) {
+            startRoundCountdown();
+            state.isPaused = true;
+            document.getElementById('btnPauseResume').textContent = '▶️ Reanudar';
+          }
+          if (state.roundEnded || saved.scoringOpen) openScoringModal(state.roundEnded);
+        }
+      renderAlphabetSetup();
+      renderCategoriesSetup();
+      renderTeamsSetup();
+      buildPrintableSheet();
+    }
+
+    function restoreSession() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        applySessionSnapshot(JSON.parse(raw));
+        document.getElementById('saveStatus').textContent = '✓ Datos recuperados. Si había una ronda en curso, el reloj está en pausa.';
+      } catch {
+        document.getElementById('saveStatus').textContent = '⚠ No se han podido recuperar los datos guardados.';
+      }
+    }
+
+    // Save after UI handlers, including each keystroke. No reloads or navigation timers.
+    ['click', 'input', 'change'].forEach(type => document.addEventListener(type, saveSession));
+    window.addEventListener('pagehide', saveSession);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        if (state.isTimerRunning && !state.isPaused) togglePauseTimer();
+        saveSession();
+      }
+    });
+    window.addEventListener('beforeunload', event => {
+      saveSession();
+      if (state.view === 'viewGame') {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
+      restoreSession();
       renderAlphabetSetup();
       renderCategoriesSetup();
       renderTeamsSetup();
