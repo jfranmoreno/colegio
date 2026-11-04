@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sudoku Escolar Interactiva 🎯</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Nunito: Alta legibilidad escolar y numérica en monitores interactivos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fffbeb;
+            background-image: radial-gradient(#FDBA74 2px, transparent 2px);
+            background-size: 30px 30px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        /* Números tabulares de alta claridad para el monitor del aula */
+        .sudoku-num {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        /* Grid base para tableros de Sudoku */
+        #board-left, #board-right {
+            display: grid;
+            gap: 2px;
+            padding: 4px;
+            background-color: #64748b;
+            border-radius: 14px;
+            border: 4px solid #475569;
+        }
+        #board-left > div, #board-right > div {
+            aspect-ratio: 1;
+        }
+        /* Scrollbar amigable para listas en MDI */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffedd5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fb923c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col text-slate-800">
+
+    <!-- Contenedor dedicado para confeti -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[150] overflow-hidden"></div>
+
+    <!-- Input oculto para cargar archivos JSON -->
+    <input type="file" id="json-file-input" accept=".json" class="hidden">
+
+    <!-- Botones flotantes Superiores: Sonido y Pantalla Completa -->
+    <div class="fixed top-3 right-3 z-[60] flex items-center gap-2">
+        <button id="btn-toggle-sound" title="Activar/Desactivar Sonido" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white border-4 border-orange-300 shadow-md flex items-center justify-center text-2xl hover:scale-105 active:scale-95 transition-transform">
+            🔊
+        </button>
+        <button id="btn-fullscreen" title="Pantalla Completa" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white border-4 border-sky-300 shadow-md flex items-center justify-center text-2xl font-black text-sky-600 hover:scale-105 active:scale-95 transition-transform">
+            ⛶
+        </button>
+    </div>
+
+    <!-- ==========================================
+         1. PANTALLA DE INICIO Y CONFIGURACIÓN
+         ========================================== -->
+    <div id="start-screen" class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-yellow-100/90 backdrop-blur-sm">
+        <div class="bg-white p-5 md:p-7 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.12)] text-center w-full max-w-2xl border-4 border-orange-300 relative flex flex-col max-h-[96vh]">
+            <div class="overflow-y-auto pr-1 space-y-4">
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-4xl md:text-5xl animate-bounce">🧩</span>
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-black text-orange-500 tracking-tight drop-shadow-sm">SUDOKU ESCOLAR</h1>
+                        <p class="text-slate-500 font-bold text-sm">Solitario · Duelo Rápido 1 vs 1 · Torneo de Aula</p>
+                    </div>
+                </div>
+                
+                <!-- Barra de Gestión JSON (Guardar / Cargar Configuración o Torneo) -->
+                <div class="bg-amber-50 p-2.5 rounded-2xl border-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs font-extrabold text-amber-800 uppercase tracking-wider ml-1">💾 Datos del Aula (JSON):</span>
+                    <div class="flex gap-2 flex-1 justify-end">
+                        <button id="btn-export-setup" class="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-extrabold px-3 py-2 rounded-xl shadow border-b-2 border-amber-700 active:translate-y-0.5 transition-all flex items-center gap-1">
+                            ⬇️ Guardar Config
+                        </button>
+                        <button id="btn-import-json-start" class="bg-teal-600 hover:bg-teal-700 text-white text-xs md:text-sm font-extrabold px-3 py-2 rounded-xl shadow border-b-2 border-teal-800 active:translate-y-0.5 transition-all flex items-center gap-1">
+                            📂 Cargar JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aviso de sesión autoguardada en el navegador -->
+                <div id="autosave-banner" class="hidden bg-sky-50 border-2 border-sky-300 p-3 rounded-2xl flex items-center justify-between gap-2">
+                    <div class="text-left">
+                        <p class="text-xs font-extrabold text-sky-800">⚡ Partida o Torneo en curso detectado</p>
+                        <p class="text-xs font-bold text-sky-600" id="autosave-info">Sesión guardada automáticamente</p>
+                    </div>
+                    <button id="btn-resume-autosave" class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-extrabold px-4 py-2 rounded-xl shadow">
+                        ▶️ Continuar
+                    </button>
+                </div>
+
+                <!-- Selector de Modalidad de Juego (Solitario / 1 vs 1 / Torneo) -->
+                <div>
+                    <p class="text-xs font-extrabold text-slate-400 uppercase mb-1.5 tracking-wider">1. Elige el Modo de Juego</p>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" data-type="solo" class="game-type-btn py-3 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 transition-all">
+                            <span class="text-2xl">👤</span>
+                            <span>Solitario</span>
+                            <span class="text-[11px] font-bold opacity-75">Tablero Grande</span>
+                        </button>
+                        <button type="button" data-type="quick1v1" class="game-type-btn py-3 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 transition-all">
+                            <span class="text-2xl">⚔️</span>
+                            <span>Duelo 1 vs 1</span>
+                            <span class="text-[11px] font-bold opacity-75">Partida Rápida</span>
+                        </button>
+                        <button type="button" data-type="tournament" class="game-type-btn py-3 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 transition-all">
+                            <span class="text-2xl">🏆</span>
+                            <span>Torneo</span>
+                            <span class="text-[11px] font-bold opacity-75">Hasta 25 Jug.</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Parámetros del Juego -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <!-- Jugadores (Solo activo en modo Torneo) -->
+                    <div id="player-count-box" class="flex flex-col justify-between bg-orange-50 p-3 rounded-2xl border-2 border-orange-100 transition-opacity">
+                        <label class="font-extrabold text-orange-700 text-xs uppercase mb-1" id="player-count-label">👥 Jugadores (2-25)</label>
+                        <div class="flex items-center justify-center gap-1">
+                            <button type="button" id="btn-dec-players" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
+                            <input type="number" id="player-count" value="4" min="2" max="25" class="sudoku-num w-14 text-center text-2xl font-black text-orange-600 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-0.5">
+                            <button type="button" id="btn-inc-players" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Vidas (1 a 10) -->
+                    <div class="flex flex-col justify-between bg-orange-50 p-3 rounded-2xl border-2 border-orange-100">
+                        <label class="font-extrabold text-orange-700 text-xs uppercase mb-1">❤️ Vidas (1-10)</label>
+                        <div class="flex items-center justify-center gap-1">
+                            <button type="button" id="btn-dec-lives" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
+                            <input type="number" id="lives-input" value="4" min="1" max="10" class="sudoku-num w-14 text-center text-2xl font-black text-orange-600 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-0.5">
+                            <button type="button" id="btn-inc-lives" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Nivel de Tablero -->
+                    <div class="flex flex-col justify-between bg-orange-50 p-3 rounded-2xl border-2 border-orange-100">
+                        <label class="font-extrabold text-orange-700 text-xs uppercase mb-1">🎮 Tamaño Tablero</label>
+                        <select id="mode-input" class="w-full text-center text-base font-extrabold text-orange-700 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-2">
+                            <option value="6">KIDS (6x6)</option>
+                            <option value="9">JUNIOR (9x9)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Lista de Nombres -->
+                <div class="text-left">
+                    <div class="flex justify-between items-center mb-1 px-2">
+                        <p class="text-xs font-extrabold text-slate-400 uppercase" id="participants-label">Participantes:</p>
+                        <button type="button" id="btn-shuffle-players" class="text-xs font-extrabold text-orange-600 hover:text-orange-700 bg-orange-100 px-3 py-1 rounded-full transition-colors">
+                            🎲 Mezclar Orden
+                        </button>
+                    </div>
+                    <div id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-36 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"></div>
+                </div>
+                
+                <button id="start-button" class="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xl font-black rounded-2xl shadow-lg hover:shadow-orange-300 hover:scale-[1.01] transition-all active:scale-95 border-b-4 border-orange-700">
+                    ¡EMPEZAR AHORA! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         2. PANTALLA DE CLASIFICACIÓN (SOLO TORNEO)
+         ========================================== -->
+    <div id="bracket-screen" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center p-4 bg-slate-50 pt-4 pb-20">
+        <div class="w-full max-w-3xl bg-white rounded-[2.5rem] p-6 md:p-8 shadow-2xl border-4 border-sky-200 flex flex-col h-full max-h-[84vh]">
+            <div class="flex items-center justify-between border-b-2 border-sky-100 pb-3 mb-4 pr-16 md:pr-0">
+                <span id="bracket-mode-badge" class="bg-sky-100 text-sky-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">Modo 6x6</span>
+                <h2 id="round-title" class="text-2xl md:text-3xl font-black text-sky-600 text-center tracking-wide">Ronda 1</h2>
+                <span id="bracket-players-badge" class="bg-orange-100 text-orange-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">❤️ 4</span>
+            </div>
+
+            <div id="bracket-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-3 p-2 mb-4 content-start"></div>
+            
+            <button id="next-match-btn" class="w-full py-4 bg-sky-500 text-white text-xl font-black rounded-2xl shadow-[0_6px_0_rgb(2,132,199)] hover:bg-sky-400 active:shadow-none active:translate-y-1 transition-all">
+                Jugar Siguiente Partido ▶️
+            </button>
+        </div>
+
+        <!-- Barra Docente en Clasificación -->
+        <div id="teacher-bar-bracket" class="fixed bottom-0 w-full bg-slate-800 text-white p-2.5 flex flex-wrap justify-center gap-3 rounded-t-2xl opacity-95 z-50">
+            <button id="btn-save-json-bracket" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                💾 Guardar Torneo (JSON)
+            </button>
+            <button id="btn-load-json-bracket" class="bg-teal-600 hover:bg-teal-700 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                📂 Cargar JSON
+            </button>
+            <button id="btn-end-tournament-bracket" class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                🏁 Menú Principal
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         3. PANTALLA DE JUEGO (SOLITARIO / 1v1 / TORNEO)
+         ========================================== -->
+    <div id="game-screen" class="hidden flex-1 flex flex-col relative h-full pb-14">
+        <!-- Cabecera Superior -->
+        <div class="h-14 flex items-center justify-center relative z-20 mt-1 px-4">
+            <div id="versus-label" class="bg-white border-4 border-yellow-400 text-amber-600 px-6 py-1 rounded-full font-black text-base md:text-2xl shadow-md tracking-wide truncate max-w-xl">
+                JUGADOR 1 vs JUGADOR 2
+            </div>
+        </div>
+
+        <!-- Contenedor Principal de Tableros -->
+        <div id="boards-wrapper" class="flex-1 flex flex-col md:flex-row gap-3 p-2 md:p-4 overflow-hidden max-w-7xl mx-auto w-full items-center justify-center">
+            
+            <!-- PANEL IZQUIERDO / PRINCIPAL (Usado también en Modo Solitario con mayor tamaño) -->
+            <div id="panel-left" class="flex-1 w-full bg-white/95 backdrop-blur rounded-3xl border-4 border-pink-300 shadow-xl flex flex-col p-3 md:p-4 relative h-full max-h-[80vh] md:max-h-full justify-between transition-all">
+                <div class="flex justify-between items-center mb-1 px-2">
+                    <span id="name-left" class="bg-pink-500 text-white px-4 py-1 rounded-full font-black text-sm md:text-lg shadow border-b-2 border-pink-700 truncate max-w-[200px]">Jugador 1</span>
+                    <div id="lives-left" class="bg-pink-50 px-3 py-1 rounded-full shadow-inner border border-pink-200 flex gap-1 items-center min-h-[34px]"></div>
+                </div>
+                <div class="flex-1 flex items-center justify-center min-h-0 overflow-hidden py-1">
+                    <div id="board-left" class="w-full max-w-[360px] shadow-md transition-all"></div>
+                </div>
+                <div class="mt-2 w-full">
+                    <div id="pad-left"></div>
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO (Oculto automáticamente en Modo Solitario) -->
+            <div id="panel-right" class="flex-1 w-full bg-white/95 backdrop-blur rounded-3xl border-4 border-sky-300 shadow-xl flex flex-col p-3 md:p-4 relative h-full max-h-[80vh] md:max-h-full justify-between transition-all">
+                <div class="flex justify-between items-center mb-1 px-2">
+                    <div id="lives-right" class="bg-sky-50 px-3 py-1 rounded-full shadow-inner border border-sky-200 flex gap-1 items-center min-h-[34px]"></div>
+                    <span id="name-right" class="bg-sky-500 text-white px-4 py-1 rounded-full font-black text-sm md:text-lg shadow border-b-2 border-sky-700 truncate max-w-[200px]">Jugador 2</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center min-h-0 overflow-hidden py-1">
+                    <div id="board-right" class="w-full max-w-[360px] shadow-md transition-all"></div>
+                </div>
+                <div class="mt-2 w-full">
+                    <div id="pad-right"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra Docente en Partida -->
+        <div id="teacher-bar-game" class="fixed bottom-0 w-full bg-slate-800 text-white p-2 flex flex-wrap justify-center gap-2 md:gap-3 rounded-t-2xl opacity-95 z-50">
+            <button id="btn-back-bracket" class="bg-slate-600 hover:bg-slate-500 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                📋 Ver Cuadro
+            </button>
+            <button id="btn-new-puzzle" class="bg-indigo-500 hover:bg-indigo-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                🎲 Nuevo Tablero
+            </button>
+            <button id="btn-restart-match" class="bg-amber-500 hover:bg-amber-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                🔄 Reiniciar
+            </button>
+            <button id="btn-end-round" class="bg-blue-500 hover:bg-blue-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                ⏭️ Decidir Ganador
+            </button>
+            <button id="btn-save-json-game" class="bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                💾 Guardar JSON
+            </button>
+            <button id="btn-end-tournament-game" class="bg-red-500 hover:bg-red-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                🏠 Menú
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         4. VENTANAS MODALES
+         ========================================== -->
+    <!-- Modal General (Victoria / Fin de Partida) -->
+    <div id="modal" class="hidden fixed inset-0 z-[100] bg-sky-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full text-center shadow-2xl border-4 border-yellow-300">
+            <h2 id="modal-title" class="text-3xl font-black text-pink-500 mb-2">TÍTULO</h2>
+            <div id="modal-body" class="mb-6 text-lg font-bold text-slate-600">Mensaje</div>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button id="modal-secondary-btn" class="hidden flex-1 py-3.5 bg-slate-200 text-slate-700 text-lg font-extrabold rounded-2xl hover:bg-slate-300 active:translate-y-0.5">
+                    🏠 Menú
+                </button>
+                <button id="modal-button" class="flex-1 py-3.5 bg-sky-500 text-white text-xl font-black rounded-2xl shadow-[0_4px_0_rgb(2,132,199)] hover:bg-sky-400 active:translate-y-0.5">
+                    ¡GENIAL!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="modal-confirm" class="hidden fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full text-center shadow-2xl border-4 border-purple-400">
+            <h2 id="modal-confirm-title" class="text-2xl font-black text-purple-600 mb-2">🤔 ¿Estás seguro/a?</h2>
+            <div id="modal-confirm-body" class="mb-6 text-slate-600 text-lg font-bold">Confirmar acción</div>
+            <div class="flex gap-4">
+                <button id="btn-confirm-no" class="flex-1 py-3 bg-gray-200 text-gray-700 font-extrabold rounded-xl hover:bg-gray-300 text-lg">Cancelar</button>
+                <button id="btn-confirm-yes" class="flex-1 py-3 bg-purple-600 text-white font-extrabold rounded-xl hover:bg-purple-700 text-lg shadow-md">Sí, adelante</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Docente: Forzar Ganador -->
+    <div id="modal-force-win" class="hidden fixed inset-0 z-[110] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full text-center shadow-2xl border-4 border-blue-400">
+            <h2 class="text-2xl font-black text-slate-700 mb-2">👩‍🏫 Decisión Docente</h2>
+            <p class="mb-6 text-slate-500 font-bold">Selecciona quién gana esta partida:</p>
+            <div class="flex gap-4">
+                <button id="btn-force-left" class="flex-1 py-4 bg-pink-500 text-white font-black rounded-xl hover:bg-pink-600 shadow-md px-2 truncate">Gana J1</button>
+                <button id="btn-force-right" class="flex-1 py-4 bg-sky-500 text-white font-black rounded-xl hover:bg-sky-600 shadow-md px-2 truncate">Gana J2</button>
+            </div>
+            <button id="btn-force-cancel" class="mt-5 text-slate-500 hover:text-slate-700 font-extrabold underline text-sm py-2 px-4">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Notificación Toast rápida -->
+    <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-slate-800 text-white px-5 py-2.5 rounded-full shadow-xl font-extrabold text-sm border-2 border-slate-600 transition-all">
+        Notificación
+    </div>
+
+    <!-- ==========================================
+         LÓGICA DE LA APLICACIÓN (JAVASCRIPT)
+         ========================================== -->
+    <script>
+        /**
+         * 1. SINTETIZADOR DE AUDIO AUTOCONTENIDO (Web Audio API)
+         */
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+                if (type === 'select') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(580, now + 0.06);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (type === 'correct') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'error') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(130, now + 0.25);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'win') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.1);
+                        gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.25);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        /**
+         * 2. ESTADO GLOBAL Y MODALIDADES DE JUEGO
+         * gameType: 'solo' | 'quick1v1' | 'tournament'
+         */
+        const MAX_PLAYERS = 25;
+        const MIN_PLAYERS = 2;
+        const STORAGE_KEY = 'sudoku_escolar_mdi_v3';
+
+        let currentGameType = 'tournament'; 
+        let sessionActive = false;
+        let currentRoundMatches = []; 
+        let currentRoundNumber = 1;
+        let playerNamesMap = {}; 
+        let currentMatchIndex = 0;
+
+        let currentMatch = {
+            p1: null, 
+            p2: null, 
+            active: false,
+            originalDataLeft: null,
+            originalDataRight: null
+        };
+
+        let gameStates = {
+            left: { puzzle: [], solution: [], selectedCell: null, completed: false, frozen: false, errors: 0, id: null },
+            right: { puzzle: [], solution: [], selectedCell: null, completed: false, frozen: false, errors: 0, id: null }
+        };
+
+        let freezeTimers = { left: null, right: null };
+        let maxErrors = 4;
+        let currentGridSize = 6; 
+
+        /**
+         * 3. BASE DE DATOS DE PUZZLES (6x6 y 9x9)
+         */
+        const puzzleDatabase = {
+            6: [
+                {
+                    solution: [1, 2, 3, 4, 5, 6, 4, 5, 6, 1, 2, 3, 2, 3, 4, 5, 6, 1, 5, 6, 1, 2, 3, 4, 3, 1, 2, 6, 4, 5, 6, 4, 5, 3, 1, 2],
+                    puzzle:   [1, 0, 3, 0, 5, 0, 0, 5, 0, 1, 0, 3, 2, 0, 4, 0, 6, 0, 0, 6, 0, 2, 0, 4, 3, 0, 2, 0, 4, 0, 0, 4, 0, 3, 0, 2]
+                },
+                {
+                    solution: [3, 5, 1, 6, 2, 4, 6, 2, 4, 3, 5, 1, 5, 1, 6, 2, 4, 3, 2, 4, 3, 5, 1, 6, 1, 3, 5, 4, 6, 2, 4, 6, 2, 1, 3, 5],
+                    puzzle:   [3, 0, 1, 0, 2, 0, 0, 2, 0, 3, 0, 1, 5, 0, 6, 0, 4, 0, 0, 4, 0, 5, 0, 6, 1, 0, 5, 0, 6, 0, 0, 6, 0, 1, 0, 5]
+                },
+                {
+                    solution: [6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 5, 4, 6, 2, 1, 3, 2, 3, 1, 6, 4, 5, 4, 6, 5, 1, 3, 2, 3, 1, 2, 5, 6, 4],
+                    puzzle:   [6, 0, 4, 3, 0, 1, 1, 0, 3, 4, 0, 6, 0, 4, 0, 0, 1, 0, 0, 3, 0, 0, 4, 0, 4, 0, 5, 1, 0, 2, 3, 0, 2, 5, 0, 4]
+                },
+                {
+                    solution: [2, 1, 6, 5, 4, 3, 5, 3, 4, 1, 6, 2, 1, 2, 5, 4, 3, 6, 4, 6, 3, 2, 1, 5, 3, 5, 1, 6, 2, 4, 6, 4, 2, 3, 5, 1],
+                    puzzle:   [2, 0, 6, 5, 0, 3, 0, 3, 0, 0, 6, 0, 1, 0, 5, 4, 0, 6, 4, 0, 3, 2, 0, 5, 0, 5, 0, 0, 2, 0, 6, 0, 2, 3, 0, 1]
+                },
+                {
+                    solution: [4, 6, 2, 1, 3, 5, 1, 3, 5, 6, 4, 2, 6, 4, 1, 5, 2, 3, 5, 2, 3, 4, 1, 6, 2, 5, 6, 3, 1, 4, 3, 1, 4, 2, 6, 5],
+                    puzzle:   [4, 0, 2, 1, 0, 5, 0, 3, 0, 6, 4, 0, 6, 0, 1, 0, 2, 3, 5, 2, 0, 4, 0, 6, 0, 5, 6, 0, 1, 0, 3, 0, 4, 2, 0, 5]
+                },
+                {
+                    solution: [5, 3, 6, 2, 1, 4, 2, 1, 4, 5, 6, 3, 4, 6, 5, 1, 3, 2, 1, 2, 3, 4, 5, 6, 6, 4, 1, 3, 2, 5, 3, 5, 2, 6, 4, 1],
+                    puzzle:   [0, 3, 6, 2, 0, 4, 2, 0, 4, 0, 6, 3, 4, 6, 0, 1, 0, 2, 1, 0, 3, 0, 5, 6, 6, 4, 0, 3, 0, 5, 3, 0, 2, 6, 4, 0]
+                }
+            ],
+            9: [
+                {
+                    solution: [
+                        5,3,4,6,7,8,9,1,2,
+                        6,7,2,1,9,5,3,4,8,
+                        1,9,8,3,4,2,5,6,7,
+                        8,5,9,7,6,1,4,2,3,
+                        4,2,6,8,5,3,7,9,1,
+                        7,1,3,9,2,4,8,5,6,
+                        9,6,1,5,3,7,2,8,4,
+                        2,8,7,4,1,9,6,3,5,
+                        3,4,5,2,8,6,1,7,9
+                    ],
+                    puzzle: [
+                        5,3,0,0,7,0,0,0,0,
+                        6,0,0,1,9,5,0,0,0,
+                        0,9,8,0,0,0,0,6,0,
+                        8,0,0,0,6,0,0,0,3,
+                        4,0,0,8,0,3,0,0,1,
+                        7,0,0,0,2,0,0,0,6,
+                        0,6,0,0,0,0,2,8,0,
+                        0,0,0,4,1,9,0,0,5,
+                        0,0,0,0,8,0,0,7,9
+                    ]
+                },
+                {
+                    solution: [
+                        4,3,5,2,6,9,7,8,1,
+                        6,8,2,5,7,1,4,9,3,
+                        1,9,7,8,3,4,5,6,2,
+                        8,2,6,1,9,5,3,4,7,
+                        3,7,4,6,8,2,9,1,5,
+                        9,5,1,7,4,3,6,2,8,
+                        5,1,9,3,2,6,8,7,4,
+                        2,4,8,9,5,7,1,3,6,
+                        7,6,3,4,1,8,2,5,9
+                    ],
+                    puzzle: [
+                        0,0,0,2,6,0,7,0,1,
+                        6,8,0,0,7,0,0,9,0,
+                        1,9,0,0,0,4,5,0,0,
+                        8,2,0,1,0,0,0,4,0,
+                        0,0,4,6,0,2,9,0,0,
+                        0,5,0,0,0,3,0,2,8,
+                        0,0,9,3,0,0,0,7,4,
+                        0,4,0,0,5,0,0,3,6,
+                        7,0,3,0,1,8,0,0,0
+                    ]
+                },
+                {
+                    solution: [
+                        1,5,2,4,8,9,3,7,6,
+                        7,3,9,2,5,6,8,4,1,
+                        4,6,8,3,7,1,2,9,5,
+                        3,8,7,1,2,4,6,5,9,
+                        5,9,1,7,6,3,4,2,8,
+                        2,4,6,8,9,5,7,1,3,
+                        9,1,4,6,3,7,5,8,2,
+                        6,2,5,9,4,8,1,3,7,
+                        8,7,3,5,1,2,9,6,4
+                    ],
+                    puzzle: [
+                        1,0,0,4,8,9,0,0,6,
+                        7,3,0,0,5,0,0,4,0,
+                        4,6,0,0,0,1,2,9,5,
+                        3,8,7,1,2,0,6,0,0,
+                        5,0,1,7,0,3,0,0,8,
+                        0,4,6,0,9,5,7,1,0,
+                        9,1,4,6,0,0,0,8,0,
+                        0,2,0,0,4,0,0,3,7,
+                        8,0,3,5,1,2,0,0,4
+                    ]
+                }
+            ]
+        };
+
+        // --- Referencias al DOM ---
+        let startScreen, bracketScreen, gameScreen;
+        let playerCountInput, livesInput, modeInput, playersListContainer, startButton;
+        let bracketContainer, roundTitleDisplay, nextMatchBtn;
+        let versusLabel, leftBoard, rightBoard, leftPad, rightPad, panelLeft, panelRight;
+        let modal, modalTitle, modalBody, modalBtn, modalSecondaryBtn;
+        let modalConfirm, modalConfirmBody, btnConfirmYes, btnConfirmNo;
+        let modalForceWin, btnForceLeft, btnForceRight, btnForceCancel;
+        let jsonFileInput;
+        let pendingAction = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startScreen = document.getElementById('start-screen');
+            bracketScreen = document.getElementById('bracket-screen');
+            gameScreen = document.getElementById('game-screen');
+            
+            playerCountInput = document.getElementById('player-count');
+            livesInput = document.getElementById('lives-input');
+            modeInput = document.getElementById('mode-input');
+            playersListContainer = document.getElementById('players-list');
+            startButton = document.getElementById('start-button');
+            
+            bracketContainer = document.getElementById('bracket-container');
+            roundTitleDisplay = document.getElementById('round-title');
+            nextMatchBtn = document.getElementById('next-match-btn');
+            
+            versusLabel = document.getElementById('versus-label');
+            panelLeft = document.getElementById('panel-left');
+            panelRight = document.getElementById('panel-right');
+            leftBoard = document.getElementById('board-left');
+            rightBoard = document.getElementById('board-right');
+            leftPad = document.getElementById('pad-left');
+            rightPad = document.getElementById('pad-right');
+            
+            modal = document.getElementById('modal');
+            modalTitle = document.getElementById('modal-title');
+            modalBody = document.getElementById('modal-body');
+            modalBtn = document.getElementById('modal-button');
+            modalSecondaryBtn = document.getElementById('modal-secondary-btn');
+
+            modalConfirm = document.getElementById('modal-confirm');
+            modalConfirmBody = document.getElementById('modal-confirm-body');
+            btnConfirmYes = document.getElementById('btn-confirm-yes');
+            btnConfirmNo = document.getElementById('btn-confirm-no');
+
+            modalForceWin = document.getElementById('modal-force-win');
+            btnForceLeft = document.getElementById('btn-force-left');
+            btnForceRight = document.getElementById('btn-force-right');
+            btnForceCancel = document.getElementById('btn-force-cancel');
+
+            jsonFileInput = document.getElementById('json-file-input');
+
+            // Selector de modo de juego (Solitario / 1 vs 1 / Torneo)
+            document.querySelectorAll('.game-type-btn').forEach(btn => {
+                btn.addEventListener('click', () => setGameType(btn.dataset.type));
+            });
+
+            // Eventos de inicio y controles numéricos (+/-)
+            startButton.addEventListener('click', startSelectedMode);
+            playerCountInput.addEventListener('change', () => { clampPlayerCount(); renderNameInputs(); });
+            playerCountInput.addEventListener('input', renderNameInputs);
+            livesInput.addEventListener('change', clampLivesCount);
+
+            document.getElementById('btn-dec-players').addEventListener('click', () => {
+                if (currentGameType !== 'tournament') return;
+                playerCountInput.value = Math.max(MIN_PLAYERS, (parseInt(playerCountInput.value) || 4) - 1);
+                renderNameInputs();
+            });
+            document.getElementById('btn-inc-players').addEventListener('click', () => {
+                if (currentGameType !== 'tournament') return;
+                playerCountInput.value = Math.min(MAX_PLAYERS, (parseInt(playerCountInput.value) || 4) + 1);
+                renderNameInputs();
+            });
+            document.getElementById('btn-dec-lives').addEventListener('click', () => {
+                livesInput.value = Math.max(1, (parseInt(livesInput.value) || 4) - 1);
+            });
+            document.getElementById('btn-inc-lives').addEventListener('click', () => {
+                livesInput.value = Math.min(10, (parseInt(livesInput.value) || 4) + 1);
+            });
+            document.getElementById('btn-shuffle-players').addEventListener('click', shufflePlayerInputs);
+
+            // Eventos de Sonido y Pantalla Completa
+            document.getElementById('btn-toggle-sound').addEventListener('click', (e) => {
+                soundEnabled = !soundEnabled;
+                e.currentTarget.textContent = soundEnabled ? '🔊' : '🔇';
+                showToast(soundEnabled ? 'Sonido activado 🔊' : 'Sonido silenciado 🔇');
+            });
+
+            document.getElementById('btn-fullscreen').addEventListener('click', toggleFullScreen);
+            document.addEventListener('fullscreenchange', updateFullscreenButtonUI);
+
+            // Eventos de Teclado Numérico en Juego
+            leftPad.addEventListener('click', (e) => handlePadClick(e, 'left'));
+            rightPad.addEventListener('click', (e) => handlePadClick(e, 'right'));
+
+            // Controles Docentes
+            document.getElementById('btn-back-bracket').addEventListener('click', () => {
+                gameScreen.classList.add('hidden');
+                bracketScreen.classList.remove('hidden');
+                renderBracket();
+                saveToLocalStorage();
+            });
+            document.getElementById('btn-new-puzzle').addEventListener('click', requestNewPuzzleMatch);
+            document.getElementById('btn-restart-match').addEventListener('click', requestRestartMatch);
+            document.getElementById('btn-end-round').addEventListener('click', openForceWinModal);
+            document.getElementById('btn-end-tournament-game').addEventListener('click', requestEndSession);
+            document.getElementById('btn-end-tournament-bracket').addEventListener('click', requestEndSession);
+
+            // Eventos de Modales
+            btnConfirmYes.addEventListener('click', () => {
+                if (pendingAction) pendingAction();
+                modalConfirm.classList.add('hidden');
+                pendingAction = null;
+            });
+            btnConfirmNo.addEventListener('click', () => {
+                modalConfirm.classList.add('hidden');
+                pendingAction = null;
+            });
+
+            btnForceLeft.addEventListener('click', () => forceWin('left'));
+            btnForceRight.addEventListener('click', () => forceWin('right'));
+            btnForceCancel.addEventListener('click', () => modalForceWin.classList.add('hidden'));
+
+            // Eventos de Exportación / Importación JSON
+            document.getElementById('btn-export-setup').addEventListener('click', () => exportToJSON('configuracion'));
+            document.getElementById('btn-save-json-bracket').addEventListener('click', () => exportToJSON('progreso'));
+            document.getElementById('btn-save-json-game').addEventListener('click', () => exportToJSON('progreso'));
+
+            document.getElementById('btn-import-json-start').addEventListener('click', () => jsonFileInput.click());
+            document.getElementById('btn-load-json-bracket').addEventListener('click', () => jsonFileInput.click());
+            jsonFileInput.addEventListener('change', handleFileImport);
+
+            // Inicializar interfaz por defecto
+            setGameType('tournament');
+            checkAutoSave();
+        });
+
+        /**
+         * PANTALLA COMPLETA
+         */
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {
+                    showToast('⚠️ El navegador bloqueó la pantalla completa');
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function updateFullscreenButtonUI() {
+            const btn = document.getElementById('btn-fullscreen');
+            if (document.fullscreenElement) {
+                btn.textContent = '🗗';
+                btn.title = 'Salir de Pantalla Completa';
+            } else {
+                btn.textContent = '⛶';
+                btn.title = 'Pantalla Completa';
+            }
+        }
+
+        /**
+         * SELECCIÓN DE MODALIDAD (SOLITARIO / 1 VS 1 / TORNEO)
+         */
+        function setGameType(type) {
+            currentGameType = type;
+
+            document.querySelectorAll('.game-type-btn').forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.className = "game-type-btn py-3 px-2 rounded-2xl border-4 border-orange-500 bg-orange-50 text-orange-700 font-black text-sm md:text-base flex flex-col items-center gap-1 shadow-md scale-[1.02] transition-all";
+                } else {
+                    btn.className = "game-type-btn py-3 px-2 rounded-2xl border-4 border-slate-200 bg-white text-slate-500 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 hover:bg-slate-50 transition-all";
+                }
+            });
+
+            const countBox = document.getElementById('player-count-box');
+            const shuffleBtn = document.getElementById('btn-shuffle-players');
+            const partLabel = document.getElementById('participants-label');
+
+            if (type === 'solo') {
+                countBox.classList.add('opacity-40', 'pointer-events-none');
+                shuffleBtn.classList.add('hidden');
+                partLabel.textContent = 'Nombre del Jugador/a o Equipo:';
+                startButton.textContent = '¡JUGAR EN SOLITARIO! 🎯';
+            } else if (type === 'quick1v1') {
+                countBox.classList.add('opacity-40', 'pointer-events-none');
+                shuffleBtn.classList.remove('hidden');
+                partLabel.textContent = 'Nombres de los 2 Rivales:';
+                startButton.textContent = '¡EMPEZAR DUELO 1 VS 1! ⚔️';
+            } else {
+                countBox.classList.remove('opacity-40', 'pointer-events-none');
+                shuffleBtn.classList.remove('hidden');
+                partLabel.textContent = 'Lista de Participantes del Torneo:';
+                startButton.textContent = '¡EMPEZAR TORNEO! 🚀';
+            }
+
+            renderNameInputs();
+        }
+
+        function getEffectivePlayerCount() {
+            if (currentGameType === 'solo') return 1;
+            if (currentGameType === 'quick1v1') return 2;
+            return clampPlayerCount();
+        }
+
+        function clampPlayerCount() {
+            let val = parseInt(playerCountInput.value);
+            if (isNaN(val) || val < MIN_PLAYERS) val = MIN_PLAYERS;
+            if (val > MAX_PLAYERS) val = MAX_PLAYERS;
+            playerCountInput.value = val;
+            return val;
+        }
+
+        function clampLivesCount() {
+            let val = parseInt(livesInput.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 10) val = 10;
+            livesInput.value = val;
+            return val;
+        }
+
+        function renderNameInputs(customNamesArray = null) {
+            const count = getEffectivePlayerCount();
+            const currentInputs = playersListContainer.querySelectorAll('input');
+            const currentValues = customNamesArray || Array.from(currentInputs).map(i => i.value);
+
+            playersListContainer.innerHTML = ''; 
+            playersListContainer.className = count === 1 
+                ? "grid grid-cols-1 gap-2 p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"
+                : "grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-36 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100";
+
+            for (let i = 0; i < count; i++) {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-orange-200 shadow-sm";
+                
+                const label = document.createElement('span');
+                label.className = "font-black text-orange-600 text-xs w-7 text-center bg-orange-100 py-1 rounded-lg";
+                label.textContent = `#${i + 1}`;
+                
+                const input = document.createElement('input');
+                input.type = "text";
+                input.maxLength = 18;
+                input.className = "player-name-input flex-1 bg-transparent px-2 py-1 text-slate-700 text-sm focus:outline-none font-extrabold placeholder-orange-200";
+                input.placeholder = count === 1 ? "Nombre o Equipo" : `Jugador ${i + 1}`;
+                if (currentValues[i]) input.value = currentValues[i];
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                playersListContainer.appendChild(div);
+            }
+        }
+
+        function shufflePlayerInputs() {
+            const inputs = Array.from(playersListContainer.querySelectorAll('.player-name-input'));
+            const values = inputs.map((inp, idx) => inp.value.trim() || `Jugador ${idx + 1}`);
+            for (let i = values.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [values[i], values[j]] = [values[j], values[i]];
+            }
+            renderNameInputs(values);
+            playSound('select');
+            showToast('¡Orden de jugadores mezclado! 🎲');
+        }
+
+        /**
+         * INICIO DE PARTIDA SEGÚN MODALIDAD
+         */
+        function startSelectedMode() {
+            initAudio();
+            maxErrors = clampLivesCount();
+            currentGridSize = parseInt(modeInput.value) || 6;
+
+            const count = getEffectivePlayerCount();
+            const inputs = document.querySelectorAll('.player-name-input');
+            playerNamesMap = {};
+            let players = [];
+
+            for (let i = 0; i < count; i++) {
+                const id = i + 1;
+                const rawName = inputs[i] ? inputs[i].value.trim() : '';
+                playerNamesMap[id] = rawName || (count === 1 ? 'Jugador/a' : `Jugador ${id}`);
+                players.push(id);
+            }
+
+            sessionActive = true;
+            startScreen.classList.add('hidden');
+
+            if (currentGameType === 'solo') {
+                currentRoundNumber = 1;
+                currentRoundMatches = [{ p1: 1, p2: null, winner: null, status: 'playing' }];
+                currentMatchIndex = 0;
+                currentMatch.p1 = 1;
+                currentMatch.p2 = null;
+                currentMatch.active = true;
+
+                setupNewGameMatch(1, null);
+                bracketScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                saveToLocalStorage();
+            } else if (currentGameType === 'quick1v1') {
+                currentRoundNumber = 1;
+                currentRoundMatches = [{ p1: 1, p2: 2, winner: null, status: 'playing' }];
+                currentMatchIndex = 0;
+                currentMatch.p1 = 1;
+                currentMatch.p2 = 2;
+                currentMatch.active = true;
+
+                setupNewGameMatch(1, 2);
+                bracketScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                saveToLocalStorage();
+            } else {
+                // Modo Torneo
+                currentRoundNumber = 1;
+                generateRound(players);
+                bracketScreen.classList.remove('hidden');
+                renderBracket();
+                saveToLocalStorage();
+            }
+        }
+
+        /**
+         * LÓGICA DEL CUADRO DE TORNEO
+         */
+        function generateRound(pool) {
+            currentRoundMatches = [];
+            currentMatchIndex = 0;
+            let tempPool = [...pool];
+            while (tempPool.length > 0) {
+                if (tempPool.length >= 2) {
+                    currentRoundMatches.push({
+                        p1: tempPool.shift(),
+                        p2: tempPool.shift(),
+                        winner: null,
+                        status: 'pending'
+                    });
+                } else {
+                    const luckyOne = tempPool.shift();
+                    currentRoundMatches.push({
+                        p1: luckyOne,
+                        p2: null,
+                        winner: luckyOne,
+                        status: 'finished'
+                    });
+                }
+            }
+        }
+
+        function renderBracket() {
+            let roundName = `Ronda ${currentRoundNumber}`;
+            const totalMatchesInRound = currentRoundMatches.length;
+            const realMatches = currentRoundMatches.filter(m => m.p2 !== null).length;
+
+            if (totalMatchesInRound === 1 && realMatches === 1) roundName = "🏆 GRAN FINAL 🏆";
+            else if (totalMatchesInRound === 2) roundName = "🔥 SEMIFINALES 🔥";
+
+            roundTitleDisplay.textContent = roundName;
+            document.getElementById('bracket-mode-badge').textContent = currentGridSize === 6 ? '🎮 KIDS 6x6' : '🎮 JUNIOR 9x9';
+            document.getElementById('bracket-players-badge').textContent = `❤️ ${maxErrors} Vidas`;
+
+            bracketContainer.innerHTML = '';
+            
+            let allFinished = true;
+            let nextFound = false;
+
+            currentRoundMatches.forEach((match, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-3.5 rounded-2xl border-4 shadow-sm flex items-center justify-between gap-3 transition-all";
+                
+                const name1 = playerNamesMap[match.p1] || `J${match.p1}`;
+                const name2 = match.p2 ? (playerNamesMap[match.p2] || `J${match.p2}`) : "PASE DIRECTO 🎟️";
+
+                if (match.status === 'finished') {
+                    card.classList.add('border-slate-200', 'bg-slate-50/70');
+                    if (match.p2 === null) {
+                        card.innerHTML = `<span class="font-extrabold text-emerald-600 truncate">✨ ${name1}</span> <span class="text-xs bg-emerald-100 text-emerald-700 font-extrabold px-2.5 py-1 rounded-full shrink-0">Pasa de ronda</span>`;
+                    } else {
+                        const wName = match.winner === match.p1 ? name1 : name2;
+                        const lName = match.winner === match.p1 ? name2 : name1;
+                        card.innerHTML = `<div class="flex flex-col text-left truncate"><span class="font-extrabold text-emerald-600 truncate">✅ ${wName}</span><span class="text-slate-400 line-through text-xs font-bold truncate">${lName}</span></div><span class="text-2xl shrink-0">🏆</span>`;
+                    }
+                } else if (!nextFound) {
+                    nextFound = true;
+                    allFinished = false;
+                    currentMatchIndex = idx; 
+                    card.classList.add('border-yellow-400', 'ring-4', 'ring-yellow-100', 'bg-yellow-50/30');
+                    card.innerHTML = `
+                        <div class="flex-1 text-center font-extrabold text-slate-800 truncate">${name1}</div>
+                        <div class="bg-orange-500 text-white font-black text-xs px-2.5 py-1 rounded-lg shrink-0">VS</div>
+                        <div class="flex-1 text-center font-extrabold text-slate-800 truncate">${name2}</div>
+                    `;
+                } else {
+                    allFinished = false;
+                    card.classList.add('border-gray-100', 'bg-gray-50', 'text-gray-400');
+                    card.innerHTML = `
+                        <div class="flex-1 text-center font-bold truncate">${name1}</div>
+                        <div class="text-xs px-2 font-extrabold shrink-0">vs</div>
+                        <div class="flex-1 text-center font-bold truncate">${name2}</div>
+                    `;
+                }
+                bracketContainer.appendChild(card);
+            });
+
+            if (allFinished) {
+                const winners = currentRoundMatches.map(m => m.winner);
+                if (winners.length === 1) {
+                    nextMatchBtn.textContent = "🎉 Ver Campeón/a del Torneo 🏆";
+                    nextMatchBtn.onclick = () => showChampion(winners[0]);
+                    showChampion(winners[0]);
+                } else {
+                    nextMatchBtn.textContent = "Pasar a la Siguiente Ronda ➡️";
+                    nextMatchBtn.onclick = prepareNextRound;
+                }
+            } else {
+                const activeMatch = currentRoundMatches[currentMatchIndex];
+                const n1 = playerNamesMap[activeMatch.p1];
+                const n2 = playerNamesMap[activeMatch.p2];
+                nextMatchBtn.textContent = `Jugar: ${n1} vs ${n2} ▶️`;
+                nextMatchBtn.onclick = playNextMatchFromBracket;
+            }
+        }
+
+        function playNextMatchFromBracket() {
+            const match = currentRoundMatches[currentMatchIndex];
+            if (!match || match.status === 'finished') return;
+
+            const isResumingSameMatch = (
+                match.status === 'playing' &&
+                currentMatch.p1 === match.p1 &&
+                currentMatch.p2 === match.p2 &&
+                currentMatch.originalDataLeft &&
+                currentMatch.originalDataRight &&
+                gameStates.left.puzzle.length > 0
+            );
+
+            currentMatch.p1 = match.p1;
+            currentMatch.p2 = match.p2;
+            currentMatch.active = true;
+            match.status = 'playing';
+
+            if (isResumingSameMatch) {
+                refreshGameScreenUI();
+            } else {
+                setupNewGameMatch(match.p1, match.p2);
+            }
+
+            bracketScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            saveToLocalStorage();
+        }
+
+        function prepareNextRound() {
+            const winners = currentRoundMatches.map(m => m.winner);
+            if (winners.length === 1) {
+                showChampion(winners[0]);
+                return;
+            }
+            currentRoundNumber++;
+            generateRound(winners);
+            renderBracket();
+            saveToLocalStorage();
+        }
+
+        function showChampion(winnerId) {
+            const championName = playerNamesMap[winnerId];
+            playSound('win');
+            launchConfetti();
+            showModal("🏆 ¡CAMPEÓN/A DEL TORNEO! 🏆", `¡Enhorabuena, ${championName}! Has ganado el Torneo Escolar de Sudoku.`, () => {
+                hideModal();
+            });
+        }
+
+        /**
+         * LÓGICA DEL JUEGO Y ADAPTACIÓN VISUAL (SOLITARIO GRANDOTE VS DUELO)
+         */
+        function clearFreezeTimers() {
+            if (freezeTimers.left) { clearTimeout(freezeTimers.left); freezeTimers.left = null; }
+            if (freezeTimers.right) { clearTimeout(freezeTimers.right); freezeTimers.right = null; }
+            if (gameStates.left) gameStates.left.frozen = false;
+            if (gameStates.right) gameStates.right.frozen = false;
+        }
+
+        function setupNewGameMatch(p1, p2) {
+            clearFreezeTimers();
+            const db = puzzleDatabase[currentGridSize];
+            
+            let idx1 = Math.floor(Math.random() * db.length);
+            let idx2 = Math.floor(Math.random() * db.length);
+            
+            if (db.length > 1) {
+                let attempts = 0;
+                while (idx1 === idx2 && attempts < 15) {
+                    idx2 = Math.floor(Math.random() * db.length);
+                    attempts++;
+                }
+            }
+
+            const puzzleData1 = {
+                puzzle: [...db[idx1].puzzle],
+                solution: [...db[idx1].solution]
+            };
+            const puzzleData2 = {
+                puzzle: [...db[idx2].puzzle],
+                solution: [...db[idx2].solution]
+            };
+
+            currentMatch.originalDataLeft = puzzleData1;
+            currentMatch.originalDataRight = puzzleData2;
+
+            initGameStates(p1, p2, puzzleData1, puzzleData2);
+            refreshGameScreenUI();
+        }
+
+        function applyLayoutSizing() {
+            const isSolo = currentGameType === 'solo';
+            const btnBackBracket = document.getElementById('btn-back-bracket');
+            const btnForceEnd = document.getElementById('btn-end-round');
+            const btnNewPuzzle = document.getElementById('btn-new-puzzle');
+
+            if (isSolo) {
+                // Ocultar segundo tablero y ampliar el tablero principal para el monitor del aula
+                panelRight.classList.add('hidden');
+                panelLeft.classList.add('max-w-2xl', 'mx-auto');
+                leftBoard.className = "w-full max-w-[480px] md:max-w-[540px] shadow-lg transition-all";
+                
+                btnBackBracket.classList.add('hidden');
+                btnForceEnd.classList.add('hidden');
+                btnNewPuzzle.classList.remove('hidden');
+            } else {
+                // Modo 2 tableros (Duelo 1v1 o Torneo)
+                panelRight.classList.remove('hidden');
+                panelLeft.classList.remove('max-w-2xl', 'mx-auto');
+                leftBoard.className = "w-full max-w-[350px] md:max-w-[380px] shadow-md transition-all";
+                rightBoard.className = "w-full max-w-[350px] md:max-w-[380px] shadow-md transition-all";
+
+                btnForceEnd.classList.remove('hidden');
+                if (currentGameType === 'tournament') {
+                    btnBackBracket.classList.remove('hidden');
+                    btnNewPuzzle.classList.add('hidden');
+                } else {
+                    // Quick 1v1
+                    btnBackBracket.classList.add('hidden');
+                    btnNewPuzzle.classList.remove('hidden');
+                }
+            }
+        }
+
+        function refreshGameScreenUI() {
+            applyLayoutSizing();
+
+            const name1 = playerNamesMap[currentMatch.p1] || 'Jugador 1';
+            document.getElementById('name-left').textContent = name1;
+            renderBoard('left');
+            generatePad('left');
+            updateLivesUI('left');
+
+            if (currentGameType === 'solo') {
+                versusLabel.textContent = `🎯 MODO SOLITARIO: ${name1}`;
+            } else {
+                const name2 = playerNamesMap[currentMatch.p2] || 'Jugador 2';
+                versusLabel.textContent = `${name1}  VS  ${name2}`;
+                btnForceLeft.textContent = `Gana ${name1}`;
+                btnForceRight.textContent = `Gana ${name2}`;
+                document.getElementById('name-right').textContent = name2;
+                renderBoard('right');
+                generatePad('right');
+                updateLivesUI('right');
+            }
+        }
+
+        function initGameStates(p1, p2, puzzleDataLeft, puzzleDataRight) {
+            gameStates.left = { 
+                puzzle: [...puzzleDataLeft.puzzle], 
+                solution: [...puzzleDataLeft.solution], 
+                selectedCell: null, 
+                completed: false, 
+                frozen: false, 
+                id: p1, 
+                errors: 0 
+            };
+            
+            gameStates.right = { 
+                puzzle: [...puzzleDataRight.puzzle], 
+                solution: [...puzzleDataRight.solution], 
+                selectedCell: null, 
+                completed: false, 
+                frozen: false, 
+                id: p2, 
+                errors: 0 
+            };
+        }
+
+        function renderBoard(side) {
+            const container = side === 'left' ? leftBoard : rightBoard;
+            const state = gameStates[side];
+            const originalData = side === 'left' ? currentMatch.originalDataLeft : currentMatch.originalDataRight;
+
+            if (!originalData) return;
+
+            container.innerHTML = ''; 
+            container.style.gridTemplateColumns = `repeat(${currentGridSize}, 1fr)`;
+
+            const totalCells = currentGridSize * currentGridSize;
+            const selectedRow = state.selectedCell !== null ? Math.floor(state.selectedCell / currentGridSize) : -1;
+            const selectedCol = state.selectedCell !== null ? state.selectedCell % currentGridSize : -1;
+
+            const isSolo = currentGameType === 'solo';
+            // Tipografía más grande en modo solitario para máxima visibilidad desde toda la clase
+            let textSize;
+            if (isSolo) {
+                textSize = currentGridSize === 9 ? 'text-xl md:text-3xl' : 'text-3xl md:text-4xl';
+            } else {
+                textSize = currentGridSize === 9 ? 'text-base md:text-xl' : 'text-xl md:text-3xl';
+            }
+
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = `sudoku-num flex items-center justify-center ${textSize} font-black cursor-pointer select-none transition-colors duration-150 border border-slate-300 rounded-sm`;
+                
+                const row = Math.floor(i / currentGridSize);
+                const col = i % currentGridSize;
+                
+                // Bordes gruesos para subcuadrículas (2x3 en 6x6 | 3x3 en 9x9)
+                if (currentGridSize === 6) {
+                    if (col === 2) cell.classList.add('border-r-4', 'border-r-slate-700');
+                    if (row === 1 || row === 3) cell.classList.add('border-b-4', 'border-b-slate-700');
+                } else if (currentGridSize === 9) {
+                    if ((col + 1) % 3 === 0 && col < 8) cell.classList.add('border-r-4', 'border-r-slate-700');
+                    if ((row + 1) % 3 === 0 && row < 8) cell.classList.add('border-b-4', 'border-b-slate-700');
+                }
+
+                const val = state.puzzle[i];
+                cell.textContent = val === 0 ? '' : val;
+
+                const isFixed = originalData.puzzle[i] !== 0;
+
+                if (state.selectedCell === i) {
+                    cell.classList.add('bg-yellow-300', 'ring-inset', 'ring-4', 'ring-amber-500', 'text-slate-900', 'scale-[1.03]', 'z-10');
+                } else if (row === selectedRow || col === selectedCol) {
+                    cell.classList.add(isFixed ? 'bg-amber-50/90' : 'bg-yellow-50/80');
+                    cell.classList.add(isFixed ? 'text-slate-800' : 'text-blue-600');
+                } else {
+                    cell.classList.add(isFixed ? 'bg-slate-100' : 'bg-white');
+                    cell.classList.add(isFixed ? 'text-slate-900' : 'text-blue-600');
+                }
+
+                cell.addEventListener('click', () => selectCell(side, i));
+                container.appendChild(cell);
+            }
+        }
+
+        function generatePad(side) {
+            const container = document.getElementById(`pad-${side}`);
+            container.innerHTML = '';
+            const isSolo = currentGameType === 'solo';
+            const maxW = isSolo ? 'max-w-[540px]' : 'max-w-[380px]';
+            const btnHeight = isSolo ? 'h-14 md:h-16 text-2xl md:text-3xl' : 'h-12 md:h-14 text-xl md:text-2xl';
+
+            container.className = `grid gap-1.5 md:gap-2.5 ${maxW} mx-auto ${currentGridSize === 9 ? 'grid-cols-9' : 'grid-cols-6'}`;
+
+            for (let i = 1; i <= currentGridSize; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.number = i;
+                btn.textContent = i;
+                btn.className = `sudoku-num ${btnHeight} rounded-xl bg-white border-2 border-b-4 font-black active:border-b-2 active:translate-y-0.5 transition-all shadow-sm`;
+                if (side === 'left') {
+                    btn.classList.add('text-pink-600', 'border-pink-300', 'hover:bg-pink-50');
+                } else {
+                    btn.classList.add('text-sky-600', 'border-sky-300', 'hover:bg-sky-50');
+                }
+                container.appendChild(btn);
+            }
+        }
+
+        function selectCell(side, index) {
+            if (!currentMatch.active) return;
+            if (gameStates[side].frozen) return;
+            
+            const originalData = side === 'left' ? currentMatch.originalDataLeft : currentMatch.originalDataRight;
+            if (originalData.puzzle[index] !== 0 || gameStates[side].puzzle[index] !== 0) return; 
+
+            gameStates[side].selectedCell = index;
+            playSound('select');
+            renderBoard(side);
+        }
+
+        function handlePadClick(e, side) {
+            const btn = e.target.closest('button');
+            if (!btn || !currentMatch.active) return;
+            if (gameStates[side].frozen) return;
+
+            const state = gameStates[side];
+            if (state.selectedCell === null) {
+                showToast('👆 Toca primero una casilla vacía del tablero');
+                return;
+            }
+
+            const num = parseInt(btn.dataset.number);
+            const correctNum = state.solution[state.selectedCell];
+
+            if (num === correctNum) {
+                playSound('correct');
+                state.puzzle[state.selectedCell] = num;
+                state.selectedCell = null;
+                renderBoard(side);
+                saveToLocalStorage();
+                checkWin(side);
+            } else {
+                playSound('error');
+                state.errors++;
+                updateLivesUI(side);
+                saveToLocalStorage();
+
+                if (state.errors >= maxErrors) {
+                    eliminatePlayer(side);
+                    return;
+                }
+
+                state.frozen = true;
+                btn.classList.add('!bg-red-500', '!text-white', '!border-red-700', 'animate-shake');
+                
+                if (freezeTimers[side]) clearTimeout(freezeTimers[side]);
+                freezeTimers[side] = setTimeout(() => {
+                    state.frozen = false;
+                    generatePad(side);
+                    renderBoard(side);
+                }, 900); 
+            }
+        }
+
+        function updateLivesUI(side) {
+            const errors = gameStates[side].errors;
+            const lives = Math.max(0, maxErrors - errors);
+            const container = document.getElementById(`lives-${side}`);
+            if (!container) return;
+            let html = '';
+            for (let i = 0; i < maxErrors; i++) {
+                html += (i < lives) 
+                    ? '<span class="text-red-500 text-base md:text-xl">❤️</span>' 
+                    : '<span class="text-gray-300 text-base md:text-xl">💔</span>';
+            }
+            container.innerHTML = html;
+        }
+
+        function eliminatePlayer(losingSide) {
+            if (currentGameType === 'solo') {
+                clearFreezeTimers();
+                currentMatch.active = false;
+                const playerName = playerNamesMap[1] || 'Jugador/a';
+                saveToLocalStorage();
+                showModal(
+                    "💔 ¡Sin vidas!",
+                    `${playerName}, te has quedado sin vidas. ¿Quieres intentarlo de nuevo?`,
+                    () => {
+                        hideModal();
+                        executeRestartMatch();
+                    },
+                    "🔄 Reintentar",
+                    () => {
+                        hideModal();
+                        resetSession();
+                    }
+                );
+                return;
+            }
+
+            const winnerId = losingSide === 'left' ? currentMatch.p2 : currentMatch.p1;
+            const loserName = playerNamesMap[gameStates[losingSide].id];
+            endMatch(winnerId, `${loserName} se quedó sin vidas.`);
+        }
+
+        function checkWin(side) {
+            const state = gameStates[side];
+            if (!state.puzzle.includes(0)) {
+                endMatch(state.id, "¡Sudoku completado a la perfección!");
+            }
+        }
+
+        function endMatch(winnerId, reason) {
+            clearFreezeTimers();
+            currentMatch.active = false;
+            const winnerName = playerNamesMap[winnerId];
+            const matchInRound = currentRoundMatches[currentMatchIndex];
+            if (matchInRound) {
+                matchInRound.winner = winnerId;
+                matchInRound.status = 'finished';
+            }
+            
+            saveToLocalStorage();
+            playSound('win');
+            launchConfetti();
+
+            setTimeout(() => {
+                if (currentGameType === 'solo') {
+                    showModal(
+                        `🎉 ¡ENHORABUENA! 🎉`,
+                        `${winnerName} ha resuelto todo el Sudoku correctamente.`,
+                        () => {
+                            hideModal();
+                            setupNewGameMatch(1, null);
+                            currentMatch.active = true;
+                            saveToLocalStorage();
+                        },
+                        "🎲 Otro Tablero",
+                        () => {
+                            hideModal();
+                            resetSession();
+                        }
+                    );
+                } else if (currentGameType === 'quick1v1') {
+                    showModal(
+                        `¡${winnerName} GANA! 🏆`,
+                        reason,
+                        () => {
+                            hideModal();
+                            setupNewGameMatch(1, 2);
+                            currentMatch.active = true;
+                            saveToLocalStorage();
+                        },
+                        "⚔️ Jugar Revancha",
+                        () => {
+                            hideModal();
+                            resetSession();
+                        }
+                    );
+                } else {
+                    // Torneo
+                    showModal(
+                        `¡${winnerName} GANA! 🎉`,
+                        reason,
+                        () => {
+                            hideModal();
+                            gameScreen.classList.add('hidden');
+                            bracketScreen.classList.remove('hidden');
+                            renderBracket();
+                        },
+                        "📋 Ir al Cuadro"
+                    );
+                }
+            }, 350);
+        }
+
+        /**
+         * CONTROLES DOCENTES
+         */
+        function requestNewPuzzleMatch() {
+            showConfirmModal("¿Cargar un tablero nuevo diferente para esta partida?", () => {
+                setupNewGameMatch(currentMatch.p1, currentMatch.p2);
+                currentMatch.active = true;
+                saveToLocalStorage();
+                showToast('🎲 Nuevo tablero generado');
+            });
+        }
+
+        function requestRestartMatch() {
+            showConfirmModal("¿Quieres reiniciar este mismo tablero desde cero?", executeRestartMatch);
+        }
+
+        function executeRestartMatch() {
+            clearFreezeTimers();
+            initGameStates(currentMatch.p1, currentMatch.p2, currentMatch.originalDataLeft, currentMatch.originalDataRight);
+            currentMatch.active = true;
+            refreshGameScreenUI();
+            saveToLocalStorage();
+            showToast('Tablero reiniciado 🔄');
+        }
+
+        function requestEndSession() {
+            showConfirmModal("¿Salir al menú principal? Se cerrará la sesión actual.", resetSession);
+        }
+
+        function resetSession() {
+            clearFreezeTimers();
+            sessionActive = false;
+            currentRoundMatches = [];
+            localStorage.removeItem(STORAGE_KEY);
+            document.getElementById('autosave-banner').classList.add('hidden');
+
+            gameScreen.classList.add('hidden');
+            bracketScreen.classList.add('hidden');
+            modal.classList.add('hidden');
+            modalConfirm.classList.add('hidden');
+            modalForceWin.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            renderNameInputs(); 
+        }
+
+        function openForceWinModal() {
+            modalForceWin.classList.remove('hidden');
+        }
+
+        function forceWin(side) {
+            modalForceWin.classList.add('hidden');
+            const winnerId = side === 'left' ? currentMatch.p1 : currentMatch.p2;
+            endMatch(winnerId, "Victoria asignada por el docente.");
+        }
+
+        /**
+         * SISTEMA DE GUARDADO Y CARGA EN JSON + AUTOGUARDADO
+         */
+        function buildStateObject() {
+            const inputs = document.querySelectorAll('.player-name-input');
+            const setupNames = Array.from(inputs).map((inp, idx) => inp.value.trim() || `Jugador ${idx + 1}`);
+
+            return {
+                app: "SudokuBattleKids",
+                version: "3.0",
+                timestamp: new Date().toISOString(),
+                config: {
+                    gameType: currentGameType,
+                    playerCount: clampPlayerCount(),
+                    maxErrors: clampLivesCount(),
+                    gridSize: parseInt(modeInput.value) || 6,
+                    setupNames: setupNames
+                },
+                tournament: {
+                    active: sessionActive,
+                    currentRoundNumber: currentRoundNumber,
+                    currentMatchIndex: currentMatchIndex,
+                    playerNamesMap: playerNamesMap,
+                    currentRoundMatches: currentRoundMatches,
+                    currentMatch: currentMatch,
+                    gameStates: gameStates
+                }
+            };
+        }
+
+        function exportToJSON(mode = 'progreso') {
+            const stateObj = buildStateObject();
+            const dataStr = JSON.stringify(stateObj, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const filename = mode === 'configuracion' 
+                ? `sudoku_config_${stateObj.config.gameType}_${dateStr}.json`
+                : `sudoku_progreso_${stateObj.config.gameType}_${dateStr}.json`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            showToast('💾 Archivo JSON descargado correctamente');
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    applyImportedState(data);
+                } catch (err) {
+                    showModal("⚠️ Error de archivo", "El archivo seleccionado no es un JSON válido.", hideModal);
+                } finally {
+                    jsonFileInput.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function applyImportedState(data) {
+            if (!data || !data.config) {
+                showModal("⚠️ Formato incompatible", "El JSON no contiene datos de configuración válidos.", hideModal);
+                return;
+            }
+
+            clearFreezeTimers();
+
+            const cfg = data.config;
+            const importedType = ['solo', 'quick1v1', 'tournament'].includes(cfg.gameType) ? cfg.gameType : 'tournament';
+            const pCount = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, parseInt(cfg.playerCount) || 4));
+            maxErrors = Math.min(10, Math.max(1, parseInt(cfg.maxErrors) || 4));
+            currentGridSize = (parseInt(cfg.gridSize) === 9) ? 9 : 6;
+
+            playerCountInput.value = pCount;
+            livesInput.value = maxErrors;
+            modeInput.value = currentGridSize;
+            setGameType(importedType);
+            renderNameInputs(cfg.setupNames || []);
+
+            const trn = data.tournament;
+            if (trn && trn.active && Array.isArray(trn.currentRoundMatches) && trn.currentRoundMatches.length > 0) {
+                sessionActive = true;
+                currentRoundNumber = trn.currentRoundNumber || 1;
+                currentMatchIndex = trn.currentMatchIndex || 0;
+                playerNamesMap = trn.playerNamesMap || {};
+                currentRoundMatches = trn.currentRoundMatches;
+
+                if (trn.currentMatch) currentMatch = trn.currentMatch;
+                if (trn.gameStates) gameStates = trn.gameStates;
+
+                startScreen.classList.add('hidden');
+
+                const activeMatchObj = currentRoundMatches[currentMatchIndex];
+                if (importedType !== 'tournament' || (currentMatch.active && activeMatchObj && activeMatchObj.status === 'playing')) {
+                    bracketScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+                    refreshGameScreenUI();
+                } else {
+                    gameScreen.classList.add('hidden');
+                    bracketScreen.classList.remove('hidden');
+                    renderBracket();
+                }
+
+                saveToLocalStorage();
+                showToast('📂 Progreso cargado con éxito');
+            } else {
+                sessionActive = false;
+                gameScreen.classList.add('hidden');
+                bracketScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+                showToast('📂 Configuración cargada');
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                const stateObj = buildStateObject();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(stateObj));
+            } catch (e) {}
+        }
+
+        function checkAutoSave() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && data.tournament && data.tournament.active) {
+                    const banner = document.getElementById('autosave-banner');
+                    const info = document.getElementById('autosave-info');
+                    const modeLabel = data.config.gameType === 'solo' ? 'Solitario' : (data.config.gameType === 'quick1v1' ? 'Duelo 1 vs 1' : `Torneo · Ronda ${data.tournament.currentRoundNumber}`);
+                    info.textContent = `${modeLabel} (${data.config.gridSize}x${data.config.gridSize})`;
+                    banner.classList.remove('hidden');
+
+                    document.getElementById('btn-resume-autosave').onclick = () => {
+                        applyImportedState(data);
+                    };
+                }
+            } catch (e) {
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        }
+
+        /**
+         * UTILIDADES VISUALES (MODALES, TOAST Y CONFETI)
+         */
+        function showModal(title, body, primaryAction, primaryText = "¡GENIAL!", secondaryAction = null) {
+            modalTitle.textContent = title;
+            modalBody.textContent = body;
+            modalBtn.textContent = primaryText;
+            modalBtn.onclick = primaryAction;
+
+            if (secondaryAction) {
+                modalSecondaryBtn.classList.remove('hidden');
+                modalSecondaryBtn.onclick = secondaryAction;
+            } else {
+                modalSecondaryBtn.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function showConfirmModal(body, onConfirm) {
+            modalConfirmBody.textContent = body;
+            pendingAction = onConfirm;
+            modalConfirm.classList.remove('hidden');
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2600);
+        }
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            const colors = ['#FCD34D', '#F472B6', '#60A5FA', '#34D399', '#A78BFA', '#FB923C'];
+            for (let i = 0; i < 75; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'absolute top-0 w-3.5 h-3.5 rounded-full opacity-90';
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animation = `fall ${Math.random() * 2 + 1.2}s ease-in forwards`;
+                container.appendChild(conf);
+                setTimeout(() => conf.remove(), 3300);
+            }
+        }
+    </script>
+</body>
+</html>
