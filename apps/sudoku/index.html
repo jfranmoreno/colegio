@@ -86,13 +86,13 @@
          1. PANTALLA DE INICIO Y CONFIGURACIÓN
          ========================================== -->
     <div id="start-screen" class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-yellow-100/90 backdrop-blur-sm">
-        <div class="bg-white p-5 md:p-7 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.12)] text-center w-full max-w-2xl border-4 border-orange-300 relative flex flex-col max-h-[96vh]">
-            <div class="overflow-y-auto pr-1 space-y-4">
+        <div class="bg-white p-5 md:p-6 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.12)] text-center w-full max-w-2xl border-4 border-orange-300 relative flex flex-col max-h-[96vh]">
+            <div class="overflow-y-auto pr-1 space-y-3.5">
                 <div class="flex items-center justify-center gap-3">
                     <span class="text-4xl md:text-5xl animate-bounce">🧩</span>
                     <div>
                         <h1 class="text-3xl md:text-4xl font-black text-orange-500 tracking-tight drop-shadow-sm">SUDOKU ESCOLAR</h1>
-                        <p class="text-slate-500 font-bold text-sm">Solitario · Duelo Rápido 1 vs 1 · Torneo de Aula</p>
+                        <p class="text-slate-500 font-bold text-xs md:text-sm">Solitario · Duelo Rápido 1 vs 1 · Torneo de Aula</p>
                     </div>
                 </div>
                 
@@ -100,17 +100,17 @@
                 <div class="bg-amber-50 p-2.5 rounded-2xl border-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
                     <span class="text-xs font-extrabold text-amber-800 uppercase tracking-wider ml-1">💾 Datos del Aula (JSON):</span>
                     <div class="flex gap-2 flex-1 justify-end">
-                        <button id="btn-export-setup" class="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-extrabold px-3 py-2 rounded-xl shadow border-b-2 border-amber-700 active:translate-y-0.5 transition-all flex items-center gap-1">
+                        <button id="btn-export-setup" class="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-extrabold px-3 py-1.5 rounded-xl shadow border-b-2 border-amber-700 active:translate-y-0.5 transition-all flex items-center gap-1">
                             ⬇️ Guardar Config
                         </button>
-                        <button id="btn-import-json-start" class="bg-teal-600 hover:bg-teal-700 text-white text-xs md:text-sm font-extrabold px-3 py-2 rounded-xl shadow border-b-2 border-teal-800 active:translate-y-0.5 transition-all flex items-center gap-1">
+                        <button id="btn-import-json-start" class="bg-teal-600 hover:bg-teal-700 text-white text-xs md:text-sm font-extrabold px-3 py-1.5 rounded-xl shadow border-b-2 border-teal-800 active:translate-y-0.5 transition-all flex items-center gap-1">
                             📂 Cargar JSON
                         </button>
                     </div>
                 </div>
 
                 <!-- Aviso de sesión autoguardada en el navegador -->
-                <div id="autosave-banner" class="hidden bg-sky-50 border-2 border-sky-300 p-3 rounded-2xl flex items-center justify-between gap-2">
+                <div id="autosave-banner" class="hidden bg-sky-50 border-2 border-sky-300 p-2.5 rounded-2xl flex items-center justify-between gap-2">
                     <div class="text-left">
                         <p class="text-xs font-extrabold text-sky-800">⚡ Partida o Torneo en curso detectado</p>
                         <p class="text-xs font-bold text-sky-600" id="autosave-info">Sesión guardada automáticamente</p>
@@ -120,21 +120,21 @@
                     </button>
                 </div>
 
-                <!-- Selector de Modalidad de Juego (Solitario / 1 vs 1 / Torneo) -->
+                <!-- 1. Selector de Modalidad de Juego (Solitario / 1 vs 1 / Torneo) -->
                 <div>
-                    <p class="text-xs font-extrabold text-slate-400 uppercase mb-1.5 tracking-wider">1. Elige el Modo de Juego</p>
+                    <p class="text-xs font-extrabold text-slate-400 uppercase mb-1 tracking-wider">1. Elige el Modo de Juego</p>
                     <div class="grid grid-cols-3 gap-2.5">
-                        <button type="button" data-type="solo" class="game-type-btn py-3 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 transition-all">
+                        <button type="button" data-type="solo" class="game-type-btn py-2.5 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 transition-all">
                             <span class="text-2xl">👤</span>
                             <span>Solitario</span>
                             <span class="text-[11px] font-bold opacity-75">Tablero Grande</span>
                         </button>
-                        <button type="button" data-type="quick1v1" class="game-type-btn py-3 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 transition-all">
+                        <button type="button" data-type="quick1v1" class="game-type-btn py-2.5 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 transition-all">
                             <span class="text-2xl">⚔️</span>
                             <span>Duelo 1 vs 1</span>
                             <span class="text-[11px] font-bold opacity-75">Partida Rápida</span>
                         </button>
-                        <button type="button" data-type="tournament" class="game-type-btn py-3 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 transition-all">
+                        <button type="button" data-type="tournament" class="game-type-btn py-2.5 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 transition-all">
                             <span class="text-2xl">🏆</span>
                             <span>Torneo</span>
                             <span class="text-[11px] font-bold opacity-75">Hasta 25 Jug.</span>
@@ -142,32 +142,51 @@
                     </div>
                 </div>
 
-                <!-- Parámetros del Juego -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <!-- 2. Selector de Nivel de Dificultad (Fácil / Medio / Difícil) -->
+                <div>
+                    <p class="text-xs font-extrabold text-slate-400 uppercase mb-1 tracking-wider">2. Nivel de Dificultad</p>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" data-diff="easy" class="diff-btn py-2 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center transition-all">
+                            <span>🟢 Fácil</span>
+                            <span id="clues-label-easy" class="text-[11px] font-bold opacity-80">22 pistas</span>
+                        </button>
+                        <button type="button" data-diff="medium" class="diff-btn py-2 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center transition-all">
+                            <span>🟡 Medio</span>
+                            <span id="clues-label-medium" class="text-[11px] font-bold opacity-80">18 pistas</span>
+                        </button>
+                        <button type="button" data-diff="hard" class="diff-btn py-2 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center transition-all">
+                            <span>🔴 Difícil</span>
+                            <span id="clues-label-hard" class="text-[11px] font-bold opacity-80">14 pistas</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Parámetros del Juego -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
                     <!-- Jugadores (Solo activo en modo Torneo) -->
-                    <div id="player-count-box" class="flex flex-col justify-between bg-orange-50 p-3 rounded-2xl border-2 border-orange-100 transition-opacity">
+                    <div id="player-count-box" class="flex flex-col justify-between bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100 transition-opacity">
                         <label class="font-extrabold text-orange-700 text-xs uppercase mb-1" id="player-count-label">👥 Jugadores (2-25)</label>
                         <div class="flex items-center justify-center gap-1">
-                            <button type="button" id="btn-dec-players" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
+                            <button type="button" id="btn-dec-players" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
                             <input type="number" id="player-count" value="4" min="2" max="25" class="sudoku-num w-14 text-center text-2xl font-black text-orange-600 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-0.5">
-                            <button type="button" id="btn-inc-players" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
+                            <button type="button" id="btn-inc-players" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
                         </div>
                     </div>
 
                     <!-- Vidas (1 a 10) -->
-                    <div class="flex flex-col justify-between bg-orange-50 p-3 rounded-2xl border-2 border-orange-100">
+                    <div class="flex flex-col justify-between bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100">
                         <label class="font-extrabold text-orange-700 text-xs uppercase mb-1">❤️ Vidas (1-10)</label>
                         <div class="flex items-center justify-center gap-1">
-                            <button type="button" id="btn-dec-lives" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
+                            <button type="button" id="btn-dec-lives" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
                             <input type="number" id="lives-input" value="4" min="1" max="10" class="sudoku-num w-14 text-center text-2xl font-black text-orange-600 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-0.5">
-                            <button type="button" id="btn-inc-lives" class="w-10 h-10 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
+                            <button type="button" id="btn-inc-lives" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
                         </div>
                     </div>
 
                     <!-- Selector de Nivel de Tablero -->
-                    <div class="flex flex-col justify-between bg-orange-50 p-3 rounded-2xl border-2 border-orange-100">
+                    <div class="flex flex-col justify-between bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100">
                         <label class="font-extrabold text-orange-700 text-xs uppercase mb-1">🎮 Tamaño Tablero</label>
-                        <select id="mode-input" class="w-full text-center text-base font-extrabold text-orange-700 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-2">
+                        <select id="mode-input" class="w-full text-center text-base font-extrabold text-orange-700 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-1.5">
                             <option value="6">KIDS (6x6)</option>
                             <option value="9">JUNIOR (9x9)</option>
                         </select>
@@ -182,10 +201,10 @@
                             🎲 Mezclar Orden
                         </button>
                     </div>
-                    <div id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-36 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"></div>
+                    <div id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"></div>
                 </div>
                 
-                <button id="start-button" class="w-full py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xl font-black rounded-2xl shadow-lg hover:shadow-orange-300 hover:scale-[1.01] transition-all active:scale-95 border-b-4 border-orange-700">
+                <button id="start-button" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xl font-black rounded-2xl shadow-lg hover:shadow-orange-300 hover:scale-[1.01] transition-all active:scale-95 border-b-4 border-orange-700">
                     ¡EMPEZAR AHORA! 🚀
                 </button>
             </div>
@@ -197,8 +216,11 @@
          ========================================== -->
     <div id="bracket-screen" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center p-4 bg-slate-50 pt-4 pb-20">
         <div class="w-full max-w-3xl bg-white rounded-[2.5rem] p-6 md:p-8 shadow-2xl border-4 border-sky-200 flex flex-col h-full max-h-[84vh]">
-            <div class="flex items-center justify-between border-b-2 border-sky-100 pb-3 mb-4 pr-16 md:pr-0">
-                <span id="bracket-mode-badge" class="bg-sky-100 text-sky-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">Modo 6x6</span>
+            <div class="flex flex-wrap items-center justify-between border-b-2 border-sky-100 pb-3 mb-4 gap-2 pr-16 md:pr-0">
+                <div class="flex items-center gap-1.5">
+                    <span id="bracket-mode-badge" class="bg-sky-100 text-sky-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">Modo 6x6</span>
+                    <span id="bracket-diff-badge" class="bg-amber-100 text-amber-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">🟡 Medio</span>
+                </div>
                 <h2 id="round-title" class="text-2xl md:text-3xl font-black text-sky-600 text-center tracking-wide">Ronda 1</h2>
                 <span id="bracket-players-badge" class="bg-orange-100 text-orange-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">❤️ 4</span>
             </div>
@@ -229,10 +251,13 @@
          ========================================== -->
     <div id="game-screen" class="hidden flex-1 flex flex-col relative h-full pb-14">
         <!-- Cabecera Superior -->
-        <div class="h-14 flex items-center justify-center relative z-20 mt-1 px-4">
-            <div id="versus-label" class="bg-white border-4 border-yellow-400 text-amber-600 px-6 py-1 rounded-full font-black text-base md:text-2xl shadow-md tracking-wide truncate max-w-xl">
+        <div class="h-14 flex items-center justify-center gap-2 relative z-20 mt-1 px-4">
+            <div id="versus-label" class="bg-white border-4 border-yellow-400 text-amber-600 px-5 py-1 rounded-full font-black text-sm md:text-2xl shadow-md tracking-wide truncate max-w-xl">
                 JUGADOR 1 vs JUGADOR 2
             </div>
+            <span id="game-diff-badge" class="bg-white border-2 border-slate-300 text-slate-700 px-3 py-1 rounded-full font-extrabold text-xs md:text-sm shadow-sm shrink-0">
+                🟡 Medio
+            </span>
         </div>
 
         <!-- Contenedor Principal de Tableros -->
@@ -422,14 +447,16 @@
         }
 
         /**
-         * 2. ESTADO GLOBAL Y MODALIDADES DE JUEGO
+         * 2. ESTADO GLOBAL, MODALIDADES Y 3 NIVELES DE DIFICULTAD
          * gameType: 'solo' | 'quick1v1' | 'tournament'
+         * difficulty: 'easy' | 'medium' | 'hard'
          */
         const MAX_PLAYERS = 25;
         const MIN_PLAYERS = 2;
-        const STORAGE_KEY = 'sudoku_escolar_mdi_v3';
+        const STORAGE_KEY = 'sudoku_escolar_mdi_v4';
 
-        let currentGameType = 'tournament'; 
+        let currentGameType = 'tournament';
+        let currentDifficulty = 'medium';
         let sessionActive = false;
         let currentRoundMatches = []; 
         let currentRoundNumber = 1;
@@ -453,8 +480,15 @@
         let maxErrors = 4;
         let currentGridSize = 6; 
 
+        // Configuración de pistas según tamaño de tablero y nivel de dificultad
+        const DIFFICULTY_META = {
+            easy:   { label: '🟢 Fácil',   clues: { 6: 22, 9: 45 } },
+            medium: { label: '🟡 Medio',   clues: { 6: 18, 9: 36 } },
+            hard:   { label: '🔴 Difícil', clues: { 6: 14, 9: 28 } }
+        };
+
         /**
-         * 3. BASE DE DATOS DE PUZZLES (6x6 y 9x9)
+         * 3. BASE DE DATOS DE SOLUCIONES Y PLANTILLAS BASE (6x6 y 9x9)
          */
         const puzzleDatabase = {
             6: [
@@ -559,6 +593,63 @@
             ]
         };
 
+        /**
+         * GENERADOR DE PUZZLES EQUILIBRADOS POR NIVEL DE DIFICULTAD
+         * Ajusta de forma simétrica el número exacto de pistas manteniendo al menos 1 pista por fila/columna.
+         */
+        function buildPuzzleForDifficulty(template, gridSize, difficulty) {
+            const solution = [...template.solution];
+            let puzzle = [...template.puzzle];
+            const targetClues = DIFFICULTY_META[difficulty]?.clues[gridSize] || (gridSize === 6 ? 18 : 36);
+
+            let currentClues = puzzle.filter(v => v !== 0).length;
+
+            // Si es Fácil (necesita más pistas que la plantilla media)
+            if (currentClues < targetClues) {
+                let emptyIndices = [];
+                puzzle.forEach((val, idx) => { if (val === 0) emptyIndices.push(idx); });
+                // Mezclar índices vacíos
+                for (let i = emptyIndices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [emptyIndices[i], emptyIndices[j]] = [emptyIndices[j], emptyIndices[i]];
+                }
+                for (let idx of emptyIndices) {
+                    if (currentClues >= targetClues) break;
+                    puzzle[idx] = solution[idx];
+                    currentClues++;
+                }
+            }
+            // Si es Difícil (necesita menos pistas que la plantilla media, cuidando no vaciar filas/columnas)
+            else if (currentClues > targetClues) {
+                let filledIndices = [];
+                puzzle.forEach((val, idx) => { if (val !== 0) filledIndices.push(idx); });
+                for (let i = filledIndices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [filledIndices[i], filledIndices[j]] = [filledIndices[j], filledIndices[i]];
+                }
+
+                for (let idx of filledIndices) {
+                    if (currentClues <= targetClues) break;
+                    const r = Math.floor(idx / gridSize);
+                    const c = idx % gridSize;
+
+                    // Contar cuántas pistas quedan en esa fila y columna para no dejarlas totalmente vacías
+                    let rowClues = 0, colClues = 0;
+                    for (let k = 0; k < gridSize; k++) {
+                        if (puzzle[r * gridSize + k] !== 0) rowClues++;
+                        if (puzzle[k * gridSize + c] !== 0) colClues++;
+                    }
+
+                    if (rowClues > 1 && colClues > 1) {
+                        puzzle[idx] = 0;
+                        currentClues--;
+                    }
+                }
+            }
+
+            return { puzzle, solution };
+        }
+
         // --- Referencias al DOM ---
         let startScreen, bracketScreen, gameScreen;
         let playerCountInput, livesInput, modeInput, playersListContainer, startButton;
@@ -615,6 +706,14 @@
             document.querySelectorAll('.game-type-btn').forEach(btn => {
                 btn.addEventListener('click', () => setGameType(btn.dataset.type));
             });
+
+            // Selector de dificultad (Fácil / Medio / Difícil)
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.addEventListener('click', () => setDifficulty(btn.dataset.diff));
+            });
+
+            // Actualizar etiquetas de pistas al cambiar entre 6x6 y 9x9
+            modeInput.addEventListener('change', updateDifficultyClueLabels);
 
             // Eventos de inicio y controles numéricos (+/-)
             startButton.addEventListener('click', startSelectedMode);
@@ -693,6 +792,8 @@
 
             // Inicializar interfaz por defecto
             setGameType('tournament');
+            setDifficulty('medium');
+            updateDifficultyClueLabels();
             checkAutoSave();
         });
 
@@ -723,16 +824,16 @@
         }
 
         /**
-         * SELECCIÓN DE MODALIDAD (SOLITARIO / 1 VS 1 / TORNEO)
+         * SELECCIÓN DE MODALIDAD Y NIVEL DE DIFICULTAD
          */
         function setGameType(type) {
             currentGameType = type;
 
             document.querySelectorAll('.game-type-btn').forEach(btn => {
                 if (btn.dataset.type === type) {
-                    btn.className = "game-type-btn py-3 px-2 rounded-2xl border-4 border-orange-500 bg-orange-50 text-orange-700 font-black text-sm md:text-base flex flex-col items-center gap-1 shadow-md scale-[1.02] transition-all";
+                    btn.className = "game-type-btn py-2.5 px-2 rounded-2xl border-4 border-orange-500 bg-orange-50 text-orange-700 font-black text-sm md:text-base flex flex-col items-center gap-0.5 shadow-md scale-[1.02] transition-all";
                 } else {
-                    btn.className = "game-type-btn py-3 px-2 rounded-2xl border-4 border-slate-200 bg-white text-slate-500 font-extrabold text-sm md:text-base flex flex-col items-center gap-1 hover:bg-slate-50 transition-all";
+                    btn.className = "game-type-btn py-2.5 px-2 rounded-2xl border-4 border-slate-200 bg-white text-slate-500 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 hover:bg-slate-50 transition-all";
                 }
             });
 
@@ -758,6 +859,33 @@
             }
 
             renderNameInputs();
+        }
+
+        function setDifficulty(diff) {
+            if (!['easy', 'medium', 'hard'].includes(diff)) diff = 'medium';
+            currentDifficulty = diff;
+
+            const activeStyles = {
+                easy:   "border-emerald-500 bg-emerald-50 text-emerald-800 shadow-md scale-[1.02]",
+                medium: "border-amber-500 bg-amber-50 text-amber-800 shadow-md scale-[1.02]",
+                hard:   "border-rose-500 bg-rose-50 text-rose-800 shadow-md scale-[1.02]"
+            };
+
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                const d = btn.dataset.diff;
+                if (d === diff) {
+                    btn.className = `diff-btn py-2 px-2 rounded-2xl border-4 font-black text-sm md:text-base flex flex-col items-center transition-all ${activeStyles[d]}`;
+                } else {
+                    btn.className = "diff-btn py-2 px-2 rounded-2xl border-4 border-slate-200 bg-white text-slate-500 font-extrabold text-sm md:text-base flex flex-col items-center hover:bg-slate-50 transition-all";
+                }
+            });
+        }
+
+        function updateDifficultyClueLabels() {
+            const size = parseInt(modeInput.value) || 6;
+            document.getElementById('clues-label-easy').textContent = `${DIFFICULTY_META.easy.clues[size]} pistas`;
+            document.getElementById('clues-label-medium').textContent = `${DIFFICULTY_META.medium.clues[size]} pistas`;
+            document.getElementById('clues-label-hard').textContent = `${DIFFICULTY_META.hard.clues[size]} pistas`;
         }
 
         function getEffectivePlayerCount() {
@@ -790,7 +918,7 @@
             playersListContainer.innerHTML = ''; 
             playersListContainer.className = count === 1 
                 ? "grid grid-cols-1 gap-2 p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"
-                : "grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-36 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100";
+                : "grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100";
 
             for (let i = 0; i < count; i++) {
                 const div = document.createElement('div');
@@ -826,7 +954,7 @@
         }
 
         /**
-         * INICIO DE PARTIDA SEGÚN MODALIDAD
+         * INICIO DE PARTIDA SEGÚN MODALIDAD Y DIFICULTAD
          */
         function startSelectedMode() {
             initAudio();
@@ -919,6 +1047,7 @@
 
             roundTitleDisplay.textContent = roundName;
             document.getElementById('bracket-mode-badge').textContent = currentGridSize === 6 ? '🎮 KIDS 6x6' : '🎮 JUNIOR 9x9';
+            document.getElementById('bracket-diff-badge').textContent = DIFFICULTY_META[currentDifficulty].label;
             document.getElementById('bracket-players-badge').textContent = `❤️ ${maxErrors} Vidas`;
 
             bracketContainer.innerHTML = '';
@@ -1058,14 +1187,9 @@
                 }
             }
 
-            const puzzleData1 = {
-                puzzle: [...db[idx1].puzzle],
-                solution: [...db[idx1].solution]
-            };
-            const puzzleData2 = {
-                puzzle: [...db[idx2].puzzle],
-                solution: [...db[idx2].solution]
-            };
+            // Generar los tableros adaptados al Nivel de Dificultad elegido (Fácil, Medio o Difícil)
+            const puzzleData1 = buildPuzzleForDifficulty(db[idx1], currentGridSize, currentDifficulty);
+            const puzzleData2 = buildPuzzleForDifficulty(db[idx2], currentGridSize, currentDifficulty);
 
             currentMatch.originalDataLeft = puzzleData1;
             currentMatch.originalDataRight = puzzleData2;
@@ -1081,7 +1205,6 @@
             const btnNewPuzzle = document.getElementById('btn-new-puzzle');
 
             if (isSolo) {
-                // Ocultar segundo tablero y ampliar el tablero principal para el monitor del aula
                 panelRight.classList.add('hidden');
                 panelLeft.classList.add('max-w-2xl', 'mx-auto');
                 leftBoard.className = "w-full max-w-[480px] md:max-w-[540px] shadow-lg transition-all";
@@ -1090,7 +1213,6 @@
                 btnForceEnd.classList.add('hidden');
                 btnNewPuzzle.classList.remove('hidden');
             } else {
-                // Modo 2 tableros (Duelo 1v1 o Torneo)
                 panelRight.classList.remove('hidden');
                 panelLeft.classList.remove('max-w-2xl', 'mx-auto');
                 leftBoard.className = "w-full max-w-[350px] md:max-w-[380px] shadow-md transition-all";
@@ -1101,7 +1223,6 @@
                     btnBackBracket.classList.remove('hidden');
                     btnNewPuzzle.classList.add('hidden');
                 } else {
-                    // Quick 1v1
                     btnBackBracket.classList.add('hidden');
                     btnNewPuzzle.classList.remove('hidden');
                 }
@@ -1113,12 +1234,14 @@
 
             const name1 = playerNamesMap[currentMatch.p1] || 'Jugador 1';
             document.getElementById('name-left').textContent = name1;
+            document.getElementById('game-diff-badge').textContent = `${DIFFICULTY_META[currentDifficulty].label} (${currentGridSize}x${currentGridSize})`;
+
             renderBoard('left');
             generatePad('left');
             updateLivesUI('left');
 
             if (currentGameType === 'solo') {
-                versusLabel.textContent = `🎯 MODO SOLITARIO: ${name1}`;
+                versusLabel.textContent = `🎯 SOLITARIO: ${name1}`;
             } else {
                 const name2 = playerNamesMap[currentMatch.p2] || 'Jugador 2';
                 versusLabel.textContent = `${name1}  VS  ${name2}`;
@@ -1168,7 +1291,6 @@
             const selectedCol = state.selectedCell !== null ? state.selectedCell % currentGridSize : -1;
 
             const isSolo = currentGameType === 'solo';
-            // Tipografía más grande en modo solitario para máxima visibilidad desde toda la clase
             let textSize;
             if (isSolo) {
                 textSize = currentGridSize === 9 ? 'text-xl md:text-3xl' : 'text-3xl md:text-4xl';
@@ -1183,7 +1305,6 @@
                 const row = Math.floor(i / currentGridSize);
                 const col = i % currentGridSize;
                 
-                // Bordes gruesos para subcuadrículas (2x3 en 6x6 | 3x3 en 9x9)
                 if (currentGridSize === 6) {
                     if (col === 2) cell.classList.add('border-r-4', 'border-r-slate-700');
                     if (row === 1 || row === 3) cell.classList.add('border-b-4', 'border-b-slate-700');
@@ -1358,7 +1479,7 @@
                 if (currentGameType === 'solo') {
                     showModal(
                         `🎉 ¡ENHORABUENA! 🎉`,
-                        `${winnerName} ha resuelto todo el Sudoku correctamente.`,
+                        `${winnerName} ha resuelto todo el Sudoku (${DIFFICULTY_META[currentDifficulty].label}) correctamente.`,
                         () => {
                             hideModal();
                             setupNewGameMatch(1, null);
@@ -1408,7 +1529,7 @@
          * CONTROLES DOCENTES
          */
         function requestNewPuzzleMatch() {
-            showConfirmModal("¿Cargar un tablero nuevo diferente para esta partida?", () => {
+            showConfirmModal("¿Cargar un tablero nuevo diferente del mismo nivel de dificultad?", () => {
                 setupNewGameMatch(currentMatch.p1, currentMatch.p2);
                 currentMatch.active = true;
                 saveToLocalStorage();
@@ -1468,10 +1589,11 @@
 
             return {
                 app: "SudokuBattleKids",
-                version: "3.0",
+                version: "4.0",
                 timestamp: new Date().toISOString(),
                 config: {
                     gameType: currentGameType,
+                    difficulty: currentDifficulty,
                     playerCount: clampPlayerCount(),
                     maxErrors: clampLivesCount(),
                     gridSize: parseInt(modeInput.value) || 6,
@@ -1497,8 +1619,8 @@
 
             const dateStr = new Date().toISOString().slice(0, 10);
             const filename = mode === 'configuracion' 
-                ? `sudoku_config_${stateObj.config.gameType}_${dateStr}.json`
-                : `sudoku_progreso_${stateObj.config.gameType}_${dateStr}.json`;
+                ? `sudoku_config_${stateObj.config.gameType}_${stateObj.config.difficulty}_${dateStr}.json`
+                : `sudoku_progreso_${stateObj.config.gameType}_${stateObj.config.difficulty}_${dateStr}.json`;
 
             const a = document.createElement('a');
             a.href = url;
@@ -1539,6 +1661,7 @@
 
             const cfg = data.config;
             const importedType = ['solo', 'quick1v1', 'tournament'].includes(cfg.gameType) ? cfg.gameType : 'tournament';
+            const importedDiff = ['easy', 'medium', 'hard'].includes(cfg.difficulty) ? cfg.difficulty : 'medium';
             const pCount = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, parseInt(cfg.playerCount) || 4));
             maxErrors = Math.min(10, Math.max(1, parseInt(cfg.maxErrors) || 4));
             currentGridSize = (parseInt(cfg.gridSize) === 9) ? 9 : 6;
@@ -1547,6 +1670,8 @@
             livesInput.value = maxErrors;
             modeInput.value = currentGridSize;
             setGameType(importedType);
+            setDifficulty(importedDiff);
+            updateDifficultyClueLabels();
             renderNameInputs(cfg.setupNames || []);
 
             const trn = data.tournament;
@@ -1600,7 +1725,8 @@
                     const banner = document.getElementById('autosave-banner');
                     const info = document.getElementById('autosave-info');
                     const modeLabel = data.config.gameType === 'solo' ? 'Solitario' : (data.config.gameType === 'quick1v1' ? 'Duelo 1 vs 1' : `Torneo · Ronda ${data.tournament.currentRoundNumber}`);
-                    info.textContent = `${modeLabel} (${data.config.gridSize}x${data.config.gridSize})`;
+                    const diffLabel = DIFFICULTY_META[data.config.difficulty || 'medium'].label;
+                    info.textContent = `${modeLabel} · ${diffLabel} (${data.config.gridSize}x${data.config.gridSize})`;
                     banner.classList.remove('hidden');
 
                     document.getElementById('btn-resume-autosave').onclick = () => {
