@@ -216,6 +216,18 @@
     .pos-U { background: var(--col-u); } .pos-D { background: var(--col-d); } .pos-C { background: var(--col-c); }
     .pos-UM { background: var(--col-um); } .pos-DM { background: var(--col-dm); } .pos-CM { background: var(--col-cm); }
     .pos-UMi { background: var(--col-umi); } .pos-DMi { background: var(--col-dmi); } .pos-CMi { background: var(--col-cmi); }
+    /* Órdenes decimales (en minúscula): décimas, centésimas, milésimas, diezmilésimas... */
+    .pos-d { background: #0891b2; } .pos-c { background: #65a30d; } .pos-m { background: #ea580c; } .pos-dm { background: #9333ea; }
+    .pos-cm, .pos-mi, .pos-dmi, .pos-cmi { background: #64748b; }
+    .static-cell.ghost, .p-cell.ghost { color: #94a3b8; }
+    .comma::after, .comma-mark {
+      position: absolute; right: calc(var(--cell-size) * -.2); bottom: calc(var(--cell-size) * -.16); font-size: calc(var(--cell-size) * .95);
+      font-weight: 900; color: #dc2626; line-height: 1; pointer-events: none;
+    }
+    .comma::after { content: ','; right: calc(var(--cell-size) * -.26); }
+    .p-comma-mark { position: absolute; right: -.28em; bottom: -.12em; font-size: calc(var(--p-font) * 1.3); font-weight: 900; color: #dc2626; line-height: 1; }
+    .p-note { font-size: .72rem; font-weight: 800; color: #475569; margin: 2px 0 6px; text-align: center; }
+    .board-note { font-size: .95rem; font-weight: 800; color: #475569; margin-bottom: 10px; text-align: center; }
 
     .static-cell {
       width: var(--cell-size); height: var(--cell-size); display: flex; align-items: center; justify-content: center;
@@ -246,6 +258,9 @@
     .carry-cell[data-pos="UMi"] { border-color: var(--col-umi); color: var(--col-umi); }
     .carry-cell[data-pos="DMi"] { border-color: var(--col-dmi); color: var(--col-dmi); }
 
+    /* Cero a la izquierda de la resta: se puede escribir 0 o dejar vacía */
+    .input-cell.opt-zero { border-style: dashed; }
+    .input-cell.opt-zero.step-enabled { border-style: dashed; }
     .input-cell.locked, .carry-cell.locked { background: #f1f5f9; border-color: #cbd5e1; color: #94a3b8; cursor: not-allowed; opacity: .6; }
     .input-cell.step-enabled, .carry-cell.step-enabled { background: #fffbeb; border-color: #f59e0b; border-style: solid; box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
     .input-cell.focused, .carry-cell.focused {
@@ -330,8 +345,11 @@
       justify-content: space-between; color: #0f172a;
     }
     .a4-sheet.hidden-sheet { display: none !important; }
-    .a4-sheet.measuring { width: 210mm !important; min-height: 0 !important; }
+    .a4-sheet.measuring { width: 190mm !important; min-height: 0 !important; padding: 0 !important; }  /* mismo ancho útil que al imprimir */
     .a4-sheet.measuring .sheet-body, .a4-sheet.measuring .exercises-grid-print { flex: none !important; }
+    .a4-sheet.measuring .exercise-card-print { padding: 22px 8px 6px !important; }
+    .a4-sheet.measuring .exercises-grid-print { row-gap: 8px !important; }
+    .a4-sheet.measuring .btn-load-board { display: none !important; }
     .sheet-body { display: flex; flex-direction: column; flex: 1; }
     .sheet-header { border-bottom: 3px solid #1e293b; padding-bottom: 8px; margin-bottom: 12px; display: flex; gap: 12px; align-items: stretch; }
     .sheet-header-main { flex: 1; }
@@ -385,8 +403,9 @@
     .p-empty.small { height: var(--p-carry-sz); }
     .p-box {
       width: var(--p-size); height: var(--p-size); border: 1.5px solid #94a3b8; border-radius: 6px; background: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: var(--p-font); font-weight: 800; color: #15803d;
+      display: flex; align-items: center; justify-content: center; font-size: var(--p-font); font-weight: 800; color: #15803d; position: relative;
     }
+    .p-box.p-opt-zero { border-style: dashed; border-color: #b6c2d1; }
     .p-carry {
       width: var(--p-carry-sz); height: var(--p-carry-sz); border-radius: 50%; border: 1.5px dashed #94a3b8; background: #fff;
       display: flex; align-items: center; justify-content: center; font-size: calc(var(--p-carry-sz) * .55); font-weight: 800; color: #dc2626;
@@ -408,7 +427,7 @@
     .wp-header .btn-load-board { position: static; }
     .wp-statement { font-size: .92rem; line-height: 1.4; font-weight: 700; }
     .wp-workspace-grid { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 10px; }
-    .wp-field-box { border: 1.5px dashed #94a3b8; border-radius: 8px; background: #fff; padding: 6px 10px; min-height: 58px; font-size: .8rem; font-weight: 700; color: #475569; }
+    .wp-field-box { border: 1.5px dashed #94a3b8; border-radius: 8px; background: #fff; padding: 5px 10px; min-height: 46px; font-size: .8rem; font-weight: 700; color: #475569; }
     .wp-solution-text { color: #15803d; font-size: .9rem; font-weight: 800; }
     .sheet-footer { margin-top: 8px; padding-top: 6px; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; gap: 10px; font-size: .72rem; color: #64748b; font-weight: 700; }
 
@@ -425,20 +444,26 @@
 
     /* ===== IMPRESIÓN ===== */
     @media print {
-      @page { size: A4 portrait; margin: 8mm; }
+      @page { size: A4 portrait; margin: 10mm; }
       body { background: #fff !important; background-image: none !important; }
-      header, #screenConfig, #screenWorkspace, .worksheet-toolbar, .btn-load-board, #toast, #confetti { display: none !important; }
-      .exercise-card-print { padding-top: 24px !important; }
+      header, #screenConfig, #screenWorkspace, .worksheet-toolbar, #fitWarning, .btn-load-board, #toast, #confetti { display: none !important; }
+      .exercise-card-print { padding: 22px 8px 6px !important; }
+      .exercises-grid-print { row-gap: 8px !important; }
       *, *::before, *::after { animation: none !important; transition: none !important; }
       .screen.active { opacity: 1 !important; transform: none !important; }
       main { padding: 0 !important; margin: 0 !important; max-width: none !important; }
       #screenWorksheet { display: block !important; }
-      .worksheet-pages-container { gap: 0 !important; padding: 0 !important; }
+      /* Safari no respeta los saltos de página dentro de contenedores flex: en impresión todo es bloque */
+      .worksheet-pages-container { display: block !important; gap: 0 !important; padding: 0 !important; }
       .a4-sheet {
-        width: 100% !important; min-height: 276mm !important; box-shadow: none !important; border: none !important;
-        padding: 3mm 5mm !important; margin: 0 !important; border-radius: 0 !important; page-break-after: always; break-after: page;
+        display: block !important; width: 100% !important; min-height: 0 !important; height: auto !important;
+        box-shadow: none !important; border: none !important; padding: 0 !important; margin: 0 !important; border-radius: 0 !important;
+        page-break-inside: avoid; break-inside: avoid; page-break-after: auto; break-after: auto;
       }
-      .a4-sheet:last-child { page-break-after: auto; break-after: auto; }
+      .a4-sheet.print-new-page { page-break-before: always; break-before: page; }
+      .sheet-body { display: block !important; }
+      .exercises-grid-print { flex: none !important; }
+      .sheet-footer { margin-top: 4mm; }
       .pos-U, .pos-D, .pos-C, .pos-UM, .pos-DM, .pos-CM, .pos-UMi, .pos-DMi, .pos-CMi,
       .exercise-num-tag, .sheet-badge, .sheet-code, .exercise-card-print, .word-problem-box {
         -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
@@ -486,7 +511,7 @@
         <div class="code-load-box">
           <div class="code-load-row">
             <span class="digit-label">🔑 ¿Tienes el código de una ficha impresa?</span>
-            <input type="text" id="codeInputConfig" class="code-input" placeholder="XXX-XXX-XXX" maxlength="13" autocomplete="off" spellcheck="false">
+            <input type="text" id="codeInputConfig" class="code-input" placeholder="Código de ficha" maxlength="16" autocomplete="off" spellcheck="false">
             <button class="btn-top" style="background:#0d9488;color:#fff;border-color:#0f766e;" onclick="app.loadCodeFromInput('codeInputConfig')">📂 Abrir ficha</button>
           </div>
           <div class="history-chips" id="historyChips"></div>
@@ -512,7 +537,7 @@
 
         <div class="settings-row">
           <div class="setting-box">
-            <div class="section-title">2. Número de cifras</div>
+            <div class="section-title">2. Cifras y decimales</div>
             <div class="digit-selector-group">
               <span class="digit-label" id="lblDigits1">1.er sumando:</span>
               <div class="pill-group" id="pillsDigits1"></div>
@@ -520,6 +545,18 @@
             <div class="digit-selector-group">
               <span class="digit-label" id="lblDigits2">2.º sumando:</span>
               <div class="pill-group" id="pillsDigits2"></div>
+            </div>
+            <div class="digit-selector-group" style="border-top:2px dashed #e2e8f0;padding-top:10px;">
+              <span class="digit-label" id="lblDec1">Decimales:</span>
+              <div class="pill-group" id="pillsDec1"></div>
+            </div>
+            <div class="digit-selector-group">
+              <span class="digit-label" id="lblDec2">Decimales:</span>
+              <div class="pill-group" id="pillsDec2"></div>
+            </div>
+            <div class="digit-selector-group" id="rowQDec">
+              <span class="digit-label">Sacar decimales en el cociente:</span>
+              <div class="pill-group" id="pillsQDec"></div>
             </div>
           </div>
 
@@ -535,8 +572,8 @@
             </div>
             <div class="manual-box">
               <span class="digit-label" style="font-size:.92rem;">✏️ Números del maestro (opcional):</span>
-              <input type="number" id="customNum1" class="manual-input" placeholder="1.er nº" min="1" max="99999" inputmode="numeric">
-              <input type="number" id="customNum2" class="manual-input" placeholder="2.º nº" min="1" max="9999" inputmode="numeric">
+              <input type="text" id="customNum1" class="manual-input" placeholder="ej.: 345,7" inputmode="decimal" autocomplete="off">
+              <input type="text" id="customNum2" class="manual-input" placeholder="ej.: 2,05" inputmode="decimal" autocomplete="off">
             </div>
           </div>
         </div>
@@ -588,6 +625,7 @@
               </div>
             </div>
 
+            <div class="board-note" id="boardNote" style="display:none;"></div>
             <div class="board-scroll"><div class="board-wrapper" id="boardWrapper"></div></div>
 
             <div id="victoryBanner" class="victory-banner">
@@ -688,7 +726,7 @@
             <button class="btn-top sm" onclick="app.copyLink()">🔗 Copiar enlace</button>
           </div>
           <div class="ws-toolbar-group">
-            <input type="text" id="codeInputWs" class="code-input" placeholder="XXX-XXX-XXX" maxlength="13" autocomplete="off" spellcheck="false">
+            <input type="text" id="codeInputWs" class="code-input" placeholder="Código de ficha" maxlength="16" autocomplete="off" spellcheck="false">
             <button class="btn-top sm" style="background:#0d9488;color:#fff;border-color:#0f766e;" onclick="app.loadCodeFromInput('codeInputWs')">📂 Abrir otra ficha</button>
           </div>
         </div>
@@ -832,11 +870,20 @@
       U: 'unidades', D: 'decenas', C: 'centenas', UM: 'unidades de millar', DM: 'decenas de millar',
       CM: 'centenas de millar', UMi: 'unidades de millón', DMi: 'decenas de millón', CMi: 'centenas de millón'
     };
-    const posKey = c => POS_LABELS[c] || 'CMi';
-    const posName = c => POS_NAMES[posKey(c)];
+    // Órdenes decimales (en minúscula para no confundirlos con D, C...)
+    const DEC_LABELS = ['d', 'c', 'm', 'dm', 'cm', 'mi', 'dmi', 'cmi'];
+    const DEC_NAMES = { d: 'décimas', c: 'centésimas', m: 'milésimas', dm: 'diezmilésimas', cm: 'cienmilésimas', mi: 'millonésimas', dmi: 'diezmillonésimas', cmi: 'cienmillonésimas' };
+    /* Columna c (0 = la de la derecha) de un número con k cifras decimales */
+    const posKey = (c, k = 0) => (c >= k ? (POS_LABELS[c - k] || 'CMi') : (DEC_LABELS[k - 1 - c] || 'cmi'));
+    const posName = (c, k = 0) => { const pk = posKey(c, k); return POS_NAMES[pk] || DEC_NAMES[pk]; };
     const fmt = n => Number(n).toLocaleString('es-ES');
+    const P10 = n => Math.pow(10, n);
+    /* Los decimales se guardan como enteros escalados: v = 235, e = 2  ->  2,35 */
+    const fmtDec = (v, e = 0) => { if (!e) return fmt(v); const p = P10(e); return `${fmt(Math.floor(v / p))},${String(v % p).padStart(e, '0')}`; };
     const nDigits = n => String(n).length;
     const digitAt = (n, c) => (c < nDigits(n) ? Math.floor(n / Math.pow(10, c)) % 10 : null);
+    const opLen = (v, k) => Math.max(nDigits(v), k + 1);              // cifras visibles (al menos el 0 de las unidades)
+    const dispDigit = (v, c, k) => (c < opLen(v, k) ? Math.floor(v / P10(c)) % 10 : null);
 
     /* =========================================================================
        BANCO DE PROBLEMAS (EDITABLE POR EL DOCENTE)
@@ -864,6 +911,30 @@
         (a, b, q, r) => ({ q: `Una cooperativa reparte ${fmt(a)} piezas de fruta a partes iguales en ${fmt(b)} cajas. ¿Cuántas piezas van en cada caja y cuántas sobran?`, d: `${fmt(a)} frutas · ${fmt(b)} cajas`, s: `${fmt(a)} ÷ ${fmt(b)} → cociente ${fmt(q)}, resto ${fmt(r)}. ${fmt(q)} piezas por caja y sobran ${fmt(r)}.` }),
         (a, b, q, r) => ({ q: `En el taller de plástica hay ${fmt(a)} cuentas de madera para hacer collares de ${fmt(b)} cuentas. ¿Cuántos collares completos salen y cuántas cuentas sobran?`, d: `${fmt(a)} cuentas · ${fmt(b)} por collar`, s: `${fmt(a)} ÷ ${fmt(b)} → cociente ${fmt(q)}, resto ${fmt(r)}. Salen ${fmt(q)} collares y sobran ${fmt(r)} cuentas.` }),
         (a, b, q, r) => ({ q: `En una carrera de relevos participan ${fmt(a)} alumnos en equipos de ${fmt(b)}. ¿Cuántos equipos completos se forman y cuántos alumnos hacen de jueces?`, d: `${fmt(a)} alumnos · equipos de ${fmt(b)}`, s: `${fmt(a)} ÷ ${fmt(b)} → cociente ${fmt(q)}, resto ${fmt(r)}. ${fmt(q)} equipos y ${fmt(r)} jueces.` })
+      ]
+    };
+
+    /* Problemas para operaciones CON DECIMALES (medidas: kg, L, km, m). También editables. */
+    const WORD_PROBLEM_TEMPLATES_DEC = {
+      add: [
+        (a, b, r) => ({ q: `Para la merienda compramos ${a} kg de naranjas y ${b} kg de manzanas. ¿Cuántos kilos de fruta hemos comprado?`, d: `${a} kg · ${b} kg`, s: `${a} + ${b} = ${r}. Hemos comprado ${r} kg de fruta.` }),
+        (a, b, r) => ({ q: `Una garrafa tiene ${a} L de agua y otra tiene ${b} L. ¿Cuántos litros hay entre las dos?`, d: `${a} L · ${b} L`, s: `${a} + ${b} = ${r}. Hay ${r} L.` }),
+        (a, b, r) => ({ q: `Lucía recorrió en bici ${a} km el sábado y ${b} km el domingo. ¿Cuántos kilómetros recorrió en total?`, d: `Sábado: ${a} km · Domingo: ${b} km`, s: `${a} + ${b} = ${r}. Recorrió ${r} km.` })
+      ],
+      sub: [
+        (a, b, r) => ({ q: `Una cinta mide ${a} m. Si cortamos ${b} m para el mural de clase, ¿cuántos metros quedan?`, d: `Mide ${a} m · Cortamos ${b} m`, s: `${a} − ${b} = ${r}. Quedan ${r} m.` }),
+        (a, b, r) => ({ q: `Un depósito tenía ${a} L de agua y se han gastado ${b} L en regar el huerto escolar. ¿Cuántos litros quedan?`, d: `Había ${a} L · Gastados ${b} L`, s: `${a} − ${b} = ${r}. Quedan ${r} L.` }),
+        (a, b, r) => ({ q: `Un saco tiene ${a} kg de pienso. Si se usan ${b} kg, ¿cuántos kilos quedan en el saco?`, d: `Saco: ${a} kg · Usados: ${b} kg`, s: `${a} − ${b} = ${r}. Quedan ${r} kg.` })
+      ],
+      mul: [
+        (a, b, r) => ({ q: `Cada metro de tubo pesa ${a} kg. ¿Cuánto pesan ${b} metros de tubo?`, d: `${a} kg por metro · ${b} m`, s: `${a} × ${b} = ${r}. Pesan ${r} kg.` }),
+        (a, b, r) => ({ q: `Un ciclista recorre ${a} km cada hora. ¿Cuántos kilómetros recorre en ${b} horas?`, d: `${a} km cada hora · ${b} h`, s: `${a} × ${b} = ${r}. Recorre ${r} km.` }),
+        (a, b, r) => ({ q: `Un litro de aceite pesa ${a} kg. ¿Cuánto pesan ${b} litros de aceite?`, d: `${a} kg por litro · ${b} L`, s: `${a} × ${b} = ${r}. Pesan ${r} kg.` })
+      ],
+      div: [
+        (a, b, q, r) => ({ q: `Un camino de ${a} km se divide en tramos de ${b} km. ¿Cuántos tramos salen?`, d: `${a} km · tramos de ${b} km`, s: `${a} ÷ ${b} → cociente ${q}, resto ${r}.` }),
+        (a, b, q, r) => ({ q: `Repartimos ${a} L de zumo en jarras de ${b} L. ¿Cuántas jarras se llenan?`, d: `${a} L · jarras de ${b} L`, s: `${a} ÷ ${b} → cociente ${q}, resto ${r}.` }),
+        (a, b, q, r) => ({ q: `Con ${a} kg de harina hacemos paquetes de ${b} kg. ¿Cuántos paquetes salen?`, d: `${a} kg · paquetes de ${b} kg`, s: `${a} ÷ ${b} → cociente ${q}, resto ${r}.` })
       ]
     };
 
@@ -968,11 +1039,118 @@
       return Gen.div(rng, d1, Math.min(d2, d1, 3), divMode);
     }
 
+    /* ---------- Generadores con decimales (números como enteros escalados) ---------- */
+    const randDec = (rng, d, e) => {
+      const ip = randNd(rng, d);
+      if (!e) return ip;
+      const dec = rint(rng, 0, P10(e - 1) - 1) * 10 + rint(rng, 1, 9); // la última cifra decimal nunca es 0
+      return ip * P10(e) + dec;
+    };
+    const GenDec = {
+      add(rng, d1, e1, d2, e2, mode) {
+        const E = Math.max(e1, e2);
+        if (mode === 'no') { // se construye columna a columna para que ninguna pase de 9
+          const lo1 = E - e1, hi1 = E + d1 - 1, lo2 = E - e2, hi2 = E + d2 - 1;
+          let A = 0, B = 0;
+          for (let c = 0; c <= Math.max(hi1, hi2); c++) {
+            const hasA = c >= lo1 && c <= hi1, hasB = c >= lo2 && c <= hi2;
+            const bMin = hasB && (c === hi2 || (e2 > 0 && c === lo2)) ? 1 : 0;
+            const aMin = hasA && (c === hi1 || (e1 > 0 && c === lo1)) ? 1 : 0;
+            const a = hasA ? rint(rng, aMin, 9 - bMin) : 0;
+            const b = hasB ? rint(rng, bMin, 9 - a) : 0;
+            A += a * P10(c); B += b * P10(c);
+          }
+          return { n1: A / P10(E - e1), n2: B / P10(E - e2) };
+        }
+        let last = null;
+        for (let i = 0; i < 400; i++) {
+          last = { n1: randDec(rng, d1, e1), n2: randDec(rng, d2, e2) };
+          if (mode !== 'yes' || countAddCarries(last.n1 * P10(E - e1), last.n2 * P10(E - e2)) >= 1) return last;
+        }
+        return last;
+      },
+      sub(rng, d1, e1, d2, e2, mode) {
+        if (d2 > d1) d2 = d1;
+        const E = Math.max(e1, e2), s1 = P10(E - e1), s2 = P10(E - e2);
+        if (mode === 'no' && e2 <= e1) {
+          const lo1 = E - e1, hi1 = E + d1 - 1, lo2 = E - e2, hi2 = E + d2 - 1;
+          for (let t = 0; t < 200; t++) {
+            let A = 0, B = 0;
+            for (let c = 0; c <= hi1; c++) {
+              const hasA = c >= lo1, hasB = c >= lo2 && c <= hi2;
+              const bMin = hasB && (c === hi2 || (e2 > 0 && c === lo2)) ? 1 : 0;
+              let a = hasA ? rint(rng, (c === hi1 || (e1 > 0 && c === lo1)) ? 1 : 0, 9) : 0;
+              if (hasB && a < bMin) a = rint(rng, bMin, 9);
+              const b = hasB ? rint(rng, bMin, a) : 0;
+              A += a * P10(c); B += b * P10(c);
+            }
+            if (A > B) return { n1: A / s1, n2: B / s2 };
+          }
+        }
+        let best = null, bestScore = -Infinity;
+        for (let i = 0; i < 600; i++) {
+          const a = randDec(rng, d1, e1), b = randDec(rng, d2, e2);
+          if (a * s1 <= b * s2) continue;
+          const k = countSubBorrows(a * s1, b * s2);
+          if (mode === 'yes' ? k >= 1 : mode === 'no' ? k === 0 : true) return { n1: a, n2: b };
+          const score = mode === 'no' ? -k : k;
+          if (score > bestScore) { bestScore = score; best = { n1: a, n2: b }; }
+        }
+        return best || { n1: (P10(d1) - 1) * P10(e1) + (e1 ? P10(e1) - 1 : 0), n2: P10(d2 - 1) * P10(e2) + (e2 ? 1 : 0) };
+      },
+      mul(rng, d1, e1, d2, e2) {
+        const a = (d1 === 1 && e1 === 0) ? rint(rng, 2, 9) : randDec(rng, d1, e1);
+        const tot = d2 + e2;
+        let b = 0;
+        for (let p = 0; p < tot; p++) b += rint(rng, tot === 1 ? 2 : 1, 9) * P10(p); // sin ceros en el multiplicador
+        return { n1: a, n2: b };
+      },
+      div(rng, d1, e1, d2, e2, mode, q = 0) {
+        const newDivisor = () => (d2 === 1 && e2 === 0) ? rint(rng, 2, 9) : randDec(rng, d2, e2);
+        let v2 = newDivisor();
+        if (mode === 'exact') { // dividendo múltiplo del divisor (como enteros) => resto 0
+          const lo = P10(d1 - 1 + e1), hi = P10(d1 + e1) - 1;
+          // Exacta si v2 divide a v1·10^p (p = decimales que acaba teniendo el cociente)
+          const gcd = (x, y) => (y ? gcd(y, x % y) : x);
+          for (let tryDiv = 0; tryDiv < 40; tryDiv++, v2 = newDivisor()) {
+            const Q = Math.max(Math.max(e1 - e2, 0), q), step = v2 / gcd(v2, P10(e2 + Q - e1));
+            const kMax = Math.floor(hi / step), kMin = Math.min(Math.max(2, Math.ceil(lo / step)), kMax);
+            for (let t = 0; kMax >= 1 && kMin >= Math.ceil(lo / step) && t < 40; t++) {
+              const v1 = step * rint(rng, kMin, kMax);
+              if (!e1 || v1 % 10) return { n1: v1, n2: v2 };
+            }
+          }
+        }
+        return { n1: randDec(rng, d1, e1), n2: v2 };
+      }
+    };
+
+    /* Límites por operación: en × y ÷ el 2.º número tiene como mucho 3 cifras en total */
+    function opLimits(op, d1, d2, e2) {
+      const D2 = op === 'sub' ? Math.min(d2, d1) : op === 'mul' ? Math.min(d2, 3) : op === 'div' ? Math.min(d2, d1, 3) : d2;
+      const E2 = (op === 'mul' || op === 'div') ? Math.min(e2, Math.max(0, 3 - D2)) : e2;
+      return { D2, E2 };
+    }
+
+    function genPairAny(rng, op, d1, d2, e1, e2, carryMode, divMode, q) {
+      const { D2, E2 } = opLimits(op, d1, d2, e2 || 0);
+      e1 = e1 || 0;
+      if (!e1 && !E2 && !(op === 'div' && q)) { const p = genPair(rng, op, d1, d2, carryMode, divMode); return { n1: p.n1, n2: p.n2, e1: 0, e2: 0 }; }
+      let p;
+      if (op === 'add') p = GenDec.add(rng, d1, e1, D2, E2, carryMode);
+      else if (op === 'sub') p = GenDec.sub(rng, d1, e1, D2, E2, carryMode);
+      else if (op === 'mul') p = GenDec.mul(rng, d1, e1, D2, E2);
+      else p = GenDec.div(rng, d1, e1, D2, E2, divMode, q || 0);
+      return { n1: p.n1, n2: p.n2, e1, e2: E2 };
+    }
+
     /* Genera SIEMPRE 8 operaciones a partir de los ajustes y la semilla.
        Mismo código => mismas operaciones, en cualquier ordenador o tablet. */
     function generateSet(s, seed) {
       const kind = s.op === 4 ? 'mix' : OPS[s.op];
-      const numKey = ((s.op * 8 + (s.d1 - 1)) * 4 + (s.d2 - 1)) * 4 + (kind === 'mul' ? 0 : s.carry);
+      const dec = (s.e1 || 0) * 25 + (s.e2 || 0) * 5 + (s.q || 0);
+      const numKey0 = ((s.op * 8 + (s.d1 - 1)) * 4 + (s.d2 - 1)) * 4 + (kind === 'mul' ? 0 : s.carry);
+      const numKey = dec ? numKey0 * 125 + dec + 7919 : numKey0;
       const rng = mulberry32((seed ^ Math.imul(numKey + 1, 0x9E3779B1)) >>> 0);
       const carryMode = ['random', 'yes', 'no'][s.carry] || 'random';
       const divMode = (kind === 'div' && s.carry === 1) ? 'exact' : 'random';
@@ -980,20 +1158,23 @@
       for (let i = 0; i < 8; i++) {
         const op = kind === 'mix' ? OPS[i % 4] : kind;
         let p, tries = 0;
-        do { p = genPair(rng, op, s.d1, s.d2, carryMode, divMode); tries++; }
+        do { p = genPairAny(rng, op, s.d1, s.d2, s.e1 || 0, s.e2 || 0, carryMode, divMode, op === 'div' ? (s.q || 0) : 0); tries++; }
         while (used.has(`${op}${p.n1}_${p.n2}`) && tries < 30);
         used.add(`${op}${p.n1}_${p.n2}`);
-        pairs.push({ op, n1: p.n1, n2: p.n2 });
+        pairs.push({ op, n1: p.n1, n2: p.n2, e1: p.e1, e2: p.e2, q: op === 'div' ? (s.q || 0) : 0 });
       }
       return pairs;
     }
 
     /* =========================================================================
-       CÓDIGOS DE FICHA: 9 caracteres (XXX-XXX-XXX) con dígito de control.
-       Sin 0/O, 1/I/L para evitar confusiones al teclear.
+       CÓDIGOS DE FICHA
+       - Fichas sin decimales: 9 caracteres (XXX-XXX-XXX), igual que en la versión anterior.
+       - Fichas con decimales: 11 caracteres (XXXX-XXXX-XXX).
+       Sin 0/O, 1/I/L para evitar confusiones al teclear. El último carácter es de control.
        ========================================================================= */
     const CODE_ALPHA = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // 31 símbolos
     const SEED_SPACE = 1048576; // 2^20 semillas
+    const SETTINGS_SPACE = 131072; // 2^17
     const CodeSys = {
       pack(s) { return ((((((s.ver * 8 + s.op) * 8 + (s.d1 - 1)) * 4 + (s.d2 - 1)) * 4 + s.carry) * 4 + s.cnt) * 2 + s.prob) * 4 + s.tpl; },
       unpack(v) {
@@ -1009,26 +1190,39 @@
         return s;
       },
       checksum(chars) { let sum = 0; for (let i = 0; i < chars.length; i++) sum += (i + 1) * CODE_ALPHA.indexOf(chars[i]); return CODE_ALPHA[sum % 31]; },
+      fmtCode(c) { return c.length === 9 ? `${c.slice(0, 3)}-${c.slice(3, 6)}-${c.slice(6)}` : `${c.slice(0, 4)}-${c.slice(4, 8)}-${c.slice(8)}`; },
       encode(s, seed) {
-        let v = this.pack(s) * SEED_SPACE + seed, chars = '';
-        for (let i = 0; i < 8; i++) { chars = CODE_ALPHA[v % 31] + chars; v = Math.floor(v / 31); }
-        chars += this.checksum(chars);
-        return `${chars.slice(0, 3)}-${chars.slice(3, 6)}-${chars.slice(6)}`;
+        const dec = (s.e1 || 0) * 25 + (s.e2 || 0) * 5 + (s.q || 0);
+        const n = dec ? 10 : 8;
+        let v = (dec ? dec * SETTINGS_SPACE + this.pack({ ...s, ver: 1 }) : this.pack({ ...s, ver: 0 })) * SEED_SPACE + seed, chars = '';
+        for (let i = 0; i < n; i++) { chars = CODE_ALPHA[v % 31] + chars; v = Math.floor(v / 31); }
+        return this.fmtCode(chars + this.checksum(chars));
       },
       decode(raw) {
         const clean = String(raw || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
-        if (clean.length !== 9) return { ok: false, error: 'El código debe tener 9 caracteres (por ejemplo: K7F-2QX-9MA).' };
+        if (clean.length !== 9 && clean.length !== 11) return { ok: false, error: 'El código debe tener 9 caracteres (fichas sin decimales) u 11 (fichas con decimales).' };
         for (const ch of clean) {
           if (!CODE_ALPHA.includes(ch)) return { ok: false, error: `El carácter «${ch}» no existe en los códigos (no se usan 0, 1, O, I ni L).` };
         }
-        const body = clean.slice(0, 8);
-        if (this.checksum(body) !== clean[8]) return { ok: false, error: 'Código incorrecto: revisa que esté bien copiado.' };
+        const body = clean.slice(0, -1);
+        if (this.checksum(body) !== clean[clean.length - 1]) return { ok: false, error: 'Código incorrecto: revisa que esté bien copiado.' };
         let v = 0; for (const ch of body) v = v * 31 + CODE_ALPHA.indexOf(ch);
         const seed = v % SEED_SPACE;
-        const s = this.unpack(Math.floor(v / SEED_SPACE));
-        const valid = s.ver === 0 && s.op <= 4 && s.d1 <= 5 && s.cnt <= 2 && s.carry <= 2 && s.tpl <= 2;
+        const rest = Math.floor(v / SEED_SPACE);
+        let s;
+        if (clean.length === 9) {
+          s = this.unpack(rest);
+          if (s.ver !== 0) return { ok: false, error: 'Código no válido para esta versión de la aplicación.' };
+          s.e1 = 0; s.e2 = 0; s.q = 0;
+        } else {
+          const dec = Math.floor(rest / SETTINGS_SPACE);
+          s = this.unpack(rest % SETTINGS_SPACE);
+          if (s.ver !== 1 || dec < 1 || dec > 124) return { ok: false, error: 'Código no válido para esta versión de la aplicación.' };
+          s.e1 = Math.floor(dec / 25); s.e2 = Math.floor(dec / 5) % 5; s.q = dec % 5;
+        }
+        const valid = s.op <= 4 && s.d1 <= 5 && s.cnt <= 2 && s.carry <= 2 && s.tpl <= 2;
         if (!valid) return { ok: false, error: 'Código no válido para esta versión de la aplicación.' };
-        return { ok: true, settings: s, seed, code: `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6)}` };
+        return { ok: true, settings: s, seed, code: this.fmtCode(clean) };
       }
     };
 
@@ -1042,6 +1236,7 @@
       sound: new SoundEngine(),
       config: {
         op: 'add', d1: 3, d2: 3,
+        e1: 0, e2: 0, qDec: 0,  // decimales del 1.er y 2.º número, y decimales a sacar en el cociente
         carryMode: 'yes',      // suma/resta: 'yes' | 'no' | 'random'
         divMode: 'random',     // división: 'random' | 'exact'
         mulCarries: 'write',   // multiplicación: 'write' (círculos) | 'mental'
@@ -1051,7 +1246,7 @@
         seed: null, printView: 'both'
       },
       state: {
-        op: 'add', num1: 0, num2: 0, steps: [], currentStepIdx: 0, cellsMap: {}, cellOrder: [],
+        op: 'add', num1: 0, num2: 0, e1: 0, e2: 0, q: 0, reveals: [], divPlan: null, steps: [], currentStepIdx: 0, cellsMap: {}, cellOrder: [],
         focusedCellId: null, completed: false, errors: 0, hints: 0, revealed: false,
         previousScreenId: 'screenConfig', worksheetPairs: [], activeWorksheetIndex: null, doneWorksheet: new Set(),
         currentCode: '', session: { stars: 0, ops: 0 }, cellSize: null
@@ -1140,6 +1335,7 @@
         const maxD2 = (c.op === 'mul' || c.op === 'div') ? 3 : 4;
         if (c.d2 > maxD2) c.d2 = maxD2;
         if ((c.op === 'sub' || c.op === 'div') && c.d2 > c.d1) c.d1 = c.d2;
+        if ((c.op === 'mul' || c.op === 'div') && c.e2 > 3 - c.d2) c.e2 = Math.max(0, 3 - c.d2);
       },
 
       refreshConfigUI() {
@@ -1148,22 +1344,35 @@
         document.querySelectorAll('.op-card').forEach(el => el.classList.toggle('selected', el.dataset.op === c.op));
         document.querySelectorAll('.mode-card').forEach(el => el.classList.toggle('selected', el.dataset.mode === c.mode));
         const terms = OP_INFO[c.op].terms;
-        document.getElementById('lblDigits1').textContent = terms[0] + ':';
-        document.getElementById('lblDigits2').textContent = terms[1] + ':';
+        document.getElementById('lblDigits1').textContent = terms[0] + ' (cifras enteras):';
+        document.getElementById('lblDigits2').textContent = terms[1] + ' (cifras enteras):';
+        document.getElementById('lblDec1').textContent = `Decimales del ${terms[0].toLowerCase().replace('1.er', 'primer').replace('2.º', 'segundo')}:`;
+        document.getElementById('lblDec2').textContent = `Decimales del ${terms[1].toLowerCase().replace('1.er', 'primer').replace('2.º', 'segundo')}:`;
         const maxD2 = (c.op === 'mul' || c.op === 'div') ? 3 : 4;
-        const mk = (boxId, which, max, current) => {
+        const maxE2 = (c.op === 'mul' || c.op === 'div') ? Math.max(0, 3 - c.d2) : 4;
+        const mk = (boxId, max, current, onPick, from = 1) => {
           const box = document.getElementById(boxId); box.innerHTML = '';
-          for (let v = 1; v <= max; v++) {
+          for (let v = from; v <= max; v++) {
             const b = document.createElement('button');
             b.className = 'pill-btn' + (v === current ? ' active' : '');
-            b.textContent = v;
-            b.onclick = () => this.setDigits(which, v);
+            b.textContent = (from === 0 && v === 0) ? 'Sin' : v;
+            b.onclick = () => onPick(v);
             box.appendChild(b);
           }
         };
-        mk('pillsDigits1', 1, 5, c.d1);
-        mk('pillsDigits2', 2, maxD2, c.d2);
+        mk('pillsDigits1', 5, c.d1, v => this.setDigits(1, v));
+        mk('pillsDigits2', maxD2, c.d2, v => this.setDigits(2, v));
+        mk('pillsDec1', 4, c.e1, v => this.setDecimals('e1', v), 0);
+        mk('pillsDec2', maxE2, c.e2, v => this.setDecimals('e2', v), 0);
+        mk('pillsQDec', 4, c.qDec, v => this.setDecimals('qDec', v), 0);
+        document.getElementById('rowQDec').style.display = c.op === 'div' ? 'flex' : 'none';
         this.renderOptionPills();
+      },
+
+      setDecimals(key, v) {
+        this.sound.play('tap');
+        this.config[key] = v;
+        this.refreshConfigUI();
       },
 
       renderOptionPills() {
@@ -1239,41 +1448,53 @@
       },
 
       /* ----------------------- NÚMEROS DEL MAESTRO ----------------------- */
+      /* Admite números como 345, 12,75 o 12.75 (hasta 4 decimales) */
+      parseDecimal(str, maxIntDigits) {
+        const m = String(str).replace(/\s/g, '').match(/^(\d+)(?:[.,](\d{1,4}))?$/);
+        if (!m) return null;
+        const ip = parseInt(m[1], 10), dec = m[2] || '';
+        if (String(ip).length > maxIntDigits) return null;
+        const v = ip * P10(dec.length) + (dec ? parseInt(dec, 10) : 0);
+        return v > 0 ? { v, e: dec.length } : null;
+      },
+
       readCustomNumbers() {
-        const i1 = document.getElementById('customNum1'), i2 = document.getElementById('customNum2');
-        const r1 = i1.value.trim(), r2 = i2.value.trim();
+        const r1 = document.getElementById('customNum1').value.trim(), r2 = document.getElementById('customNum2').value.trim();
         if (r1 === '' && r2 === '') return { used: false };
-        const c1 = parseInt(r1, 10), c2 = parseInt(r2, 10);
-        if (isNaN(c1) || isNaN(c2)) { this.toast('Escribe los dos números o deja ambos vacíos.', 'error'); return { error: true }; }
-        if (c1 < 1 || c1 > 99999 || c2 < 1 || c2 > 9999) {
-          this.toast('El 1.er número debe estar entre 1 y 99 999, y el 2.º entre 1 y 9 999.', 'error'); return { error: true };
+        if (r1 === '' || r2 === '') { this.toast('Escribe los dos números o deja ambos vacíos.', 'error'); return { error: true }; }
+        let a = this.parseDecimal(r1, 5), b = this.parseDecimal(r2, 4);
+        if (!a || !b) {
+          this.toast('Usa números mayores que 0, como 345 o 12,75: hasta 5 cifras enteras el 1.º, 4 el 2.º, y hasta 4 decimales.', 'error');
+          return { error: true };
         }
-        let n1 = c1, n2 = c2;
-        const op = this.config.op;
-        if ((op === 'sub' || op === 'div') && n1 < n2) {
-          [n1, n2] = [n2, n1];
+        const op = this.config.op, val = x => x.v / P10(x.e);
+        if ((op === 'sub' && val(a) < val(b)) || (op === 'div' && !a.e && !b.e && a.v < b.v)) {
+          [a, b] = [b, a];
           this.toast('He intercambiado los números: el primero debe ser el mayor.', 'ok');
         }
-        return { used: true, n1, n2 };
+        return { used: true, a, b };
       },
 
       startOperation() {
         this.sound.play('tap');
-        const s = this.state;
+        const s = this.state, c = this.config;
         const custom = this.readCustomNumbers();
         if (custom.error) return;
         s.activeWorksheetIndex = null;
-        s.op = this.config.op;
-        if (custom.used) { s.num1 = custom.n1; s.num2 = custom.n2; }
-        else this.randomNumbersForBoard();
+        s.op = c.op;
+        if (custom.used) {
+          s.num1 = custom.a.v; s.e1 = custom.a.e; s.num2 = custom.b.v; s.e2 = custom.b.e;
+          s.q = s.op === 'div' ? c.qDec : 0;
+        } else this.randomNumbersForBoard();
         this.buildWorkspace();
         this.showScreen('screenWorkspace');
       },
 
       randomNumbersForBoard() {
         const c = this.config, s = this.state;
-        const p = genPair(Math.random, s.op, c.d1, c.d2, c.carryMode, c.divMode);
-        s.num1 = p.n1; s.num2 = p.n2;
+        const p = genPairAny(Math.random, s.op, c.d1, c.d2, c.e1, c.e2, c.carryMode, c.divMode, s.op === 'div' ? c.qDec : 0);
+        s.num1 = p.n1; s.num2 = p.n2; s.e1 = p.e1; s.e2 = p.e2;
+        s.q = s.op === 'div' ? c.qDec : 0;
       },
 
       newRandomSameConfig() {
@@ -1295,7 +1516,7 @@
         this.sound.play('tap');
         const s = this.state;
         s.activeWorksheetIndex = index;
-        s.op = pair.op; s.num1 = pair.n1; s.num2 = pair.n2;
+        s.op = pair.op; s.num1 = pair.n1; s.num2 = pair.n2; s.e1 = pair.e1 || 0; s.e2 = pair.e2 || 0; s.q = pair.q || 0;
         this.buildWorkspace();
         this.showScreen('screenWorkspace');
       },
@@ -1329,7 +1550,7 @@
           const b = document.createElement('button');
           b.className = 'sync-pill-btn' + (i === s.activeWorksheetIndex ? ' active' : '') + (s.doneWorksheet.has(`${s.currentCode}:${i}`) ? ' done' : '');
           b.innerHTML = `${i + 1}${mixed ? ` <small>${OP_INFO[p.op].sym}</small>` : ''}`;
-          b.title = `Operación n.º ${i + 1}: ${fmt(p.n1)} ${OP_INFO[p.op].sym} ${fmt(p.n2)}`;
+          b.title = `Operación n.º ${i + 1}: ${fmtDec(p.n1, p.e1 || 0)} ${OP_INFO[p.op].sym} ${fmtDec(p.n2, p.e2 || 0)}`;
           b.onclick = () => this.loadWorksheetOpIntoBoard(i);
           box.appendChild(b);
         }
@@ -1338,7 +1559,7 @@
       /* ------------------------- CONSTRUCCIÓN ------------------------- */
       buildWorkspace() {
         const s = this.state;
-        Object.assign(s, { steps: [], currentStepIdx: 0, cellsMap: {}, cellOrder: [], focusedCellId: null, completed: false, errors: 0, hints: 0, revealed: false });
+        Object.assign(s, { reveals: [], divPlan: null, steps: [], currentStepIdx: 0, cellsMap: {}, cellOrder: [], focusedCellId: null, completed: false, errors: 0, hints: 0, revealed: false });
         const banner = document.getElementById('victoryBanner');
         banner.classList.remove('show', 'revealed');
         this.renderWorksheetSyncBar();
@@ -1349,7 +1570,10 @@
         badge.textContent = guided ? '🦉 Práctica guiada' : '🚀 Práctica libre';
         document.getElementById('btnMainCheck').textContent = guided ? '✓ Comprobar paso' : '✓ Comprobar operación';
         document.getElementById('btnFreeHint').style.display = guided ? 'none' : 'flex';
-        document.getElementById('opSummary').textContent = `${fmt(s.num1)} ${OP_INFO[s.op].sym} ${fmt(s.num2)}`;
+        document.getElementById('opSummary').textContent = `${fmtDec(s.num1, s.e1 || 0)} ${OP_INFO[s.op].sym} ${fmtDec(s.num2, s.e2 || 0)}`;
+        const note = document.getElementById('boardNote');
+        note.style.display = 'none';
+        if (s.op === 'div' && s.q) { note.textContent = `Saca ${s.q} decimal${s.q > 1 ? 'es' : ''} en el cociente`; note.style.display = 'block'; }
 
         const wrapper = document.getElementById('boardWrapper');
         wrapper.innerHTML = '';
@@ -1375,10 +1599,10 @@
       inputEl() { const d = document.createElement('div'); d.className = 'input-cell'; return d; },
       lineEl(span) { const d = document.createElement('div'); d.className = 'op-divider-line'; d.style.gridColumn = `1 / span ${span}`; return d; },
       makeGrid(cols) { const g = document.createElement('div'); g.className = 'math-grid'; g.style.gridTemplateColumns = `repeat(${cols}, auto)`; return g; },
-      headerRow(grid, L) {
+      headerRow(grid, L, k = 0) {
         grid.appendChild(this.slot(true));
         for (let c = L - 1; c >= 0; c--) {
-          const pk = posKey(c);
+          const pk = posKey(c, k);
           const h = document.createElement('div');
           h.className = `pos-header pos-${pk}`; h.id = `pos-header-${pk}`; h.textContent = pk;
           grid.appendChild(h);
@@ -1389,47 +1613,72 @@
         this.state.cellsMap[id] = { id, expected: String(expected), optional: !!optional, userVal: '', el, hintTitle, hintText, posKey: pk || null, kind: kind || 'digit' };
         el.addEventListener('click', () => this.onCellClick(id));
       },
-      addStep(title, text, cellIds, pk, refs) {
-        this.state.steps.push({ title: `Paso ${this.state.steps.length + 1}: ${title}`, text, cellIds: cellIds || [], posKey: pk || null, refStaticIds: refs || [] });
+      addStep(title, text, cellIds, pk, refs, onEnter) {
+        this.state.steps.push({ title: `Paso ${this.state.steps.length + 1}: ${title}`, text, cellIds: cellIds || [], posKey: pk || null, refStaticIds: refs || [], onEnter: onEnter || null });
+      },
+
+      /* Coma decimal: en las casillas de escribir se dibuja con CSS; en las fijas, con un elemento */
+      markComma(el) {
+        if (!el) return;
+        if (el.classList.contains('input-cell')) { el.classList.add('comma'); return; }
+        if (!el.querySelector('.comma-mark')) { const m = document.createElement('span'); m.className = 'comma-mark'; m.textContent = ','; el.appendChild(m); }
       },
 
       /* ===================== SUMA Y RESTA ===================== */
       buildAddSubBoard(wrapper, isAdd) {
-        const n1 = this.state.num1, n2 = this.state.num2;
-        const res = isAdd ? n1 + n2 : n1 - n2;
-        const resLen = nDigits(res);
-        const L = Math.max(nDigits(n1), nDigits(n2), resLen);
-        const carries = new Array(L + 1).fill(0), out = new Array(L).fill(0);
+        const s = this.state, e1 = s.e1 || 0, e2 = s.e2 || 0, E = Math.max(e1, e2);
+        const A = s.num1 * P10(E - e1), B = s.num2 * P10(E - e2);   // alineamos por la coma
+        const res = isAdd ? A + B : A - B;
+        const resLen = Math.max(nDigits(res), E + 1);
+        const L = Math.max(opLen(A, E), opLen(B, E), resLen);
+        const aD = [], bD = [], carries = new Array(L + 1).fill(0), out = new Array(L).fill(0);
         for (let c = 0; c < L; c++) {
-          const A = digitAt(n1, c) ?? 0, B = digitAt(n2, c) ?? 0;
-          if (isAdd) { const t = A + B + carries[c]; out[c] = t % 10; carries[c + 1] = Math.floor(t / 10); }
-          else { const sb = B + carries[c]; if (A < sb) { out[c] = A + 10 - sb; carries[c + 1] = 1; } else { out[c] = A - sb; carries[c + 1] = 0; } }
+          aD[c] = dispDigit(A, c, E); bD[c] = dispDigit(B, c, E);
+          const Av = aD[c] ?? 0, Bv = bD[c] ?? 0;
+          if (isAdd) { const t = Av + Bv + carries[c]; out[c] = t % 10; carries[c + 1] = Math.floor(t / 10); }
+          else { const sb = Bv + carries[c]; if (Av < sb) { out[c] = Av + 10 - sb; carries[c + 1] = 1; } else { out[c] = Av - sb; carries[c + 1] = 0; } }
         }
 
         const grid = this.makeGrid(L + 1);
-        this.headerRow(grid, L);
+        this.headerRow(grid, L, E);
         grid.appendChild(this.slot(true));
         const carryEls = {};
         for (let c = L - 1; c >= 0; c--) {
           if (c === 0) grid.appendChild(this.slot(true));
-          else { const ce = this.carryEl(posKey(c)); grid.appendChild(ce); carryEls[c] = ce; }
+          else { const ce = this.carryEl(posKey(c, E)); grid.appendChild(ce); carryEls[c] = ce; }
         }
+        const operandRow = (digits, prefix, ghostBelow) => {
+          for (let c = L - 1; c >= 0; c--) {
+            const cell = this.staticCell(digits[c], `${prefix}-col-${c}`);
+            if (c < ghostBelow) cell.classList.add('ghost');          // ceros añadidos para igualar decimales
+            if (E > 0 && c === E) this.markComma(cell);
+            grid.appendChild(cell);
+          }
+        };
         grid.appendChild(this.slot());
-        for (let c = L - 1; c >= 0; c--) grid.appendChild(this.staticCell(digitAt(n1, c), `op1-col-${c}`));
+        operandRow(aD, 'op1', E - e1);
         grid.appendChild(this.staticCell(isAdd ? '+' : '−', null, true));
-        for (let c = L - 1; c >= 0; c--) grid.appendChild(this.staticCell(digitAt(n2, c), `op2-col-${c}`));
+        operandRow(bD, 'op2', E - e2);
         grid.appendChild(this.lineEl(L + 1));
         grid.appendChild(this.slot());
         const resEls = {};
         for (let c = L - 1; c >= 0; c--) {
-          if (!isAdd && c >= resLen) grid.appendChild(this.slot());   // los ceros a la izquierda no se escriben
-          else { const r = this.inputEl(); grid.appendChild(r); resEls[c] = r; }
+          const r = this.inputEl();
+          if (!isAdd && c >= resLen) r.classList.add('opt-zero');   // cero a la izquierda: casilla opcional
+          if (E > 0 && c === E) this.markComma(r);
+          grid.appendChild(r); resEls[c] = r;
+        }
+
+        if (E > 0) {
+          this.addStep('Colocamos las comas',
+            `Escribimos los números con las <strong>comas una debajo de otra</strong>: unidades con unidades, décimas con décimas…${e1 !== e2 ? ' Como no tienen los mismos decimales, <strong>completamos con ceros</strong> (en gris) el que tiene menos.' : ''} La <strong>coma del resultado</strong> va justo debajo de las otras. Pulsa «Siguiente».`,
+            [], posKey(E, E), []);
         }
 
         for (let c = 0; c < L; c++) {
-          const a = digitAt(n1, c), b = digitAt(n2, c);
-          const A = a ?? 0, B = b ?? 0, prev = carries[c], next = carries[c + 1], o = out[c];
-          const pk = posKey(c), name = posName(c), npk = posKey(c + 1), nname = posName(c + 1);
+          const a = aD[c], b = bD[c];
+          const Av = a ?? 0, Bv = b ?? 0, prev = carries[c], next = carries[c + 1], o = out[c];
+          const pk = posKey(c, E), name = posName(c, E), npk = posKey(c + 1, E), nname = posName(c + 1, E);
           const cells = [];
           let text, title;
 
@@ -1439,7 +1688,7 @@
             if (a !== null) parts.push(a);
             if (b !== null) parts.push(b);
             if (prev > 0) parts.push(`${prev} (que nos llevábamos)`);
-            const total = A + B + prev;
+            const total = Av + Bv + prev;
             if (parts.length === 1) {
               text = (a === null && b === null)
                 ? `En las <strong>${name}</strong> no hay cifras, pero nos llevábamos <strong>${prev}</strong>: lo bajamos. Escribe el <strong>${o}</strong>.`
@@ -1451,23 +1700,25 @@
             }
           } else {
             title = `Restamos las ${name} (${pk})`;
-            const sb = B + prev;
-            const sbDesc = prev > 0 ? `${B} + 1 que nos llevábamos = <strong>${sb}</strong>` : `<strong>${sb}</strong>`;
+            const sb = Bv + prev;
+            const sbDesc = prev > 0 ? `${Bv} + 1 que nos llevábamos = <strong>${sb}</strong>` : `<strong>${sb}</strong>`;
             if (c >= resLen) {
+              const zeroNote = `Es un <strong>cero a la izquierda</strong>: no hace falta escribirlo. Puedes poner el <strong>0</strong> en la casilla de puntos o dejarla vacía.`;
               text = next === 1
-                ? `En las <strong>${name}</strong>: a ${A} no le podemos quitar ${sbDesc}. Le sumamos 10 (${A + 10}) y de ${sb} a ${A + 10} van 0. Anota <strong>1</strong> de llevada en el circulito de las <strong>${nname}</strong>. Ese 0 <strong>no se escribe</strong>: es un cero a la izquierda.`
-                : `En las <strong>${name}</strong>: ${A} − ${sb} = 0. Es un <strong>cero a la izquierda</strong>, así que <strong>no se escribe</strong>. Pulsa «Siguiente».`;
+                ? `En las <strong>${name}</strong>: a ${Av} no le podemos quitar ${sbDesc}. Le sumamos 10 (${Av + 10}) y de ${sb} a ${Av + 10} van 0. Anota <strong>1</strong> de llevada en el circulito de las <strong>${nname}</strong>. ${zeroNote}`
+                : `En las <strong>${name}</strong>: ${Av} − ${sb} = <strong>0</strong>. ${zeroNote} Después pulsa «Comprobar paso».`;
             } else if (next === 1) {
-              text = `Arriba hay un <strong>${A}</strong> y tenemos que quitar ${sbDesc}. Como ${A} es menor, le sumamos 10: <strong>${A + 10}</strong>. De ${sb} a ${A + 10} van <strong>${o}</strong>. Escribe el <strong>${o}</strong> y anota <strong>1</strong> de llevada en el circulito de las <strong>${nname} (${npk})</strong>: se lo sumaremos a la cifra de abajo.`;
+              text = `Arriba hay un <strong>${Av}</strong> y tenemos que quitar ${sbDesc}. Como ${Av} es menor, le sumamos 10: <strong>${Av + 10}</strong>. De ${sb} a ${Av + 10} van <strong>${o}</strong>. Escribe el <strong>${o}</strong> y anota <strong>1</strong> de llevada en el circulito de las <strong>${nname} (${npk})</strong>: se lo sumaremos a la cifra de abajo.`;
             } else if (b === null && prev === 0) {
-              text = `En las <strong>${name}</strong> no hay nada que quitar: bajamos el <strong>${A}</strong>.`;
+              text = `En las <strong>${name}</strong> no hay nada que quitar: bajamos el <strong>${Av}</strong>.`;
             } else {
-              text = `A <strong>${A}</strong> le quitamos ${sbDesc}: ${A} − ${sb} = <strong>${o}</strong>. Escribe el <strong>${o}</strong>.`;
+              text = `A <strong>${Av}</strong> le quitamos ${sbDesc}: ${Av} − ${sb} = <strong>${o}</strong>. Escribe el <strong>${o}</strong>.`;
             }
           }
 
           if (resEls[c]) {
-            this.registerCell(`res_${c}`, o, false, resEls[c], `Resultado en las ${name}`, text, pk, 'digit');
+            const optZero = !isAdd && c >= resLen;
+            this.registerCell(`res_${c}`, o, optZero, resEls[c], optZero ? `Cero a la izquierda (${name})` : `Resultado en las ${name}`, text, pk, 'digit');
             cells.push(`res_${c}`);
           }
           if (c + 1 < L && carryEls[c + 1]) {
@@ -1493,7 +1744,8 @@
       },
 
       buildMultiplicationBoard(wrapper) {
-        const n1 = this.state.num1, n2 = this.state.num2, prod = n1 * n2;
+        const st0 = this.state;
+        const n1 = st0.num1, n2 = st0.num2, e1 = st0.e1 || 0, e2 = st0.e2 || 0, k = e1 + e2, prod = n1 * n2;
         const s1 = String(n1), s2 = String(n2), len1 = s1.length, len2 = s2.length;
         const writeCarries = this.config.mulCarries === 'write';
         const partials = [];
@@ -1501,14 +1753,13 @@
           const m = +s2[len2 - 1 - r];
           partials.push({ m, ...this.computePartial(n1, m) });
         }
-        const prodLen = nDigits(prod);
-        let L = Math.max(len1, len2, prodLen);
+        const prodLen = nDigits(prod), outLen = Math.max(prodLen, k + 1);  // con decimales puede hacer falta añadir ceros
+        let L = Math.max(opLen(n1, e1), opLen(n2, e2), outLen);
         partials.forEach((p, r) => { L = Math.max(L, r + p.digits.length); });
 
         const grid = this.makeGrid(L + 1);
-        this.headerRow(grid, L);
+        if (k === 0) this.headerRow(grid, L, 0);   // con decimales no hay etiquetas: se multiplica como si no hubiera coma
 
-        // Filas de llevadas: la del primer multiplicador (r = 0) queda pegada al multiplicando
         const mulCarryEls = [];
         if (writeCarries && len1 > 1) {
           for (let r = len2 - 1; r >= 0; r--) {
@@ -1516,45 +1767,51 @@
             if (partials[r].m === 0) continue;
             grid.appendChild(this.slot(true));
             for (let c = L - 1; c >= 0; c--) {
-              if (c >= 1 && c <= len1 - 1) { const ce = this.carryEl(posKey(c)); grid.appendChild(ce); mulCarryEls[r][c] = ce; }
+              if (c >= 1 && c <= len1 - 1) { const ce = this.carryEl(posKey(c, k)); grid.appendChild(ce); mulCarryEls[r][c] = ce; }
               else grid.appendChild(this.slot(true));
             }
           }
         }
 
         grid.appendChild(this.slot());
-        for (let c = L - 1; c >= 0; c--) grid.appendChild(this.staticCell(digitAt(n1, c), `op1-col-${c}`));
+        for (let c = L - 1; c >= 0; c--) { const cell = this.staticCell(dispDigit(n1, c, e1), `op1-col-${c}`); if (e1 && c === e1) this.markComma(cell); grid.appendChild(cell); }
         grid.appendChild(this.staticCell('×', null, true));
-        for (let c = L - 1; c >= 0; c--) grid.appendChild(this.staticCell(digitAt(n2, c), `op2-col-${c}`));
+        for (let c = L - 1; c >= 0; c--) { const cell = this.staticCell(dispDigit(n2, c, e2), `op2-col-${c}`); if (e2 && c === e2) this.markComma(cell); grid.appendChild(cell); }
         grid.appendChild(this.lineEl(L + 1));
 
         const partialEls = [];
         partials.forEach((p, r) => {
           partialEls[r] = {};
+          const rowLen = len2 === 1 ? Math.max(p.digits.length, outLen) : p.digits.length;
           grid.appendChild((len2 > 1 && r === len2 - 1) ? this.staticCell('+', null, true) : this.slot());
           for (let c = L - 1; c >= 0; c--) {
             const li = c - r;
-            if (li >= 0 && li < p.digits.length) { const e = this.inputEl(); grid.appendChild(e); partialEls[r][li] = e; }
+            if (li >= 0 && li < rowLen) { const e = this.inputEl(); grid.appendChild(e); partialEls[r][li] = e; }
             else grid.appendChild(this.slot());
           }
         });
 
+        if (k > 0) {
+          this.addStep('Multiplicamos sin mirar las comas',
+            `Para multiplicar números decimales, <strong>multiplicamos como si no tuvieran coma</strong>. Al final contaremos los decimales para colocar la coma en el resultado. Pulsa «Siguiente».`, [], null, []);
+        }
+
         partials.forEach((p, r) => {
-          const m = p.m, mpk = posKey(r);
+          const m = p.m, mpk = posKey(r, k);
           if (r > 0) {
-            this.addStep(`Cambiamos a la cifra de las ${posName(r)}`,
-              `Ahora multiplicamos por el <strong>${m}</strong> del multiplicador, que está en las <strong>${posName(r)}</strong>. Por eso empezamos a escribir <strong>${r === 1 ? 'una posición' : r + ' posiciones'} más a la izquierda</strong>: ${r === 1 ? 'la columna de las unidades se queda vacía' : 'las primeras columnas se quedan vacías'}. ${writeCarries ? 'Las llevadas de esta fila van en una fila nueva de circulitos.' : ''} Pulsa «Siguiente».`,
+            this.addStep(`Cambiamos de cifra del multiplicador`,
+              `Ahora multiplicamos por el <strong>${m}</strong>, la siguiente cifra del multiplicador. Por eso empezamos a escribir <strong>${r === 1 ? 'una posición' : r + ' posiciones'} más a la izquierda</strong>: ${r === 1 ? 'la primera columna se queda vacía' : 'las primeras columnas se quedan vacías'}. ${writeCarries ? 'Las llevadas de esta fila van en una fila nueva de circulitos.' : ''} Pulsa «Siguiente».`,
               [], mpk, [`op2-col-${r}`]);
           }
           if (m === 0) {
             const ids = [];
-            p.digits.forEach((dg, li) => { const id = `part_${r}_${li}`; this.registerCell(id, 0, false, partialEls[r][li], 'Fila por 0', 'Cualquier número por 0 da 0.', posKey(r + li)); ids.push(id); });
+            p.digits.forEach((dg, li) => { const id = `part_${r}_${li}`; this.registerCell(id, 0, false, partialEls[r][li], 'Fila por 0', 'Cualquier número por 0 da 0.', posKey(r + li, k)); ids.push(id); });
             this.addStep('Multiplicamos por 0', `Cualquier número multiplicado por <strong>0</strong> da <strong>0</strong>: escribe un <strong>0</strong> en cada casilla de esta fila.`, ids, mpk, [`op2-col-${r}`]);
             return;
           }
           for (let i = 0; i < len1; i++) {
             const d = +s1[len1 - 1 - i], prevC = p.carries[i], v = d * m + prevC, o = p.digits[i], nextC = p.carries[i + 1];
-            const last = i === len1 - 1, targetPk = posKey(r + i);
+            const last = i === len1 - 1, targetPk = posKey(r + i, k);
             const calc = prevC > 0 ? `${m} × ${d} = ${m * d}, más ${prevC} que nos llevábamos = <strong>${v}</strong>` : `${m} × ${d} = <strong>${v}</strong>`;
             const ids = [], cid = `part_${r}_${i}`;
             let text;
@@ -1562,70 +1819,88 @@
               text = `${calc}. Es la última cifra del multiplicando, así que escribimos el <strong>${v}</strong> completo: el <strong>${o}</strong> y, a su izquierda, el <strong>${nextC}</strong>.`;
               this.registerCell(cid, o, false, partialEls[r][i], 'Producto parcial', text, targetPk);
               const xid = `part_${r}_${len1}`;
-              this.registerCell(xid, nextC, false, partialEls[r][len1], 'Producto parcial', text, posKey(r + len1));
+              this.registerCell(xid, nextC, false, partialEls[r][len1], 'Producto parcial', text, posKey(r + len1, k));
               ids.push(cid, xid);
             } else if (nextC > 0) {
               text = writeCarries
-                ? `${calc}. Escribe el <strong>${o}</strong> y anota el <strong>${nextC}</strong> que te llevas en el circulito de encima de las ${posName(i + 1)} del multiplicando.`
+                ? `${calc}. Escribe el <strong>${o}</strong> y anota el <strong>${nextC}</strong> que te llevas en el circulito de encima de la siguiente cifra del multiplicando.`
                 : `${calc}. Escribe el <strong>${o}</strong> y <strong>recuerda</strong> que te llevas <strong>${nextC}</strong>.`;
               this.registerCell(cid, o, false, partialEls[r][i], 'Producto parcial', text, targetPk);
               ids.push(cid);
               const ce = mulCarryEls[r] && mulCarryEls[r][i + 1];
-              if (ce) { const kid = `mcarry_${r}_${i + 1}`; this.registerCell(kid, nextC, false, ce, 'Llevada de la multiplicación', text, posKey(i + 1), 'carry'); ids.push(kid); }
+              if (ce) { const kid = `mcarry_${r}_${i + 1}`; this.registerCell(kid, nextC, false, ce, 'Llevada de la multiplicación', text, posKey(i + 1, k), 'carry'); ids.push(kid); }
             } else {
               text = `${calc}. Escribe el <strong>${o}</strong>${last ? '' : '. No nos llevamos nada'}.`;
               this.registerCell(cid, o, false, partialEls[r][i], 'Producto parcial', text, targetPk);
               ids.push(cid);
               const ce = mulCarryEls[r] && mulCarryEls[r][i + 1];
-              if (ce) this.registerCell(`mcarry_${r}_${i + 1}`, 0, true, ce, 'Sin llevada', 'No nos llevamos nada en este paso.', posKey(i + 1), 'carry');
+              if (ce) this.registerCell(`mcarry_${r}_${i + 1}`, 0, true, ce, 'Sin llevada', 'No nos llevamos nada en este paso.', posKey(i + 1, k), 'carry');
             }
             this.addStep(`Multiplicamos ${m} × ${d}`, text, ids, targetPk, [`op1-col-${i}`, `op2-col-${r}`]);
           }
+          if (len2 === 1 && outLen > p.digits.length) {
+            const ids = [];
+            for (let li = p.digits.length; li < outLen; li++) { const id = `part_0_${li}`; this.registerCell(id, 0, false, partialEls[0][li], 'Completamos con ceros', 'Faltan cifras para poner la coma: escribimos 0.', posKey(li, k)); ids.push(id); }
+            this.addStep('Completamos con ceros',
+              `El resultado necesita <strong>${k}</strong> cifra${k > 1 ? 's' : ''} decimal${k > 1 ? 'es' : ''} y solo hemos obtenido ${p.digits.length}. Escribimos <strong>0</strong> a la izquierda hasta tener cifras suficientes.`, ids, posKey(p.digits.length, k), []);
+          }
         });
 
+        const productEls = len2 === 1 ? partialEls[0] : {};
         if (len2 > 1) {
           grid.appendChild(this.lineEl(L + 1));
           grid.appendChild(this.slot(true));
           const sumCarryEls = {};
           for (let c = L - 1; c >= 0; c--) {
-            if (c >= 1 && c < prodLen) { const ce = this.carryEl(posKey(c)); grid.appendChild(ce); sumCarryEls[c] = ce; }
+            if (c >= 1 && c < outLen) { const ce = this.carryEl(posKey(c, k)); grid.appendChild(ce); sumCarryEls[c] = ce; }
             else grid.appendChild(this.slot(true));
           }
           grid.appendChild(this.slot());
-          const finalEls = {};
           for (let c = L - 1; c >= 0; c--) {
-            if (c < prodLen) { const e = this.inputEl(); grid.appendChild(e); finalEls[c] = e; }
+            if (c < outLen) { const e = this.inputEl(); grid.appendChild(e); productEls[c] = e; }
             else grid.appendChild(this.slot());
           }
           const sc = new Array(L + 1).fill(0);
-          for (let c = 0; c < prodLen; c++) {
+          for (let c = 0; c < outLen; c++) {
             const vals = [];
             partials.forEach((p, r) => { const li = c - r; if (li >= 0 && li < p.digits.length) vals.push(p.digits[li]); });
             const total = vals.reduce((x, y) => x + y, 0) + sc[c];
             const o = total % 10, next = Math.floor(total / 10); sc[c + 1] = next;
-            const name = posName(c), pk = posKey(c);
+            const name = posName(c, k), pk = posKey(c, k);
             const parts = vals.slice(); if (sc[c] > 0) parts.push(`${sc[c]} (que nos llevábamos)`);
             let text;
-            if (parts.length === 1) text = `En las <strong>${name}</strong> solo hay una cifra: la bajamos. Escribe el <strong>${o}</strong>.`;
-            else if (next > 0 && c + 1 < prodLen) text = `Sumamos las <strong>${name}</strong>: ${parts.join(' + ')} = <strong>${total}</strong>. Escribe el <strong>${o}</strong> y anota el <strong>${next}</strong> en el circulito de las ${posName(c + 1)}.`;
+            if (parts.length === 0) text = `No quedan cifras, pero el resultado necesita ${k} decimales: escribe un <strong>0</strong>.`;
+            else if (parts.length === 1) text = `En las <strong>${name}</strong> solo hay una cifra: la bajamos. Escribe el <strong>${o}</strong>.`;
+            else if (next > 0 && c + 1 < outLen) text = `Sumamos las <strong>${name}</strong>: ${parts.join(' + ')} = <strong>${total}</strong>. Escribe el <strong>${o}</strong> y anota el <strong>${next}</strong> en el circulito de las ${posName(c + 1, k)}.`;
             else text = `Sumamos las <strong>${name}</strong>: ${parts.join(' + ')} = <strong>${total}</strong>. Escribe el <strong>${o}</strong>.`;
             const ids = [`final_${c}`];
-            this.registerCell(`final_${c}`, o, false, finalEls[c], `Suma final (${name})`, text, pk);
-            if (c + 1 < prodLen && sumCarryEls[c + 1]) {
-              this.registerCell(`scarry_${c + 1}`, next, next === 0, sumCarryEls[c + 1], 'Llevada de la suma', text, posKey(c + 1), 'carry');
+            this.registerCell(`final_${c}`, o, false, productEls[c], `Suma final (${name})`, text, pk);
+            if (c + 1 < outLen && sumCarryEls[c + 1]) {
+              this.registerCell(`scarry_${c + 1}`, next, next === 0, sumCarryEls[c + 1], 'Llevada de la suma', text, posKey(c + 1, k), 'carry');
               if (next > 0) ids.push(`scarry_${c + 1}`);
             }
             this.addStep(`Suma final: ${name} (${pk})`, text, ids, pk, []);
           }
         }
+
+        if (k > 0) {
+          const target = productEls[k];
+          this.addStep('Colocamos la coma',
+            `Contamos los decimales: el multiplicando tiene <strong>${e1}</strong> y el multiplicador <strong>${e2}</strong>; en total <strong>${k}</strong>. Contamos ${k} cifra${k > 1 ? 's' : ''} desde la derecha del resultado y ponemos la coma: <strong>${fmtDec(prod, k)}</strong>.`,
+            [], posKey(k, k), [], () => this.markComma(target));
+          st0.reveals.push(() => this.markComma(target));
+        }
         wrapper.appendChild(grid);
       },
 
       /* ===================== DIVISIÓN (caja española) ===================== */
-      computeDivisionSteps(dividend, divisor) {
-        const ds = String(dividend), len = ds.length;
+      computeDivisionSteps(ds, divisor, unitsIdx) {
+        ds = String(ds);
+        const len = ds.length;
+        if (unitsIdx === undefined) unitsIdx = len - 1;
         let idx = 0, cur = 0;
-        while (idx < len - 1 && (cur * 10 + (+ds[idx])) < divisor) { cur = cur * 10 + (+ds[idx]); idx++; }
+        // Primer grupo: las cifras necesarias, pero nunca pasando de las unidades (si no cabe, el cociente empieza por 0,)
+        while (idx < len - 1 && idx < unitsIdx && (cur * 10 + (+ds[idx])) < divisor) { cur = cur * 10 + (+ds[idx]); idx++; }
         cur = cur * 10 + (+ds[idx]);
         const firstEndCol = idx, steps = [];
         let end = firstEndCol, w = cur;
@@ -1639,22 +1914,48 @@
         return { firstEndCol, divStepsData: steps };
       },
 
+      /* Prepara la división: quita la coma del divisor y añade ceros para sacar decimales */
+      divisionPlan(v1, e1, v2, e2, q) {
+        let tv1 = v1, te1 = e1;
+        if (e2 > 0) { if (e1 >= e2) te1 = e1 - e2; else { tv1 = v1 * P10(e2 - e1); te1 = 0; } }
+        const Q = Math.max(te1, q || 0), added = Q - te1;
+        const ds = String(tv1 * P10(added)).padStart(Q + 1, '0');
+        const unitsIdx = ds.length - 1 - Q;
+        const { firstEndCol, divStepsData } = this.computeDivisionSteps(ds, v2, unitsIdx);
+        const quotient = parseInt(divStepsData.map(x => x.qDigit).join(''), 10);
+        const rem = divStepsData[divStepsData.length - 1].rem;
+        return { tv1, te1, tv2: v2, Q, added, ds, unitsIdx, firstEndCol, divStepsData, quotient, rem, transformed: e2 > 0 };
+      },
+
       buildDivisionBoard(wrapper) {
-        const dividend = this.state.num1, divisor = this.state.num2;
-        const ds = String(dividend), len = ds.length;
-        const { firstEndCol, divStepsData } = this.computeDivisionSteps(dividend, divisor);
+        const s = this.state, e1 = s.e1 || 0, e2 = s.e2 || 0;
+        const P = this.divisionPlan(s.num1, e1, s.num2, e2, s.q || 0);
+        s.divPlan = P;
+        const ds = P.ds, len = ds.length, divisor = P.tv2, Q = P.Q;
+        const { firstEndCol, divStepsData } = P;
+
+        if (P.transformed) {
+          this.addStep('Quitamos la coma del divisor',
+            `El divisor <strong>${fmtDec(s.num2, e2)}</strong> tiene coma. Para quitarla, <strong>multiplicamos el dividendo y el divisor por ${fmt(P10(e2))}</strong>${e1 < e2 ? ' (al dividendo le añadimos ceros)' : ' (movemos sus comas ' + e2 + ' lugar' + (e2 > 1 ? 'es' : '') + ' a la derecha)'}: ${fmtDec(s.num1, e1)} ÷ ${fmtDec(s.num2, e2)} → <strong>${fmtDec(P.tv1, P.te1)} ÷ ${fmt(P.tv2)}</strong>. El cociente es el mismo. Pulsa «Siguiente».`, [], null, []);
+        }
+        if (P.added > 0) {
+          this.addStep('Sacamos decimales',
+            `Queremos <strong>${Q} decimal${Q > 1 ? 'es' : ''}</strong> en el cociente. ${P.te1 === 0 ? 'Ponemos la coma al dividendo y le añadimos' : 'Añadimos al dividendo'} <strong>${P.added} cero${P.added > 1 ? 's' : ''}</strong> (en gris): no cambian su valor y nos dejan seguir dividiendo. Pulsa «Siguiente».`, [], null, []);
+        }
 
         const layout = document.createElement('div'); layout.className = 'spanish-div-layout';
         const left = document.createElement('div'); left.className = 'div-left-block';
         const lg = this.makeGrid(len);
         for (let i = 0; i < len; i++) {
-          const pk = posKey(len - 1 - i);
+          const pk = posKey(len - 1 - i, Q);
           const h = document.createElement('div'); h.className = `pos-header pos-${pk}`; h.id = `pos-header-${pk}`; h.textContent = pk;
           lg.appendChild(h);
         }
         for (let i = 0; i < len; i++) {
           const cell = this.staticCell(ds[i], `div-digit-${i}`);
           cell.classList.add(i <= firstEndCol ? 'div-arc-top' : 'div-drop-tick');
+          if (i >= len - P.added) cell.classList.add('ghost');
+          if (Q > 0 && i === P.unitsIdx) this.markComma(cell);
           lg.appendChild(cell);
         }
         const rows = divStepsData.map(st => {
@@ -1680,9 +1981,12 @@
         layout.appendChild(left); layout.appendChild(right);
         wrapper.appendChild(layout);
 
+        const commaQ = Q > 0 ? qEls[P.unitsIdx - firstEndCol] : null;
+        if (commaQ) s.reveals.push(() => this.markComma(commaQ));
+
         const divisorRefs = String(divisor).split('').map((_, i) => `divisor-digit-${i}`);
         divStepsData.forEach((st, sIdx) => {
-          const pk = posKey(len - 1 - st.endCol);
+          const pk = posKey(len - 1 - st.endCol, Q);
           const w = st.workingNumber, q = st.qDigit;
           const tryText = q < 9 ? ` y ${divisor} × ${q + 1} = ${(q + 1) * divisor} ✘ (se pasa)` : '';
           let qText;
@@ -1702,13 +2006,19 @@
           let rText = q === 0
             ? `Como el cociente es 0, el resto es el mismo número: <strong>${st.rem}</strong>. Escríbelo debajo`
             : `Multiplicamos ${q} × ${divisor} = ${st.prod} y restamos: de ${st.prod} a ${w} van <strong>${st.rem}</strong>. Escribe el resto <strong>${st.rem}</strong> debajo`;
+          const dropIsGhost = st.hasNextDigit && st.endCol + 1 >= len - P.added;
           rText += st.hasNextDigit
-            ? ` y baja la siguiente cifra (el <strong>${st.nextDividendDigit}</strong>) a su derecha. Ahora tenemos <strong>${st.rem * 10 + st.nextDividendDigit}</strong>.`
+            ? ` y baja ${dropIsGhost ? 'el <strong>0</strong> que hemos añadido' : `la siguiente cifra (el <strong>${st.nextDividendDigit}</strong>)`} a su derecha. Ahora tenemos <strong>${st.rem * 10 + st.nextDividendDigit}</strong>.`
             : `. ¡No quedan cifras por bajar! El resto de la división es <strong>${st.rem}</strong>.`;
+          let onEnter = null;
+          if (commaQ && st.hasNextDigit && st.endCol === P.unitsIdx) {
+            rText += ' Como bajamos la <strong>primera cifra decimal</strong>, ponemos la <strong>coma en el cociente</strong>.';
+            onEnter = () => this.markComma(commaQ);
+          }
           const ids = [];
-          rows[sIdx].remCells.forEach((rc, k) => { const id = `div_rem_${sIdx}_${k}`; this.registerCell(id, rc.digit, false, rc.el, 'Resto parcial', rText, pk); ids.push(id); });
+          rows[sIdx].remCells.forEach((rc, k2) => { const id = `div_rem_${sIdx}_${k2}`; this.registerCell(id, rc.digit, false, rc.el, 'Resto parcial', rText, pk); ids.push(id); });
           if (rows[sIdx].dropCell) { const id = `div_drop_${sIdx}`; this.registerCell(id, rows[sIdx].dropCell.digit, false, rows[sIdx].dropCell.el, 'Bajar la siguiente cifra', rText, pk); ids.push(id); }
-          this.addStep(st.hasNextDigit ? 'Resto y bajamos cifra' : 'Resto final', rText, ids, pk, st.hasNextDigit ? [`div-digit-${st.endCol + 1}`] : []);
+          this.addStep(st.hasNextDigit ? 'Resto y bajamos cifra' : 'Resto final', rText, ids, pk, st.hasNextDigit ? [`div-digit-${st.endCol + 1}`] : [], onEnter);
         });
       },
 
@@ -1727,9 +2037,11 @@
           document.getElementById('stepCounterBadge').textContent = `Paso ${s.currentStepIdx + 1} de ${s.steps.length}`;
           if (st.posKey) { const h = document.getElementById(`pos-header-${st.posKey}`); if (h) h.classList.add('active-col'); }
           st.refStaticIds.forEach(id => { const e = document.getElementById(id); if (e) e.classList.add('highlight-ref'); });
+          if (st.onEnter) st.onEnter();
           this.setBubbleMessage(st.title, st.text, 'normal');
           const isInfo = st.cellIds.length === 0;
-          document.getElementById('btnMainCheck').textContent = isInfo ? '➡️ Entendido, siguiente' : '✓ Comprobar paso';
+          const onlyOptional = !isInfo && st.cellIds.every(id => s.cellsMap[id].optional);
+          document.getElementById('btnMainCheck').textContent = isInfo ? '➡️ Entendido, siguiente' : onlyOptional ? '✓ Comprobar / Siguiente' : '✓ Comprobar paso';
           Object.values(s.cellsMap).forEach(cell => {
             cell.el.classList.remove('step-enabled', 'focused', 'locked');
             if (cell.el.classList.contains('correct')) return;
@@ -1743,7 +2055,7 @@
           Object.values(s.cellsMap).forEach(cell => cell.el.classList.remove('locked', 'step-enabled'));
           if (!s.focusedCellId && s.cellOrder.length) this.focusCell(s.cellOrder[0]);
           this.setBubbleMessage('🚀 Práctica libre',
-            `Todas las casillas están desbloqueadas. Toca una casilla, escribe con el teclado y pulsa <strong>«Comprobar operación»</strong> al terminar. ${this.config.requireCarries ? 'Las llevadas cuentan: anótalas en los circulitos.' : 'Las llevadas son opcionales.'}`, 'normal');
+            `Todas las casillas están desbloqueadas. Toca una casilla, escribe con el teclado y pulsa <strong>«Comprobar operación»</strong> al terminar. ${this.config.requireCarries ? 'Las llevadas cuentan: anótalas en los circulitos.' : 'Las llevadas son opcionales.'}${s.reveals.length ? ' Piensa dónde irá la <strong>coma</strong> del resultado: aparecerá al comprobar.' : ''}`, 'normal');
         }
       },
 
@@ -1814,7 +2126,7 @@
           cell.el.classList.remove('wrong', 'step-enabled', 'focused');
           cell.el.classList.add('correct');
           this.sound.play('success');
-          const pending = st.cellIds.find(id => !s.cellsMap[id].el.classList.contains('correct'));
+          const pending = this.pendingRequired(st)[0];
           if (pending) {
             this.focusCell(pending);
             const pc = s.cellsMap[pending];
@@ -1835,15 +2147,29 @@
         }
       },
 
+      /* Casillas del paso que aún hay que rellenar (las opcionales vacías no cuentan) */
+      pendingRequired(st) {
+        const m = this.state.cellsMap;
+        return st.cellIds.filter(id => !m[id].el.classList.contains('correct') && !(m[id].optional && m[id].userVal === ''));
+      },
+
       validateAction() {
         const s = this.state;
         if (s.completed) return;
         if (this.config.mode === 'guided') {
           const st = s.steps[s.currentStepIdx];
-          if (st && st.cellIds.length === 0) { this.sound.play('tap'); s.currentStepIdx++; this.applyModeLocksAndFocus(); return; }
+          if (!st) return;
           const cell = s.cellsMap[s.focusedCellId];
-          if (cell && cell.userVal !== '' && !cell.el.classList.contains('correct')) this.checkGuidedDigit(cell);
-          else if (st) { this.sound.play('tap'); this.setBubbleMessage(st.title, st.text, 'normal'); }
+          if (cell && cell.userVal !== '' && !cell.el.classList.contains('correct')) { this.checkGuidedDigit(cell); return; }
+          const pend = this.pendingRequired(st);
+          if (!pend.length) {   // paso informativo o solo quedan casillas opcionales vacías
+            this.sound.play(st.cellIds.length ? 'success' : 'tap');
+            st.cellIds.forEach(id => { const c = s.cellsMap[id]; c.el.classList.remove('focused', 'step-enabled', 'wrong'); });
+            s.currentStepIdx++; this.applyModeLocksAndFocus(); return;
+          }
+          this.sound.play('tap');
+          this.focusCell(pend[0]);
+          this.setBubbleMessage(st.title, st.text, 'normal');
           return;
         }
         let allOk = true, firstWrong = null, wrongCount = 0;
@@ -1887,18 +2213,22 @@
       },
 
       proofText() {
-        const { op, num1: a, num2: b } = this.state;
-        if (op === 'add') return `🔁 Comprobación: ${fmt(b)} + ${fmt(a)} = ${fmt(a + b)} (el orden de los sumandos no cambia el resultado).`;
-        if (op === 'sub') return `🔁 Prueba de la resta: ${fmt(a - b)} + ${fmt(b)} = ${fmt(a)} ✔`;
-        if (op === 'mul') return `🔁 Comprobación: ${fmt(b)} × ${fmt(a)} = ${fmt(a * b)} (propiedad conmutativa).`;
-        const q = Math.floor(a / b), r = a % b;
-        return `🔁 Prueba de la división: ${fmt(b)} × ${fmt(q)} + ${fmt(r)} = ${fmt(a)} ✔ ${r === 0 ? '(división exacta)' : '(el resto es menor que el divisor)'}`;
+        const s = this.state, a = s.num1, b = s.num2, e1 = s.e1 || 0, e2 = s.e2 || 0;
+        if (s.op === 'add' || s.op === 'sub') {
+          const E = Math.max(e1, e2), A = a * P10(E - e1), B = b * P10(E - e2);
+          if (s.op === 'add') return `🔁 Comprobación: ${fmtDec(b, e2)} + ${fmtDec(a, e1)} = ${fmtDec(A + B, E)} (el orden de los sumandos no cambia el resultado).`;
+          return `🔁 Prueba de la resta: ${fmtDec(A - B, E)} + ${fmtDec(b, e2)} = ${fmtDec(a, e1)} ✔`;
+        }
+        if (s.op === 'mul') return `🔁 Comprobación: ${fmtDec(b, e2)} × ${fmtDec(a, e1)} = ${fmtDec(a * b, e1 + e2)} (propiedad conmutativa).`;
+        const P = s.divPlan || this.divisionPlan(a, e1, b, e2, s.q || 0);
+        return `🔁 Prueba de la división: ${fmt(P.tv2)} × ${fmtDec(P.quotient, P.Q)} + ${fmtDec(P.rem, P.Q)} = ${fmtDec(parseInt(P.ds, 10), P.Q)} ✔ ${P.rem === 0 ? '(división exacta)' : '(el resto es menor que el divisor)'}`;
       },
 
       finishOperationSuccess() {
         const s = this.state;
         if (s.completed) return;
         s.completed = true;
+        s.reveals.forEach(fn => fn());
         this.clearHighlights();
         Object.values(s.cellsMap).forEach(c => c.el.classList.remove('focused', 'step-enabled', 'locked'));
         document.getElementById('stepCounterBadge').textContent = '¡Terminada!';
@@ -1976,7 +2306,8 @@
         if (kind === 'div') carry = c.divMode === 'exact' ? 1 : 0;
         else if (kind === 'mul') carry = c.mulCarries === 'mental' ? 1 : 0;
         else carry = ['random', 'yes', 'no'].indexOf(c.carryMode);
-        return { ver: 0, op: c.worksheetMix ? 4 : OPS.indexOf(c.op), d1: c.d1, d2: c.d2, carry, cnt: COUNTS.indexOf(c.worksheetCount), prob: c.includeProblem ? 1 : 0, tpl: c.problemTemplateIdx % 3 };
+        return { ver: 0, op: c.worksheetMix ? 4 : OPS.indexOf(c.op), d1: c.d1, d2: c.d2, carry, cnt: COUNTS.indexOf(c.worksheetCount), prob: c.includeProblem ? 1 : 0, tpl: c.problemTemplateIdx % 3,
+          e1: c.e1, e2: c.e2, q: (kind === 'div' || kind === 'mix') ? c.qDec : 0 };
       },
 
       applySettings(st) {
@@ -1990,6 +2321,7 @@
         c.worksheetCount = COUNTS[st.cnt] || 8;
         c.includeProblem = st.prob === 1;
         c.problemTemplateIdx = st.tpl;
+        c.e1 = st.e1 || 0; c.e2 = st.e2 || 0; c.qDec = st.q || 0;
       },
 
       openWorksheetScreen() {
@@ -2021,11 +2353,14 @@
 
       worksheetTitle() {
         const c = this.config;
-        if (c.worksheetMix) return `Ficha mixta (+ − × ÷) · ${c.d1} y ${c.d2} cifras`;
+        const dec = (c.e1 || c.e2) ? ' con decimales' : '';
+        const part = (d, e) => `${d} cifra${d > 1 ? 's' : ''}${e ? ` y ${e} dec.` : ''}`;
+        const qd = c.qDec && (c.worksheetMix || c.op === 'div') ? ` · cociente con ${c.qDec} dec.` : '';
+        if (c.worksheetMix) return `Ficha mixta (+ − × ÷)${dec} · ${part(c.d1, c.e1)} / ${part(c.d2, c.e2)}${qd}`;
         const extra = c.op === 'div' ? (c.divMode === 'exact' ? ' exactas' : '')
           : (c.op === 'add' || c.op === 'sub') ? ({ yes: ' con llevadas', no: ' sin llevadas', random: '' }[c.carryMode]) : '';
-        const digits = c.op === 'mul' ? `${c.d1} × ${c.d2} cifras` : c.op === 'div' ? `${c.d1} ÷ ${c.d2} cifras` : `${c.d1} y ${c.d2} cifras`;
-        return `${OP_INFO[c.op].plural}${extra} (${digits})`;
+        const sep = c.op === 'mul' ? ' × ' : c.op === 'div' ? ' ÷ ' : ' y ';
+        return `${OP_INFO[c.op].plural}${extra}${dec} (${part(c.d1, c.e1)}${sep}${part(c.d2, c.e2)})${qd}`;
       },
 
       renderWorksheetDOM() {
@@ -2050,6 +2385,7 @@
         document.getElementById('btnNewProblemStory').style.display = c.includeProblem ? 'inline-flex' : 'none';
         document.getElementById('sheetStudent').classList.toggle('hidden-sheet', c.printView === 'teacher');
         document.getElementById('sheetTeacher').classList.toggle('hidden-sheet', c.printView === 'student');
+        document.getElementById('sheetTeacher').classList.toggle('print-new-page', c.printView === 'both');
 
         const gS = document.getElementById('gridStudentPrint'), gT = document.getElementById('gridTeacherPrint');
         const cls = `exercises-grid-print count-${count}${c.includeProblem ? ' with-problem' : ''}`;
@@ -2075,9 +2411,20 @@
         const show = c.includeProblem && this.state.worksheetPairs.length > 0;
         bS.classList.toggle('hidden-problem', !show); bT.classList.toggle('hidden-problem', !show);
         if (!show) return;
-        const { op, n1, n2 } = this.state.worksheetPairs[0];
-        const tpl = WORD_PROBLEM_TEMPLATES[op][c.problemTemplateIdx % 3];
-        const data = op === 'add' ? tpl(n1, n2, n1 + n2) : op === 'sub' ? tpl(n1, n2, n1 - n2) : op === 'mul' ? tpl(n1, n2, n1 * n2) : tpl(n1, n2, Math.floor(n1 / n2), n1 % n2);
+        const pr = this.state.worksheetPairs[0], { op, n1, n2 } = pr, e1 = pr.e1 || 0, e2 = pr.e2 || 0;
+        const idx = c.problemTemplateIdx % 3;
+        let data;
+        if (!e1 && !e2 && !pr.q) {
+          const tpl = WORD_PROBLEM_TEMPLATES[op][idx];
+          data = op === 'add' ? tpl(n1, n2, n1 + n2) : op === 'sub' ? tpl(n1, n2, n1 - n2) : op === 'mul' ? tpl(n1, n2, n1 * n2) : tpl(n1, n2, Math.floor(n1 / n2), n1 % n2);
+        } else {
+          const tpl = WORD_PROBLEM_TEMPLATES_DEC[op][idx], A = fmtDec(n1, e1), B = fmtDec(n2, e2);
+          if (op === 'add' || op === 'sub') {
+            const E = Math.max(e1, e2), X = n1 * P10(E - e1), Y = n2 * P10(E - e2);
+            data = tpl(A, B, fmtDec(op === 'add' ? X + Y : X - Y, E));
+          } else if (op === 'mul') data = tpl(A, B, fmtDec(n1 * n2, e1 + e2));
+          else { const P = this.divisionPlan(n1, e1, n2, e2, pr.q || 0); data = tpl(A, B, fmtDec(P.quotient, P.Q), fmtDec(P.rem, P.Q + e2)); }
+        }
         document.getElementById('wpTextStudent').textContent = data.q;
         document.getElementById('wpTextTeacher').textContent = `${data.q} (${data.d})`;
         document.getElementById('wpAnswerTeacher').textContent = `✔ ${data.s}`;
@@ -2102,12 +2449,16 @@
         const sheets = ['sheetStudent', 'sheetTeacher'].map(id => document.getElementById(id)).filter(sh => !sh.classList.contains('hidden-sheet'));
         const grids = [document.getElementById('gridStudentPrint'), document.getElementById('gridTeacherPrint')];
         if (!sheets.length || !this.isActive('screenWorksheet')) return;
+        // Durante la impresión no se recalcula: se usa el ajuste hecho en pantalla
+        if (window.matchMedia && window.matchMedia('print').matches) return;
         const probe = document.createElement('div');
         probe.style.cssText = 'position:absolute;visibility:hidden;height:100mm;width:1px;';
         document.body.appendChild(probe);
         const mm = probe.offsetHeight / 100; probe.remove();
         if (!mm) return;
-        const limit = 266 * mm;
+        // Alto útil: 297 mm − 2 × 10 mm de margen = 277 mm. Dejamos 17 mm de seguridad porque
+        // algunos navegadores (Safari) añaden su propio margen o encabezados al imprimir.
+        const limit = 260 * mm;
         const measure = () => Math.max(...sheets.map(sh => {
           sh.classList.add('measuring');
           const cs = getComputedStyle(sh);
@@ -2117,30 +2468,46 @@
         }));
         const warn = document.getElementById('fitWarning');
         warn.style.display = 'none';
-        if (measure() <= limit) return;
-        grids.forEach(g => g.style.setProperty('--card-min-h', '0px'));
-        // Si las operaciones son estrechas, se reparten en 3 columnas (ganamos una fila entera)
-        const overflowX = () => grids.some(g => Array.from(g.children).some(card => card.scrollWidth > card.clientWidth + 1));
-        if (measure() > limit && this.config.worksheetCount >= 6) {
+        const overflowX = () => {
           sheets.forEach(sh => sh.classList.add('measuring'));
-          grids.forEach(g => { g.style.gridTemplateColumns = 'repeat(3, 1fr)'; });
-          const tooWide = overflowX();
+          const r = grids.some(g => g.scrollWidth > g.clientWidth + 1 || Array.from(g.children).some(card => card.scrollWidth > card.clientWidth + 1));
           sheets.forEach(sh => sh.classList.remove('measuring'));
-          if (tooWide) grids.forEach(g => { g.style.gridTemplateColumns = ''; });
-        }
+          return r;
+        };
+        const setCols = n => grids.forEach(g => { g.style.gridTemplateColumns = n === 2 ? '' : `repeat(${n}, minmax(0, 1fr))`; });
+        const setSize = sz => grids.forEach(g => {
+          g.style.setProperty('--p-size', sz + 'px');
+          g.style.setProperty('--p-carry-sz', Math.round(sz * 0.7) + 'px');
+          g.style.setProperty('--p-font', Math.round(sz * 0.62) + 'px');
+        });
+        // Si sobra sitio, las tarjetas crecen hasta llenar la hoja (más espacio para escribir)
+        const grow = () => {
+          const setMin = px => grids.forEach(g => g.style.setProperty('--card-min-h', px + 'px'));
+          const target = limit - 3 * mm;
+          if (measure() >= target) return;
+          // Búsqueda de la mayor altura mínima de tarjeta que sigue cabiendo en la hoja
+          let lo = 0, hi = 140 * mm;
+          for (let i = 0; i < 10; i++) {
+            const mid = (lo + hi) / 2;
+            setMin(mid);
+            if (measure() <= target) lo = mid; else hi = mid;
+          }
+          setMin(Math.floor(lo));
+        };
+        grids.forEach(g => g.style.setProperty('--card-min-h', '0px'));
+        if (measure() <= limit && !overflowX()) return grow();
         let size = parseFloat(getComputedStyle(grids[0]).getPropertyValue('--p-size')) || 26;
-        for (let i = 0; i < 20 && measure() > limit && size > 18; i++) {
-          size -= 1;
-          grids.forEach(g => {
-            g.style.setProperty('--p-size', size + 'px');
-            g.style.setProperty('--p-carry-sz', Math.round(size * 0.7) + 'px');
-            g.style.setProperty('--p-font', Math.round(size * 0.62) + 'px');
-          });
+        // En cada tamaño probamos 3 columnas (si son operaciones estrechas) y si no, 2
+        for (; size >= 18; size--) {
+          setSize(size);
+          if (this.config.worksheetCount >= 6) { setCols(3); if (!overflowX() && measure() <= limit) return grow(); }
+          setCols(2);
+          if (!overflowX() && measure() <= limit) return grow();
         }
-        if (measure() > limit) {
-          warn.textContent = `⚠️ Con estas cifras, ${this.config.worksheetCount} operaciones${this.config.includeProblem ? ' y el problema' : ''} no caben en un solo A4 sin que las casillas queden demasiado pequeñas. Elige menos operaciones${this.config.includeProblem ? ' o quita el problema' : ''}; si imprimes así, cada hoja ocupará dos páginas.`;
-          warn.style.display = 'block';
-        }
+        size = 18; setSize(size); setCols(2);
+        if (overflowX()) setCols(1);   // operaciones muy anchas: una por fila antes que cortarlas
+        warn.textContent = `⚠️ Con estas cifras, ${this.config.worksheetCount} operaciones${this.config.includeProblem ? ' y el problema' : ''} no caben en un solo A4 sin que las casillas queden demasiado pequeñas. Elige menos operaciones${this.config.includeProblem ? ' o quita el problema' : ''}; si imprimes así, cada hoja ocupará más de una página.`;
+        warn.style.display = 'block';
       },
 
       renderPrintCard(i, pair, solved) {
@@ -2155,9 +2522,9 @@
         btn.textContent = '🖥️ Resolver en pizarra';
         btn.onclick = () => this.loadWorksheetOpIntoBoard(i);
         card.appendChild(btn);
-        if (pair.op === 'add' || pair.op === 'sub') card.appendChild(this.printAddSub(pair.n1, pair.n2, pair.op === 'add', solved));
-        else if (pair.op === 'mul') card.appendChild(this.printMul(pair.n1, pair.n2, solved));
-        else card.appendChild(this.printDiv(pair.n1, pair.n2, solved));
+        if (pair.op === 'add' || pair.op === 'sub') card.appendChild(this.printAddSub(pair, solved));
+        else if (pair.op === 'mul') card.appendChild(this.printMul(pair, solved));
+        else card.appendChild(this.printDiv(pair, solved));
         return card;
       },
 
@@ -2167,74 +2534,116 @@
       pCarry(val) { const d = document.createElement('div'); d.className = 'p-carry'; if (val) d.textContent = val; return d; },
       pLine(span) { const d = document.createElement('div'); d.className = 'p-line'; d.style.gridColumn = `1 / span ${span}`; return d; },
       pGrid(cols) { const g = document.createElement('div'); g.className = 'p-math-grid'; g.style.gridTemplateColumns = `repeat(${cols}, auto)`; return g; },
-      pHeader(grid, L, lead) {
+      pComma(el) { const m = document.createElement('span'); m.className = 'p-comma-mark'; m.textContent = ','; el.appendChild(m); return el; },
+      pNote(text) { const d = document.createElement('div'); d.className = 'p-note'; d.textContent = text; return d; },
+      pHeader(grid, L, lead, k = 0) {
         if (lead) grid.appendChild(this.pEmpty(true));
-        for (let c = L - 1; c >= 0; c--) { const h = document.createElement('div'); const pk = posKey(c); h.className = `p-pos pos-${pk}`; h.textContent = pk; grid.appendChild(h); }
+        for (let c = L - 1; c >= 0; c--) { const h = document.createElement('div'); const pk = posKey(c, k); h.className = `p-pos pos-${pk}`; h.textContent = pk; grid.appendChild(h); }
       },
 
-      printAddSub(n1, n2, isAdd, solved) {
-        const res = isAdd ? n1 + n2 : n1 - n2, resLen = nDigits(res);
-        const L = Math.max(nDigits(n1), nDigits(n2), resLen);
+      printAddSub(pair, solved) {
+        const isAdd = pair.op === 'add', e1 = pair.e1 || 0, e2 = pair.e2 || 0, E = Math.max(e1, e2);
+        const A = pair.n1 * P10(E - e1), B = pair.n2 * P10(E - e2);
+        const res = isAdd ? A + B : A - B, resLen = Math.max(nDigits(res), E + 1);
+        const L = Math.max(opLen(A, E), opLen(B, E), resLen);
         const carries = new Array(L + 1).fill(0), out = [];
         for (let c = 0; c < L; c++) {
-          const A = digitAt(n1, c) ?? 0, B = digitAt(n2, c) ?? 0;
-          if (isAdd) { const t = A + B + carries[c]; out[c] = t % 10; carries[c + 1] = Math.floor(t / 10); }
-          else { const sb = B + carries[c]; if (A < sb) { out[c] = A + 10 - sb; carries[c + 1] = 1; } else { out[c] = A - sb; carries[c + 1] = 0; } }
+          const Av = dispDigit(A, c, E) ?? 0, Bv = dispDigit(B, c, E) ?? 0;
+          if (isAdd) { const t = Av + Bv + carries[c]; out[c] = t % 10; carries[c + 1] = Math.floor(t / 10); }
+          else { const sb = Bv + carries[c]; if (Av < sb) { out[c] = Av + 10 - sb; carries[c + 1] = 1; } else { out[c] = Av - sb; carries[c + 1] = 0; } }
         }
         const g = this.pGrid(L + 1);
-        this.pHeader(g, L, true);
+        this.pHeader(g, L, true, E);
         g.appendChild(this.pEmpty(true));
         for (let c = L - 1; c >= 0; c--) g.appendChild(c === 0 ? this.pEmpty(true) : this.pCarry(solved ? carries[c] : 0));
+        const row = (V, ghostBelow) => {
+          for (let c = L - 1; c >= 0; c--) {
+            const ghost = c < ghostBelow;
+            const cell = this.pStatic(ghost ? (solved ? 0 : '') : dispDigit(V, c, E));
+            if (ghost) cell.classList.add('ghost');
+            if (E && c === E) this.pComma(cell);
+            g.appendChild(cell);
+          }
+        };
         g.appendChild(this.pEmpty());
-        for (let c = L - 1; c >= 0; c--) g.appendChild(this.pStatic(digitAt(n1, c)));
+        row(A, E - e1);
         g.appendChild(this.pStatic(isAdd ? '+' : '−', true));
-        for (let c = L - 1; c >= 0; c--) g.appendChild(this.pStatic(digitAt(n2, c)));
+        row(B, E - e2);
         g.appendChild(this.pLine(L + 1));
         g.appendChild(this.pEmpty());
-        for (let c = L - 1; c >= 0; c--) g.appendChild(c < resLen ? this.pBox(solved ? out[c] : null) : this.pEmpty());
+        for (let c = L - 1; c >= 0; c--) {
+          if (c >= resLen) {   // cero a la izquierda de la resta: casilla de puntos opcional (vacía también en el solucionario)
+            const oz = this.pBox(null); oz.classList.add('p-opt-zero'); g.appendChild(oz); continue;
+          }
+          const bx = this.pBox(solved ? out[c] : null);
+          if (E && c === E) this.pComma(bx);
+          g.appendChild(bx);
+        }
         return g;
       },
 
-      printMul(n1, n2, solved) {
-        const s2 = String(n2), len1 = nDigits(n1), len2 = s2.length, prod = n1 * n2, prodLen = nDigits(prod);
+      printMul(pair, solved) {
+        const n1 = pair.n1, n2 = pair.n2, e1 = pair.e1 || 0, e2 = pair.e2 || 0, k = e1 + e2;
+        const s2 = String(n2), len1 = nDigits(n1), len2 = s2.length, prod = n1 * n2, outLen = Math.max(nDigits(prod), k + 1);
         const partials = [];
         for (let r = 0; r < len2; r++) partials.push(this.computePartial(n1, +s2[len2 - 1 - r]));
-        let L = Math.max(len1, len2, prodLen);
+        let L = Math.max(opLen(n1, e1), opLen(n2, e2), outLen);
         partials.forEach((p, r) => { L = Math.max(L, r + p.digits.length); });
         const g = this.pGrid(L + 1);
-        this.pHeader(g, L, true);
+        if (k === 0) this.pHeader(g, L, true, 0);
         if (len2 === 1 && len1 > 1) {
           g.appendChild(this.pEmpty(true));
           for (let c = L - 1; c >= 0; c--) g.appendChild((c >= 1 && c <= len1 - 1) ? this.pCarry(solved ? partials[0].carries[c] : 0) : this.pEmpty(true));
         }
         g.appendChild(this.pEmpty());
-        for (let c = L - 1; c >= 0; c--) g.appendChild(this.pStatic(digitAt(n1, c)));
+        for (let c = L - 1; c >= 0; c--) { const cell = this.pStatic(dispDigit(n1, c, e1)); if (e1 && c === e1) this.pComma(cell); g.appendChild(cell); }
         g.appendChild(this.pStatic('×', true));
-        for (let c = L - 1; c >= 0; c--) g.appendChild(this.pStatic(digitAt(n2, c)));
+        for (let c = L - 1; c >= 0; c--) { const cell = this.pStatic(dispDigit(n2, c, e2)); if (e2 && c === e2) this.pComma(cell); g.appendChild(cell); }
         g.appendChild(this.pLine(L + 1));
         partials.forEach((p, r) => {
+          const rowLen = len2 === 1 ? Math.max(p.digits.length, outLen) : p.digits.length;
           g.appendChild((len2 > 1 && r === len2 - 1) ? this.pStatic('+', true) : this.pEmpty());
           for (let c = L - 1; c >= 0; c--) {
             const li = c - r;
-            g.appendChild((li >= 0 && li < p.digits.length) ? this.pBox(solved ? p.digits[li] : null) : this.pEmpty());
+            if (li >= 0 && li < rowLen) {
+              const bx = this.pBox(solved ? (li < p.digits.length ? p.digits[li] : 0) : null);
+              if (solved && len2 === 1 && k && li === k) this.pComma(bx);
+              g.appendChild(bx);
+            } else g.appendChild(this.pEmpty());
           }
         });
         if (len2 > 1) {
           g.appendChild(this.pLine(L + 1));
           g.appendChild(this.pEmpty());
-          for (let c = L - 1; c >= 0; c--) g.appendChild(c < prodLen ? this.pBox(solved ? digitAt(prod, c) : null) : this.pEmpty());
+          for (let c = L - 1; c >= 0; c--) {
+            if (c >= outLen) { g.appendChild(this.pEmpty()); continue; }
+            const bx = this.pBox(solved ? (digitAt(prod, c) ?? 0) : null);
+            if (solved && k && c === k) this.pComma(bx);
+            g.appendChild(bx);
+          }
         }
         return g;
       },
 
-      printDiv(dividend, divisor, solved) {
-        const ds = String(dividend), len = ds.length;
-        const { firstEndCol, divStepsData } = this.computeDivisionSteps(dividend, divisor);
+      printDiv(pair, solved) {
+        const P = this.divisionPlan(pair.n1, pair.e1 || 0, pair.n2, pair.e2 || 0, pair.q || 0);
+        const ds = P.ds, len = ds.length, { firstEndCol, divStepsData } = P;
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;';
+        if (P.transformed) wrap.appendChild(this.pNote(`${fmtDec(pair.n1, pair.e1)} ÷ ${fmtDec(pair.n2, pair.e2)} → quita la coma del divisor`));
         const layout = document.createElement('div'); layout.className = 'p-div-layout';
         const left = document.createElement('div'); left.className = 'p-div-left';
         const g = this.pGrid(len);
-        this.pHeader(g, len, false);
-        for (let i = 0; i < len; i++) { const c = this.pStatic(ds[i]); if (i <= firstEndCol) c.classList.add('p-arc-top'); g.appendChild(c); }
+        this.pHeader(g, len, false, P.Q);
+        for (let i = 0; i < len; i++) {
+          const ghost = i >= len - P.added;
+          let c;
+          if (P.transformed) c = this.pBox(solved ? ds[i] : null);       // el alumnado escribe el dividendo transformado
+          else { c = this.pStatic(ds[i]); if (ghost) c.classList.add('ghost'); }
+          if (i <= firstEndCol) c.classList.add('p-arc-top');
+          if (P.Q && i === P.unitsIdx && (!P.transformed || solved)) this.pComma(c);
+          g.appendChild(c);
+        }
         divStepsData.forEach(st => {
           const remStr = String(st.rem), start = st.endCol - remStr.length + 1, drop = st.hasNextDigit ? st.endCol + 1 : -1;
           for (let col = 0; col < len; col++) {
@@ -2245,15 +2654,21 @@
         });
         left.appendChild(g);
         const right = document.createElement('div'); right.className = 'p-div-right';
-        const sp = document.createElement('div'); sp.style.height = '22px'; right.appendChild(sp);
+        const sp = document.createElement('div'); sp.style.height = 'calc(var(--p-size) * .72 + 3px)'; right.appendChild(sp);
         const box = document.createElement('div'); box.className = 'p-divisor-box';
-        String(divisor).split('').forEach(ch => box.appendChild(this.pStatic(ch)));
+        String(P.tv2).split('').forEach(ch => box.appendChild(P.transformed ? this.pBox(solved ? ch : null) : this.pStatic(ch)));
         right.appendChild(box);
         const qa = document.createElement('div'); qa.className = 'p-quotient-box';
-        divStepsData.forEach(st => qa.appendChild(this.pBox(solved ? st.qDigit : null)));
+        divStepsData.forEach((st, idx) => {
+          const bx = this.pBox(solved ? st.qDigit : null);
+          if (solved && P.Q && idx === P.unitsIdx - firstEndCol) this.pComma(bx);
+          qa.appendChild(bx);
+        });
         right.appendChild(qa);
         layout.appendChild(left); layout.appendChild(right);
-        return layout;
+        wrap.appendChild(layout);
+        if (pair.q) wrap.appendChild(this.pNote(`Saca ${pair.q} decimal${pair.q > 1 ? 'es' : ''} en el cociente`));
+        return wrap;
       },
 
       printWorksheet() {
