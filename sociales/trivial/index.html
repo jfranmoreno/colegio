@@ -28,9 +28,11 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
+
+    body { user-select: none; -webkit-user-select: none; }
+    input, select, textarea { user-select: text; -webkit-user-select: text; }
 
     body {
       font-family: 'Quicksand', sans-serif;
@@ -384,7 +386,7 @@
     /* Tablero Perimetral (20 casillas alrededor + centro interactivo) */
     .board-grid {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       grid-template-rows: repeat(5, minmax(98px, 1fr));
       gap: 10px;
       flex: 1;
@@ -392,6 +394,7 @@
 
     .tile {
       position: relative;
+      min-width: 0;
       border-radius: 16px;
       padding: 24px 6px 8px;
       display: flex;
@@ -711,6 +714,19 @@
       transform: translateY(-2px);
     }
 
+    .option-btn:disabled { cursor: default; opacity: 0.55; transform: none; }
+    .option-btn.correct { background: #dcfce7; border-color: var(--success); box-shadow: 0 5px 0 #86efac; opacity: 1; }
+    .option-btn.wrong { background: #fee2e2; border-color: var(--danger); box-shadow: 0 5px 0 #fca5a5; opacity: 1; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .dice-box:focus-visible, .btn:focus-visible, .option-btn:focus-visible { outline: 4px solid #fde047; outline-offset: 3px; }
+    @media (max-width: 760px) {
+      .board-grid { gap: 5px; grid-template-rows: repeat(5, minmax(72px, 1fr)); }
+      .tile { padding: 20px 2px 4px; border-radius: 10px; }
+      .tile-name { font-size: 0.6rem; }
+      .token { width: 28px; height: 28px; font-size: 1.05rem; }
+      .rule-box[style] { grid-column: auto !important; }
+    }
+
     .option-letter {
       width: 40px;
       height: 40px;
@@ -896,7 +912,7 @@
               <input type="number" id="pointsReboundInput" class="input-text" min="1" max="100" value="1">
             </div>
 
-            <div class="rule-box" style="grid-column: span 2;">
+            <div class="rule-box" style="grid-column: 1 / -1;">
               <label>🛡️ Regla de Rebote a otros equipos (si hay fallo o tiempo agotado)</label>
               <div class="toggle-wrapper">
                 <label class="switch">
@@ -1133,7 +1149,7 @@
     const QUESTIONS_CS_UNIDAD_1 = [
       // RONDA 1: El Universo y la Vía Láctea
       { id: "cs1_1", round: 1, teamIndex: 0, category: "El Universo y la Vía Láctea", question: "¿Cómo se llama la galaxia en la que se encuentra nuestro Sistema Solar?", options: ["Galaxia de Andrómeda", "Vía Láctea", "Cúmulo de Orión", "Osa Mayor"], answer: 1 },
-      { id: "cs1_2", round: 1, teamIndex: 1, category: "El Universo y la Vía Láctea", question: "¿Qué son las estrellas?", options: ["Bolas de hielo y roca congelada", "Esferas de gas ardiente que producen luz y calor", "Rocas que flotan entre Marte y Júpiter", "Planetas muy pequeños y lejanos"], answer: 1 },
+      { id: "cs1_2", round: 1, teamIndex: 1, category: "El Universo y la Vía Láctea", question: "¿Qué son las estrellas?", options: ["Bolas de hielo y roca congelada", "Enormes esferas de gas muy caliente que producen luz y calor", "Rocas que flotan entre Marte y Júpiter", "Planetas muy pequeños y lejanos"], answer: 1 },
       { id: "cs1_3", round: 1, teamIndex: 2, category: "El Universo y la Vía Láctea", question: "¿Cuál es la estrella más cercana a la Tierra y centro del Sistema Solar?", options: ["La Estrella Polar", "La Luna", "El Sol", "Sirio"], answer: 2 },
       { id: "cs1_4", round: 1, teamIndex: 3, category: "El Universo y la Vía Láctea", question: "¿Qué contiene el universo en grandes cantidades?", options: ["Solo el planeta Tierra y el Sol", "Únicamente asteroides y satélites", "Numerosas galaxias formadas por gas, polvo y millones de estrellas", "Solamente cometas con cola brillante"], answer: 2 },
       { id: "cs1_5", round: 1, teamIndex: 4, category: "El Universo y la Vía Láctea", question: "¿Por qué los planetas no son considerados estrellas?", options: ["Porque no producen luz ni calor propio", "Porque son de color verde y azul", "Porque son más grandes que el Sol", "Porque no se mueven"], answer: 0 },
@@ -1151,13 +1167,13 @@
       { id: "cs3_13", round: 3, teamIndex: 0, category: "Los Movimientos de la Tierra", question: "¿Cuánto tarda la Tierra en completar el giro sobre sí misma (movimiento de rotación)?", options: ["12 horas", "24 horas (un día)", "30 días", "365 días"], answer: 1 },
       { id: "cs3_14", round: 3, teamIndex: 1, category: "Los Movimientos de la Tierra", question: "¿Cuál es la consecuencia directa del movimiento de rotación de la Tierra?", options: ["Las cuatro estaciones del año", "El día y la noche", "Los eclipses de Luna", "Los años bisiestos"], answer: 1 },
       { id: "cs3_15", round: 3, teamIndex: 2, category: "Los Movimientos de la Tierra", question: "¿Cómo se llama el desplazamiento de la Tierra alrededor del Sol?", options: ["Rotación", "Traslación", "Orientación", "Inclinación"], answer: 1 },
-      { id: "cs3_16", round: 3, teamIndex: 3, category: "Los Movimientos de la Tierra", question: "¿Cuánto tiempo tarda exactamente la Tierra en dar una vuelta completa al Sol?", options: ["24 horas", "365 días y 6 horas (un año)", "100 días", "12 meses exactos sin horas adicionales"], answer: 1 },
+      { id: "cs3_16", round: 3, teamIndex: 3, category: "Los Movimientos de la Tierra", question: "¿Cuánto tiempo tarda aproximadamente la Tierra en dar una vuelta completa al Sol?", options: ["24 horas", "365 días y 6 horas (un año)", "100 días", "30 días (un mes)"], answer: 1 },
       { id: "cs3_17", round: 3, teamIndex: 4, category: "Los Movimientos de la Tierra", question: "¿Qué origina el movimiento de traslación junto con la inclinación del eje terrestre?", options: ["El día y la noche", "Las cuatro estaciones del año", "El movimiento de la Luna", "La formación de las nubes"], answer: 1 },
       { id: "cs3_18", round: 3, teamIndex: 5, category: "Los Movimientos de la Tierra", question: "¿Cuál es la forma real que tiene el planeta Tierra?", options: ["Un círculo completamente plano", "Esférica, un poco achatada por los polos", "Con forma de cono", "Perfectamente cúbica"], answer: 1 },
 
       // RONDA 4: Las Estaciones del Año
       { id: "cs4_19", round: 4, teamIndex: 0, category: "Las Estaciones del Año", question: "¿En qué estación del año los días son más largos y hace más calor?", options: ["Invierno", "Otoño", "Verano", "Primavera"], answer: 2 },
-      { id: "cs4_20", round: 4, teamIndex: 1, category: "Las Estaciones del Año", question: "¿Qué día da comienzo la primavera en nuestro hemisferio?", options: ["El 21 de diciembre", "El 21 de marzo", "El 21 de junio", "El 22 de septiembre"], answer: 1 },
+      { id: "cs4_20", round: 4, teamIndex: 1, category: "Las Estaciones del Año", question: "¿Hacia qué fecha comienza la primavera en nuestro hemisferio?", options: ["Hacia el 21 de diciembre", "Hacia el 21 de marzo", "Hacia el 21 de junio", "Hacia el 22 de septiembre"], answer: 1 },
       { id: "cs4_21", round: 4, teamIndex: 2, category: "Las Estaciones del Año", question: "¿En qué estación del año las hojas de muchos árboles cambian de color y empiezan a caer?", options: ["Otoño", "Primavera", "Verano", "Invierno"], answer: 0 },
       { id: "cs4_22", round: 4, teamIndex: 3, category: "Las Estaciones del Año", question: "¿Cuál es la estación más fría del año en la que los días son más cortos que las noches?", options: ["Verano", "Primavera", "Otoño", "Invierno"], answer: 3 },
       { id: "cs4_23", round: 4, teamIndex: 4, category: "Las Estaciones del Año", question: "¿Cuánto tiempo dura aproximadamente cada estación del año?", options: ["Un mes", "Seis meses", "Tres meses", "Un año entero"], answer: 2 },
@@ -1174,7 +1190,7 @@
       // RONDA 6: Elementos de los Mapas y Orientación
       { id: "cs6_31", round: 6, teamIndex: 0, category: "Mapas y Orientación", question: "¿Qué elemento de un mapa explica el significado de los símbolos y colores utilizados?", options: ["El título", "La toponimia", "La leyenda", "La escala"], answer: 2 },
       { id: "cs6_32", round: 6, teamIndex: 1, category: "Mapas y Orientación", question: "¿Para qué sirve la escala en un mapa?", options: ["Para indicar el nombre del mapa", "Para relacionar las medidas del mapa con las distancias reales en el terreno", "Para mostrar hacia dónde está el norte", "Para pintar los océanos de azul"], answer: 1 },
-      { id: "cs6_33", round: 6, teamIndex: 2, category: "Mapas y Orientación", question: "¿Hacia qué punto cardinal señala siempre la aguja imantada de una brújula?", options: ["Al Sur", "Al Este", "Al Oeste", "Al Norte"], answer: 3 },
+      { id: "cs6_33", round: 6, teamIndex: 2, category: "Mapas y Orientación", question: "¿Hacia qué punto cardinal señala la aguja imantada de una brújula?", options: ["Al Sur", "Al Este", "Al Oeste", "Al Norte"], answer: 3 },
       { id: "cs6_34", round: 6, teamIndex: 3, category: "Mapas y Orientación", question: "¿Por qué punto cardinal sale el Sol por la mañana?", options: ["Por el Norte", "Por el Este", "Por el Oeste", "Por el Sur"], answer: 1 },
       { id: "cs6_35", round: 6, teamIndex: 4, category: "Mapas y Orientación", question: "Si estamos en el campo por la noche sin brújula, ¿qué estrella nos ayuda a localizar el Norte?", options: ["El Sol", "La Luna", "La Estrella Polar", "Venus"], answer: 2 },
       { id: "cs6_36", round: 6, teamIndex: 5, category: "Mapas y Orientación", question: "¿Qué parte del mapa nos muestra los nombres de los lugares (ciudades, ríos, montañas...)?", options: ["La leyenda", "La escala", "La toponimia", "La orientación"], answer: 2 }
@@ -1192,8 +1208,8 @@
       { id: "g_8", category: "Ciencias de la Naturaleza", unit: "LOS ANIMALES VERTEBRADOS", question: "¿Cómo respiran los peces debajo del agua?", options: ["Por pulmones", "Por branquias", "Por las escamas", "Por las aletas"], answer: 1 },
       { id: "g_9", category: "Ciencias de la Naturaleza", unit: "LAS PLANTAS", question: "¿En qué parte de la planta se fabrica su alimento gracias a la luz del Sol?", options: ["En la raíz", "En las hojas", "En las semillas", "En la tierra"], answer: 1 },
       { id: "g_10", category: "Ciencias Sociales", unit: "EL RELIEVE", question: "¿Cómo se llama una gran elevación natural del terreno?", options: ["Llanura", "Valle", "Montaña", "Playa"], answer: 2 },
-      { id: "g_11", category: "Ciencias Sociales", unit: "EL RELIEVE", question: "¿Qué nombre recibe una porción de tierra rodeada de agua por todas partes menos por una llamada istmo?", options: ["Isla", "Península", "Archipiélago", "Cabo"], answer: 1 },
-      { id: "g_12", category: "Ciencias Sociales", unit: "EL AGUA Y LOS RÍOS", question: "¿Dónde desembocan las aguas de un río principal?", options: ["En la cima de una montaña", "En el mar, océano o en otro río", "En una cueva seca", "En las nubes"], answer: 1 },
+      { id: "g_11", category: "Ciencias Sociales", unit: "EL RELIEVE", question: "¿Qué nombre recibe una porción de tierra rodeada de agua por todas partes menos por una, que la une al continente?", options: ["Isla", "Península", "Archipiélago", "Cabo"], answer: 1 },
+      { id: "g_12", category: "Ciencias Sociales", unit: "EL AGUA Y LOS RÍOS", question: "¿Dónde desembocan los ríos?", options: ["En la cima de una montaña", "En el mar, en un lago o en otro río", "En una cueva seca", "En las nubes"], answer: 1 },
       { id: "g_13", category: "Inglés / Artística", unit: "COLORS AND ANIMALS", question: "How do you say 'El pájaro amarillo puede volar' in English?", options: ["The blue fish can swim", "The yellow bird can fly", "The red dog can run", "The green frog can jump"], answer: 1 },
       { id: "g_14", category: "Inglés / Artística", unit: "EDUCACIÓN ARTÍSTICA", question: "Si mezclamos pintura amarilla y pintura azul a partes iguales, ¿qué color secundario obtenemos?", options: ["Naranja", "Verde", "Violeta", "Marrón"], answer: 1 },
       { id: "g_15", category: "Inglés / Artística", unit: "MÚSICA", question: "¿Cuántos tiempos dura una figura musical de Blanca en un compás?", options: ["1 tiempo", "2 tiempos", "4 tiempos", "Medio tiempo"], answer: 1 }
@@ -1205,77 +1221,46 @@
 
     const AVATAR_OPTIONS = ["🌍", "👩‍🚀", "🌌", "🧭", "🛰️", "🚀", "🦊", "🦁", "🐼", "🦄", "🦉", "⚡"];
     const TEAM_COLORS = ["#4f46e5", "#0ea5e9", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"];
-    const DEFAULT_TEAM_NAMES = [
-      "Planeta Tierra",
-      "Astronautas",
-      "Vía Láctea",
-      "Exploradores",
-      "Brújulas",
-      "Satélites"
-    ];
+    const DEFAULT_TEAM_NAMES = ["Planeta Tierra", "Astronautas", "Vía Láctea", "Exploradores", "Brújulas", "Satélites"];
+    const FALLBACK_COLORS = ["#0891b2", "#be123c", "#4d7c0f", "#7c2d12", "#6d28d9", "#0f766e"];
+    const BOARD_SIZE = 20;
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // CORREGIDO: el AudioContext se crea al primer sonido (tras un clic), no al cargar la página.
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return null;
+        audioCtx = new Ctx();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function tone(ctx, freq, start, dur, type, vol) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, start);
+      gain.gain.setValueAtTime(vol, start);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + dur);
+    }
 
     function playSound(type) {
       try {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const now = audioCtx.currentTime;
-
-        if (type === 'roll') {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(280, now);
-          osc.frequency.exponentialRampToValueAtTime(620, now + 0.09);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.09);
-        } else if (type === 'success') {
-          [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now + idx * 0.08);
-            osc.stop(now + idx * 0.08 + 0.25);
-          });
-        } else if (type === 'error') {
-          [300, 220].forEach((freq, idx) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.15);
-            gain.gain.setValueAtTime(0.15, now + idx * 0.15);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.15 + 0.22);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now + idx * 0.15);
-            osc.stop(now + idx * 0.15 + 0.22);
-          });
-        } else if (type === 'fanfare') {
-          [440, 554.37, 659.25, 880].forEach((freq, idx) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
-            gain.gain.setValueAtTime(0.22, now + idx * 0.12);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.35);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now + idx * 0.12);
-            osc.stop(now + idx * 0.12 + 0.35);
-          });
-        }
-      } catch (e) {
-        // Ignorar si el navegador bloquea el audio antes de interacción
-      }
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        if (type === 'roll') tone(ctx, 420, now, 0.08, 'triangle', 0.12);
+        else if (type === 'success') [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(ctx, f, now + i * 0.08, 0.25, 'sine', 0.2));
+        else if (type === 'error') [300, 220].forEach((f, i) => tone(ctx, f, now + i * 0.15, 0.22, 'sawtooth', 0.12));
+        else if (type === 'tick') tone(ctx, 880, now, 0.05, 'square', 0.05);
+        else if (type === 'fanfare') [440, 554.37, 659.25, 880].forEach((f, i) => tone(ctx, f, now + i * 0.12, 0.35, 'triangle', 0.22));
+      } catch (e) { /* sin audio: el juego sigue */ }
     }
 
     /* =========================================================================
@@ -1285,38 +1270,87 @@
     let activeQuestionBank = [...QUESTIONS_CS_UNIDAD_1];
     let currentPresetMode = 'cs_u1';
 
-    let gameState = {
-      teams: [],
-      rules: {
-        totalRounds: 6,
-        timeLimit: 30,
-        allowRebound: true,
-        pointsDirect: 1,
-        pointsRebound: 1
-      },
-      currentRound: 1,
-      currentTeamIndex: 0,
-      answeredQuestionIds: [],
-      boardTiles: [],
-      isGameOver: false
-    };
+    let gameState = createEmptyState();
+
+    function createEmptyState() {
+      return {
+        teams: [],
+        rules: { totalRounds: 6, timeLimit: 30, allowRebound: true, pointsDirect: 1, pointsRebound: 1 },
+        currentRound: 1,
+        currentTeamIndex: 0,
+        answeredQuestionIds: [],
+        boardTiles: [],
+        isGameOver: false,
+        started: false
+      };
+    }
 
     // Variables efímeras del turno actual
     let currentQuestionObj = null;
+    let shuffledOptions = [];          // [{text, original}]
     let activeAnsweringTeamIndex = 0;
     let reboundAttemptsCount = 0;
     let isReboundTurn = false;
     let questionTimerInterval = null;
     let remainingSeconds = 0;
     let isRollingDice = false;
+    let isTurnInProgress = false;
+    let lastRoll = null;
 
-    // Coordenadas perimetrales para un tablero de 7 columnas x 5 filas (20 casillas conectadas en circuito)
     const PERIMETER_COORDS = [
       { r: 1, c: 1 }, { r: 1, c: 2 }, { r: 1, c: 3 }, { r: 1, c: 4 }, { r: 1, c: 5 }, { r: 1, c: 6 }, { r: 1, c: 7 },
       { r: 2, c: 7 }, { r: 3, c: 7 }, { r: 4, c: 7 },
       { r: 5, c: 7 }, { r: 5, c: 6 }, { r: 5, c: 5 }, { r: 5, c: 4 }, { r: 5, c: 3 }, { r: 5, c: 2 }, { r: 5, c: 1 },
       { r: 4, c: 1 }, { r: 3, c: 1 }, { r: 2, c: 1 }
     ];
+
+    /* =========================================================================
+       UTILIDADES
+       ========================================================================= */
+
+    // CORREGIDO: los textos (nombres de equipo, preguntas importadas) se escapan antes de meterlos en el HTML.
+    function esc(str) {
+      return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function getCategoryMeta(catId) {
+      const found = BOARD_CATEGORIES.find(c => c.id === catId);
+      if (found) return found;
+      // Categoría de un JSON importado que no está en la lista: se le asigna color e icono genéricos.
+      let hash = 0;
+      for (const ch of String(catId)) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+      return { id: catId, name: catId, icon: "⭐", color: FALLBACK_COLORS[hash % FALLBACK_COLORS.length] };
+    }
+
+    function getBankCategories() {
+      return [...new Set(activeQuestionBank.map(q => q.category))];
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastMsg');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => { toast.style.display = 'none'; }, 3400);
+    }
+
+    function showModal(id) { document.getElementById(id).classList.add('show'); }
+    function hideModal(id) { document.getElementById(id).classList.remove('show'); }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('btnSwitchMenu').style.display = id === 'screenGame' ? 'inline-flex' : 'none';
+    }
 
     /* =========================================================================
        INICIALIZACIÓN Y CONFIGURACIÓN DEL MENÚ
@@ -1336,37 +1370,42 @@
           lbl.style.color = 'var(--text-muted)';
         }
       });
-    });
 
-    function showToast(msg) {
-      const toast = document.getElementById('toastMsg');
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.display = 'none'; }, 3400);
-    }
+      // Aviso antes de cerrar la pestaña con una partida en marcha
+      window.addEventListener('beforeunload', (e) => {
+        if (gameState.started && !gameState.isGameOver) { e.preventDefault(); e.returnValue = ''; }
+      });
+
+      window.addEventListener('resize', resizeConfetti);
+      resizeConfetti();
+    });
 
     function renderTeamInputs() {
       const count = parseInt(document.getElementById('numTeamsSelect').value, 10);
       const container = document.getElementById('teamsConfigContainer');
+
+      // CORREGIDO: al cambiar el nº de equipos se conservan los nombres ya escritos.
+      const previous = [];
+      container.querySelectorAll('.team-config-item').forEach((el, i) => {
+        previous[i] = {
+          name: document.getElementById(`teamName_${i}`).value,
+          avatar: document.getElementById(`teamAvatar_${i}`).value
+        };
+      });
       container.innerHTML = '';
 
       for (let i = 0; i < count; i++) {
-        const defaultName = DEFAULT_TEAM_NAMES[i] || `Equipo ${i + 1}`;
-        const defaultAvatar = AVATAR_OPTIONS[i % AVATAR_OPTIONS.length];
+        const name = previous[i]?.name ?? (DEFAULT_TEAM_NAMES[i] || `Equipo ${i + 1}`);
+        const avatar = previous[i]?.avatar ?? AVATAR_OPTIONS[i % AVATAR_OPTIONS.length];
         const color = TEAM_COLORS[i % TEAM_COLORS.length];
-
-        const avatarOptionsHtml = AVATAR_OPTIONS.map(av =>
-          `<option value="${av}" ${av === defaultAvatar ? 'selected' : ''}>${av}</option>`
-        ).join('');
+        const avatarOptionsHtml = AVATAR_OPTIONS.map(av => `<option value="${av}" ${av === avatar ? 'selected' : ''}>${av}</option>`).join('');
 
         const item = document.createElement('div');
         item.className = 'team-config-item';
         item.innerHTML = `
           <div class="team-color-dot" style="background:${color};"></div>
-          <select class="avatar-select" id="teamAvatar_${i}" aria-label="Avatar Equipo ${i + 1}">
-            ${avatarOptionsHtml}
-          </select>
-          <input type="text" class="input-text" id="teamName_${i}" value="${defaultName}" placeholder="Nombre del equipo">
+          <select class="avatar-select" id="teamAvatar_${i}" aria-label="Avatar Equipo ${i + 1}">${avatarOptionsHtml}</select>
+          <input type="text" class="input-text" id="teamName_${i}" maxlength="24" value="${esc(name)}" placeholder="Nombre del equipo">
         `;
         container.appendChild(item);
       }
@@ -1392,50 +1431,51 @@
     }
 
     function updateQuestionBankUI() {
-      document.getElementById('questionCountLabel').textContent =
-        `✅ ${activeQuestionBank.length} preguntas cargadas listas para jugar`;
+      document.getElementById('questionCountLabel').textContent = `✅ ${activeQuestionBank.length} preguntas cargadas listas para jugar`;
     }
 
     /* =========================================================================
-       PANTALLA COMPLETA Y GESTIÓN DE ARCHIVOS JSON (IMPORTAR / EXPORTAR / GUARDAR)
+       PANTALLA COMPLETA Y ARCHIVOS JSON
        ========================================================================= */
 
     function toggleFullScreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {
-          showToast('⚠️ Tu navegador bloqueó la pantalla completa automática.');
-        });
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (!req) { showToast('⚠️ Este navegador no permite pantalla completa.'); return; }
+        Promise.resolve(req.call(el)).catch(() => showToast('⚠️ El navegador bloqueó la pantalla completa.'));
       } else {
-        document.exitFullscreen();
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
       }
     }
 
-    // Descargar plantilla JSON de ejemplo con las áreas de 3º de Primaria y Unidad 1
+    function downloadJSON(data, filename) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     function downloadExampleTemplateJSON() {
       const templateData = {
         metadata: {
           title: "Plantilla de Preguntas Trivial 3º de Primaria",
           grade: "3º Educación Primaria",
+          instrucciones: "Cada pregunta necesita: question (texto), options (exactamente 4 respuestas), answer (posición de la correcta: 0, 1, 2 o 3) y category (área o tema). El orden de las opciones se baraja al jugar.",
           areas: ["Lengua Castellana", "Matemáticas", "Ciencias de la Naturaleza", "Ciencias Sociales", "Inglés / Artística"],
           unidadesIncluidas: UNIDADES_EJEMPLO
         },
-        questions: [
-          ...QUESTIONS_CS_UNIDAD_1.slice(0, 6),
-          ...QUESTIONS_GENERAL_3P.slice(0, 10)
-        ]
+        questions: [...QUESTIONS_CS_UNIDAD_1.slice(0, 6), ...QUESTIONS_GENERAL_3P.slice(0, 10)]
       };
-
-      const blob = new Blob([JSON.stringify(templateData, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = "plantilla_preguntas_trivial_3primaria.json";
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadJSON(templateData, "plantilla_preguntas_trivial_3primaria.json");
       showToast("📤 Plantilla JSON descargada correctamente.");
     }
 
-    // Importar banco de preguntas JSON propio
     function handleImportQuestions(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1451,32 +1491,31 @@
             return;
           }
 
-          // Validar estructura mínima de cada pregunta
           const validQuestions = list.filter(q =>
-            q && typeof q.question === 'string' &&
+            q && typeof q.question === 'string' && q.question.trim() &&
             Array.isArray(q.options) && q.options.length === 4 &&
-            typeof q.answer === 'number' && q.answer >= 0 && q.answer <= 3
+            Number.isInteger(q.answer) && q.answer >= 0 && q.answer <= 3
           ).map((q, idx) => ({
-            id: q.id || `custom_${ idx + 1 }`,
-            category: q.category || "Ciencias Sociales",
-            round: q.round || null,
-            teamIndex: typeof q.teamIndex === 'number' ? q.teamIndex : null,
+            // CORREGIDO: ids únicos aunque el JSON repita ids (evita que una pregunta "bloquee" a otra).
+            id: `custom_${idx + 1}_${String(q.id || '')}`,
+            category: (typeof q.category === 'string' && q.category.trim()) ? q.category.trim() : "General",
             question: q.question,
-            options: q.options,
+            options: q.options.map(String),
             answer: q.answer
           }));
 
           if (validQuestions.length === 0) {
-            alert("⚠️ Ninguna pregunta del archivo cumple el formato requerido (question, 4 options y answer de 0 a 3).");
+            alert("⚠️ Ninguna pregunta cumple el formato (question, 4 options y answer de 0 a 3).");
             return;
           }
 
+          const discarded = list.length - validQuestions.length;
           activeQuestionBank = validQuestions;
           currentPresetMode = 'custom';
           document.getElementById('activePackBadge').textContent = `Banco Personalizado (${validQuestions.length} preg.)`;
           document.getElementById('questionBankSubtitle').textContent = `Archivo cargado: ${file.name}`;
           updateQuestionBankUI();
-          showToast(`✅ ¡${validQuestions.length} preguntas importadas con éxito!`);
+          showToast(`✅ ${validQuestions.length} preguntas importadas${discarded ? ` (${discarded} descartadas por formato)` : ''}.`);
         } catch (err) {
           alert("❌ Error al leer el archivo JSON. Asegúrate de que sea un archivo JSON válido.");
         }
@@ -1485,57 +1524,49 @@
       event.target.value = '';
     }
 
-    // Guardar estado exacto de la partida en JSON
     function saveProgressJSON() {
+      if (!gameState.started) {
+        showToast('ℹ️ Aún no hay partida empezada que guardar.');
+        return;
+      }
       const savePayload = {
         type: "TRIVIAL_3P_SAVEGAME",
+        version: 2,
         savedAt: new Date().toISOString(),
         currentPresetMode,
         gameState,
         activeQuestionBank
       };
-
-      const blob = new Blob([JSON.stringify(savePayload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const dateStr = new Date().toISOString().slice(0, 10);
-      a.download = `partida_trivial_3primaria_${dateStr}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast("💾 Progreso de la partida guardado en JSON.");
+      const stamp = new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '-');
+      downloadJSON(savePayload, `partida_trivial_3primaria_${stamp}.json`);
+      showToast('💾 Partida guardada.');
     }
 
-    // Cargar partida guardada desde JSON
     function handleLoadSavedGame(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
           const data = JSON.parse(e.target.result);
-          if (!data || !data.gameState || !Array.isArray(data.gameState.teams)) {
-            alert("⚠️ El archivo seleccionado no es una partida guardada válida de SuperTrivial.");
+          const gs = data && data.gameState;
+          if (data.type !== "TRIVIAL_3P_SAVEGAME" || !gs || !Array.isArray(gs.teams) || gs.teams.length < 2 ||
+              !Array.isArray(data.activeQuestionBank) || !Array.isArray(gs.boardTiles) || gs.boardTiles.length !== BOARD_SIZE) {
+            alert("⚠️ Este archivo no es una partida guardada válida de este juego.");
             return;
           }
-
-          gameState = data.gameState;
-          if (Array.isArray(data.activeQuestionBank) && data.activeQuestionBank.length > 0) {
-            activeQuestionBank = data.activeQuestionBank;
-          }
+          activeQuestionBank = data.activeQuestionBank;
           currentPresetMode = data.currentPresetMode || 'custom';
-
+          gameState = Object.assign(createEmptyState(), gs, { started: true });
+          gameState.teams.forEach(t => { t.position = Number(t.position) || 0; t.score = Number(t.score) || 0; });
           updateQuestionBankUI();
-          document.getElementById('screenSetup').classList.remove('active');
-          document.getElementById('screenGame').classList.add('active');
-          document.getElementById('btnSwitchMenu').style.display = 'inline-flex';
-
-          renderBoard();
-          updateSidebarUI();
-          showToast("📂 ¡Partida retomada exactamente donde se dejó!");
+          resetTurnState();
+          renderGame();
+          showScreen('screenGame');
+          showToast(`📂 Partida cargada (ronda ${gameState.currentRound}).`);
+          if (gameState.isGameOver) showRankingModal(true);
         } catch (err) {
-          alert("❌ No se pudo cargar el archivo de partida JSON.");
+          alert("❌ No se pudo leer la partida guardada.");
         }
       };
       reader.readAsText(file);
@@ -1543,582 +1574,530 @@
     }
 
     /* =========================================================================
-       ARRANQUE DE PARTIDA Y GENERACIÓN DEL TABLERO
+       INICIO DE PARTIDA Y TABLERO
        ========================================================================= */
 
-    function getActiveCategoriesForBoard() {
-      // Extraer categorías presentes en el banco actual o usar las estándar
-      const uniqueCats = [...new Set(activeQuestionBank.map(q => q.category))];
-      const matched = uniqueCats.map((catName, idx) => {
-        const found = BOARD_CATEGORIES.find(c => c.id.toLowerCase() === catName.toLowerCase() || c.name.toLowerCase() === catName.toLowerCase());
-        if (found) return found;
-        const fallbackColors = ["#4f46e5", "#0ea5e9", "#10b981", "#f59e0b", "#ec4899", "#8b5cf6"];
-        return { id: catName, name: catName, icon: "⭐", color: fallbackColors[idx % fallbackColors.length] };
-      });
-      return matched.length > 0 ? matched : BOARD_CATEGORIES.slice(0, 5);
+    function readIntInput(id, min, max, fallback) {
+      const v = parseInt(document.getElementById(id).value, 10);
+      if (Number.isNaN(v)) return fallback;
+      return Math.min(max, Math.max(min, v));
     }
 
     function startNewGame() {
-      const numTeams = parseInt(document.getElementById('numTeamsSelect').value, 10);
-      const teams = [];
+      if (activeQuestionBank.length === 0) { alert('⚠️ No hay preguntas cargadas.'); return; }
 
-      for (let i = 0; i < numTeams; i++) {
-        const nameEl = document.getElementById(`teamName_${i}`);
-        const avatarEl = document.getElementById(`teamAvatar_${i}`);
+      const count = parseInt(document.getElementById('numTeamsSelect').value, 10);
+      const teams = [];
+      for (let i = 0; i < count; i++) {
+        const rawName = document.getElementById(`teamName_${i}`).value.trim();
         teams.push({
-          id: i,
-          name: (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : `Equipo ${i + 1}`,
-          avatar: avatarEl ? avatarEl.value : AVATAR_OPTIONS[i],
+          name: rawName || `Equipo ${i + 1}`,
+          avatar: document.getElementById(`teamAvatar_${i}`).value,
           color: TEAM_COLORS[i % TEAM_COLORS.length],
           score: 0,
-          position: 0
+          position: 0,
+          correct: 0
         });
       }
 
-      const boardCats = getActiveCategoriesForBoard();
-      const boardTiles = PERIMETER_COORDS.map((coord, index) => {
-        const cat = boardCats[index % boardCats.length];
-        return {
-          index,
-          row: coord.r,
-          col: coord.c,
-          categoryId: cat.id,
-          categoryName: cat.name,
-          icon: cat.icon,
-          color: cat.color
-        };
-      });
+      const rules = {
+        totalRounds: readIntInput('totalRoundsInput', 1, 20, 6),
+        timeLimit: parseInt(document.getElementById('timerSelect').value, 10) || 0,
+        allowRebound: document.getElementById('reboundToggle').checked,
+        pointsDirect: readIntInput('pointsDirectInput', 1, 100, 1),
+        pointsRebound: readIntInput('pointsReboundInput', 1, 100, 1)
+      };
+
+      const needed = rules.totalRounds * count;
+      if (needed > activeQuestionBank.length) {
+        const ok = confirm(`Con ${count} equipos y ${rules.totalRounds} rondas haríais ${needed} preguntas, pero el banco tiene ${activeQuestionBank.length}.\n\nSi se agotan, la partida terminará antes. ¿Empezar igualmente?`);
+        if (!ok) return;
+      }
+
+      // Las 20 casillas se reparten entre las categorías del banco activo (no las 11 de la lista).
+      const cats = shuffle(getBankCategories());
+      const boardTiles = [];
+      for (let i = 0; i < BOARD_SIZE; i++) boardTiles.push(cats[i % cats.length]);
 
       gameState = {
-        teams,
-        rules: {
-          totalRounds: Math.max(1, parseInt(document.getElementById('totalRoundsInput').value, 10) || 6),
-          timeLimit: parseInt(document.getElementById('timerSelect').value, 10),
-          allowRebound: document.getElementById('reboundToggle').checked,
-          pointsDirect: parseInt(document.getElementById('pointsDirectInput').value, 10) || 1,
-          pointsRebound: parseInt(document.getElementById('pointsReboundInput').value, 10) || 1
-        },
+        teams, rules,
         currentRound: 1,
         currentTeamIndex: 0,
         answeredQuestionIds: [],
         boardTiles,
-        isGameOver: false
+        isGameOver: false,
+        started: true
       };
 
-      document.getElementById('screenSetup').classList.remove('active');
-      document.getElementById('screenGame').classList.add('active');
-      document.getElementById('btnSwitchMenu').style.display = 'inline-flex';
-
-      renderBoard();
-      updateSidebarUI();
-      playSound('fanfare');
+      resetTurnState();
+      getAudioCtx();
+      renderGame();
+      showScreen('screenGame');
+      window.scrollTo(0, 0);
     }
 
     function goToSetupScreen() {
-      document.getElementById('screenGame').classList.remove('active');
-      document.getElementById('screenSetup').classList.add('active');
-      document.getElementById('btnSwitchMenu').style.display = 'none';
+      if (gameState.started && !gameState.isGameOver) {
+        const ok = confirm('¿Volver al menú? La partida actual se perderá si no la has guardado (💾).');
+        if (!ok) return;
+      }
+      stopTimer();
+      ['modalPreQuestion', 'modalQuestion', 'modalFeedback', 'modalRanking'].forEach(hideModal);
+      gameState = createEmptyState();
+      resetTurnState();
+      showScreen('screenSetup');
+    }
+
+    function resetTurnState() {
+      stopTimer();
+      currentQuestionObj = null;
+      reboundAttemptsCount = 0;
+      isReboundTurn = false;
+      isRollingDice = false;
+      isTurnInProgress = false;
+      lastRoll = null;
+    }
+
+    function renderGame() {
+      renderLegend();
+      renderBoard();
+      renderScoreboard();
+      renderRoundInfo();
+    }
+
+    function renderLegend() {
+      const used = [...new Set(gameState.boardTiles)];
+      document.getElementById('categoryLegend').innerHTML = used.map(id => {
+        const m = getCategoryMeta(id);
+        return `<span class="legend-pill" style="background:${m.color};">${m.icon} ${esc(m.name)}</span>`;
+      }).join('');
     }
 
     function renderBoard() {
       const grid = document.getElementById('boardGrid');
       grid.innerHTML = '';
+      const current = gameState.teams[gameState.currentTeamIndex];
 
-      // Leyenda superior de categorías
-      const legend = document.getElementById('categoryLegend');
-      const uniqueBoardCats = [];
-      gameState.boardTiles.forEach(t => {
-        if (!uniqueBoardCats.find(c => c.categoryId === t.categoryId)) {
-          uniqueBoardCats.push(t);
-        }
-      });
-      legend.innerHTML = uniqueBoardCats.map(c => `
-        <span class="legend-pill" style="background:${c.color};">
-          ${c.categoryName}
-        </span>
-      `).join('');
+      gameState.boardTiles.forEach((catId, idx) => {
+        const m = getCategoryMeta(catId);
+        const pos = PERIMETER_COORDS[idx];
+        const tile = document.createElement('div');
+        tile.className = 'tile' + (current && current.position === idx ? ' active-tile' : '');
+        tile.style.gridRow = pos.r;
+        tile.style.gridColumn = pos.c;
+        tile.style.background = m.color;
+        tile.title = m.name;
 
-      // Crear las 20 casillas perimetrales (sin emoticono superior, solo fichas ampliadas y etiqueta inferior)
-      const currentTeam = gameState.teams[gameState.currentTeamIndex];
-      gameState.boardTiles.forEach(tile => {
-        const tileEl = document.createElement('div');
-        tileEl.className = 'tile' + (currentTeam && currentTeam.position === tile.index ? ' active-tile' : '');
-        tileEl.id = `boardTile_${tile.index}`;
-        tileEl.style.gridRow = tile.row;
-        tileEl.style.gridColumn = tile.col;
-        tileEl.style.backgroundColor = tile.color;
+        const tokens = gameState.teams.map((t, ti) => t.position === idx
+          ? `<div class="token" style="border-color:${t.color};" title="${esc(t.name)}">${t.avatar}</div>` : '').join('');
 
-        // Fichas de equipos en esta casilla
-        const teamsHere = gameState.teams.filter(tm => tm.position === tile.index);
-        const tokensHtml = teamsHere.map(tm => `
-          <div class="token" style="border-color:${tm.color};" title="${tm.name}">
-            ${tm.avatar}
-          </div>
-        `).join('');
-
-        tileEl.innerHTML = `
-          <span class="tile-number">${tile.index + 1}</span>
-          <div class="tokens-holder">${tokensHtml}</div>
-          <div class="tile-name">${tile.categoryName}</div>
+        tile.innerHTML = `
+          <span class="tile-number">${idx === 0 ? 'SALIDA' : idx + 1}</span>
+          <div class="tokens-holder">${tokens}</div>
+          <div class="tile-name">${m.icon} ${esc(m.name)}</div>
         `;
-        grid.appendChild(tileEl);
+        grid.appendChild(tile);
       });
 
-      // Crear zona central interactiva del tablero
       const center = document.createElement('div');
       center.className = 'board-center';
-      center.innerHTML = `
-        <div class="turn-banner" style="border-color:${currentTeam.color};">
-          <span class="turn-avatar">${currentTeam.avatar}</span>
-          <div class="turn-info" style="text-align:left;">
-            <span style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">
-              Turno Activo • Ronda ${gameState.currentRound}
-            </span>
-            <h3 id="centerTeamName">${currentTeam.name}</h3>
+      if (gameState.isGameOver) {
+        center.innerHTML = `
+          <div style="font-size:3.5rem;">🏁</div>
+          <h2 class="font-display" style="font-size:2rem; color:var(--primary);">¡Partida terminada!</h2>
+          <button class="btn btn-primary btn-lg" onclick="showRankingModal(true)">🏆 Ver podio final</button>`;
+      } else {
+        center.innerHTML = `
+          <div class="turn-banner" style="border-color:${current.color};">
+            <span class="turn-avatar">${current.avatar}</span>
+            <div class="turn-info" style="text-align:left;">
+              <div style="font-size:0.85rem; color:var(--text-muted); font-weight:800; text-transform:uppercase;">Turno de</div>
+              <h3>${esc(current.name)}</h3>
+            </div>
           </div>
-        </div>
-
-        <div class="dice-stage">
-          <div id="diceBox" class="dice-box" onclick="rollDiceAndMove()" title="Pulsa para lanzar el dado">
-            🎲
+          <div class="dice-stage">
+            <div class="dice-box" id="diceBox" role="button" tabindex="0" aria-label="Tirar el dado" onclick="rollDice()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();rollDice();}">${lastRoll ?? '🎲'}</div>
           </div>
-          <div style="text-align:left; max-width:250px;">
-            <button class="btn btn-primary btn-lg" id="btnRollDice" onclick="rollDiceAndMove()">
-              🎲 ¡Lanzar Dado!
-            </button>
-            <p style="font-size:0.88rem; color:var(--text-muted); margin-top:6px; font-weight:700;">
-              Avanza por el tablero y responde la pregunta de tu casilla.
-            </p>
-          </div>
-        </div>
-      `;
+          <button class="btn btn-primary btn-lg" id="btnRoll" onclick="rollDice()">🎲 Tirar el dado</button>
+          <p style="color:var(--text-muted); font-weight:700;">Avanza las casillas que salgan y responde una pregunta del color donde caigas.</p>`;
+      }
       grid.appendChild(center);
     }
 
-    function updateSidebarUI() {
-      document.getElementById('roundCounterText').textContent =
-        `Ronda ${gameState.currentRound} de ${gameState.rules.totalRounds}`;
-
-      const remaining = activeQuestionBank.filter(q => !gameState.answeredQuestionIds.includes(q.id)).length;
-      document.getElementById('questionsRemainingText').textContent =
-        `${remaining} preguntas disponibles en el banco`;
-
+    function renderScoreboard() {
       const list = document.getElementById('scoreboardList');
-      list.innerHTML = gameState.teams.map((tm, idx) => `
-        <div class="score-item ${idx === gameState.currentTeamIndex ? 'active-turn' : ''}">
+      list.innerHTML = gameState.teams.map((t, i) => `
+        <div class="score-item ${i === gameState.currentTeamIndex && !gameState.isGameOver ? 'active-turn' : ''}" style="border-left:8px solid ${t.color};">
           <div class="score-team-left">
-            <span class="score-team-avatar">${tm.avatar}</span>
-            <div>
-              <div style="color:${tm.color}; font-size:1.05rem;">${tm.name}</div>
-              <div style="font-size:0.78rem; color:var(--text-muted);">Casilla ${tm.position + 1}</div>
-            </div>
+            <span class="score-team-avatar">${t.avatar}</span>
+            <span>${esc(t.name)}</span>
           </div>
-          <span class="score-badge">${tm.score} pts</span>
-        </div>
-      `).join('');
+          <span class="score-badge">${t.score}</span>
+        </div>`).join('');
+    }
+
+    function renderRoundInfo() {
+      const shown = Math.min(gameState.currentRound, gameState.rules.totalRounds);
+      document.getElementById('roundCounterText').textContent = `Ronda ${shown} de ${gameState.rules.totalRounds}`;
+      const left = activeQuestionBank.length - gameState.answeredQuestionIds.length;
+      document.getElementById('questionsRemainingText').textContent = `${left} preguntas disponibles`;
     }
 
     /* =========================================================================
-       MOVIMIENTO DE FICHAS Y SELECCIÓN DE PREGUNTA
+       DADO, MOVIMIENTO Y ELECCIÓN DE PREGUNTA
        ========================================================================= */
 
-    function rollDiceAndMove() {
-      if (isRollingDice || gameState.isGameOver) return;
+    function rollDice() {
+      if (isRollingDice || isTurnInProgress || gameState.isGameOver) return;
       isRollingDice = true;
+      isTurnInProgress = true;
+      const btn = document.getElementById('btnRoll');
+      if (btn) btn.disabled = true;
 
-      const diceEl = document.getElementById('diceBox');
-      const btnRoll = document.getElementById('btnRollDice');
-      if (btnRoll) btnRoll.disabled = true;
-      diceEl.classList.add('rolling');
-
+      const dice = document.getElementById('diceBox');
+      dice.classList.add('rolling');
       let ticks = 0;
-      const rollTimer = setInterval(() => {
-        ticks++;
-        const tempVal = Math.floor(Math.random() * 6) + 1;
-        diceEl.textContent = tempVal;
+      const anim = setInterval(() => {
+        dice.textContent = 1 + Math.floor(Math.random() * 6);
         playSound('roll');
-
-        if (ticks >= 10) {
-          clearInterval(rollTimer);
-          const finalRoll = Math.floor(Math.random() * 6) + 1;
-          diceEl.textContent = finalRoll;
-          diceEl.classList.remove('rolling');
-          animateTokenMovement(finalRoll);
-        }
-      }, 65);
-    }
-
-    function animateTokenMovement(steps) {
-      const team = gameState.teams[gameState.currentTeamIndex];
-      let moved = 0;
-
-      const stepInterval = setInterval(() => {
-        team.position = (team.position + 1) % gameState.boardTiles.length;
-        moved++;
-        renderBoard();
-        updateSidebarUI();
-        playSound('roll');
-
-        if (moved >= steps) {
-          clearInterval(stepInterval);
+        if (++ticks >= 10) {
+          clearInterval(anim);
+          const roll = 1 + Math.floor(Math.random() * 6);
+          lastRoll = roll;
+          dice.textContent = roll;
+          dice.classList.remove('rolling');
           isRollingDice = false;
-          setTimeout(() => {
-            preparePreQuestionModal();
-          }, 420);
+          moveTeam(gameState.currentTeamIndex, roll);
         }
-      }, 220);
+      }, 90);
     }
 
-    function triggerDirectQuestionForCurrentTeam() {
-      if (isRollingDice || gameState.isGameOver) return;
-      preparePreQuestionModal();
+    function moveTeam(teamIdx, steps) {
+      const team = gameState.teams[teamIdx];
+      let done = 0;
+      const stepper = setInterval(() => {
+        team.position = (team.position + 1) % BOARD_SIZE;
+        renderBoard();
+        const d = document.getElementById('diceBox');
+        if (d) d.textContent = steps;
+        const b = document.getElementById('btnRoll');
+        if (b) b.disabled = true;
+        playSound('tick');
+        if (++done >= steps) {
+          clearInterval(stepper);
+          setTimeout(() => prepareQuestion(gameState.boardTiles[team.position], false), 350);
+        }
+      }, 260);
     }
 
-    function selectQuestionForTurn(tileCategoryId) {
-      // Si se habían agotado todas las preguntas, reiniciar historial de respondidas
-      let available = activeQuestionBank.filter(q => !gameState.answeredQuestionIds.includes(q.id));
-      if (available.length === 0) {
-        gameState.answeredQuestionIds = [];
-        available = [...activeQuestionBank];
+    function pickQuestion(categoryId) {
+      const available = activeQuestionBank.filter(q => !gameState.answeredQuestionIds.includes(q.id));
+      if (available.length === 0) return null;
+      const sameCat = available.filter(q => q.category === categoryId);
+      // Si la categoría de la casilla está agotada, se usa cualquier otra disponible.
+      const pool = sameCat.length ? sameCat : available;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function prepareQuestion(categoryId, isDirect) {
+      const q = pickQuestion(categoryId);
+      if (!q) {
+        isTurnInProgress = false;
+        showToast('📭 Se han agotado las preguntas del banco.');
+        endGame();
+        return;
       }
-
-      // 1. Si estamos en modo Unidad 1 CS, priorizar la pregunta exacta de la Ronda y Equipo del documento si está disponible
-      const exactRoundTeamMatch = available.find(q =>
-        q.round === gameState.currentRound && q.teamIndex === gameState.currentTeamIndex
-      );
-      if (exactRoundTeamMatch) return exactRoundTeamMatch;
-
-      // 2. Priorizar preguntas de la ronda actual (si tienen etiqueta round)
-      const sameRoundMatch = available.find(q => q.round === gameState.currentRound);
-      if (sameRoundMatch) return sameRoundMatch;
-
-      // 3. Priorizar preguntas de la categoría de la casilla donde ha caído la ficha
-      const categoryMatches = available.filter(q =>
-        q.category && q.category.toLowerCase() === tileCategoryId.toLowerCase()
-      );
-      if (categoryMatches.length > 0) {
-        return categoryMatches[Math.floor(Math.random() * categoryMatches.length)];
-      }
-
-      // 4. Si no quedan de esa categoría, elegir una aleatoria disponible
-      return available[Math.floor(Math.random() * available.length)];
-    }
-
-    /* =========================================================================
-       FLUJO DE MODALES: PRE-PREGUNTA, PREGUNTA, REBOTE Y FEEDBACK
-       ========================================================================= */
-
-    function preparePreQuestionModal() {
-      const team = gameState.teams[gameState.currentTeamIndex];
-      const currentTile = gameState.boardTiles[team.position];
-
-      currentQuestionObj = selectQuestionForTurn(currentTile.categoryId);
+      currentQuestionObj = q;
       activeAnsweringTeamIndex = gameState.currentTeamIndex;
       reboundAttemptsCount = 0;
       isReboundTurn = false;
 
-      // Buscar color e icono de la categoría de la pregunta seleccionada
-      const catMeta = getActiveCategoriesForBoard().find(
-        c => c.id.toLowerCase() === (currentQuestionObj.category || '').toLowerCase()
-      ) || currentTile;
-
+      const team = gameState.teams[gameState.currentTeamIndex];
+      const m = getCategoryMeta(q.category);
       const badge = document.getElementById('preCategoryBadge');
-      badge.style.backgroundColor = catMeta.color || currentTile.color;
-      badge.textContent = `${catMeta.icon || currentTile.icon} ${currentQuestionObj.category || currentTile.categoryName}`;
-
+      badge.textContent = `${m.icon} ${m.name}`;
+      badge.style.background = m.color;
       document.getElementById('preTeamAvatar').textContent = team.avatar;
-      document.getElementById('preTeamName').textContent = `Turno de: ${team.name}`;
-      document.getElementById('preSubText').textContent =
-        `Ronda ${gameState.currentRound} • Por ${gameState.rules.pointsDirect} punto(s)`;
-
-      document.getElementById('modalPreQuestion').classList.add('show');
+      document.getElementById('preTeamName').textContent = `Turno de ${team.name}`;
+      document.getElementById('preSubText').textContent = isDirect
+        ? 'Pregunta directa lanzada por el docente.'
+        : (q.category !== categoryId ? `No quedan preguntas de esa casilla: os toca una de ${m.name}.` : '¡Preparaos para responder vuestra pregunta!');
+      showModal('modalPreQuestion');
     }
 
-    function openQuestionModal() {
-      document.getElementById('modalPreQuestion').classList.remove('show');
-      renderActiveQuestionModal();
-      document.getElementById('modalQuestion').classList.add('show');
-    }
-
-    function renderActiveQuestionModal() {
-      const answeringTeam = gameState.teams[activeAnsweringTeamIndex];
-      const currentTile = gameState.boardTiles[answeringTeam.position];
-      const catMeta = getActiveCategoriesForBoard().find(
-        c => c.id.toLowerCase() === (currentQuestionObj.category || '').toLowerCase()
-      ) || currentTile;
-
-      const qBadge = document.getElementById('qCategoryBadge');
-      qBadge.style.backgroundColor = catMeta.color || '#4f46e5';
-      qBadge.textContent = `${catMeta.icon || '❓'} ${currentQuestionObj.category}`;
-
-      const teamInd = document.getElementById('qTeamIndicator');
-      teamInd.innerHTML = `<span style="font-size:1.75rem; line-height:1;">${answeringTeam.avatar}</span> Responde: <span style="color:${answeringTeam.color}">${answeringTeam.name}</span>`;
-
-      const reboundBanner = document.getElementById('reboundBanner');
-      if (isReboundTurn) {
-        reboundBanner.style.display = 'block';
-        document.getElementById('reboundTeamSpan').innerHTML =
-          `<span style="font-size:1.5rem; vertical-align:middle;">${answeringTeam.avatar}</span> ${answeringTeam.name} (+${gameState.rules.pointsRebound} ptos)`;
-      } else {
-        reboundBanner.style.display = 'none';
-      }
-
-      document.getElementById('questionEnunciado').textContent = currentQuestionObj.question;
-
-      const letters = ['A', 'B', 'C', 'D'];
-      const optionsContainer = document.getElementById('optionsContainer');
-      optionsContainer.innerHTML = currentQuestionObj.options.map((optText, idx) => `
-        <button class="option-btn" onclick="submitAnswer(${idx})">
-          <span class="option-letter">${letters[idx]}</span>
-          <span>${optText}</span>
-        </button>
-      `).join('');
-
-      startQuestionTimer();
-    }
-
-    function startQuestionTimer() {
-      clearInterval(questionTimerInterval);
-      const timerWrapper = document.getElementById('timerWrapper');
-      const limit = gameState.rules.timeLimit;
-
-      if (!limit || limit <= 0) {
-        timerWrapper.style.display = 'none';
+    function triggerDirectQuestionForCurrentTeam() {
+      if (isRollingDice || isTurnInProgress || gameState.isGameOver) {
+        showToast('⏳ Termina el turno en curso antes de lanzar otra pregunta.');
         return;
       }
+      isTurnInProgress = true;
+      const b = document.getElementById('btnRoll');
+      if (b) b.disabled = true;
+      const team = gameState.teams[gameState.currentTeamIndex];
+      prepareQuestion(gameState.boardTiles[team.position], true);
+    }
 
-      timerWrapper.style.display = 'block';
+    /* =========================================================================
+       PREGUNTA, TEMPORIZADOR Y REBOTE
+       ========================================================================= */
+
+    function openQuestionModal() {
+      hideModal('modalPreQuestion');
+      const q = currentQuestionObj;
+      if (!q) return;
+      const m = getCategoryMeta(q.category);
+      const badge = document.getElementById('qCategoryBadge');
+      badge.textContent = `${m.icon} ${m.name}`;
+      badge.style.background = m.color;
+      document.getElementById('questionEnunciado').textContent = q.question;
+
+      // CORREGIDO: se barajan las opciones. En el banco original la correcta era casi siempre la B o la C.
+      shuffledOptions = shuffle(q.options.map((text, original) => ({ text, original })));
+      const container = document.getElementById('optionsContainer');
+      container.innerHTML = '';
+      shuffledOptions.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.dataset.original = opt.original;
+        btn.innerHTML = `<span class="option-letter">${'ABCD'[i]}</span><span></span>`;
+        btn.lastElementChild.textContent = opt.text;
+        btn.onclick = () => handleAnswer(opt.original, btn);
+        container.appendChild(btn);
+      });
+
+      updateAnsweringTeamUI();
+      showModal('modalQuestion');
+      startTimer();
+    }
+
+    function updateAnsweringTeamUI() {
+      const t = gameState.teams[activeAnsweringTeamIndex];
+      const ind = document.getElementById('qTeamIndicator');
+      ind.textContent = `${t.avatar} ${t.name}`;
+      ind.style.border = `3px solid ${t.color}`;
+      const banner = document.getElementById('reboundBanner');
+      if (isReboundTurn) {
+        document.getElementById('reboundTeamSpan').textContent = `${t.avatar} ${t.name}`;
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    function startTimer() {
+      stopTimer();
+      const limit = gameState.rules.timeLimit;
+      const wrapper = document.getElementById('timerWrapper');
+      if (!limit) { wrapper.style.display = 'none'; return; }
+      wrapper.style.display = 'block';
       remainingSeconds = limit;
-      const textEl = document.getElementById('timerSecondsText');
-      const barEl = document.getElementById('timerBarFill');
-
-      textEl.textContent = `${remainingSeconds}s`;
-      barEl.style.width = '100%';
-      barEl.style.background = 'linear-gradient(90deg, #10b981, #3b82f6)';
-
+      updateTimerUI();
       questionTimerInterval = setInterval(() => {
         remainingSeconds--;
-        textEl.textContent = `${remainingSeconds}s`;
-        const pct = Math.max(0, (remainingSeconds / limit) * 100);
-        barEl.style.width = `${pct}%`;
-
-        if (pct <= 30) {
-          barEl.style.background = '#ef4444';
-        } else if (pct <= 60) {
-          barEl.style.background = '#f59e0b';
-        }
-
+        updateTimerUI();
+        if (remainingSeconds <= 5 && remainingSeconds > 0) playSound('tick');
         if (remainingSeconds <= 0) {
-          clearInterval(questionTimerInterval);
-          handleWrongOrTimeout(true);
+          stopTimer();
+          handleAnswer(null, null);
         }
       }, 1000);
     }
 
-    function submitAnswer(selectedIndex) {
-      clearInterval(questionTimerInterval);
-      const isCorrect = (selectedIndex === currentQuestionObj.answer);
-
-      if (isCorrect) {
-        const pointsEarned = isReboundTurn ? gameState.rules.pointsRebound : gameState.rules.pointsDirect;
-        const answeringTeam = gameState.teams[activeAnsweringTeamIndex];
-        answeringTeam.score += pointsEarned;
-
-        if (!gameState.answeredQuestionIds.includes(currentQuestionObj.id)) {
-          gameState.answeredQuestionIds.push(currentQuestionObj.id);
-        }
-
-        playSound('success');
-        launchConfetti();
-        showFeedbackModal(true, answeringTeam, pointsEarned);
-      } else {
-        handleWrongOrTimeout(false);
-      }
+    function stopTimer() {
+      if (questionTimerInterval) clearInterval(questionTimerInterval);
+      questionTimerInterval = null;
     }
 
-    function handleWrongOrTimeout(wasTimeout) {
-      playSound('error');
+    function updateTimerUI() {
+      const limit = gameState.rules.timeLimit;
+      const pct = Math.max(0, remainingSeconds / limit * 100);
+      const bar = document.getElementById('timerBarFill');
+      bar.style.width = pct + '%';
+      bar.style.background = pct > 50 ? 'linear-gradient(90deg, #10b981, #3b82f6)'
+        : pct > 20 ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' : 'linear-gradient(90deg, #ef4444, #f87171)';
+      document.getElementById('timerSecondsText').textContent = `${Math.max(0, remainingSeconds)}s`;
+    }
 
-      // Comprobar si la regla de rebote está activa y quedan equipos por intentar en este turno
-      if (gameState.rules.allowRebound && reboundAttemptsCount < gameState.teams.length - 1) {
-        reboundAttemptsCount++;
-        isReboundTurn = true;
-        activeAnsweringTeamIndex = (activeAnsweringTeamIndex + 1) % gameState.teams.length;
-        const nextTeam = gameState.teams[activeAnsweringTeamIndex];
+    function handleAnswer(originalIndex, btn) {
+      const q = currentQuestionObj;
+      if (!q) return;
+      stopTimer();
+      const isCorrect = originalIndex === q.answer;
+      const buttons = [...document.querySelectorAll('#optionsContainer .option-btn')];
 
-        showToast(
-          wasTimeout
-            ? `⌛ ¡Tiempo agotado! Rebote para ${nextTeam.name}`
-            : `❌ ¡Fallo! Rebote para ${nextTeam.name}`
-        );
-        renderActiveQuestionModal();
+      if (isCorrect) {
+        buttons.forEach(b => b.disabled = true);
+        btn.classList.add('correct');
+        const team = gameState.teams[activeAnsweringTeamIndex];
+        const pts = isReboundTurn ? gameState.rules.pointsRebound : gameState.rules.pointsDirect;
+        team.score += pts;
+        team.correct = (team.correct || 0) + 1;
+        playSound('success');
+        launchConfetti(60);
+        setTimeout(() => showFeedback(true, `${team.avatar} ${team.name} suma ${pts} punto${pts > 1 ? 's' : ''}${isReboundTurn ? ' de rebote' : ''}.`), 700);
         return;
       }
 
-      // Si no hay rebote o todos los equipos fallaron, marcar pregunta como vista y mostrar respuesta correcta
-      if (!gameState.answeredQuestionIds.includes(currentQuestionObj.id)) {
-        gameState.answeredQuestionIds.push(currentQuestionObj.id);
+      // Fallo o tiempo agotado
+      playSound('error');
+      if (btn) { btn.classList.add('wrong'); btn.disabled = true; }
+
+      const maxRebounds = gameState.teams.length - 1;
+      const remainingOptions = buttons.filter(b => !b.disabled).length;
+      if (gameState.rules.allowRebound && reboundAttemptsCount < maxRebounds && remainingOptions > 1) {
+        reboundAttemptsCount++;
+        isReboundTurn = true;
+        activeAnsweringTeamIndex = (gameState.currentTeamIndex + reboundAttemptsCount) % gameState.teams.length;
+        showToast(btn ? '❌ ¡Fallo! Rebote para el siguiente equipo.' : '⏰ ¡Tiempo! Rebote para el siguiente equipo.');
+        updateAnsweringTeamUI();
+        startTimer();
+        return;
       }
-      showFeedbackModal(false, gameState.teams[activeAnsweringTeamIndex], 0, wasTimeout);
+
+      buttons.forEach(b => {
+        b.disabled = true;
+        if (Number(b.dataset.original) === q.answer) b.classList.add('correct');
+      });
+      setTimeout(() => showFeedback(false, btn ? 'Nadie ha acertado esta vez.' : '¡Se acabó el tiempo!'), 900);
     }
 
-    function showFeedbackModal(isSuccess, team, pointsAdded, wasTimeout = false) {
-      document.getElementById('modalQuestion').classList.remove('show');
+    function showFeedback(correct, message) {
+      hideModal('modalQuestion');
+      const q = currentQuestionObj;
+      document.getElementById('feedbackEmoji').textContent = correct ? '🎉' : '😅';
+      const title = document.getElementById('feedbackTitle');
+      title.textContent = correct ? '¡Respuesta correcta!' : 'Respuesta incorrecta';
+      title.style.color = correct ? 'var(--success)' : 'var(--danger)';
+      document.getElementById('feedbackMessage').textContent = message;
+      document.getElementById('feedbackCorrectAnswerBox').textContent = `✅ Respuesta correcta: ${q.options[q.answer]}`;
 
-      const emojiEl = document.getElementById('feedbackEmoji');
-      const titleEl = document.getElementById('feedbackTitle');
-      const msgEl = document.getElementById('feedbackMessage');
-      const correctBox = document.getElementById('feedbackCorrectAnswerBox');
-
-      const letters = ['a)', 'b)', 'c)', 'd)'];
-      const correctText = `${letters[currentQuestionObj.answer]} ${currentQuestionObj.options[currentQuestionObj.answer]}`;
-
-      if (isSuccess) {
-        emojiEl.textContent = '🎉';
-        titleEl.textContent = '¡Respuesta Correcta!';
-        titleEl.style.color = 'var(--success)';
-        msgEl.innerHTML = `<span style="font-size:1.8rem; vertical-align:middle;">${team.avatar}</span> ${team.name} suma +${pointsAdded} punto(s) al marcador.`;
-        correctBox.textContent = `✅ Solución: ${correctText}`;
-      } else {
-        emojiEl.textContent = wasTimeout ? '⏰' : '💪';
-        titleEl.textContent = wasTimeout ? '¡Se agotó el tiempo!' : '¡Casi! A seguir intentándolo';
-        titleEl.style.color = 'var(--danger)';
-        msgEl.textContent = '¡No pasa nada! Aprendemos la respuesta correcta para la próxima vez:';
-        correctBox.textContent = `💡 Respuesta correcta: ${correctText}`;
-      }
-
-      updateSidebarUI();
-      document.getElementById('modalFeedback').classList.add('show');
-    }
-
-    function advanceTurnAfterFeedback() {
-      document.getElementById('modalFeedback').classList.remove('show');
-
-      // Pasar al siguiente equipo
-      const isLastTeamOfRound = (gameState.currentTeamIndex === gameState.teams.length - 1);
-
-      if (isLastTeamOfRound) {
-        // Fin de la ronda actual: mostrar modal de clasificación
-        showRankingModal(true);
-      } else {
-        gameState.currentTeamIndex++;
-        renderBoard();
-        updateSidebarUI();
-      }
+      gameState.answeredQuestionIds.push(q.id);
+      renderScoreboard();
+      renderRoundInfo();
+      showModal('modalFeedback');
     }
 
     /* =========================================================================
-       CLASIFICACIÓN FINAL DE RONDA Y PODIO FINAL
+       AVANCE DE TURNOS, RONDAS Y FINAL
        ========================================================================= */
 
-    function showRankingModal(isEndOfRound) {
-      const sortedTeams = [...gameState.teams].sort((a, b) => b.score - a.score);
-      const isFinalRound = isEndOfRound && (gameState.currentRound >= gameState.rules.totalRounds);
+    function advanceTurnAfterFeedback() {
+      hideModal('modalFeedback');
+      currentQuestionObj = null;
+      isTurnInProgress = false;
+      lastRoll = null;
 
-      const titleEl = document.getElementById('rankingModalTitle');
-      const subEl = document.getElementById('rankingModalSubtitle');
-      const btnClose = document.getElementById('btnCloseRanking');
+      const left = activeQuestionBank.length - gameState.answeredQuestionIds.length;
+      gameState.currentTeamIndex++;
 
-      if (isFinalRound) {
-        gameState.isGameOver = true;
-        titleEl.textContent = '🏆 ¡CLASIFICACIÓN FINAL DE LA PARTIDA!';
-        subEl.textContent = `¡Enhorabuena a todos los equipos tras completar las ${gameState.rules.totalRounds} rondas!`;
-        btnClose.textContent = '🔄 Volver al Menú Inicial';
-        playSound('fanfare');
-        launchConfetti();
-      } else if (isEndOfRound) {
-        titleEl.textContent = `📊 Clasificación tras la Ronda ${gameState.currentRound}`;
-        subEl.textContent = `Preparados para comenzar la Ronda ${gameState.currentRound + 1} de ${gameState.rules.totalRounds}`;
-        btnClose.textContent = `🚀 Comenzar Ronda ${gameState.currentRound + 1}`;
-        playSound('fanfare');
-      } else {
-        titleEl.textContent = '📊 Clasificación en Vivo';
-        subEl.textContent = `Ronda ${gameState.currentRound} en curso`;
-        btnClose.textContent = '⬅️ Volver al Tablero';
+      if (gameState.currentTeamIndex >= gameState.teams.length) {
+        gameState.currentTeamIndex = 0;
+        if (gameState.currentRound >= gameState.rules.totalRounds || left <= 0) { endGame(); return; }
+        gameState.currentRound++;
+        renderGame();
+        showRankingModal(false, true);
+        return;
       }
+      if (left <= 0) { endGame(); return; }
+      renderGame();
+    }
 
-      btnClose.dataset.endOfRound = isEndOfRound ? '1' : '0';
-      btnClose.dataset.finalRound = isFinalRound ? '1' : '0';
+    function endGame() {
+      gameState.isGameOver = true;
+      stopTimer();
+      ['modalPreQuestion', 'modalQuestion', 'modalFeedback'].forEach(hideModal);
+      renderGame();
+      showRankingModal(true);
+    }
 
-      const medals = ['🥇', '🥈', '🥉', '4º', '5º', '6º'];
-      const container = document.getElementById('rankingListContainer');
-      container.innerHTML = sortedTeams.map((tm, idx) => `
-        <div class="ranking-row ${idx === 0 ? 'rank-1' : ''}">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <span style="font-size:1.6rem; min-width:38px;">${medals[idx] || `${idx + 1}º`}</span>
-            <span style="font-size:2.3rem; line-height:1;">${tm.avatar}</span>
-            <span style="color:${tm.color};">${tm.name}</span>
-          </div>
-          <span class="score-badge">${tm.score} puntos</span>
-        </div>
-      `).join('');
+    function showRankingModal(isFinal, isRoundEnd = false) {
+      if (!gameState.started) return;
+      const sorted = gameState.teams.map(t => t).sort((a, b) => b.score - a.score);
+      const medals = ['🥇', '🥈', '🥉'];
+      // CORREGIDO: los empates comparten puesto y medalla.
+      let rank = 0, prevScore = null;
+      const rows = sorted.map((t, i) => {
+        if (t.score !== prevScore) { rank = i; prevScore = t.score; }
+        return `<div class="ranking-row ${rank === 0 ? 'rank-1' : ''}">
+          <span>${medals[rank] || `${rank + 1}º`} ${t.avatar} ${esc(t.name)}</span>
+          <span class="score-badge">${t.score} ${t.score === 1 ? "punto" : "puntos"}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('rankingListContainer').innerHTML = rows;
 
-      document.getElementById('modalRanking').classList.add('show');
+      const title = document.getElementById('rankingModalTitle');
+      const sub = document.getElementById('rankingModalSubtitle');
+      const btn = document.getElementById('btnCloseRanking');
+
+      if (isFinal) {
+        const winners = sorted.filter(t => t.score === sorted[0].score);
+        title.textContent = winners.length > 1 ? '¡Empate en cabeza!' : `¡Gana ${sorted[0].name}!`;
+        sub.textContent = 'Clasificación final de la partida';
+        btn.textContent = '🔁 Nueva partida';
+        btn.onclick = () => { hideModal('modalRanking'); gameState.isGameOver = true; goToSetupScreen(); };
+        playSound('fanfare');
+        launchConfetti(220);
+      } else if (isRoundEnd) {
+        title.textContent = `Fin de la ronda ${gameState.currentRound - 1}`;
+        sub.textContent = `Así va la clasificación. Empieza la ronda ${gameState.currentRound}.`;
+        btn.textContent = '🚀 Siguiente ronda';
+        btn.onclick = closeRankingModal;
+      } else {
+        title.textContent = 'Clasificación actual';
+        sub.textContent = 'Resumen de puntos por equipos';
+        btn.textContent = '↩️ Volver al tablero';
+        btn.onclick = closeRankingModal;
+      }
+      showModal('modalRanking');
     }
 
     function closeRankingModal() {
-      const btnClose = document.getElementById('btnCloseRanking');
-      const isEndOfRound = btnClose.dataset.endOfRound === '1';
-      const isFinalRound = btnClose.dataset.finalRound === '1';
-
-      document.getElementById('modalRanking').classList.remove('show');
-
-      if (isFinalRound) {
-        goToSetupScreen();
-        return;
-      }
-
-      if (isEndOfRound) {
-        gameState.currentRound++;
-        gameState.currentTeamIndex = 0;
-        renderBoard();
-        updateSidebarUI();
-      }
+      hideModal('modalRanking');
     }
 
     /* =========================================================================
-       SISTEMA DE CONFETI VISUAL (CANVAS AUTOCONTENIDO)
+       CONFETI
        ========================================================================= */
 
-    function launchConfetti() {
-      const canvas = document.getElementById('confettiCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const confettiCtx = confettiCanvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiRunning = false;
 
-      const pieces = Array.from({ length: 90 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * -canvas.height * 0.5,
-        size: Math.random() * 9 + 6,
-        color: ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#fde047'][Math.floor(Math.random() * 6)],
-        speedY: Math.random() * 4 + 3,
-        speedX: (Math.random() - 0.5) * 3,
-        angle: Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 0.2
-      }));
+    function resizeConfetti() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
 
-      let frames = 0;
-      function draw() {
-        frames++;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach(p => {
-          p.y += p.speedY;
-          p.x += p.speedX;
-          p.angle += p.spin;
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.angle);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-          ctx.restore();
+    function launchConfetti(amount) {
+      const colors = ['#4f46e5', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#fde047'];
+      for (let i = 0; i < amount; i++) {
+        confettiParticles.push({
+          x: Math.random() * confettiCanvas.width,
+          y: -20 - Math.random() * confettiCanvas.height * 0.3,
+          w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+          vy: 2 + Math.random() * 3, vx: -1.5 + Math.random() * 3,
+          rot: Math.random() * Math.PI, vr: -0.2 + Math.random() * 0.4,
+          color: colors[Math.floor(Math.random() * colors.length)]
         });
-        if (frames < 110) {
-          requestAnimationFrame(draw);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
       }
-      requestAnimationFrame(draw);
+      if (!confettiRunning) { confettiRunning = true; requestAnimationFrame(confettiLoop); }
+    }
+
+    function confettiLoop() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      confettiParticles.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        confettiCtx.save();
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate(p.rot);
+        confettiCtx.fillStyle = p.color;
+        confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        confettiCtx.restore();
+      });
+      confettiParticles = confettiParticles.filter(p => p.y < confettiCanvas.height + 30);
+      if (confettiParticles.length) requestAnimationFrame(confettiLoop);
+      else { confettiRunning = false; confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height); }
     }
   </script>
 </body>
