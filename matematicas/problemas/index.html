@@ -199,6 +199,12 @@
       .guided-tools-label { display:none; }
     }
 
+    .pdf-level-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:8px; max-height:300px; overflow:auto; padding:3px; }
+    .pdf-level-option { display:flex; align-items:flex-start; gap:10px; background:white; border:1px solid #cbd5e1; padding:12px; border-radius:12px; cursor:pointer; font-size:14px; }
+    .pdf-level-option input { width:20px; height:20px; margin-top:2px; flex-shrink:0; accent-color:#4f46e5; }
+    .pdf-level-option:has(input:checked) { border-color:#6366f1; background:#eef2ff; }
+    .pdf-level-disabled { opacity:.5; cursor:default; }
+    #pdf-level-picker[hidden] { display:none; }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
@@ -530,11 +536,12 @@
             <div class="flex flex-wrap items-center gap-2">
               <label for="stamp-category" class="font-bold text-sm">Sellos rápidos</label>
               <select id="stamp-category" onchange="filterStamps()" class="bg-white text-slate-900 rounded-lg p-2 font-bold text-sm">
-                <option value="fraction">Barras de fracción</option><option value="money">Euros y céntimos</option><option value="rod">Regletas (1–10)</option>
+                <option value="fraction">Barras de fracción</option><option value="money">Euros y céntimos</option><option value="rod">Regletas (1–10)</option><option value="place">Descomposición: UM, C, D y U</option>
               </select>
               <button id="delete-stamp" onclick="removeSelectedStamp()" disabled class="bg-rose-600 rounded-lg px-3 py-2 text-sm font-bold">Eliminar sello</button>
             </div>
             <div id="stamp-palette" class="flex flex-wrap gap-2" aria-label="Paleta de sellos"></div>
+            <p id="place-value-help" hidden class="text-xs text-white">1 UM = 1000 unidades · 1 C = 100 · 1 D = 10 · 1 U = 1. Añade tantas tarjetas como necesites: 2341 = 2 UM + 3 C + 4 D + 1 U.</p>
             <p class="text-xs text-slate-200">Pulsa para añadir o arrastra a la pizarra. Mueve los sellos con el dedo o el ratón. Las fracciones comparten un entero de referencia; las regletas, una misma unidad. Dinero didáctico.</p>
           </div>
 
@@ -607,6 +614,7 @@
           <label class="block text-xs font-extrabold uppercase text-slate-600 mb-1.5">3. Modo de Selección de Problemas</label>
           <select id="pdf-selection-mode" onchange="generatePrintableSheets()" class="w-full px-4 py-3 rounded-xl border border-slate-300 font-bold text-sm bg-white">
             <option value="current">Todos del Nivel Activo seleccionado</option>
+            <option value="selected">Elegir de 1 a 4 niveles de este curso</option>
             <option value="mixed">Mezcla variada de niveles de este Curso</option>
           </select>
         </div>
@@ -620,6 +628,14 @@
           </select>
         </div>
       </div>
+
+      <fieldset id="pdf-level-picker" hidden class="rounded-2xl border border-indigo-200 bg-indigo-50/40 p-4">
+        <legend class="font-extrabold text-indigo-900 px-2">Niveles trabajados para la ficha</legend>
+        <p id="pdf-level-count" class="font-bold text-sm text-indigo-700 mb-2" aria-live="polite"></p>
+        <p class="text-sm text-slate-600 mb-3">Selecciona entre 1 y 4 niveles. Cada modelo incluirá todos los elegidos, con un reparto equilibrado. El número de problemas se ajustará si es necesario.</p>
+        <div id="pdf-level-options" class="pdf-level-options"></div>
+        <p id="pdf-level-notice" class="text-sm font-bold text-indigo-700 mt-3" aria-live="polite"></p>
+      </fieldset>
 
       <!-- Botones de Acción de Impresión -->
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -4539,11 +4555,51 @@
       root.style.setProperty('--print-card-pad', cfg.pad);
     }
 
+    const pdfLevelSelections = new Map();
+    function selectedPdfLevels() {
+      const grade=CURRICULUM_DB[currentGradeKey];
+      let ids=pdfLevelSelections.get(currentGradeKey)||[currentLevelObj.id];
+      ids=ids.filter(id=>grade.levels.some(l=>l.id===id)).slice(0,4);
+      if(!ids.length)ids=[currentLevelObj.id];
+      pdfLevelSelections.set(currentGradeKey,ids);
+      return grade.levels.filter(l=>ids.includes(l.id));
+    }
+    function renderPdfLevelPicker() {
+      const container=document.getElementById('pdf-level-picker');
+      if(!container)return;
+      const selected=selectedPdfLevels();
+      const selectedMode=document.getElementById('pdf-selection-mode').value==='selected';
+      container.hidden=!selectedMode;
+      document.getElementById('pdf-level-count').textContent=`${selected.length} de 4 niveles seleccionados`;
+      document.getElementById('pdf-level-options').innerHTML=CURRICULUM_DB[currentGradeKey].levels.map((level,index)=>{
+        const checked=selected.some(l=>l.id===level.id);
+        const disabled=(checked&&selected.length===1)||(!checked&&selected.length===4);
+        return `<label class="pdf-level-option${disabled&&!checked?' pdf-level-disabled':''}"><input type="checkbox" value="${level.id}" ${checked?'checked':''} ${disabled?'disabled':''} onchange="togglePdfLevel(this.value,this.checked)"><span><strong>Nivel ${index+1}.</strong> ${escapeHTML(level.name)}</span></label>`;
+      }).join('');
+    }
+    function togglePdfLevel(id,checked) {
+      const ids=selectedPdfLevels().map(l=>l.id);
+      if(checked&&!ids.includes(id)&&ids.length<4)ids.push(id);
+      else if(!checked&&ids.length>1){const index=ids.indexOf(id);if(index>=0)ids.splice(index,1);}
+      pdfLevelSelections.set(currentGradeKey,ids);
+      generatePrintableSheets();
+    }
+
     function generatePrintableSheets() {
       const numVersions = parseInt(document.getElementById('pdf-num-versions').value, 10) || 4;
-      const numProblems = parseInt(document.getElementById('pdf-num-problems').value, 10) || 5;
+      let numProblems = parseInt(document.getElementById('pdf-num-problems').value, 10) || 5;
       const mode = document.getElementById('pdf-selection-mode').value;
       const gradeData = CURRICULUM_DB[currentGradeKey];
+      const selectedLevels=mode==='selected'?selectedPdfLevels():[];
+      renderPdfLevelPicker();
+      const notice=document.getElementById('pdf-level-notice');
+      notice.textContent='';
+      if(mode==='selected'&&numProblems<selectedLevels.length){
+        numProblems=selectedLevels.length;
+        document.getElementById('pdf-num-problems').value=String(numProblems);
+        notice.textContent=`Se han ajustado los problemas por hoja a ${numProblems} para incluir todos los niveles elegidos.`;
+      }
+      const selectedNumbers=selectedLevels.map(l=>gradeData.levels.findIndex(x=>x.id===l.id)+1);
       const modelLetters = ['A', 'B', 'C', 'D'];
 
       adjustPrintBoxHeights(numProblems);
@@ -4558,6 +4614,7 @@
 
         for (let i = 0; i < numProblems; i++) {
           let chosenLevel = currentLevelObj;
+          if(mode==='selected')chosenLevel=selectedLevels[(i+v)%selectedLevels.length];
           if (mode === 'mixed') {
             chosenLevel = gradeData.levels[(i + v * 2) % gradeData.levels.length];
           }
@@ -4587,8 +4644,8 @@
           courseTitle: gradeData.title,
           levelLabel: mode === 'current'
             ? 'Nivel ' + (gradeData.levels.findIndex(level => level.id === currentLevelObj.id) + 1)
-            : 'Niveles variados',
-          levelTitle: mode === 'current' ? currentLevelObj.name : 'Práctica Variada del Curso',
+            : mode==='selected' ? (selectedLevels.length===1?'Nivel ':'Niveles ')+selectedNumbers.join(', ') : 'Niveles variados',
+          levelTitle: mode === 'current' ? currentLevelObj.name : mode==='selected' ? (selectedLevels.length===1?selectedLevels[0].name:'Repaso de niveles seleccionados') : 'Práctica Variada del Curso',
           problems
         });
       }
@@ -4728,6 +4785,12 @@
     }
 
     const STAMP_TYPES = [
+      ...[
+        {id:'place-um',label:'1 UM = 1000',value:1000,color:'#e9d5ff'},
+        {id:'place-c',label:'1 C = 100',value:100,color:'#bfdbfe'},
+        {id:'place-d',label:'1 D = 10',value:10,color:'#bbf7d0'},
+        {id:'place-u',label:'1 U = 1',value:1,color:'#fecaca'}
+      ].map(t=>({...t,group:'place',width:112,height:48})),
       ...[1,2,3,4,6,8,10].map(n => ({id:'fraction-'+n, group:'fraction', label:n===1?'1 entero':'1/'+n, value:n, width:240/n, height:38, color:'#bfdbfe'})),
       ...[1,2,5,10,20,50].map(n => ({id:'cent-'+n, group:'money', label:n+' c', value:n/100, width:44, height:44, color:n<10?'#edb58f':'#fde68a', coin:true})),
       ...[1,2,5,10,20,50,100,200,500].map(n => ({id:'euro-'+n, group:'money', label:n+' €', value:n, width:n<5?48:88, height:n<5?48:44, color:n<5?'#fde68a':({'5':'#e2e8f0','10':'#fecaca','20':'#bfdbfe','50':'#fed7aa','100':'#bbf7d0','200':'#fef08a','500':'#e9d5ff'})[n], coin:n<5})),
@@ -4744,7 +4807,7 @@
         button.dataset.group = type.group;
         button.dataset.stamp = type.id;
         button.textContent = type.label;
-        button.title = (type.group==='fraction'?'Barra de fracción ':type.group==='rod'?'Regleta de ':'Euro didáctico ') + type.label + '. Pulsa o arrastra a la pizarra.';
+        button.title = (type.group==='fraction'?'Barra de fracción ':type.group==='rod'?'Regleta de ':type.group==='place'?'Valor posicional ':'Euro didáctico ') + type.label + '. Pulsa o arrastra a la pizarra.';
         button.style.background = type.color;
         button.style.color = ['#15803d','#171717','#92400e','#2563eb'].includes(type.color)?'white':'#0f172a';
         button.addEventListener('pointerdown', e => {
@@ -4781,6 +4844,7 @@
     function filterStamps() {
       const group=document.getElementById('stamp-category').value;
       document.querySelectorAll('.stamp-source').forEach(b=>b.hidden=b.dataset.group!==group);
+      document.getElementById('place-value-help').hidden=group!=='place';
     }
     function positionStamp(el,x,y) {
       const layer=document.getElementById('stamp-layer');
@@ -4802,7 +4866,7 @@
       const layer=document.getElementById('stamp-layer');
       const el=document.createElement('div');
       el.className='board-stamp'; el.tabIndex=0; el.setAttribute('role','button');
-      el.setAttribute('aria-label',(type.group==='rod'?'Regleta ':type.group==='fraction'?'Fracción ':'Dinero didáctico ')+type.label+'. Mover con flechas; Suprimir para eliminar.');
+      el.setAttribute('aria-label',(type.group==='rod'?'Regleta ':type.group==='fraction'?'Fracción ':type.group==='place'?'Valor posicional ':'Dinero didáctico ')+type.label+'. Mover con flechas; Suprimir para eliminar.');
       el.dataset.type=type.id;
       el.style.cssText=`width:${type.width}px;height:${type.height}px;background:${type.color};color:${['#15803d','#171717','#92400e','#2563eb'].includes(type.color)?'white':'#0f172a'};border-radius:${type.coin?'50%':'5px'}`;
       if(type.group==='rod') el.style.backgroundImage='repeating-linear-gradient(to right,transparent 0,transparent 23px,#0004 23px,#0004 24px)';
