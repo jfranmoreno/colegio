@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sudoku Escolar Interactiva 🎯</title>
+    <!-- jsPDF: generación de fichas imprimibles en PDF (vectorial, nítido al imprimir) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fuente Nunito: Alta legibilidad escolar y numérica en monitores interactivos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #fffbeb;
+            background-image: radial-gradient(#FDBA74 2px, transparent 2px);
+            background-size: 30px 30px;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        /* Números tabulares de alta claridad para el monitor del aula */
+        .sudoku-num {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        /* Grid base para tableros de Sudoku */
+        #board-left, #board-right {
+            display: grid;
+            gap: 2px;
+            padding: 4px;
+            background-color: #64748b;
+            border-radius: 14px;
+            border: 4px solid #475569;
+        }
+        #board-left > div, #board-right > div {
+            aspect-ratio: 1;
+        }
+        /* Scrollbar amigable para listas en MDI */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffedd5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fb923c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col text-slate-800">
+
+    <!-- Contenedor dedicado para confeti -->
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[150] overflow-hidden"></div>
+
+    <!-- Input oculto para cargar archivos JSON -->
+    <input type="file" id="json-file-input" accept=".json" class="hidden">
+
+    <!-- Botones flotantes Superiores: Sonido y Pantalla Completa -->
+    <div class="fixed top-3 right-3 z-[60] flex items-center gap-2">
+        <button id="btn-toggle-sound" title="Activar/Desactivar Sonido" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white border-4 border-orange-300 shadow-md flex items-center justify-center text-2xl hover:scale-105 active:scale-95 transition-transform">
+            🔊
+        </button>
+        <button id="btn-fullscreen" title="Pantalla Completa" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white border-4 border-sky-300 shadow-md flex items-center justify-center text-2xl font-black text-sky-600 hover:scale-105 active:scale-95 transition-transform">
+            ⛶
+        </button>
+    </div>
+
+    <!-- ==========================================
+         1. PANTALLA DE INICIO Y CONFIGURACIÓN
+         ========================================== -->
+    <div id="start-screen" class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-yellow-100/90 backdrop-blur-sm">
+        <div class="bg-white p-5 md:p-6 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.12)] text-center w-full max-w-2xl border-4 border-orange-300 relative flex flex-col max-h-[96vh]">
+            <div class="overflow-y-auto pr-1 space-y-3.5">
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-4xl md:text-5xl animate-bounce">🧩</span>
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-black text-orange-500 tracking-tight drop-shadow-sm">SUDOKU ESCOLAR</h1>
+                        <p class="text-slate-500 font-bold text-xs md:text-sm">Solitario · Duelo Rápido 1 vs 1 · Torneo de Aula</p>
+                    </div>
+                </div>
+                
+                <!-- Barra de Gestión JSON (Guardar / Cargar Configuración o Torneo) -->
+                <div class="bg-amber-50 p-2.5 rounded-2xl border-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs font-extrabold text-amber-800 uppercase tracking-wider ml-1">💾 Datos del Aula (JSON):</span>
+                    <div class="flex gap-2 flex-1 justify-end">
+                        <button id="btn-export-setup" class="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-extrabold px-3 py-1.5 rounded-xl shadow border-b-2 border-amber-700 active:translate-y-0.5 transition-all flex items-center gap-1">
+                            ⬇️ Guardar Config
+                        </button>
+                        <button id="btn-import-json-start" class="bg-teal-600 hover:bg-teal-700 text-white text-xs md:text-sm font-extrabold px-3 py-1.5 rounded-xl shadow border-b-2 border-teal-800 active:translate-y-0.5 transition-all flex items-center gap-1">
+                            📂 Cargar JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aviso de sesión autoguardada en el navegador -->
+                <div id="autosave-banner" class="hidden bg-sky-50 border-2 border-sky-300 p-2.5 rounded-2xl flex items-center justify-between gap-2">
+                    <div class="text-left">
+                        <p class="text-xs font-extrabold text-sky-800">⚡ Partida o Torneo en curso detectado</p>
+                        <p class="text-xs font-bold text-sky-600" id="autosave-info">Sesión guardada automáticamente</p>
+                    </div>
+                    <button id="btn-resume-autosave" class="bg-sky-500 hover:bg-sky-600 text-white text-xs font-extrabold px-4 py-2 rounded-xl shadow">
+                        ▶️ Continuar
+                    </button>
+                </div>
+
+                <!-- Fichas en papel: imprimir y resolver con código -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button type="button" id="btn-open-print" class="py-2.5 px-2 rounded-2xl border-4 border-violet-300 bg-violet-50 hover:bg-violet-100 text-violet-800 font-black text-sm md:text-base flex flex-col items-center gap-0.5 transition-all active:scale-95">
+                        <span class="text-2xl">🖨️</span>
+                        <span>Fichas PDF</span>
+                        <span class="text-[11px] font-bold opacity-75">A4 · 1, 2 o 4 por folio</span>
+                    </button>
+                    <button type="button" id="btn-open-code" class="py-2.5 px-2 rounded-2xl border-4 border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-black text-sm md:text-base flex flex-col items-center gap-0.5 transition-all active:scale-95">
+                        <span class="text-2xl">🔑</span>
+                        <span>Resolver una ficha</span>
+                        <span class="text-[11px] font-bold opacity-75">Escribe su código</span>
+                    </button>
+                </div>
+
+                <!-- 1. Selector de Modalidad de Juego (Solitario / 1 vs 1 / Torneo) -->
+                <div>
+                    <p class="text-xs font-extrabold text-slate-400 uppercase mb-1 tracking-wider">1. Elige el Modo de Juego</p>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" data-type="solo" class="game-type-btn py-2.5 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 transition-all">
+                            <span class="text-2xl">👤</span>
+                            <span>Solitario</span>
+                            <span class="text-[11px] font-bold opacity-75">Tablero Grande</span>
+                        </button>
+                        <button type="button" data-type="quick1v1" class="game-type-btn py-2.5 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 transition-all">
+                            <span class="text-2xl">⚔️</span>
+                            <span>Duelo 1 vs 1</span>
+                            <span class="text-[11px] font-bold opacity-75">Partida Rápida</span>
+                        </button>
+                        <button type="button" data-type="tournament" class="game-type-btn py-2.5 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 transition-all">
+                            <span class="text-2xl">🏆</span>
+                            <span>Torneo</span>
+                            <span class="text-[11px] font-bold opacity-75">Hasta 25 Jug.</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. Selector de Nivel de Dificultad (Fácil / Medio / Difícil) -->
+                <div>
+                    <p class="text-xs font-extrabold text-slate-400 uppercase mb-1 tracking-wider">2. Nivel de Dificultad</p>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" data-diff="easy" class="diff-btn py-2 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center transition-all">
+                            <span>🟢 Fácil</span>
+                            <span id="clues-label-easy" class="text-[11px] font-bold opacity-80">22 pistas</span>
+                        </button>
+                        <button type="button" data-diff="medium" class="diff-btn py-2 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center transition-all">
+                            <span>🟡 Medio</span>
+                            <span id="clues-label-medium" class="text-[11px] font-bold opacity-80">18 pistas</span>
+                        </button>
+                        <button type="button" data-diff="hard" class="diff-btn py-2 px-2 rounded-2xl border-4 font-extrabold text-sm md:text-base flex flex-col items-center transition-all">
+                            <span>🔴 Difícil</span>
+                            <span id="clues-label-hard" class="text-[11px] font-bold opacity-80">14 pistas</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Parámetros del Juego -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                    <!-- Jugadores (Solo activo en modo Torneo) -->
+                    <div id="player-count-box" class="flex flex-col justify-between bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100 transition-opacity">
+                        <label class="font-extrabold text-orange-700 text-xs uppercase mb-1" id="player-count-label">👥 Jugadores (2-25)</label>
+                        <div class="flex items-center justify-center gap-1">
+                            <button type="button" id="btn-dec-players" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
+                            <input type="number" id="player-count" value="4" min="2" max="25" class="sudoku-num w-14 text-center text-2xl font-black text-orange-600 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-0.5">
+                            <button type="button" id="btn-inc-players" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Vidas (1 a 10) -->
+                    <div class="flex flex-col justify-between bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100">
+                        <label class="font-extrabold text-orange-700 text-xs uppercase mb-1">❤️ Vidas (1-10)</label>
+                        <div class="flex items-center justify-center gap-1">
+                            <button type="button" id="btn-dec-lives" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">-</button>
+                            <input type="number" id="lives-input" value="4" min="1" max="10" class="sudoku-num w-14 text-center text-2xl font-black text-orange-600 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-0.5">
+                            <button type="button" id="btn-inc-lives" class="w-9 h-9 rounded-xl bg-orange-200 hover:bg-orange-300 text-orange-900 font-black text-xl active:scale-95">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Nivel de Tablero -->
+                    <div class="flex flex-col justify-between bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100">
+                        <label class="font-extrabold text-orange-700 text-xs uppercase mb-1">🎮 Tamaño Tablero</label>
+                        <select id="mode-input" class="w-full text-center text-base font-extrabold text-orange-700 bg-white border-2 border-orange-200 rounded-xl focus:outline-none focus:border-orange-500 py-1.5">
+                            <option value="6">KIDS (6x6)</option>
+                            <option value="9">JUNIOR (9x9)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Lista de Nombres -->
+                <div class="text-left">
+                    <div class="flex justify-between items-center mb-1 px-2">
+                        <p class="text-xs font-extrabold text-slate-400 uppercase" id="participants-label">Participantes:</p>
+                        <button type="button" id="btn-shuffle-players" class="text-xs font-extrabold text-orange-600 hover:text-orange-700 bg-orange-100 px-3 py-1 rounded-full transition-colors">
+                            🎲 Mezclar Orden
+                        </button>
+                    </div>
+                    <div id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"></div>
+                </div>
+                
+                <button id="start-button" class="w-full py-3.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xl font-black rounded-2xl shadow-lg hover:shadow-orange-300 hover:scale-[1.01] transition-all active:scale-95 border-b-4 border-orange-700">
+                    ¡EMPEZAR AHORA! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         2. PANTALLA DE CLASIFICACIÓN (SOLO TORNEO)
+         ========================================== -->
+    <div id="bracket-screen" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center p-4 bg-slate-50 pt-4 pb-20">
+        <div class="w-full max-w-3xl bg-white rounded-[2.5rem] p-6 md:p-8 shadow-2xl border-4 border-sky-200 flex flex-col h-full max-h-[84vh]">
+            <div class="flex flex-wrap items-center justify-between border-b-2 border-sky-100 pb-3 mb-4 gap-2 pr-16 md:pr-0">
+                <div class="flex items-center gap-1.5">
+                    <span id="bracket-mode-badge" class="bg-sky-100 text-sky-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">Modo 6x6</span>
+                    <span id="bracket-diff-badge" class="bg-amber-100 text-amber-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">🟡 Medio</span>
+                </div>
+                <h2 id="round-title" class="text-2xl md:text-3xl font-black text-sky-600 text-center tracking-wide">Ronda 1</h2>
+                <span id="bracket-players-badge" class="bg-orange-100 text-orange-800 font-extrabold text-xs md:text-sm px-3 py-1 rounded-full">❤️ 4</span>
+            </div>
+
+            <div id="bracket-container" class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-3 p-2 mb-4 content-start"></div>
+            
+            <button id="next-match-btn" class="w-full py-4 bg-sky-500 text-white text-xl font-black rounded-2xl shadow-[0_6px_0_rgb(2,132,199)] hover:bg-sky-400 active:shadow-none active:translate-y-1 transition-all">
+                Jugar Siguiente Partido ▶️
+            </button>
+        </div>
+
+        <!-- Barra Docente en Clasificación -->
+        <div id="teacher-bar-bracket" class="fixed bottom-0 w-full bg-slate-800 text-white p-2.5 flex flex-wrap justify-center gap-3 rounded-t-2xl opacity-95 z-50">
+            <button id="btn-save-json-bracket" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                💾 Guardar Torneo (JSON)
+            </button>
+            <button id="btn-load-json-bracket" class="bg-teal-600 hover:bg-teal-700 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                📂 Cargar JSON
+            </button>
+            <button id="btn-end-tournament-bracket" class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                🏁 Menú Principal
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         3. PANTALLA DE JUEGO (SOLITARIO / 1v1 / TORNEO)
+         ========================================== -->
+    <div id="game-screen" class="hidden flex-1 flex flex-col relative h-full pb-14">
+        <!-- Cabecera Superior -->
+        <div class="h-14 flex items-center justify-center gap-2 relative z-20 mt-1 px-4">
+            <div id="versus-label" class="bg-white border-4 border-yellow-400 text-amber-600 px-5 py-1 rounded-full font-black text-sm md:text-2xl shadow-md tracking-wide truncate max-w-xl">
+                JUGADOR 1 vs JUGADOR 2
+            </div>
+            <span id="game-diff-badge" class="bg-white border-2 border-slate-300 text-slate-700 px-3 py-1 rounded-full font-extrabold text-xs md:text-sm shadow-sm shrink-0">
+                🟡 Medio
+            </span>
+            <span id="game-code" title="Código de este sudoku" class="hidden sudoku-num bg-emerald-50 border-2 border-emerald-300 text-emerald-800 px-3 py-1 rounded-full font-extrabold text-xs md:text-sm shadow-sm shrink-0 tracking-wider">
+                🔑 ----
+            </span>
+            <span id="game-timer" class="sudoku-num bg-white border-2 border-slate-300 text-slate-700 px-3 py-1 rounded-full font-extrabold text-xs md:text-sm shadow-sm shrink-0">
+                ⏱️ 00:00
+            </span>
+        </div>
+
+        <!-- Contenedor Principal de Tableros -->
+        <div id="boards-wrapper" class="flex-1 flex flex-col md:flex-row gap-3 p-2 md:p-4 overflow-hidden max-w-7xl mx-auto w-full items-center justify-center">
+            
+            <!-- PANEL IZQUIERDO / PRINCIPAL (Usado también en Modo Solitario con mayor tamaño) -->
+            <div id="panel-left" class="flex-1 w-full bg-white/95 backdrop-blur rounded-3xl border-4 border-pink-300 shadow-xl flex flex-col p-3 md:p-4 relative h-full max-h-[80vh] md:max-h-full justify-between transition-all">
+                <div class="flex justify-between items-center mb-1 px-2">
+                    <span id="name-left" class="bg-pink-500 text-white px-4 py-1 rounded-full font-black text-sm md:text-lg shadow border-b-2 border-pink-700 truncate max-w-[200px]">Jugador 1</span>
+                    <div id="lives-left" class="bg-pink-50 px-3 py-1 rounded-full shadow-inner border border-pink-200 flex gap-1 items-center min-h-[34px]"></div>
+                </div>
+                <div class="flex-1 flex items-center justify-center min-h-0 overflow-hidden py-1">
+                    <div id="board-left" class="w-full max-w-[360px] shadow-md transition-all"></div>
+                </div>
+                <div class="mt-2 w-full">
+                    <div id="pad-left"></div>
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO (Oculto automáticamente en Modo Solitario) -->
+            <div id="panel-right" class="flex-1 w-full bg-white/95 backdrop-blur rounded-3xl border-4 border-sky-300 shadow-xl flex flex-col p-3 md:p-4 relative h-full max-h-[80vh] md:max-h-full justify-between transition-all">
+                <div class="flex justify-between items-center mb-1 px-2">
+                    <div id="lives-right" class="bg-sky-50 px-3 py-1 rounded-full shadow-inner border border-sky-200 flex gap-1 items-center min-h-[34px]"></div>
+                    <span id="name-right" class="bg-sky-500 text-white px-4 py-1 rounded-full font-black text-sm md:text-lg shadow border-b-2 border-sky-700 truncate max-w-[200px]">Jugador 2</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center min-h-0 overflow-hidden py-1">
+                    <div id="board-right" class="w-full max-w-[360px] shadow-md transition-all"></div>
+                </div>
+                <div class="mt-2 w-full">
+                    <div id="pad-right"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra Docente en Partida -->
+        <div id="teacher-bar-game" class="fixed bottom-0 w-full bg-slate-800 text-white p-2 flex flex-wrap justify-center gap-2 md:gap-3 rounded-t-2xl opacity-95 z-50">
+            <button id="btn-back-bracket" class="bg-slate-600 hover:bg-slate-500 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                📋 Ver Cuadro
+            </button>
+            <button id="btn-new-puzzle" class="bg-indigo-500 hover:bg-indigo-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                🎲 Nuevo Tablero
+            </button>
+            <button id="btn-restart-match" class="bg-amber-500 hover:bg-amber-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                🔄 Reiniciar
+            </button>
+            <button id="btn-end-round" class="bg-blue-500 hover:bg-blue-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                ⏭️ Decidir Ganador
+            </button>
+            <button id="btn-save-json-game" class="bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                💾 Guardar JSON
+            </button>
+            <button id="btn-end-tournament-game" class="bg-red-500 hover:bg-red-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                🏠 Menú
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         4. VENTANAS MODALES
+         ========================================== -->
+    <!-- Modal General (Victoria / Fin de Partida) -->
+    <div id="modal" class="hidden fixed inset-0 z-[100] bg-sky-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full text-center shadow-2xl border-4 border-yellow-300">
+            <h2 id="modal-title" class="text-3xl font-black text-pink-500 mb-2">TÍTULO</h2>
+            <div id="modal-body" class="mb-6 text-lg font-bold text-slate-600">Mensaje</div>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button id="modal-secondary-btn" class="hidden flex-1 py-3.5 bg-slate-200 text-slate-700 text-lg font-extrabold rounded-2xl hover:bg-slate-300 active:translate-y-0.5">
+                    🏠 Menú
+                </button>
+                <button id="modal-button" class="flex-1 py-3.5 bg-sky-500 text-white text-xl font-black rounded-2xl shadow-[0_4px_0_rgb(2,132,199)] hover:bg-sky-400 active:translate-y-0.5">
+                    ¡GENIAL!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Fichas PDF para imprimir -->
+    <div id="modal-print" class="hidden fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 md:p-7 max-w-lg w-full shadow-2xl border-4 border-violet-400 max-h-[96vh] overflow-y-auto">
+            <h2 class="text-2xl font-black text-violet-600 mb-1 text-center">🖨️ Fichas para imprimir</h2>
+            <p class="text-sm font-bold text-slate-500 mb-4 text-center">PDF en A4 vertical. Cada sudoku lleva un código para resolverlo después en el monitor.</p>
+
+            <div class="space-y-3 text-left">
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex flex-col gap-1">
+                        <span class="text-xs font-extrabold text-slate-500 uppercase">Tamaño</span>
+                        <select id="print-size" class="text-base font-extrabold text-violet-700 bg-white border-2 border-violet-200 rounded-xl py-2 px-2 focus:outline-none focus:border-violet-500">
+                            <option value="6">6x6</option>
+                            <option value="9">9x9</option>
+                        </select>
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-xs font-extrabold text-slate-500 uppercase">Dificultad</span>
+                        <select id="print-diff" class="text-base font-extrabold text-violet-700 bg-white border-2 border-violet-200 rounded-xl py-2 px-2 focus:outline-none focus:border-violet-500">
+                            <option value="easy">🟢 Fácil</option>
+                            <option value="medium">🟡 Medio</option>
+                            <option value="hard">🔴 Difícil</option>
+                            <option value="mixed">🌈 Progresiva (fácil → difícil)</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div>
+                    <span class="text-xs font-extrabold text-slate-500 uppercase">Sudokus por folio</span>
+                    <div class="grid grid-cols-3 gap-2 mt-1" id="print-per-page">
+                        <button type="button" data-per="1" class="print-per-btn py-2 rounded-xl border-4 font-black text-lg">1</button>
+                        <button type="button" data-per="2" class="print-per-btn py-2 rounded-xl border-4 font-black text-lg">2</button>
+                        <button type="button" data-per="4" class="print-per-btn py-2 rounded-xl border-4 font-black text-lg">4</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="flex flex-col gap-1">
+                        <span class="text-xs font-extrabold text-slate-500 uppercase">Nº de folios</span>
+                        <input type="number" id="print-pages" value="1" min="1" max="30" class="sudoku-num text-center text-xl font-black text-violet-700 bg-white border-2 border-violet-200 rounded-xl py-1.5 focus:outline-none focus:border-violet-500">
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-xs font-extrabold text-slate-500 uppercase">Copias de cada folio</span>
+                        <input type="number" id="print-copies" value="1" min="1" max="30" class="sudoku-num text-center text-xl font-black text-violet-700 bg-white border-2 border-violet-200 rounded-xl py-1.5 focus:outline-none focus:border-violet-500">
+                    </label>
+                </div>
+
+                <label class="flex flex-col gap-1">
+                    <span class="text-xs font-extrabold text-slate-500 uppercase">Título de la ficha</span>
+                    <input type="text" id="print-title" value="Ficha de Sudokus" maxlength="60" class="text-base font-bold text-slate-700 bg-white border-2 border-violet-200 rounded-xl py-2 px-3 focus:outline-none focus:border-violet-500">
+                </label>
+
+                <label class="flex items-center gap-2 font-bold text-slate-600 text-sm cursor-pointer">
+                    <input type="checkbox" id="print-solutions" checked class="w-5 h-5 accent-violet-600">
+                    Añadir al final una hoja de soluciones para el docente
+                </label>
+
+                <p id="print-summary" class="text-sm font-extrabold text-violet-700 bg-violet-50 border-2 border-violet-100 rounded-xl px-3 py-2 text-center">1 folio · 2 sudokus</p>
+            </div>
+
+            <div class="flex gap-3 mt-5">
+                <button id="btn-print-cancel" class="flex-1 py-3 bg-gray-200 text-gray-700 font-extrabold rounded-xl hover:bg-gray-300 text-lg">Cancelar</button>
+                <button id="btn-print-generate" class="flex-1 py-3 bg-violet-600 text-white font-extrabold rounded-xl hover:bg-violet-700 text-lg shadow-md">📄 Descargar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Resolver ficha con código -->
+    <div id="modal-code" class="hidden fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-6 md:p-7 max-w-md w-full text-center shadow-2xl border-4 border-emerald-400">
+            <h2 class="text-2xl font-black text-emerald-600 mb-1">🔑 Resolver una ficha</h2>
+            <p class="text-sm font-bold text-slate-500 mb-4">Escribe el código que aparece junto al sudoku de la ficha (por ejemplo <span class="sudoku-num font-black text-slate-700">9D-K7QX4</span>).</p>
+            <input type="text" id="code-input" maxlength="12" autocomplete="off" spellcheck="false" placeholder="6F-ABCDE"
+                class="sudoku-num w-full text-center text-3xl font-black tracking-[0.2em] uppercase text-emerald-700 bg-emerald-50 border-4 border-emerald-200 rounded-2xl py-3 focus:outline-none focus:border-emerald-500">
+            <p id="code-feedback" class="min-h-[1.5rem] mt-2 text-sm font-extrabold text-slate-400">&nbsp;</p>
+            <div class="flex gap-3 mt-3">
+                <button id="btn-code-cancel" class="flex-1 py-3 bg-gray-200 text-gray-700 font-extrabold rounded-xl hover:bg-gray-300 text-lg">Cancelar</button>
+                <button id="btn-code-go" class="flex-1 py-3 bg-emerald-600 text-white font-extrabold rounded-xl hover:bg-emerald-700 text-lg shadow-md">¡A resolver! 🎯</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="modal-confirm" class="hidden fixed inset-0 z-[120] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full text-center shadow-2xl border-4 border-purple-400">
+            <h2 id="modal-confirm-title" class="text-2xl font-black text-purple-600 mb-2">🤔 ¿Estás seguro/a?</h2>
+            <div id="modal-confirm-body" class="mb-6 text-slate-600 text-lg font-bold">Confirmar acción</div>
+            <div class="flex gap-4">
+                <button id="btn-confirm-no" class="flex-1 py-3 bg-gray-200 text-gray-700 font-extrabold rounded-xl hover:bg-gray-300 text-lg">Cancelar</button>
+                <button id="btn-confirm-yes" class="flex-1 py-3 bg-purple-600 text-white font-extrabold rounded-xl hover:bg-purple-700 text-lg shadow-md">Sí, adelante</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Docente: Forzar Ganador -->
+    <div id="modal-force-win" class="hidden fixed inset-0 z-[110] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2rem] p-8 max-w-md w-full text-center shadow-2xl border-4 border-blue-400">
+            <h2 class="text-2xl font-black text-slate-700 mb-2">👩‍🏫 Decisión Docente</h2>
+            <p class="mb-6 text-slate-500 font-bold">Selecciona quién gana esta partida:</p>
+            <div class="flex gap-4">
+                <button id="btn-force-left" class="flex-1 py-4 bg-pink-500 text-white font-black rounded-xl hover:bg-pink-600 shadow-md px-2 truncate">Gana J1</button>
+                <button id="btn-force-right" class="flex-1 py-4 bg-sky-500 text-white font-black rounded-xl hover:bg-sky-600 shadow-md px-2 truncate">Gana J2</button>
+            </div>
+            <button id="btn-force-cancel" class="mt-5 text-slate-500 hover:text-slate-700 font-extrabold underline text-sm py-2 px-4">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Notificación Toast rápida -->
+    <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[200] bg-slate-800 text-white px-5 py-2.5 rounded-full shadow-xl font-extrabold text-sm border-2 border-slate-600 transition-all">
+        Notificación
+    </div>
+
+    <!-- ==========================================
+         LÓGICA DE LA APLICACIÓN (JAVASCRIPT)
+         ========================================== -->
+    <script>
+        /**
+         * 1. SINTETIZADOR DE AUDIO AUTOCONTENIDO (Web Audio API)
+         */
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+
+                const now = audioCtx.currentTime;
+                if (type === 'select') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(580, now + 0.06);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (type === 'correct') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.28);
+                } else if (type === 'error') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(130, now + 0.25);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'win') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.1);
+                        gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.1 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.1);
+                        osc.stop(now + idx * 0.1 + 0.25);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        /**
+         * 2. ESTADO GLOBAL, MODALIDADES Y 3 NIVELES DE DIFICULTAD
+         * gameType: 'solo' | 'quick1v1' | 'tournament'
+         * difficulty: 'easy' | 'medium' | 'hard'
+         */
+        const MAX_PLAYERS = 25;
+        const MIN_PLAYERS = 2;
+        const STORAGE_KEY = 'sudoku_escolar_mdi_v5';
+
+        let currentGameType = 'tournament';
+        let currentDifficulty = 'medium';
+        let sessionActive = false;
+        let currentRoundMatches = []; 
+        let currentRoundNumber = 1;
+        let playerNamesMap = {}; 
+        let currentMatchIndex = 0;
+        let byeCounts = {};
+
+        let currentMatch = {
+            p1: null, 
+            p2: null, 
+            active: false,
+            originalDataLeft: null,
+            originalDataRight: null
+        };
+
+        let gameStates = {
+            left: { puzzle: [], solution: [], selectedCell: null, completed: false, frozen: false, errors: 0, id: null },
+            right: { puzzle: [], solution: [], selectedCell: null, completed: false, frozen: false, errors: 0, id: null }
+        };
+
+        let freezeTimers = { left: null, right: null };
+        let maxErrors = 4;
+        let currentGridSize = 6; 
+
+        // Configuración de pistas según tamaño de tablero y nivel de dificultad
+        const DIFFICULTY_META = {
+            easy:   { label: '🟢 Fácil',   clues: { 6: 22, 9: 45 } },
+            medium: { label: '🟡 Medio',   clues: { 6: 18, 9: 36 } },
+            hard:   { label: '🔴 Difícil', clues: { 6: 14, 9: 28 } }
+        };
+
+        /**
+         * 3. GENERADOR REAL DE SUDOKUS (sustituye a la antigua base de datos fija)
+         * - Crea una solución completa aleatoria por backtracking.
+         * - Quita pistas una a una comprobando que el puzle SIGUE TENIENDO SOLUCIÓN ÚNICA.
+         *   (Imprescindible: el juego corrige comparando con una solución concreta; si hubiera
+         *   dos soluciones, un número lógicamente correcto se contaría como fallo.)
+         * - En los duelos ambos jugadores reciben el MISMO puzle "disfrazado" (dígitos y filas
+         *   permutados): misma dificultad exacta, pero no se puede copiar mirando al rival.
+         */
+        const BOX_DIMS = { 6: [2, 3], 9: [3, 3] }; // [filas de la caja, columnas de la caja]
+
+        function boxIndex(r, c, n) {
+            const [br, bc] = BOX_DIMS[n];
+            return Math.floor(r / br) * (n / bc) + Math.floor(c / bc);
+        }
+
+        // Generador aleatorio intercambiable: Math.random normalmente, o uno con SEMILLA para
+        // que un código (6F-XXXXX) reproduzca siempre exactamente el mismo sudoku.
+        let rng = Math.random;
+
+        function mulberry32(seed) {
+            let a = seed >>> 0;
+            return function () {
+                a = (a + 0x6D2B79F5) >>> 0;
+                let t = a;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(rng() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        /** Cuenta soluciones (se detiene al llegar a `limit`). Usa máscaras de bits. */
+        function countSolutions(grid, n, limit = 2) {
+            const g = grid.slice();
+            const full = (1 << (n + 1)) - 2;
+            const R = new Array(n).fill(0), C = new Array(n).fill(0), B = new Array(n).fill(0);
+            for (let i = 0; i < n * n; i++) {
+                const v = g[i];
+                if (!v) continue;
+                const r = Math.floor(i / n), c = i % n, b = boxIndex(r, c, n), bit = 1 << v;
+                if ((R[r] & bit) || (C[c] & bit) || (B[b] & bit)) return 0;
+                R[r] |= bit; C[c] |= bit; B[b] |= bit;
+            }
+            let count = 0;
+            (function rec() {
+                let best = -1, bestMask = 0, bestCount = 99;
+                for (let i = 0; i < n * n; i++) {
+                    if (g[i]) continue;
+                    const r = Math.floor(i / n), c = i % n;
+                    const m = full & ~(R[r] | C[c] | B[boxIndex(r, c, n)]);
+                    let k = 0; for (let x = m; x; x &= x - 1) k++;
+                    if (k === 0) return;
+                    if (k < bestCount) { bestCount = k; best = i; bestMask = m; if (k === 1) break; }
+                }
+                if (best < 0) { count++; return; }
+                const r = Math.floor(best / n), c = best % n, b = boxIndex(r, c, n);
+                for (let d = 1; d <= n; d++) {
+                    if (!(bestMask & (1 << d))) continue;
+                    const bit = 1 << d;
+                    R[r] |= bit; C[c] |= bit; B[b] |= bit; g[best] = d;
+                    rec();
+                    R[r] &= ~bit; C[c] &= ~bit; B[b] &= ~bit; g[best] = 0;
+                    if (count >= limit) return;
+                }
+            })();
+            return count;
+        }
+
+        /** Genera una cuadrícula completa y válida al azar. */
+        function generateSolution(n) {
+            const g = new Array(n * n).fill(0);
+            function ok(i, d) {
+                const r = Math.floor(i / n), c = i % n, b = boxIndex(r, c, n);
+                for (let k = 0; k < n * n; k++) {
+                    if (g[k] !== d) continue;
+                    const r2 = Math.floor(k / n), c2 = k % n;
+                    if (r2 === r || c2 === c || boxIndex(r2, c2, n) === b) return false;
+                }
+                return true;
+            }
+            (function fill(i) {
+                if (i === n * n) return true;
+                const digits = shuffleArray(Array.from({ length: n }, (_, k) => k + 1));
+                for (const d of digits) {
+                    if (ok(i, d)) { g[i] = d; if (fill(i + 1)) return true; g[i] = 0; }
+                }
+                return false;
+            })(0);
+            return g;
+        }
+
+        /** Quita pistas manteniendo solución única hasta llegar (o acercarse) al objetivo. */
+        function carvePuzzle(solution, n, targetClues) {
+            const puzzle = solution.slice();
+            let clues = n * n;
+            for (const idx of shuffleArray([...Array(n * n).keys()])) {
+                if (clues <= targetClues) break;
+                const backup = puzzle[idx];
+                puzzle[idx] = 0;
+                if (countSolutions(puzzle, n, 2) !== 1) puzzle[idx] = backup;
+                else clues--;
+            }
+            return { puzzle, clues };
+        }
+
+        function generatePuzzle(n, difficulty) {
+            const target = DIFFICULTY_META[difficulty]?.clues[n] || (n === 6 ? 18 : 36);
+            let best = null;
+            for (let attempt = 0; attempt < 8; attempt++) {
+                const solution = generateSolution(n);
+                const { puzzle, clues } = carvePuzzle(solution, n, target);
+                if (!best || clues < best.clues) best = { puzzle, solution, clues };
+                if (clues <= target) break;
+            }
+            return { puzzle: best.puzzle, solution: best.solution };
+        }
+
+        /**
+         * CÓDIGOS DE SUDOKU  ·  formato  [tamaño][dificultad]-[4 caracteres][1 control]
+         * Ej.: 9D-K7QX4  →  9x9, Difícil, semilla K7QX, carácter de control 4.
+         * - Alfabeto sin caracteres confusos (sin 0/O, 1/I/L).
+         * - El carácter de control detecta cualquier error de una letra y casi todos los
+         *   intercambios de dos letras al teclear.
+         * - IMPORTANTE: el código depende del generador. Si se modifica el generador, los
+         *   códigos de fichas antiguas dejarían de producir el mismo sudoku.
+         */
+        const CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // 31 caracteres
+        const CODE_SEED_LEN = 4;                                   // 31^4 ≈ 923.000 sudokus por nivel
+        const DIFF_TO_LETTER = { easy: 'F', medium: 'M', hard: 'D' };
+        const LETTER_TO_DIFF = { F: 'easy', M: 'medium', D: 'hard' };
+        const DIFF_PLAIN = { easy: 'Fácil', medium: 'Medio', hard: 'Difícil' };
+
+        function codeCheckChar(body) {
+            let sum = 0;
+            for (let i = 0; i < body.length; i++) {
+                const idx = CODE_ALPHABET.indexOf(body[i]);
+                sum += (idx >= 0 ? idx : body.charCodeAt(i)) * (i + 1);
+            }
+            return CODE_ALPHABET[sum % CODE_ALPHABET.length];
+        }
+
+        function randomSeed() {
+            return Math.floor(Math.random() * Math.pow(CODE_ALPHABET.length, CODE_SEED_LEN));
+        }
+
+        function encodeCode(n, difficulty, seed) {
+            let chars = '';
+            let x = seed;
+            for (let i = 0; i < CODE_SEED_LEN; i++) {
+                chars = CODE_ALPHABET[x % CODE_ALPHABET.length] + chars;
+                x = Math.floor(x / CODE_ALPHABET.length);
+            }
+            const prefix = `${n}${DIFF_TO_LETTER[difficulty]}`;
+            return `${prefix}-${chars}${codeCheckChar(prefix + chars)}`;
+        }
+
+        /** Devuelve {n, difficulty, seed, code} o {error: 'mensaje'} */
+        function decodeCode(raw) {
+            const clean = String(raw || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+            if (clean.length !== 2 + CODE_SEED_LEN + 1) return { error: `El código debe tener ${2 + CODE_SEED_LEN + 1} caracteres (sin contar el guion).` };
+            const n = parseInt(clean[0]);
+            const difficulty = LETTER_TO_DIFF[clean[1]];
+            if (n !== 6 && n !== 9) return { error: 'Debe empezar por 6 o por 9 (tamaño del tablero).' };
+            if (!difficulty) return { error: 'La 2ª letra debe ser F (fácil), M (medio) o D (difícil).' };
+            const chars = clean.slice(2, 2 + CODE_SEED_LEN);
+            const check = clean[2 + CODE_SEED_LEN];
+            let seed = 0;
+            for (const ch of chars) {
+                const idx = CODE_ALPHABET.indexOf(ch);
+                if (idx < 0) return { error: `El carácter «${ch}» no existe en los códigos. Revísalo.` };
+                seed = seed * CODE_ALPHABET.length + idx;
+            }
+            if (codeCheckChar(clean.slice(0, 2) + chars) !== check) return { error: 'Código no válido: revisa que esté bien copiado.' };
+            return { n, difficulty, seed, code: encodeCode(n, difficulty, seed) };
+        }
+
+        /** Mismo código → mismo sudoku, siempre */
+        function generatePuzzleFromSeed(n, difficulty, seed) {
+            const mix = (seed * 7 + n * 1000003 + ['easy', 'medium', 'hard'].indexOf(difficulty) * 7919) >>> 0;
+            rng = mulberry32(mix);
+            try {
+                return generatePuzzle(n, difficulty);
+            } finally {
+                rng = Math.random;
+            }
+        }
+
+        /** Crea una versión equivalente (isomorfa) de un puzle: misma dificultad, aspecto distinto. */
+        function disguisePuzzle(data, n) {
+            const [br, bc] = BOX_DIMS[n];
+            const digitMap = [0, ...shuffleArray(Array.from({ length: n }, (_, k) => k + 1))];
+            // Permutar bandas (grupos de filas) y filas dentro de cada banda
+            const rowOrder = [];
+            for (const band of shuffleArray([...Array(n / br).keys()])) {
+                for (const r of shuffleArray([...Array(br).keys()])) rowOrder.push(band * br + r);
+            }
+            // Permutar pilas (grupos de columnas) y columnas dentro de cada pila
+            const colOrder = [];
+            for (const stack of shuffleArray([...Array(n / bc).keys()])) {
+                for (const c of shuffleArray([...Array(bc).keys()])) colOrder.push(stack * bc + c);
+            }
+            const map = arr => {
+                const out = new Array(n * n);
+                for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+                    out[r * n + c] = digitMap[arr[rowOrder[r] * n + colOrder[c]]];
+                }
+                return out;
+            };
+            return { puzzle: map(data.puzzle), solution: map(data.solution) };
+        }
+
+        // --- Referencias al DOM ---
+        let startScreen, bracketScreen, gameScreen;
+        let playerCountInput, livesInput, modeInput, playersListContainer, startButton;
+        let bracketContainer, roundTitleDisplay, nextMatchBtn;
+        let versusLabel, leftBoard, rightBoard, leftPad, rightPad, panelLeft, panelRight;
+        let modal, modalTitle, modalBody, modalBtn, modalSecondaryBtn;
+        let modalConfirm, modalConfirmBody, btnConfirmYes, btnConfirmNo;
+        let modalForceWin, btnForceLeft, btnForceRight, btnForceCancel;
+        let jsonFileInput;
+        let pendingAction = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startScreen = document.getElementById('start-screen');
+            bracketScreen = document.getElementById('bracket-screen');
+            gameScreen = document.getElementById('game-screen');
+            
+            playerCountInput = document.getElementById('player-count');
+            livesInput = document.getElementById('lives-input');
+            modeInput = document.getElementById('mode-input');
+            playersListContainer = document.getElementById('players-list');
+            startButton = document.getElementById('start-button');
+            
+            bracketContainer = document.getElementById('bracket-container');
+            roundTitleDisplay = document.getElementById('round-title');
+            nextMatchBtn = document.getElementById('next-match-btn');
+            
+            versusLabel = document.getElementById('versus-label');
+            panelLeft = document.getElementById('panel-left');
+            panelRight = document.getElementById('panel-right');
+            leftBoard = document.getElementById('board-left');
+            rightBoard = document.getElementById('board-right');
+            leftPad = document.getElementById('pad-left');
+            rightPad = document.getElementById('pad-right');
+            
+            modal = document.getElementById('modal');
+            modalTitle = document.getElementById('modal-title');
+            modalBody = document.getElementById('modal-body');
+            modalBtn = document.getElementById('modal-button');
+            modalSecondaryBtn = document.getElementById('modal-secondary-btn');
+
+            modalConfirm = document.getElementById('modal-confirm');
+            modalConfirmBody = document.getElementById('modal-confirm-body');
+            btnConfirmYes = document.getElementById('btn-confirm-yes');
+            btnConfirmNo = document.getElementById('btn-confirm-no');
+
+            modalForceWin = document.getElementById('modal-force-win');
+            btnForceLeft = document.getElementById('btn-force-left');
+            btnForceRight = document.getElementById('btn-force-right');
+            btnForceCancel = document.getElementById('btn-force-cancel');
+
+            jsonFileInput = document.getElementById('json-file-input');
+
+            // Selector de modo de juego (Solitario / 1 vs 1 / Torneo)
+            document.querySelectorAll('.game-type-btn').forEach(btn => {
+                btn.addEventListener('click', () => setGameType(btn.dataset.type));
+            });
+
+            // Selector de dificultad (Fácil / Medio / Difícil)
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                btn.addEventListener('click', () => setDifficulty(btn.dataset.diff));
+            });
+
+            // Actualizar etiquetas de pistas al cambiar entre 6x6 y 9x9
+            modeInput.addEventListener('change', updateDifficultyClueLabels);
+
+            // Eventos de inicio y controles numéricos (+/-)
+            startButton.addEventListener('click', startSelectedMode);
+            playerCountInput.addEventListener('change', () => { clampPlayerCount(); renderNameInputs(); });
+            playerCountInput.addEventListener('input', renderNameInputs);
+            livesInput.addEventListener('change', clampLivesCount);
+
+            document.getElementById('btn-dec-players').addEventListener('click', () => {
+                if (currentGameType !== 'tournament') return;
+                playerCountInput.value = Math.max(MIN_PLAYERS, (parseInt(playerCountInput.value) || 4) - 1);
+                renderNameInputs();
+            });
+            document.getElementById('btn-inc-players').addEventListener('click', () => {
+                if (currentGameType !== 'tournament') return;
+                playerCountInput.value = Math.min(MAX_PLAYERS, (parseInt(playerCountInput.value) || 4) + 1);
+                renderNameInputs();
+            });
+            document.getElementById('btn-dec-lives').addEventListener('click', () => {
+                livesInput.value = Math.max(1, (parseInt(livesInput.value) || 4) - 1);
+            });
+            document.getElementById('btn-inc-lives').addEventListener('click', () => {
+                livesInput.value = Math.min(10, (parseInt(livesInput.value) || 4) + 1);
+            });
+            document.getElementById('btn-shuffle-players').addEventListener('click', shufflePlayerInputs);
+
+            // Eventos de Sonido y Pantalla Completa
+            document.getElementById('btn-toggle-sound').addEventListener('click', (e) => {
+                soundEnabled = !soundEnabled;
+                e.currentTarget.textContent = soundEnabled ? '🔊' : '🔇';
+                showToast(soundEnabled ? 'Sonido activado 🔊' : 'Sonido silenciado 🔇');
+            });
+
+            document.getElementById('btn-fullscreen').addEventListener('click', toggleFullScreen);
+            document.addEventListener('fullscreenchange', updateFullscreenButtonUI);
+
+            // Eventos de Teclado Numérico en Juego
+            leftPad.addEventListener('click', (e) => handlePadClick(e, 'left'));
+            document.addEventListener('keydown', handleKeyboard);
+            rightPad.addEventListener('click', (e) => handlePadClick(e, 'right'));
+
+            // Controles Docentes
+            document.getElementById('btn-back-bracket').addEventListener('click', () => {
+                gameScreen.classList.add('hidden');
+                bracketScreen.classList.remove('hidden');
+                renderBracket();
+                saveToLocalStorage();
+            });
+            document.getElementById('btn-new-puzzle').addEventListener('click', requestNewPuzzleMatch);
+            document.getElementById('btn-restart-match').addEventListener('click', requestRestartMatch);
+            document.getElementById('btn-end-round').addEventListener('click', openForceWinModal);
+            document.getElementById('btn-end-tournament-game').addEventListener('click', requestEndSession);
+            document.getElementById('btn-end-tournament-bracket').addEventListener('click', requestEndSession);
+
+            // Eventos de Modales
+            btnConfirmYes.addEventListener('click', () => {
+                if (pendingAction) pendingAction();
+                modalConfirm.classList.add('hidden');
+                pendingAction = null;
+            });
+            btnConfirmNo.addEventListener('click', () => {
+                modalConfirm.classList.add('hidden');
+                pendingAction = null;
+            });
+
+            btnForceLeft.addEventListener('click', () => forceWin('left'));
+            btnForceRight.addEventListener('click', () => forceWin('right'));
+            btnForceCancel.addEventListener('click', () => modalForceWin.classList.add('hidden'));
+
+            // Eventos de Exportación / Importación JSON
+            document.getElementById('btn-export-setup').addEventListener('click', () => exportToJSON('configuracion'));
+            document.getElementById('btn-save-json-bracket').addEventListener('click', () => exportToJSON('progreso'));
+            document.getElementById('btn-save-json-game').addEventListener('click', () => exportToJSON('progreso'));
+
+            document.getElementById('btn-import-json-start').addEventListener('click', () => jsonFileInput.click());
+            document.getElementById('btn-load-json-bracket').addEventListener('click', () => jsonFileInput.click());
+            jsonFileInput.addEventListener('change', handleFileImport);
+
+            // Fichas PDF y códigos
+            document.getElementById('btn-open-print').addEventListener('click', openPrintModal);
+            document.getElementById('btn-print-cancel').addEventListener('click', () => document.getElementById('modal-print').classList.add('hidden'));
+            document.getElementById('btn-print-generate').addEventListener('click', generateWorksheetPDF);
+            document.querySelectorAll('.print-per-btn').forEach(btn => btn.addEventListener('click', () => setPrintPerPage(parseInt(btn.dataset.per))));
+            ['print-size', 'print-diff', 'print-pages', 'print-copies', 'print-solutions'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updatePrintSummary);
+                document.getElementById(id).addEventListener('change', updatePrintSummary);
+            });
+            document.getElementById('btn-open-code').addEventListener('click', openCodeModal);
+            document.getElementById('btn-code-cancel').addEventListener('click', () => document.getElementById('modal-code').classList.add('hidden'));
+            document.getElementById('btn-code-go').addEventListener('click', startFromCode);
+            document.getElementById('code-input').addEventListener('input', liveCheckCode);
+            document.getElementById('code-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') startFromCode(); });
+
+            // Inicializar interfaz por defecto
+            setGameType('tournament');
+            setDifficulty('medium');
+            updateDifficultyClueLabels();
+            checkAutoSave();
+        });
+
+        /**
+         * PANTALLA COMPLETA
+         */
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {
+                    showToast('⚠️ El navegador bloqueó la pantalla completa');
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function updateFullscreenButtonUI() {
+            const btn = document.getElementById('btn-fullscreen');
+            if (document.fullscreenElement) {
+                btn.textContent = '🗗';
+                btn.title = 'Salir de Pantalla Completa';
+            } else {
+                btn.textContent = '⛶';
+                btn.title = 'Pantalla Completa';
+            }
+        }
+
+        /**
+         * SELECCIÓN DE MODALIDAD Y NIVEL DE DIFICULTAD
+         */
+        function setGameType(type) {
+            currentGameType = type;
+
+            document.querySelectorAll('.game-type-btn').forEach(btn => {
+                if (btn.dataset.type === type) {
+                    btn.className = "game-type-btn py-2.5 px-2 rounded-2xl border-4 border-orange-500 bg-orange-50 text-orange-700 font-black text-sm md:text-base flex flex-col items-center gap-0.5 shadow-md scale-[1.02] transition-all";
+                } else {
+                    btn.className = "game-type-btn py-2.5 px-2 rounded-2xl border-4 border-slate-200 bg-white text-slate-500 font-extrabold text-sm md:text-base flex flex-col items-center gap-0.5 hover:bg-slate-50 transition-all";
+                }
+            });
+
+            const countBox = document.getElementById('player-count-box');
+            const shuffleBtn = document.getElementById('btn-shuffle-players');
+            const partLabel = document.getElementById('participants-label');
+
+            if (type === 'solo') {
+                countBox.classList.add('opacity-40', 'pointer-events-none');
+                shuffleBtn.classList.add('hidden');
+                partLabel.textContent = 'Nombre del Jugador/a o Equipo:';
+                startButton.textContent = '¡JUGAR EN SOLITARIO! 🎯';
+            } else if (type === 'quick1v1') {
+                countBox.classList.add('opacity-40', 'pointer-events-none');
+                shuffleBtn.classList.remove('hidden');
+                partLabel.textContent = 'Nombres de los 2 Rivales:';
+                startButton.textContent = '¡EMPEZAR DUELO 1 VS 1! ⚔️';
+            } else {
+                countBox.classList.remove('opacity-40', 'pointer-events-none');
+                shuffleBtn.classList.remove('hidden');
+                partLabel.textContent = 'Lista de Participantes del Torneo:';
+                startButton.textContent = '¡EMPEZAR TORNEO! 🚀';
+            }
+
+            renderNameInputs();
+        }
+
+        function setDifficulty(diff) {
+            if (!['easy', 'medium', 'hard'].includes(diff)) diff = 'medium';
+            currentDifficulty = diff;
+
+            const activeStyles = {
+                easy:   "border-emerald-500 bg-emerald-50 text-emerald-800 shadow-md scale-[1.02]",
+                medium: "border-amber-500 bg-amber-50 text-amber-800 shadow-md scale-[1.02]",
+                hard:   "border-rose-500 bg-rose-50 text-rose-800 shadow-md scale-[1.02]"
+            };
+
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                const d = btn.dataset.diff;
+                if (d === diff) {
+                    btn.className = `diff-btn py-2 px-2 rounded-2xl border-4 font-black text-sm md:text-base flex flex-col items-center transition-all ${activeStyles[d]}`;
+                } else {
+                    btn.className = "diff-btn py-2 px-2 rounded-2xl border-4 border-slate-200 bg-white text-slate-500 font-extrabold text-sm md:text-base flex flex-col items-center hover:bg-slate-50 transition-all";
+                }
+            });
+        }
+
+        function updateDifficultyClueLabels() {
+            const size = parseInt(modeInput.value) || 6;
+            document.getElementById('clues-label-easy').textContent = `${DIFFICULTY_META.easy.clues[size]} pistas`;
+            document.getElementById('clues-label-medium').textContent = `${DIFFICULTY_META.medium.clues[size]} pistas`;
+            document.getElementById('clues-label-hard').textContent = `${DIFFICULTY_META.hard.clues[size]} pistas`;
+        }
+
+        function getEffectivePlayerCount() {
+            if (currentGameType === 'solo') return 1;
+            if (currentGameType === 'quick1v1') return 2;
+            return clampPlayerCount();
+        }
+
+        function clampPlayerCount() {
+            let val = parseInt(playerCountInput.value);
+            if (isNaN(val) || val < MIN_PLAYERS) val = MIN_PLAYERS;
+            if (val > MAX_PLAYERS) val = MAX_PLAYERS;
+            playerCountInput.value = val;
+            return val;
+        }
+
+        function clampLivesCount() {
+            let val = parseInt(livesInput.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 10) val = 10;
+            livesInput.value = val;
+            return val;
+        }
+
+        function renderNameInputs(customNamesArray = null) {
+            const count = getEffectivePlayerCount();
+            const currentInputs = playersListContainer.querySelectorAll('input');
+            const currentValues = customNamesArray || Array.from(currentInputs).map(i => i.value);
+
+            playersListContainer.innerHTML = ''; 
+            playersListContainer.className = count === 1 
+                ? "grid grid-cols-1 gap-2 p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"
+                : "grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100";
+
+            for (let i = 0; i < count; i++) {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-orange-200 shadow-sm";
+                
+                const label = document.createElement('span');
+                label.className = "font-black text-orange-600 text-xs w-7 text-center bg-orange-100 py-1 rounded-lg";
+                label.textContent = `#${i + 1}`;
+                
+                const input = document.createElement('input');
+                input.type = "text";
+                input.maxLength = 18;
+                input.className = "player-name-input flex-1 bg-transparent px-2 py-1 text-slate-700 text-sm focus:outline-none font-extrabold placeholder-orange-200";
+                input.placeholder = count === 1 ? "Nombre o Equipo" : `Jugador ${i + 1}`;
+                if (currentValues[i]) input.value = currentValues[i];
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                playersListContainer.appendChild(div);
+            }
+        }
+
+        function shufflePlayerInputs() {
+            const inputs = Array.from(playersListContainer.querySelectorAll('.player-name-input'));
+            const values = inputs.map((inp, idx) => inp.value.trim() || `Jugador ${idx + 1}`);
+            for (let i = values.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [values[i], values[j]] = [values[j], values[i]];
+            }
+            renderNameInputs(values);
+            playSound('select');
+            showToast('¡Orden de jugadores mezclado! 🎲');
+        }
+
+        /**
+         * INICIO DE PARTIDA SEGÚN MODALIDAD Y DIFICULTAD
+         */
+        function startSelectedMode() {
+            initAudio();
+            maxErrors = clampLivesCount();
+            currentGridSize = parseInt(modeInput.value) || 6;
+
+            const count = getEffectivePlayerCount();
+            const inputs = document.querySelectorAll('.player-name-input');
+            playerNamesMap = {};
+            let players = [];
+
+            for (let i = 0; i < count; i++) {
+                const id = i + 1;
+                const rawName = inputs[i] ? inputs[i].value.trim() : '';
+                playerNamesMap[id] = rawName || (count === 1 ? 'Jugador/a' : `Jugador ${id}`);
+                players.push(id);
+            }
+
+            sessionActive = true;
+            startScreen.classList.add('hidden');
+
+            if (currentGameType === 'solo') {
+                currentRoundNumber = 1;
+                currentRoundMatches = [{ p1: 1, p2: null, winner: null, status: 'playing' }];
+                currentMatchIndex = 0;
+                currentMatch.p1 = 1;
+                currentMatch.p2 = null;
+                currentMatch.active = true;
+
+                setupNewGameMatch(1, null, pendingSeed);
+                pendingSeed = null;
+                bracketScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                saveToLocalStorage();
+            } else if (currentGameType === 'quick1v1') {
+                currentRoundNumber = 1;
+                currentRoundMatches = [{ p1: 1, p2: 2, winner: null, status: 'playing' }];
+                currentMatchIndex = 0;
+                currentMatch.p1 = 1;
+                currentMatch.p2 = 2;
+                currentMatch.active = true;
+
+                setupNewGameMatch(1, 2);
+                bracketScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                saveToLocalStorage();
+            } else {
+                // Modo Torneo
+                currentRoundNumber = 1;
+                byeCounts = {};
+                generateRound(players);
+                bracketScreen.classList.remove('hidden');
+                renderBracket();
+                saveToLocalStorage();
+            }
+        }
+
+        /**
+         * LÓGICA DEL CUADRO DE TORNEO
+         */
+        function generateRound(pool) {
+            currentRoundMatches = [];
+            currentMatchIndex = 0;
+            let tempPool = [...pool];
+            // Con número impar, el PASE DIRECTO va a quien menos pases haya tenido
+            // (antes siempre iba al último de la lista y podía llegar a la final sin jugar).
+            if (tempPool.length % 2 === 1) {
+                const minByes = Math.min(...tempPool.map(id => byeCounts[id] || 0));
+                const candidates = tempPool.filter(id => (byeCounts[id] || 0) === minByes);
+                const lucky = candidates[Math.floor(Math.random() * candidates.length)];
+                byeCounts[lucky] = (byeCounts[lucky] || 0) + 1;
+                tempPool = tempPool.filter(id => id !== lucky);
+                tempPool.push(lucky);
+            }
+            while (tempPool.length > 0) {
+                if (tempPool.length >= 2) {
+                    currentRoundMatches.push({
+                        p1: tempPool.shift(),
+                        p2: tempPool.shift(),
+                        winner: null,
+                        status: 'pending'
+                    });
+                } else {
+                    const luckyOne = tempPool.shift();
+                    currentRoundMatches.push({
+                        p1: luckyOne,
+                        p2: null,
+                        winner: luckyOne,
+                        status: 'finished'
+                    });
+                }
+            }
+        }
+
+        function escapeHTML(str) {
+            return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        }
+
+        function renderBracket() {
+            let roundName = `Ronda ${currentRoundNumber}`;
+            const totalMatchesInRound = currentRoundMatches.length;
+            const realMatches = currentRoundMatches.filter(m => m.p2 !== null).length;
+
+            const playersInRound = currentRoundMatches.reduce((acc, m) => acc + (m.p2 !== null ? 2 : 1), 0);
+            if (playersInRound === 2) roundName = "🏆 GRAN FINAL 🏆";
+            else if (playersInRound <= 4) roundName = "🔥 SEMIFINALES 🔥";
+
+            roundTitleDisplay.textContent = roundName;
+            document.getElementById('bracket-mode-badge').textContent = currentGridSize === 6 ? '🎮 KIDS 6x6' : '🎮 JUNIOR 9x9';
+            document.getElementById('bracket-diff-badge').textContent = DIFFICULTY_META[currentDifficulty].label;
+            document.getElementById('bracket-players-badge').textContent = `❤️ ${maxErrors} Vidas`;
+
+            bracketContainer.innerHTML = '';
+            
+            let allFinished = true;
+            let nextFound = false;
+
+            currentRoundMatches.forEach((match, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-3.5 rounded-2xl border-4 shadow-sm flex items-center justify-between gap-3 transition-all";
+                
+                const name1 = escapeHTML(playerNamesMap[match.p1] || `J${match.p1}`);
+                const name2 = match.p2 ? escapeHTML(playerNamesMap[match.p2] || `J${match.p2}`) : "PASE DIRECTO 🎟️";
+
+                if (match.status === 'finished') {
+                    card.classList.add('border-slate-200', 'bg-slate-50/70');
+                    if (match.p2 === null) {
+                        card.innerHTML = `<span class="font-extrabold text-emerald-600 truncate">✨ ${name1}</span> <span class="text-xs bg-emerald-100 text-emerald-700 font-extrabold px-2.5 py-1 rounded-full shrink-0">Pasa de ronda</span>`;
+                    } else {
+                        const wName = match.winner === match.p1 ? name1 : name2;
+                        const lName = match.winner === match.p1 ? name2 : name1;
+                        card.innerHTML = `<div class="flex flex-col text-left truncate"><span class="font-extrabold text-emerald-600 truncate">✅ ${wName}</span><span class="text-slate-400 line-through text-xs font-bold truncate">${lName}</span></div><span class="text-2xl shrink-0">🏆</span>`;
+                    }
+                } else if (!nextFound) {
+                    nextFound = true;
+                    allFinished = false;
+                    currentMatchIndex = idx; 
+                    card.classList.add('border-yellow-400', 'ring-4', 'ring-yellow-100', 'bg-yellow-50/30');
+                    card.innerHTML = `
+                        <div class="flex-1 text-center font-extrabold text-slate-800 truncate">${name1}</div>
+                        <div class="bg-orange-500 text-white font-black text-xs px-2.5 py-1 rounded-lg shrink-0">VS</div>
+                        <div class="flex-1 text-center font-extrabold text-slate-800 truncate">${name2}</div>
+                    `;
+                } else {
+                    allFinished = false;
+                    card.classList.add('border-gray-100', 'bg-gray-50', 'text-gray-400');
+                    card.innerHTML = `
+                        <div class="flex-1 text-center font-bold truncate">${name1}</div>
+                        <div class="text-xs px-2 font-extrabold shrink-0">vs</div>
+                        <div class="flex-1 text-center font-bold truncate">${name2}</div>
+                    `;
+                }
+                bracketContainer.appendChild(card);
+            });
+
+            if (allFinished) {
+                const winners = currentRoundMatches.map(m => m.winner);
+                if (winners.length === 1) {
+                    nextMatchBtn.textContent = "🎉 Ver Campeón/a del Torneo 🏆";
+                    nextMatchBtn.onclick = () => showChampion(winners[0]);
+                    showChampion(winners[0]);
+                } else {
+                    nextMatchBtn.textContent = "Pasar a la Siguiente Ronda ➡️";
+                    nextMatchBtn.onclick = prepareNextRound;
+                }
+            } else {
+                const activeMatch = currentRoundMatches[currentMatchIndex];
+                const n1 = playerNamesMap[activeMatch.p1];
+                const n2 = playerNamesMap[activeMatch.p2];
+                nextMatchBtn.textContent = `Jugar: ${n1} vs ${n2} ▶️`;
+                nextMatchBtn.onclick = playNextMatchFromBracket;
+            }
+        }
+
+        function playNextMatchFromBracket() {
+            const match = currentRoundMatches[currentMatchIndex];
+            if (!match || match.status === 'finished') return;
+
+            const isResumingSameMatch = (
+                match.status === 'playing' &&
+                currentMatch.p1 === match.p1 &&
+                currentMatch.p2 === match.p2 &&
+                currentMatch.originalDataLeft &&
+                currentMatch.originalDataRight &&
+                gameStates.left.puzzle.length > 0
+            );
+
+            currentMatch.p1 = match.p1;
+            currentMatch.p2 = match.p2;
+            currentMatch.active = true;
+            match.status = 'playing';
+
+            if (isResumingSameMatch) {
+                refreshGameScreenUI();
+            } else {
+                setupNewGameMatch(match.p1, match.p2);
+            }
+
+            bracketScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            saveToLocalStorage();
+        }
+
+        function prepareNextRound() {
+            const winners = currentRoundMatches.map(m => m.winner);
+            if (winners.length === 1) {
+                showChampion(winners[0]);
+                return;
+            }
+            currentRoundNumber++;
+            generateRound(winners);
+            renderBracket();
+            saveToLocalStorage();
+        }
+
+        function showChampion(winnerId) {
+            const championName = playerNamesMap[winnerId];
+            playSound('win');
+            launchConfetti();
+            showModal("🏆 ¡CAMPEÓN/A DEL TORNEO! 🏆", `¡Enhorabuena, ${championName}! Has ganado el Torneo Escolar de Sudoku.`, () => {
+                hideModal();
+            });
+        }
+
+        /**
+         * LÓGICA DEL JUEGO Y ADAPTACIÓN VISUAL (SOLITARIO GRANDOTE VS DUELO)
+         */
+        /**
+         * CRONÓMETRO DE PARTIDA
+         */
+        let timerStart = null, timerAccum = 0, timerInterval = null;
+
+        function getElapsedMs() {
+            return timerAccum + (timerStart ? Date.now() - timerStart : 0);
+        }
+        function formatTime(ms) {
+            const t = Math.floor(ms / 1000);
+            return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+        }
+        function paintTimer() {
+            const el = document.getElementById('game-timer');
+            if (el) el.textContent = `⏱️ ${formatTime(getElapsedMs())}`;
+        }
+        function restoreTimer(ms, running) {
+            if (timerInterval) clearInterval(timerInterval);
+            timerAccum = ms; timerStart = running ? Date.now() : null;
+            timerInterval = running ? setInterval(paintTimer, 1000) : null;
+            paintTimer();
+        }
+        function startTimer() { restoreTimer(0, true); }
+        function stopTimer() {
+            timerAccum = getElapsedMs(); timerStart = null;
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            paintTimer();
+        }
+
+        /**
+         * RESOLVER UNA FICHA CON SU CÓDIGO
+         */
+        let pendingSeed = null;
+
+        function openCodeModal() {
+            const input = document.getElementById('code-input');
+            input.value = '';
+            setCodeFeedback('&nbsp;', 'text-slate-400');
+            document.getElementById('modal-code').classList.remove('hidden');
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function setCodeFeedback(html, color) {
+            const fb = document.getElementById('code-feedback');
+            fb.className = `min-h-[1.5rem] mt-2 text-sm font-extrabold ${color}`;
+            fb.innerHTML = html;
+        }
+
+        function liveCheckCode() {
+            const input = document.getElementById('code-input');
+            const clean = input.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+            // Auto-formato con guion: 9DK7QX4 → 9D-K7QX4
+            input.value = clean.length > 2 ? `${clean.slice(0, 2)}-${clean.slice(2)}` : clean;
+            if (clean.length < 2 + CODE_SEED_LEN + 1) { setCodeFeedback('&nbsp;', 'text-slate-400'); return null; }
+            const res = decodeCode(clean);
+            if (res.error) setCodeFeedback(`❌ ${escapeHTML(res.error)}`, 'text-rose-600');
+            else setCodeFeedback(`✅ Sudoku ${res.n}x${res.n} · ${DIFF_PLAIN[res.difficulty]}`, 'text-emerald-600');
+            return res;
+        }
+
+        function startFromCode() {
+            const res = decodeCode(document.getElementById('code-input').value);
+            if (res.error) { setCodeFeedback(`❌ ${escapeHTML(res.error)}`, 'text-rose-600'); return; }
+            document.getElementById('modal-code').classList.add('hidden');
+            // La ficha se resuelve en modo Solitario con el tamaño y la dificultad del código
+            setGameType('solo');
+            setDifficulty(res.difficulty);
+            modeInput.value = String(res.n);
+            updateDifficultyClueLabels();
+            pendingSeed = res.seed;
+            startSelectedMode();
+        }
+
+        /**
+         * FICHAS PDF (A4 vertical, 1 / 2 / 4 sudokus por folio)
+         */
+        let printPerPage = 2;
+
+        function openPrintModal() {
+            document.getElementById('print-size').value = modeInput.value || '6';
+            document.getElementById('print-diff').value = currentDifficulty;
+            setPrintPerPage(printPerPage);
+            document.getElementById('modal-print').classList.remove('hidden');
+        }
+
+        function setPrintPerPage(per) {
+            printPerPage = per;
+            document.querySelectorAll('.print-per-btn').forEach(btn => {
+                const on = parseInt(btn.dataset.per) === per;
+                btn.className = `print-per-btn py-2 rounded-xl border-4 font-black text-lg transition-all ${on ? 'border-violet-500 bg-violet-100 text-violet-800 shadow' : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'}`;
+            });
+            updatePrintSummary();
+        }
+
+        function readPrintOptions() {
+            const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, parseInt(v) || lo));
+            return {
+                n: parseInt(document.getElementById('print-size').value) || 6,
+                diff: document.getElementById('print-diff').value,
+                per: printPerPage,
+                pages: clamp(document.getElementById('print-pages').value, 1, 30),
+                copies: clamp(document.getElementById('print-copies').value, 1, 30),
+                title: document.getElementById('print-title').value.trim() || 'Ficha de Sudokus',
+                solutions: document.getElementById('print-solutions').checked
+            };
+        }
+
+        function updatePrintSummary() {
+            const o = readPrintOptions();
+            const total = o.per * o.pages;
+            let txt = `${o.pages} folio${o.pages > 1 ? 's' : ''} distinto${o.pages > 1 ? 's' : ''} · ${total} sudoku${total > 1 ? 's' : ''}`;
+            if (o.copies > 1) txt += ` · ×${o.copies} copias = ${o.pages * o.copies} folios`;
+            if (o.solutions) txt += ' + soluciones';
+            document.getElementById('print-summary').textContent = txt;
+        }
+
+        /** Dibuja un sudoku vectorial. Si se pasa `solution`, rellena en gris lo que no era pista. */
+        function drawSudokuPDF(doc, x, y, side, n, puzzle, solution = null) {
+            const [br, bc] = BOX_DIMS[n];
+            const cell = side / n;
+            // Números
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(cell * 2.1);
+            for (let i = 0; i < n * n; i++) {
+                const r = Math.floor(i / n), c = i % n;
+                const v = puzzle[i] || (solution ? solution[i] : 0);
+                if (!v) continue;
+                doc.setTextColor(puzzle[i] ? 20 : 150);
+                const txt = String(v);
+                const tw = doc.getTextWidth(txt);
+                // Centrado manual (más fiable que align:'center' en jsPDF)
+                doc.text(txt, x + c * cell + (cell - tw) / 2, y + r * cell + cell / 2 + cell * 0.04, { baseline: 'middle' });
+            }
+            doc.setTextColor(0);
+            // Líneas finas
+            doc.setDrawColor(90);
+            doc.setLineWidth(Math.max(0.15, side * 0.0022));
+            for (let k = 1; k < n; k++) {
+                if (k % bc !== 0) doc.line(x + k * cell, y, x + k * cell, y + side);
+                if (k % br !== 0) doc.line(x, y + k * cell, x + side, y + k * cell);
+            }
+            // Líneas gruesas de caja y borde
+            doc.setDrawColor(0);
+            doc.setLineWidth(Math.max(0.5, side * 0.008));
+            for (let k = bc; k < n; k += bc) doc.line(x + k * cell, y, x + k * cell, y + side);
+            for (let k = br; k < n; k += br) doc.line(x, y + k * cell, x + side, y + k * cell);
+            doc.rect(x, y, side, side);
+        }
+
+        function drawCodeTag(doc, rightX, centerY, code, fontSize) {
+            doc.setFont('courier', 'bold');
+            doc.setFontSize(fontSize);
+            const w = doc.getTextWidth(code) + fontSize * 0.5;
+            const h = fontSize * 0.55;
+            doc.setDrawColor(0);
+            doc.setLineWidth(0.3);
+            doc.setFillColor(240, 240, 240);
+            doc.roundedRect(rightX - w, centerY - h / 2, w, h, 1.2, 1.2, 'FD');
+            doc.setTextColor(0);
+            doc.text(code, rightX - w / 2 - doc.getTextWidth(code) / 2, centerY + 0.2, { baseline: 'middle' });
+            return w;
+        }
+
+        function generateWorksheetPDF() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                showToast('⚠️ No se pudo cargar el generador de PDF (¿sin internet?)');
+                return;
+            }
+            const o = readPrintOptions();
+            const total = o.per * o.pages;
+            const diffs = ['easy', 'medium', 'hard'];
+
+            // 1) Generar los sudokus (con su código)
+            const items = [];
+            for (let k = 0; k < total; k++) {
+                const diff = o.diff === 'mixed'
+                    ? diffs[Math.min(2, Math.floor(k * 3 / total))]
+                    : o.diff;
+                const seed = randomSeed();
+                const data = generatePuzzleFromSeed(o.n, diff, seed);
+                items.push({ ...data, diff, code: encodeCode(o.n, diff, seed), num: k + 1 });
+            }
+
+            // 2) Maquetar
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            const W = 210, H = 297, M = 14;
+            const top = 46, bottom = H - 16;
+            let firstPage = true;
+            const newPage = () => { if (!firstPage) doc.addPage(); firstPage = false; };
+
+            const drawHeader = (pageNum, pageTotal) => {
+                doc.setTextColor(0);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(20);
+                doc.text(o.title, W / 2, 20, { align: 'center' });
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
+                doc.text('Nombre: ______________________________', M, 31);
+                doc.text('Fecha: ____________', W - M, 31, { align: 'right' });
+                doc.setFontSize(9.5);
+                doc.setTextColor(70);
+                const maxN = o.n;
+                doc.text(`Completa cada fila, cada columna y cada caja con los números del 1 al ${maxN}, sin repetir ninguno.`, W / 2, 39, { align: 'center' });
+                doc.setDrawColor(180);
+                doc.setLineWidth(0.3);
+                doc.line(M, 42, W - M, 42);
+                // Pie
+                doc.setFontSize(8);
+                doc.setTextColor(120);
+                doc.text('Sudoku Escolar · Para comprobar un sudoku en el monitor: «Resolver una ficha» y escribe su código.', M, H - 8);
+                doc.text(`${pageNum}/${pageTotal}`, W - M, H - 8, { align: 'right' });
+                doc.setTextColor(0);
+            };
+
+            const drawItem = (it, bx, by, bw, bh) => {
+                // Cabecera del bloque: «Sudoku 3 · Medio» a la izquierda y el código a la derecha
+                const labelSize = o.per === 4 ? 10 : 12;
+                const codeSize = o.per === 4 ? 11 : 13;
+                const labelH = o.per === 4 ? 9 : 11;
+                const side = Math.min(bw, bh - labelH - 2);
+                const gx = bx + (bw - side) / 2;
+                const ly = by + labelH / 2;
+                drawCodeTag(doc, gx + side, ly, it.code, codeSize);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(labelSize);
+                doc.setTextColor(0);
+                doc.text(`Sudoku ${it.num}`, gx, ly, { baseline: 'middle' });
+                const wNum = doc.getTextWidth(`Sudoku ${it.num}`);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(90);
+                doc.text(` · ${o.n}x${o.n} · ${DIFF_PLAIN[it.diff]}`, gx + wNum, ly, { baseline: 'middle' });
+                doc.setTextColor(0);
+                drawSudokuPDF(doc, gx, by + labelH, side, o.n, it.puzzle);
+            };
+
+            // Caja disponible para cada sudoku según 1 / 2 / 4 por folio
+            const areaW = W - 2 * M, areaH = bottom - top;
+            const slots = o.per === 1
+                ? [[M, top + 4, areaW, areaH - 8]]
+                : o.per === 2
+                    ? [[M + 15, top, areaW - 30, areaH / 2 - 4], [M + 15, top + areaH / 2 + 4, areaW - 30, areaH / 2 - 4]]
+                    : [[M, top, areaW / 2 - 5, areaH / 2 - 4], [M + areaW / 2 + 5, top, areaW / 2 - 5, areaH / 2 - 4],
+                       [M, top + areaH / 2 + 4, areaW / 2 - 5, areaH / 2 - 4], [M + areaW / 2 + 5, top + areaH / 2 + 4, areaW / 2 - 5, areaH / 2 - 4]];
+
+            const solPerPage = 12;
+            const solPages = o.solutions ? Math.ceil(total / solPerPage) : 0;
+            const pageTotal = o.pages * o.copies + solPages;
+            let pageNum = 0;
+
+            // Las copias se agrupan por folio (folio 1 ×N, folio 2 ×N…): listo para repartir
+            for (let pg = 0; pg < o.pages; pg++) {
+                for (let cp = 0; cp < o.copies; cp++) {
+                    newPage();
+                    drawHeader(++pageNum, pageTotal);
+                    for (let s = 0; s < o.per; s++) {
+                        const it = items[pg * o.per + s];
+                        drawItem(it, ...slots[s]);
+                    }
+                }
+            }
+
+            // 3) Hoja de soluciones (12 por folio): pistas en negro, respuestas en gris
+            if (o.solutions) {
+                for (let sp = 0; sp < solPages; sp++) {
+                    newPage();
+                    pageNum++;
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(16);
+                    doc.setTextColor(0);
+                    doc.text(`Soluciones · ${o.title}`, W / 2, 18, { align: 'center' });
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(90);
+                    doc.text('Para el docente. En negro, las pistas de la ficha; en gris, las respuestas.', W / 2, 25, { align: 'center' });
+                    doc.setFontSize(8);
+                    doc.setTextColor(120);
+                    doc.text(`${pageNum}/${pageTotal}`, W - M, H - 8, { align: 'right' });
+                    const cols = 3, rows = 4;
+                    const cw = (W - 2 * M) / cols, ch = (H - 32 - 16) / rows;
+                    for (let k = 0; k < solPerPage; k++) {
+                        const it = items[sp * solPerPage + k];
+                        if (!it) break;
+                        const cx = M + (k % cols) * cw, cy = 32 + Math.floor(k / cols) * ch;
+                        const side = Math.min(cw - 10, ch - 13);
+                        const gx = cx + (cw - side) / 2;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(9);
+                        doc.setTextColor(0);
+                        doc.text(`Sudoku ${it.num}`, gx, cy + 3, { baseline: 'middle' });
+                        drawCodeTag(doc, gx + side, cy + 3, it.code, 9);
+                        drawSudokuPDF(doc, gx, cy + 8, side, o.n, it.puzzle, it.solution);
+                    }
+                }
+            }
+
+            const diffName = o.diff === 'mixed' ? 'progresiva' : DIFF_PLAIN[o.diff].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            doc.save(`fichas-sudoku-${o.n}x${o.n}-${diffName}-${o.per}porfolio.pdf`);
+            document.getElementById('modal-print').classList.add('hidden');
+            showToast(`📄 PDF generado: ${total} sudoku${total > 1 ? 's' : ''}`);
+        }
+
+        function clearFreezeTimers() {
+            if (freezeTimers.left) { clearTimeout(freezeTimers.left); freezeTimers.left = null; }
+            if (freezeTimers.right) { clearTimeout(freezeTimers.right); freezeTimers.right = null; }
+            if (gameStates.left) gameStates.left.frozen = false;
+            if (gameStates.right) gameStates.right.frozen = false;
+        }
+
+        function setupNewGameMatch(p1, p2, forcedSeed = null) {
+            clearFreezeTimers();
+            // Un único puzle (con código) y solución única; el rival recibe la misma versión "disfrazada"
+            const seed = forcedSeed !== null ? forcedSeed : randomSeed();
+            currentMatch.code = encodeCode(currentGridSize, currentDifficulty, seed);
+            const puzzleData1 = generatePuzzleFromSeed(currentGridSize, currentDifficulty, seed);
+            const puzzleData2 = disguisePuzzle(puzzleData1, currentGridSize);
+
+            currentMatch.originalDataLeft = puzzleData1;
+            currentMatch.originalDataRight = puzzleData2;
+
+            initGameStates(p1, p2, puzzleData1, puzzleData2);
+            refreshGameScreenUI();
+            startTimer();
+        }
+
+        function applyLayoutSizing() {
+            const isSolo = currentGameType === 'solo';
+            const btnBackBracket = document.getElementById('btn-back-bracket');
+            const btnForceEnd = document.getElementById('btn-end-round');
+            const btnNewPuzzle = document.getElementById('btn-new-puzzle');
+
+            if (isSolo) {
+                panelRight.classList.add('hidden');
+                panelLeft.classList.add('max-w-2xl', 'mx-auto');
+                leftBoard.className = "w-full max-w-[480px] md:max-w-[540px] shadow-lg transition-all";
+                
+                btnBackBracket.classList.add('hidden');
+                btnForceEnd.classList.add('hidden');
+                btnNewPuzzle.classList.remove('hidden');
+            } else {
+                panelRight.classList.remove('hidden');
+                panelLeft.classList.remove('max-w-2xl', 'mx-auto');
+                leftBoard.className = "w-full max-w-[350px] md:max-w-[380px] shadow-md transition-all";
+                rightBoard.className = "w-full max-w-[350px] md:max-w-[380px] shadow-md transition-all";
+
+                btnForceEnd.classList.remove('hidden');
+                if (currentGameType === 'tournament') {
+                    btnBackBracket.classList.remove('hidden');
+                    btnNewPuzzle.classList.add('hidden');
+                } else {
+                    btnBackBracket.classList.add('hidden');
+                    btnNewPuzzle.classList.remove('hidden');
+                }
+            }
+        }
+
+        function refreshGameScreenUI() {
+            applyLayoutSizing();
+
+            const name1 = playerNamesMap[currentMatch.p1] || 'Jugador 1';
+            document.getElementById('name-left').textContent = name1;
+            document.getElementById('game-diff-badge').textContent = `${DIFFICULTY_META[currentDifficulty].label} (${currentGridSize}x${currentGridSize})`;
+            const codeBadge = document.getElementById('game-code');
+            codeBadge.textContent = `🔑 ${currentMatch.code || ''}`;
+            codeBadge.classList.toggle('hidden', !currentMatch.code);
+
+            renderBoard('left');
+            generatePad('left');
+            updateLivesUI('left');
+
+            if (currentGameType === 'solo') {
+                versusLabel.textContent = `🎯 SOLITARIO: ${name1}`;
+            } else {
+                const name2 = playerNamesMap[currentMatch.p2] || 'Jugador 2';
+                versusLabel.textContent = `${name1}  VS  ${name2}`;
+                btnForceLeft.textContent = `Gana ${name1}`;
+                btnForceRight.textContent = `Gana ${name2}`;
+                document.getElementById('name-right').textContent = name2;
+                renderBoard('right');
+                generatePad('right');
+                updateLivesUI('right');
+            }
+        }
+
+        function initGameStates(p1, p2, puzzleDataLeft, puzzleDataRight) {
+            gameStates.left = { 
+                puzzle: [...puzzleDataLeft.puzzle], 
+                solution: [...puzzleDataLeft.solution], 
+                selectedCell: null, 
+                completed: false, 
+                frozen: false, 
+                id: p1, 
+                errors: 0 
+            };
+            
+            gameStates.right = { 
+                puzzle: [...puzzleDataRight.puzzle], 
+                solution: [...puzzleDataRight.solution], 
+                selectedCell: null, 
+                completed: false, 
+                frozen: false, 
+                id: p2, 
+                errors: 0 
+            };
+        }
+
+        function renderBoard(side) {
+            const container = side === 'left' ? leftBoard : rightBoard;
+            const state = gameStates[side];
+            const originalData = side === 'left' ? currentMatch.originalDataLeft : currentMatch.originalDataRight;
+
+            if (!originalData) return;
+
+            container.innerHTML = ''; 
+            container.style.gridTemplateColumns = `repeat(${currentGridSize}, 1fr)`;
+
+            const totalCells = currentGridSize * currentGridSize;
+            const selectedRow = state.selectedCell !== null ? Math.floor(state.selectedCell / currentGridSize) : -1;
+            const selectedCol = state.selectedCell !== null ? state.selectedCell % currentGridSize : -1;
+            const selectedBox = state.selectedCell !== null ? boxIndex(selectedRow, selectedCol, currentGridSize) : -1;
+
+            const isSolo = currentGameType === 'solo';
+            let textSize;
+            if (isSolo) {
+                textSize = currentGridSize === 9 ? 'text-xl md:text-3xl' : 'text-3xl md:text-4xl';
+            } else {
+                textSize = currentGridSize === 9 ? 'text-base md:text-xl' : 'text-xl md:text-3xl';
+            }
+
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = `sudoku-num flex items-center justify-center ${textSize} font-black cursor-pointer select-none transition-colors duration-150 border border-slate-300 rounded-sm`;
+                
+                const row = Math.floor(i / currentGridSize);
+                const col = i % currentGridSize;
+                
+                if (currentGridSize === 6) {
+                    if (col === 2) cell.classList.add('border-r-4', 'border-r-slate-700');
+                    if (row === 1 || row === 3) cell.classList.add('border-b-4', 'border-b-slate-700');
+                } else if (currentGridSize === 9) {
+                    if ((col + 1) % 3 === 0 && col < 8) cell.classList.add('border-r-4', 'border-r-slate-700');
+                    if ((row + 1) % 3 === 0 && row < 8) cell.classList.add('border-b-4', 'border-b-slate-700');
+                }
+
+                const val = state.puzzle[i];
+                cell.textContent = val === 0 ? '' : val;
+
+                const isFixed = originalData.puzzle[i] !== 0;
+
+                if (state.selectedCell === i) {
+                    cell.classList.add('bg-yellow-300', 'ring-inset', 'ring-4', 'ring-amber-500', 'text-slate-900', 'scale-[1.03]', 'z-10');
+                } else if (row === selectedRow || col === selectedCol || boxIndex(row, col, currentGridSize) === selectedBox) {
+                    cell.classList.add(isFixed ? 'bg-amber-50/90' : 'bg-yellow-50/80');
+                    cell.classList.add(isFixed ? 'text-slate-800' : 'text-blue-600');
+                } else {
+                    cell.classList.add(isFixed ? 'bg-slate-100' : 'bg-white');
+                    cell.classList.add(isFixed ? 'text-slate-900' : 'text-blue-600');
+                }
+
+                cell.addEventListener('click', () => selectCell(side, i));
+                container.appendChild(cell);
+            }
+            updatePadCompletion(side);
+        }
+
+        /** Atenúa en el teclado los números que ya están colocados todas las veces (ayuda visual) */
+        function updatePadCompletion(side) {
+            const pad = document.getElementById(`pad-${side}`);
+            if (!pad || !gameStates[side].puzzle.length) return;
+            pad.querySelectorAll('button[data-number]').forEach(btn => {
+                const d = parseInt(btn.dataset.number);
+                const done = gameStates[side].puzzle.filter(v => v === d).length >= currentGridSize;
+                btn.classList.toggle('opacity-30', done);
+                btn.disabled = done;
+            });
+        }
+
+        function generatePad(side) {
+            const container = document.getElementById(`pad-${side}`);
+            container.innerHTML = '';
+            const isSolo = currentGameType === 'solo';
+            const maxW = isSolo ? 'max-w-[540px]' : 'max-w-[380px]';
+            const btnHeight = isSolo ? 'h-14 md:h-16 text-2xl md:text-3xl' : 'h-12 md:h-14 text-xl md:text-2xl';
+
+            container.className = `grid gap-1.5 md:gap-2.5 ${maxW} mx-auto ${currentGridSize === 9 ? 'grid-cols-9' : 'grid-cols-6'}`;
+
+            for (let i = 1; i <= currentGridSize; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.number = i;
+                btn.textContent = i;
+                btn.className = `sudoku-num ${btnHeight} rounded-xl bg-white border-2 border-b-4 font-black active:border-b-2 active:translate-y-0.5 transition-all shadow-sm`;
+                if (side === 'left') {
+                    btn.classList.add('text-pink-600', 'border-pink-300', 'hover:bg-pink-50');
+                } else {
+                    btn.classList.add('text-sky-600', 'border-sky-300', 'hover:bg-sky-50');
+                }
+                container.appendChild(btn);
+            }
+        }
+
+        function selectCell(side, index) {
+            if (!currentMatch.active) return;
+            if (gameStates[side].frozen) return;
+            
+            const originalData = side === 'left' ? currentMatch.originalDataLeft : currentMatch.originalDataRight;
+            if (originalData.puzzle[index] !== 0 || gameStates[side].puzzle[index] !== 0) return; 
+
+            gameStates[side].selectedCell = index;
+            playSound('select');
+            renderBoard(side);
+        }
+
+        function handlePadClick(e, side) {
+            const btn = e.target.closest('button');
+            if (!btn || btn.disabled) return;
+            enterNumber(side, parseInt(btn.dataset.number), btn);
+        }
+
+        /** Teclado físico (útil en Solitario con el ordenador del aula): flechas + números */
+        function handleKeyboard(e) {
+            if (gameScreen.classList.contains('hidden') || currentGameType !== 'solo') return;
+            if (!modal.classList.contains('hidden') || !modalConfirm.classList.contains('hidden')) return;
+            const n = currentGridSize, state = gameStates.left;
+            const num = parseInt(e.key);
+            if (num >= 1 && num <= n) {
+                const btn = leftPad.querySelector(`button[data-number="${num}"]`);
+                if (btn && !btn.disabled) enterNumber('left', num, btn);
+                return;
+            }
+            const dirs = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+            if (!dirs[e.key] || !currentMatch.active || state.frozen) return;
+            e.preventDefault();
+            let r = state.selectedCell === null ? 0 : Math.floor(state.selectedCell / n);
+            let c = state.selectedCell === null ? -1 : state.selectedCell % n;
+            const [dr, dc] = dirs[e.key];
+            for (let step = 0; step < n; step++) {
+                r = (r + dr + n) % n; c = (c + dc + n) % n;
+                if (state.puzzle[r * n + c] === 0) { selectCell('left', r * n + c); return; }
+            }
+        }
+
+        function enterNumber(side, num, btn) {
+            if (!currentMatch.active) return;
+            if (gameStates[side].frozen) return;
+
+            const state = gameStates[side];
+            if (state.selectedCell === null) {
+                showToast('👆 Toca primero una casilla vacía del tablero');
+                return;
+            }
+
+            const correctNum = state.solution[state.selectedCell];
+
+            if (num === correctNum) {
+                playSound('correct');
+                state.puzzle[state.selectedCell] = num;
+                state.selectedCell = null;
+                renderBoard(side);
+                saveToLocalStorage();
+                checkWin(side);
+            } else {
+                playSound('error');
+                state.errors++;
+                updateLivesUI(side);
+                saveToLocalStorage();
+
+                if (state.errors >= maxErrors) {
+                    eliminatePlayer(side);
+                    return;
+                }
+
+                state.frozen = true;
+                btn.classList.add('!bg-red-500', '!text-white', '!border-red-700', 'animate-shake');
+                
+                if (freezeTimers[side]) clearTimeout(freezeTimers[side]);
+                freezeTimers[side] = setTimeout(() => {
+                    state.frozen = false;
+                    generatePad(side);
+                    renderBoard(side);
+                }, 900); 
+            }
+        }
+
+        function updateLivesUI(side) {
+            const errors = gameStates[side].errors;
+            const lives = Math.max(0, maxErrors - errors);
+            const container = document.getElementById(`lives-${side}`);
+            if (!container) return;
+            let html = '';
+            for (let i = 0; i < maxErrors; i++) {
+                html += (i < lives) 
+                    ? '<span class="text-red-500 text-base md:text-xl">❤️</span>' 
+                    : '<span class="text-gray-300 text-base md:text-xl">💔</span>';
+            }
+            container.innerHTML = html;
+        }
+
+        function eliminatePlayer(losingSide) {
+            if (currentGameType === 'solo') {
+                clearFreezeTimers();
+                stopTimer();
+                currentMatch.active = false;
+                const playerName = playerNamesMap[1] || 'Jugador/a';
+                saveToLocalStorage();
+                showModal(
+                    "💔 ¡Sin vidas!",
+                    `${playerName}, te has quedado sin vidas. ¿Quieres intentarlo de nuevo?`,
+                    () => {
+                        hideModal();
+                        executeRestartMatch();
+                    },
+                    "🔄 Reintentar",
+                    () => {
+                        hideModal();
+                        resetSession();
+                    }
+                );
+                return;
+            }
+
+            const winnerId = losingSide === 'left' ? currentMatch.p2 : currentMatch.p1;
+            const loserName = playerNamesMap[gameStates[losingSide].id];
+            endMatch(winnerId, `${loserName} se quedó sin vidas.`);
+        }
+
+        function checkWin(side) {
+            const state = gameStates[side];
+            if (!state.puzzle.includes(0)) {
+                endMatch(state.id, "¡Sudoku completado a la perfección!");
+            }
+        }
+
+        function endMatch(winnerId, reason) {
+            if (!currentMatch.active) return; // evita doble cierre (p. ej. completar y forzar a la vez)
+            clearFreezeTimers();
+            stopTimer();
+            currentMatch.active = false;
+            reason = `${reason} ⏱️ Tiempo: ${formatTime(getElapsedMs())}`;
+            const winnerName = playerNamesMap[winnerId];
+            const matchInRound = currentRoundMatches[currentMatchIndex];
+            if (matchInRound) {
+                matchInRound.winner = winnerId;
+                matchInRound.status = 'finished';
+            }
+            
+            saveToLocalStorage();
+            playSound('win');
+            launchConfetti();
+
+            setTimeout(() => {
+                if (currentGameType === 'solo') {
+                    showModal(
+                        `🎉 ¡ENHORABUENA! 🎉`,
+                        `${winnerName} ha resuelto todo el Sudoku (${DIFFICULTY_META[currentDifficulty].label}) en ${formatTime(getElapsedMs())} con ${gameStates.left.errors} fallo(s).`,
+                        () => {
+                            hideModal();
+                            setupNewGameMatch(1, null);
+                            currentMatch.active = true;
+                            saveToLocalStorage();
+                        },
+                        "🎲 Otro Tablero",
+                        () => {
+                            hideModal();
+                            resetSession();
+                        }
+                    );
+                } else if (currentGameType === 'quick1v1') {
+                    showModal(
+                        `¡${winnerName} GANA! 🏆`,
+                        reason,
+                        () => {
+                            hideModal();
+                            setupNewGameMatch(1, 2);
+                            currentMatch.active = true;
+                            saveToLocalStorage();
+                        },
+                        "⚔️ Jugar Revancha",
+                        () => {
+                            hideModal();
+                            resetSession();
+                        }
+                    );
+                } else {
+                    // Torneo
+                    showModal(
+                        `¡${winnerName} GANA! 🎉`,
+                        reason,
+                        () => {
+                            hideModal();
+                            gameScreen.classList.add('hidden');
+                            bracketScreen.classList.remove('hidden');
+                            renderBracket();
+                        },
+                        "📋 Ir al Cuadro"
+                    );
+                }
+            }, 350);
+        }
+
+        /**
+         * CONTROLES DOCENTES
+         */
+        function currentTournamentMatchFinished() {
+            const m = currentRoundMatches[currentMatchIndex];
+            return currentGameType === 'tournament' && (!m || m.status === 'finished');
+        }
+
+        function requestNewPuzzleMatch() {
+            showConfirmModal("¿Cargar un tablero nuevo diferente del mismo nivel de dificultad?", () => {
+                setupNewGameMatch(currentMatch.p1, currentMatch.p2);
+                currentMatch.active = true;
+                saveToLocalStorage();
+                showToast('🎲 Nuevo tablero generado');
+            });
+        }
+
+        function requestRestartMatch() {
+            if (currentTournamentMatchFinished()) {
+                showToast('🏁 Este partido ya terminó: vuelve al cuadro');
+                return;
+            }
+            showConfirmModal("¿Quieres reiniciar este mismo tablero desde cero?", executeRestartMatch);
+        }
+
+        function executeRestartMatch() {
+            clearFreezeTimers();
+            initGameStates(currentMatch.p1, currentMatch.p2, currentMatch.originalDataLeft, currentMatch.originalDataRight);
+            currentMatch.active = true;
+            refreshGameScreenUI();
+            startTimer();
+            saveToLocalStorage();
+            showToast('Tablero reiniciado 🔄');
+        }
+
+        function requestEndSession() {
+            showConfirmModal("¿Salir al menú principal? Se cerrará la sesión actual.", resetSession);
+        }
+
+        function resetSession() {
+            clearFreezeTimers();
+            stopTimer();
+            restoreTimer(0, false);
+            sessionActive = false;
+            currentRoundMatches = [];
+            localStorage.removeItem(STORAGE_KEY);
+            document.getElementById('autosave-banner').classList.add('hidden');
+
+            gameScreen.classList.add('hidden');
+            bracketScreen.classList.add('hidden');
+            modal.classList.add('hidden');
+            modalConfirm.classList.add('hidden');
+            modalForceWin.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            renderNameInputs(); 
+        }
+
+        function openForceWinModal() {
+            if (!currentMatch.active) {
+                showToast('🏁 La partida ya ha terminado');
+                return;
+            }
+            modalForceWin.classList.remove('hidden');
+        }
+
+        function forceWin(side) {
+            modalForceWin.classList.add('hidden');
+            const winnerId = side === 'left' ? currentMatch.p1 : currentMatch.p2;
+            endMatch(winnerId, "Victoria asignada por el docente.");
+        }
+
+        /**
+         * SISTEMA DE GUARDADO Y CARGA EN JSON + AUTOGUARDADO
+         */
+        function buildStateObject() {
+            const inputs = document.querySelectorAll('.player-name-input');
+            const setupNames = Array.from(inputs).map((inp, idx) => inp.value.trim() || `Jugador ${idx + 1}`);
+
+            return {
+                app: "SudokuBattleKids",
+                version: "5.0",
+                timestamp: new Date().toISOString(),
+                config: {
+                    gameType: currentGameType,
+                    difficulty: currentDifficulty,
+                    playerCount: clampPlayerCount(),
+                    maxErrors: clampLivesCount(),
+                    gridSize: parseInt(modeInput.value) || 6,
+                    setupNames: setupNames
+                },
+                tournament: {
+                    active: sessionActive,
+                    currentRoundNumber: currentRoundNumber,
+                    currentMatchIndex: currentMatchIndex,
+                    byeCounts: byeCounts,
+                    elapsedMs: getElapsedMs(),
+                    playerNamesMap: playerNamesMap,
+                    currentRoundMatches: currentRoundMatches,
+                    currentMatch: currentMatch,
+                    gameStates: gameStates
+                }
+            };
+        }
+
+        function exportToJSON(mode = 'progreso') {
+            const stateObj = buildStateObject();
+            const dataStr = JSON.stringify(stateObj, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const filename = mode === 'configuracion' 
+                ? `sudoku_config_${stateObj.config.gameType}_${stateObj.config.difficulty}_${dateStr}.json`
+                : `sudoku_progreso_${stateObj.config.gameType}_${stateObj.config.difficulty}_${dateStr}.json`;
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            showToast('💾 Archivo JSON descargado correctamente');
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    applyImportedState(data);
+                } catch (err) {
+                    showModal("⚠️ Error de archivo", "El archivo seleccionado no es un JSON válido.", hideModal);
+                } finally {
+                    jsonFileInput.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function applyImportedState(data) {
+            if (!data || !data.config) {
+                showModal("⚠️ Formato incompatible", "El JSON no contiene datos de configuración válidos.", hideModal);
+                return;
+            }
+
+            clearFreezeTimers();
+
+            const cfg = data.config;
+            const importedType = ['solo', 'quick1v1', 'tournament'].includes(cfg.gameType) ? cfg.gameType : 'tournament';
+            const importedDiff = ['easy', 'medium', 'hard'].includes(cfg.difficulty) ? cfg.difficulty : 'medium';
+            const pCount = Math.min(MAX_PLAYERS, Math.max(MIN_PLAYERS, parseInt(cfg.playerCount) || 4));
+            maxErrors = Math.min(10, Math.max(1, parseInt(cfg.maxErrors) || 4));
+            currentGridSize = (parseInt(cfg.gridSize) === 9) ? 9 : 6;
+
+            playerCountInput.value = pCount;
+            livesInput.value = maxErrors;
+            modeInput.value = currentGridSize;
+            setGameType(importedType);
+            setDifficulty(importedDiff);
+            updateDifficultyClueLabels();
+            renderNameInputs(cfg.setupNames || []);
+
+            const trn = data.tournament;
+            if (trn && trn.active && Array.isArray(trn.currentRoundMatches) && trn.currentRoundMatches.length > 0) {
+                sessionActive = true;
+                currentRoundNumber = trn.currentRoundNumber || 1;
+                currentMatchIndex = trn.currentMatchIndex || 0;
+                playerNamesMap = trn.playerNamesMap || {};
+                currentRoundMatches = trn.currentRoundMatches;
+
+                byeCounts = trn.byeCounts || {};
+                if (trn.currentMatch) currentMatch = trn.currentMatch;
+                if (trn.gameStates) gameStates = trn.gameStates;
+                // Un jugador guardado "congelado" (tras fallo) se quedaría bloqueado para siempre al recargar
+                ['left', 'right'].forEach(side => {
+                    if (gameStates[side]) { gameStates[side].frozen = false; gameStates[side].selectedCell = null; }
+                });
+                // Un JSON antiguo de la v4 puede traer tableros ambiguos: si el actual no tiene solución única, se avisa
+                const ld = currentMatch.originalDataLeft;
+                if (ld && Array.isArray(ld.puzzle) && countSolutions(ld.puzzle, currentGridSize, 2) !== 1) {
+                    setTimeout(() => showToast('⚠️ Tablero guardado ambiguo: pulsa 🎲 Nuevo Tablero o 🔄'), 400);
+                }
+                restoreTimer(trn.elapsedMs || 0, currentMatch.active);
+
+                startScreen.classList.add('hidden');
+
+                const activeMatchObj = currentRoundMatches[currentMatchIndex];
+                if (importedType !== 'tournament' || (currentMatch.active && activeMatchObj && activeMatchObj.status === 'playing')) {
+                    bracketScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+                    refreshGameScreenUI();
+                } else {
+                    gameScreen.classList.add('hidden');
+                    bracketScreen.classList.remove('hidden');
+                    renderBracket();
+                }
+
+                saveToLocalStorage();
+                showToast('📂 Progreso cargado con éxito');
+            } else {
+                sessionActive = false;
+                gameScreen.classList.add('hidden');
+                bracketScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+                showToast('📂 Configuración cargada');
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                const stateObj = buildStateObject();
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(stateObj));
+            } catch (e) {}
+        }
+
+        function checkAutoSave() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && data.tournament && data.tournament.active) {
+                    const banner = document.getElementById('autosave-banner');
+                    const info = document.getElementById('autosave-info');
+                    const modeLabel = data.config.gameType === 'solo' ? 'Solitario' : (data.config.gameType === 'quick1v1' ? 'Duelo 1 vs 1' : `Torneo · Ronda ${data.tournament.currentRoundNumber}`);
+                    const diffLabel = DIFFICULTY_META[data.config.difficulty || 'medium'].label;
+                    info.textContent = `${modeLabel} · ${diffLabel} (${data.config.gridSize}x${data.config.gridSize})`;
+                    banner.classList.remove('hidden');
+
+                    document.getElementById('btn-resume-autosave').onclick = () => {
+                        applyImportedState(data);
+                    };
+                }
+            } catch (e) {
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        }
+
+        /**
+         * UTILIDADES VISUALES (MODALES, TOAST Y CONFETI)
+         */
+        function showModal(title, body, primaryAction, primaryText = "¡GENIAL!", secondaryAction = null) {
+            modalTitle.textContent = title;
+            modalBody.textContent = body;
+            modalBtn.textContent = primaryText;
+            modalBtn.onclick = primaryAction;
+
+            if (secondaryAction) {
+                modalSecondaryBtn.classList.remove('hidden');
+                modalSecondaryBtn.onclick = secondaryAction;
+            } else {
+                modalSecondaryBtn.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function showConfirmModal(body, onConfirm) {
+            modalConfirmBody.textContent = body;
+            pendingAction = onConfirm;
+            modalConfirm.classList.remove('hidden');
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('hidden');
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2600);
+        }
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            const colors = ['#FCD34D', '#F472B6', '#60A5FA', '#34D399', '#A78BFA', '#FB923C'];
+            for (let i = 0; i < 75; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'absolute top-0 w-3.5 h-3.5 rounded-full opacity-90';
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animation = `fall ${Math.random() * 2 + 1.2}s ease-in forwards`;
+                container.appendChild(conf);
+                setTimeout(() => conf.remove(), 3300);
+            }
+        }
+    </script>
+</body>
+</html>
