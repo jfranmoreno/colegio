@@ -258,6 +258,9 @@
             <span id="game-diff-badge" class="bg-white border-2 border-slate-300 text-slate-700 px-3 py-1 rounded-full font-extrabold text-xs md:text-sm shadow-sm shrink-0">
                 🟡 Medio
             </span>
+            <span id="game-timer" class="sudoku-num bg-white border-2 border-slate-300 text-slate-700 px-3 py-1 rounded-full font-extrabold text-xs md:text-sm shadow-sm shrink-0">
+                ⏱️ 00:00
+            </span>
         </div>
 
         <!-- Contenedor Principal de Tableros -->
@@ -453,7 +456,7 @@
          */
         const MAX_PLAYERS = 25;
         const MIN_PLAYERS = 2;
-        const STORAGE_KEY = 'sudoku_escolar_mdi_v4';
+        const STORAGE_KEY = 'sudoku_escolar_mdi_v5';
 
         let currentGameType = 'tournament';
         let currentDifficulty = 'medium';
@@ -462,6 +465,7 @@
         let currentRoundNumber = 1;
         let playerNamesMap = {}; 
         let currentMatchIndex = 0;
+        let byeCounts = {};
 
         let currentMatch = {
             p1: null, 
@@ -488,166 +492,137 @@
         };
 
         /**
-         * 3. BASE DE DATOS DE SOLUCIONES Y PLANTILLAS BASE (6x6 y 9x9)
+         * 3. GENERADOR REAL DE SUDOKUS (sustituye a la antigua base de datos fija)
+         * - Crea una solución completa aleatoria por backtracking.
+         * - Quita pistas una a una comprobando que el puzle SIGUE TENIENDO SOLUCIÓN ÚNICA.
+         *   (Imprescindible: el juego corrige comparando con una solución concreta; si hubiera
+         *   dos soluciones, un número lógicamente correcto se contaría como fallo.)
+         * - En los duelos ambos jugadores reciben el MISMO puzle "disfrazado" (dígitos y filas
+         *   permutados): misma dificultad exacta, pero no se puede copiar mirando al rival.
          */
-        const puzzleDatabase = {
-            6: [
-                {
-                    solution: [1, 2, 3, 4, 5, 6, 4, 5, 6, 1, 2, 3, 2, 3, 4, 5, 6, 1, 5, 6, 1, 2, 3, 4, 3, 1, 2, 6, 4, 5, 6, 4, 5, 3, 1, 2],
-                    puzzle:   [1, 0, 3, 0, 5, 0, 0, 5, 0, 1, 0, 3, 2, 0, 4, 0, 6, 0, 0, 6, 0, 2, 0, 4, 3, 0, 2, 0, 4, 0, 0, 4, 0, 3, 0, 2]
-                },
-                {
-                    solution: [3, 5, 1, 6, 2, 4, 6, 2, 4, 3, 5, 1, 5, 1, 6, 2, 4, 3, 2, 4, 3, 5, 1, 6, 1, 3, 5, 4, 6, 2, 4, 6, 2, 1, 3, 5],
-                    puzzle:   [3, 0, 1, 0, 2, 0, 0, 2, 0, 3, 0, 1, 5, 0, 6, 0, 4, 0, 0, 4, 0, 5, 0, 6, 1, 0, 5, 0, 6, 0, 0, 6, 0, 1, 0, 5]
-                },
-                {
-                    solution: [6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 5, 4, 6, 2, 1, 3, 2, 3, 1, 6, 4, 5, 4, 6, 5, 1, 3, 2, 3, 1, 2, 5, 6, 4],
-                    puzzle:   [6, 0, 4, 3, 0, 1, 1, 0, 3, 4, 0, 6, 0, 4, 0, 0, 1, 0, 0, 3, 0, 0, 4, 0, 4, 0, 5, 1, 0, 2, 3, 0, 2, 5, 0, 4]
-                },
-                {
-                    solution: [2, 1, 6, 5, 4, 3, 5, 3, 4, 1, 6, 2, 1, 2, 5, 4, 3, 6, 4, 6, 3, 2, 1, 5, 3, 5, 1, 6, 2, 4, 6, 4, 2, 3, 5, 1],
-                    puzzle:   [2, 0, 6, 5, 0, 3, 0, 3, 0, 0, 6, 0, 1, 0, 5, 4, 0, 6, 4, 0, 3, 2, 0, 5, 0, 5, 0, 0, 2, 0, 6, 0, 2, 3, 0, 1]
-                },
-                {
-                    solution: [4, 6, 2, 1, 3, 5, 1, 3, 5, 6, 4, 2, 6, 4, 1, 5, 2, 3, 5, 2, 3, 4, 1, 6, 2, 5, 6, 3, 1, 4, 3, 1, 4, 2, 6, 5],
-                    puzzle:   [4, 0, 2, 1, 0, 5, 0, 3, 0, 6, 4, 0, 6, 0, 1, 0, 2, 3, 5, 2, 0, 4, 0, 6, 0, 5, 6, 0, 1, 0, 3, 0, 4, 2, 0, 5]
-                },
-                {
-                    solution: [5, 3, 6, 2, 1, 4, 2, 1, 4, 5, 6, 3, 4, 6, 5, 1, 3, 2, 1, 2, 3, 4, 5, 6, 6, 4, 1, 3, 2, 5, 3, 5, 2, 6, 4, 1],
-                    puzzle:   [0, 3, 6, 2, 0, 4, 2, 0, 4, 0, 6, 3, 4, 6, 0, 1, 0, 2, 1, 0, 3, 0, 5, 6, 6, 4, 0, 3, 0, 5, 3, 0, 2, 6, 4, 0]
-                }
-            ],
-            9: [
-                {
-                    solution: [
-                        5,3,4,6,7,8,9,1,2,
-                        6,7,2,1,9,5,3,4,8,
-                        1,9,8,3,4,2,5,6,7,
-                        8,5,9,7,6,1,4,2,3,
-                        4,2,6,8,5,3,7,9,1,
-                        7,1,3,9,2,4,8,5,6,
-                        9,6,1,5,3,7,2,8,4,
-                        2,8,7,4,1,9,6,3,5,
-                        3,4,5,2,8,6,1,7,9
-                    ],
-                    puzzle: [
-                        5,3,0,0,7,0,0,0,0,
-                        6,0,0,1,9,5,0,0,0,
-                        0,9,8,0,0,0,0,6,0,
-                        8,0,0,0,6,0,0,0,3,
-                        4,0,0,8,0,3,0,0,1,
-                        7,0,0,0,2,0,0,0,6,
-                        0,6,0,0,0,0,2,8,0,
-                        0,0,0,4,1,9,0,0,5,
-                        0,0,0,0,8,0,0,7,9
-                    ]
-                },
-                {
-                    solution: [
-                        4,3,5,2,6,9,7,8,1,
-                        6,8,2,5,7,1,4,9,3,
-                        1,9,7,8,3,4,5,6,2,
-                        8,2,6,1,9,5,3,4,7,
-                        3,7,4,6,8,2,9,1,5,
-                        9,5,1,7,4,3,6,2,8,
-                        5,1,9,3,2,6,8,7,4,
-                        2,4,8,9,5,7,1,3,6,
-                        7,6,3,4,1,8,2,5,9
-                    ],
-                    puzzle: [
-                        0,0,0,2,6,0,7,0,1,
-                        6,8,0,0,7,0,0,9,0,
-                        1,9,0,0,0,4,5,0,0,
-                        8,2,0,1,0,0,0,4,0,
-                        0,0,4,6,0,2,9,0,0,
-                        0,5,0,0,0,3,0,2,8,
-                        0,0,9,3,0,0,0,7,4,
-                        0,4,0,0,5,0,0,3,6,
-                        7,0,3,0,1,8,0,0,0
-                    ]
-                },
-                {
-                    solution: [
-                        1,5,2,4,8,9,3,7,6,
-                        7,3,9,2,5,6,8,4,1,
-                        4,6,8,3,7,1,2,9,5,
-                        3,8,7,1,2,4,6,5,9,
-                        5,9,1,7,6,3,4,2,8,
-                        2,4,6,8,9,5,7,1,3,
-                        9,1,4,6,3,7,5,8,2,
-                        6,2,5,9,4,8,1,3,7,
-                        8,7,3,5,1,2,9,6,4
-                    ],
-                    puzzle: [
-                        1,0,0,4,8,9,0,0,6,
-                        7,3,0,0,5,0,0,4,0,
-                        4,6,0,0,0,1,2,9,5,
-                        3,8,7,1,2,0,6,0,0,
-                        5,0,1,7,0,3,0,0,8,
-                        0,4,6,0,9,5,7,1,0,
-                        9,1,4,6,0,0,0,8,0,
-                        0,2,0,0,4,0,0,3,7,
-                        8,0,3,5,1,2,0,0,4
-                    ]
-                }
-            ]
-        };
+        const BOX_DIMS = { 6: [2, 3], 9: [3, 3] }; // [filas de la caja, columnas de la caja]
 
-        /**
-         * GENERADOR DE PUZZLES EQUILIBRADOS POR NIVEL DE DIFICULTAD
-         * Ajusta de forma simétrica el número exacto de pistas manteniendo al menos 1 pista por fila/columna.
-         */
-        function buildPuzzleForDifficulty(template, gridSize, difficulty) {
-            const solution = [...template.solution];
-            let puzzle = [...template.puzzle];
-            const targetClues = DIFFICULTY_META[difficulty]?.clues[gridSize] || (gridSize === 6 ? 18 : 36);
+        function boxIndex(r, c, n) {
+            const [br, bc] = BOX_DIMS[n];
+            return Math.floor(r / br) * (n / bc) + Math.floor(c / bc);
+        }
 
-            let currentClues = puzzle.filter(v => v !== 0).length;
-
-            // Si es Fácil (necesita más pistas que la plantilla media)
-            if (currentClues < targetClues) {
-                let emptyIndices = [];
-                puzzle.forEach((val, idx) => { if (val === 0) emptyIndices.push(idx); });
-                // Mezclar índices vacíos
-                for (let i = emptyIndices.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [emptyIndices[i], emptyIndices[j]] = [emptyIndices[j], emptyIndices[i]];
-                }
-                for (let idx of emptyIndices) {
-                    if (currentClues >= targetClues) break;
-                    puzzle[idx] = solution[idx];
-                    currentClues++;
-                }
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
-            // Si es Difícil (necesita menos pistas que la plantilla media, cuidando no vaciar filas/columnas)
-            else if (currentClues > targetClues) {
-                let filledIndices = [];
-                puzzle.forEach((val, idx) => { if (val !== 0) filledIndices.push(idx); });
-                for (let i = filledIndices.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [filledIndices[i], filledIndices[j]] = [filledIndices[j], filledIndices[i]];
-                }
+            return arr;
+        }
 
-                for (let idx of filledIndices) {
-                    if (currentClues <= targetClues) break;
-                    const r = Math.floor(idx / gridSize);
-                    const c = idx % gridSize;
-
-                    // Contar cuántas pistas quedan en esa fila y columna para no dejarlas totalmente vacías
-                    let rowClues = 0, colClues = 0;
-                    for (let k = 0; k < gridSize; k++) {
-                        if (puzzle[r * gridSize + k] !== 0) rowClues++;
-                        if (puzzle[k * gridSize + c] !== 0) colClues++;
-                    }
-
-                    if (rowClues > 1 && colClues > 1) {
-                        puzzle[idx] = 0;
-                        currentClues--;
-                    }
-                }
+        /** Cuenta soluciones (se detiene al llegar a `limit`). Usa máscaras de bits. */
+        function countSolutions(grid, n, limit = 2) {
+            const g = grid.slice();
+            const full = (1 << (n + 1)) - 2;
+            const R = new Array(n).fill(0), C = new Array(n).fill(0), B = new Array(n).fill(0);
+            for (let i = 0; i < n * n; i++) {
+                const v = g[i];
+                if (!v) continue;
+                const r = Math.floor(i / n), c = i % n, b = boxIndex(r, c, n), bit = 1 << v;
+                if ((R[r] & bit) || (C[c] & bit) || (B[b] & bit)) return 0;
+                R[r] |= bit; C[c] |= bit; B[b] |= bit;
             }
+            let count = 0;
+            (function rec() {
+                let best = -1, bestMask = 0, bestCount = 99;
+                for (let i = 0; i < n * n; i++) {
+                    if (g[i]) continue;
+                    const r = Math.floor(i / n), c = i % n;
+                    const m = full & ~(R[r] | C[c] | B[boxIndex(r, c, n)]);
+                    let k = 0; for (let x = m; x; x &= x - 1) k++;
+                    if (k === 0) return;
+                    if (k < bestCount) { bestCount = k; best = i; bestMask = m; if (k === 1) break; }
+                }
+                if (best < 0) { count++; return; }
+                const r = Math.floor(best / n), c = best % n, b = boxIndex(r, c, n);
+                for (let d = 1; d <= n; d++) {
+                    if (!(bestMask & (1 << d))) continue;
+                    const bit = 1 << d;
+                    R[r] |= bit; C[c] |= bit; B[b] |= bit; g[best] = d;
+                    rec();
+                    R[r] &= ~bit; C[c] &= ~bit; B[b] &= ~bit; g[best] = 0;
+                    if (count >= limit) return;
+                }
+            })();
+            return count;
+        }
 
-            return { puzzle, solution };
+        /** Genera una cuadrícula completa y válida al azar. */
+        function generateSolution(n) {
+            const g = new Array(n * n).fill(0);
+            function ok(i, d) {
+                const r = Math.floor(i / n), c = i % n, b = boxIndex(r, c, n);
+                for (let k = 0; k < n * n; k++) {
+                    if (g[k] !== d) continue;
+                    const r2 = Math.floor(k / n), c2 = k % n;
+                    if (r2 === r || c2 === c || boxIndex(r2, c2, n) === b) return false;
+                }
+                return true;
+            }
+            (function fill(i) {
+                if (i === n * n) return true;
+                const digits = shuffleArray(Array.from({ length: n }, (_, k) => k + 1));
+                for (const d of digits) {
+                    if (ok(i, d)) { g[i] = d; if (fill(i + 1)) return true; g[i] = 0; }
+                }
+                return false;
+            })(0);
+            return g;
+        }
+
+        /** Quita pistas manteniendo solución única hasta llegar (o acercarse) al objetivo. */
+        function carvePuzzle(solution, n, targetClues) {
+            const puzzle = solution.slice();
+            let clues = n * n;
+            for (const idx of shuffleArray([...Array(n * n).keys()])) {
+                if (clues <= targetClues) break;
+                const backup = puzzle[idx];
+                puzzle[idx] = 0;
+                if (countSolutions(puzzle, n, 2) !== 1) puzzle[idx] = backup;
+                else clues--;
+            }
+            return { puzzle, clues };
+        }
+
+        function generatePuzzle(n, difficulty) {
+            const target = DIFFICULTY_META[difficulty]?.clues[n] || (n === 6 ? 18 : 36);
+            let best = null;
+            for (let attempt = 0; attempt < 8; attempt++) {
+                const solution = generateSolution(n);
+                const { puzzle, clues } = carvePuzzle(solution, n, target);
+                if (!best || clues < best.clues) best = { puzzle, solution, clues };
+                if (clues <= target) break;
+            }
+            return { puzzle: best.puzzle, solution: best.solution };
+        }
+
+        /** Crea una versión equivalente (isomorfa) de un puzle: misma dificultad, aspecto distinto. */
+        function disguisePuzzle(data, n) {
+            const [br, bc] = BOX_DIMS[n];
+            const digitMap = [0, ...shuffleArray(Array.from({ length: n }, (_, k) => k + 1))];
+            // Permutar bandas (grupos de filas) y filas dentro de cada banda
+            const rowOrder = [];
+            for (const band of shuffleArray([...Array(n / br).keys()])) {
+                for (const r of shuffleArray([...Array(br).keys()])) rowOrder.push(band * br + r);
+            }
+            // Permutar pilas (grupos de columnas) y columnas dentro de cada pila
+            const colOrder = [];
+            for (const stack of shuffleArray([...Array(n / bc).keys()])) {
+                for (const c of shuffleArray([...Array(bc).keys()])) colOrder.push(stack * bc + c);
+            }
+            const map = arr => {
+                const out = new Array(n * n);
+                for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+                    out[r * n + c] = digitMap[arr[rowOrder[r] * n + colOrder[c]]];
+                }
+                return out;
+            };
+            return { puzzle: map(data.puzzle), solution: map(data.solution) };
         }
 
         // --- Referencias al DOM ---
@@ -751,6 +726,7 @@
 
             // Eventos de Teclado Numérico en Juego
             leftPad.addEventListener('click', (e) => handlePadClick(e, 'left'));
+            document.addEventListener('keydown', handleKeyboard);
             rightPad.addEventListener('click', (e) => handlePadClick(e, 'right'));
 
             // Controles Docentes
@@ -1003,6 +979,7 @@
             } else {
                 // Modo Torneo
                 currentRoundNumber = 1;
+                byeCounts = {};
                 generateRound(players);
                 bracketScreen.classList.remove('hidden');
                 renderBracket();
@@ -1017,6 +994,16 @@
             currentRoundMatches = [];
             currentMatchIndex = 0;
             let tempPool = [...pool];
+            // Con número impar, el PASE DIRECTO va a quien menos pases haya tenido
+            // (antes siempre iba al último de la lista y podía llegar a la final sin jugar).
+            if (tempPool.length % 2 === 1) {
+                const minByes = Math.min(...tempPool.map(id => byeCounts[id] || 0));
+                const candidates = tempPool.filter(id => (byeCounts[id] || 0) === minByes);
+                const lucky = candidates[Math.floor(Math.random() * candidates.length)];
+                byeCounts[lucky] = (byeCounts[lucky] || 0) + 1;
+                tempPool = tempPool.filter(id => id !== lucky);
+                tempPool.push(lucky);
+            }
             while (tempPool.length > 0) {
                 if (tempPool.length >= 2) {
                     currentRoundMatches.push({
@@ -1037,13 +1024,18 @@
             }
         }
 
+        function escapeHTML(str) {
+            return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+        }
+
         function renderBracket() {
             let roundName = `Ronda ${currentRoundNumber}`;
             const totalMatchesInRound = currentRoundMatches.length;
             const realMatches = currentRoundMatches.filter(m => m.p2 !== null).length;
 
-            if (totalMatchesInRound === 1 && realMatches === 1) roundName = "🏆 GRAN FINAL 🏆";
-            else if (totalMatchesInRound === 2) roundName = "🔥 SEMIFINALES 🔥";
+            const playersInRound = currentRoundMatches.reduce((acc, m) => acc + (m.p2 !== null ? 2 : 1), 0);
+            if (playersInRound === 2) roundName = "🏆 GRAN FINAL 🏆";
+            else if (playersInRound <= 4) roundName = "🔥 SEMIFINALES 🔥";
 
             roundTitleDisplay.textContent = roundName;
             document.getElementById('bracket-mode-badge').textContent = currentGridSize === 6 ? '🎮 KIDS 6x6' : '🎮 JUNIOR 9x9';
@@ -1059,8 +1051,8 @@
                 const card = document.createElement('div');
                 card.className = "bg-white p-3.5 rounded-2xl border-4 shadow-sm flex items-center justify-between gap-3 transition-all";
                 
-                const name1 = playerNamesMap[match.p1] || `J${match.p1}`;
-                const name2 = match.p2 ? (playerNamesMap[match.p2] || `J${match.p2}`) : "PASE DIRECTO 🎟️";
+                const name1 = escapeHTML(playerNamesMap[match.p1] || `J${match.p1}`);
+                const name2 = match.p2 ? escapeHTML(playerNamesMap[match.p2] || `J${match.p2}`) : "PASE DIRECTO 🎟️";
 
                 if (match.status === 'finished') {
                     card.classList.add('border-slate-200', 'bg-slate-50/70');
@@ -1165,6 +1157,35 @@
         /**
          * LÓGICA DEL JUEGO Y ADAPTACIÓN VISUAL (SOLITARIO GRANDOTE VS DUELO)
          */
+        /**
+         * CRONÓMETRO DE PARTIDA
+         */
+        let timerStart = null, timerAccum = 0, timerInterval = null;
+
+        function getElapsedMs() {
+            return timerAccum + (timerStart ? Date.now() - timerStart : 0);
+        }
+        function formatTime(ms) {
+            const t = Math.floor(ms / 1000);
+            return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+        }
+        function paintTimer() {
+            const el = document.getElementById('game-timer');
+            if (el) el.textContent = `⏱️ ${formatTime(getElapsedMs())}`;
+        }
+        function restoreTimer(ms, running) {
+            if (timerInterval) clearInterval(timerInterval);
+            timerAccum = ms; timerStart = running ? Date.now() : null;
+            timerInterval = running ? setInterval(paintTimer, 1000) : null;
+            paintTimer();
+        }
+        function startTimer() { restoreTimer(0, true); }
+        function stopTimer() {
+            timerAccum = getElapsedMs(); timerStart = null;
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            paintTimer();
+        }
+
         function clearFreezeTimers() {
             if (freezeTimers.left) { clearTimeout(freezeTimers.left); freezeTimers.left = null; }
             if (freezeTimers.right) { clearTimeout(freezeTimers.right); freezeTimers.right = null; }
@@ -1174,28 +1195,16 @@
 
         function setupNewGameMatch(p1, p2) {
             clearFreezeTimers();
-            const db = puzzleDatabase[currentGridSize];
-            
-            let idx1 = Math.floor(Math.random() * db.length);
-            let idx2 = Math.floor(Math.random() * db.length);
-            
-            if (db.length > 1) {
-                let attempts = 0;
-                while (idx1 === idx2 && attempts < 15) {
-                    idx2 = Math.floor(Math.random() * db.length);
-                    attempts++;
-                }
-            }
-
-            // Generar los tableros adaptados al Nivel de Dificultad elegido (Fácil, Medio o Difícil)
-            const puzzleData1 = buildPuzzleForDifficulty(db[idx1], currentGridSize, currentDifficulty);
-            const puzzleData2 = buildPuzzleForDifficulty(db[idx2], currentGridSize, currentDifficulty);
+            // Un único puzle con solución única; el rival recibe la misma versión "disfrazada"
+            const puzzleData1 = generatePuzzle(currentGridSize, currentDifficulty);
+            const puzzleData2 = disguisePuzzle(puzzleData1, currentGridSize);
 
             currentMatch.originalDataLeft = puzzleData1;
             currentMatch.originalDataRight = puzzleData2;
 
             initGameStates(p1, p2, puzzleData1, puzzleData2);
             refreshGameScreenUI();
+            startTimer();
         }
 
         function applyLayoutSizing() {
@@ -1289,6 +1298,7 @@
             const totalCells = currentGridSize * currentGridSize;
             const selectedRow = state.selectedCell !== null ? Math.floor(state.selectedCell / currentGridSize) : -1;
             const selectedCol = state.selectedCell !== null ? state.selectedCell % currentGridSize : -1;
+            const selectedBox = state.selectedCell !== null ? boxIndex(selectedRow, selectedCol, currentGridSize) : -1;
 
             const isSolo = currentGameType === 'solo';
             let textSize;
@@ -1320,7 +1330,7 @@
 
                 if (state.selectedCell === i) {
                     cell.classList.add('bg-yellow-300', 'ring-inset', 'ring-4', 'ring-amber-500', 'text-slate-900', 'scale-[1.03]', 'z-10');
-                } else if (row === selectedRow || col === selectedCol) {
+                } else if (row === selectedRow || col === selectedCol || boxIndex(row, col, currentGridSize) === selectedBox) {
                     cell.classList.add(isFixed ? 'bg-amber-50/90' : 'bg-yellow-50/80');
                     cell.classList.add(isFixed ? 'text-slate-800' : 'text-blue-600');
                 } else {
@@ -1331,6 +1341,19 @@
                 cell.addEventListener('click', () => selectCell(side, i));
                 container.appendChild(cell);
             }
+            updatePadCompletion(side);
+        }
+
+        /** Atenúa en el teclado los números que ya están colocados todas las veces (ayuda visual) */
+        function updatePadCompletion(side) {
+            const pad = document.getElementById(`pad-${side}`);
+            if (!pad || !gameStates[side].puzzle.length) return;
+            pad.querySelectorAll('button[data-number]').forEach(btn => {
+                const d = parseInt(btn.dataset.number);
+                const done = gameStates[side].puzzle.filter(v => v === d).length >= currentGridSize;
+                btn.classList.toggle('opacity-30', done);
+                btn.disabled = done;
+            });
         }
 
         function generatePad(side) {
@@ -1371,7 +1394,35 @@
 
         function handlePadClick(e, side) {
             const btn = e.target.closest('button');
-            if (!btn || !currentMatch.active) return;
+            if (!btn || btn.disabled) return;
+            enterNumber(side, parseInt(btn.dataset.number), btn);
+        }
+
+        /** Teclado físico (útil en Solitario con el ordenador del aula): flechas + números */
+        function handleKeyboard(e) {
+            if (gameScreen.classList.contains('hidden') || currentGameType !== 'solo') return;
+            if (!modal.classList.contains('hidden') || !modalConfirm.classList.contains('hidden')) return;
+            const n = currentGridSize, state = gameStates.left;
+            const num = parseInt(e.key);
+            if (num >= 1 && num <= n) {
+                const btn = leftPad.querySelector(`button[data-number="${num}"]`);
+                if (btn && !btn.disabled) enterNumber('left', num, btn);
+                return;
+            }
+            const dirs = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+            if (!dirs[e.key] || !currentMatch.active || state.frozen) return;
+            e.preventDefault();
+            let r = state.selectedCell === null ? 0 : Math.floor(state.selectedCell / n);
+            let c = state.selectedCell === null ? -1 : state.selectedCell % n;
+            const [dr, dc] = dirs[e.key];
+            for (let step = 0; step < n; step++) {
+                r = (r + dr + n) % n; c = (c + dc + n) % n;
+                if (state.puzzle[r * n + c] === 0) { selectCell('left', r * n + c); return; }
+            }
+        }
+
+        function enterNumber(side, num, btn) {
+            if (!currentMatch.active) return;
             if (gameStates[side].frozen) return;
 
             const state = gameStates[side];
@@ -1380,7 +1431,6 @@
                 return;
             }
 
-            const num = parseInt(btn.dataset.number);
             const correctNum = state.solution[state.selectedCell];
 
             if (num === correctNum) {
@@ -1430,6 +1480,7 @@
         function eliminatePlayer(losingSide) {
             if (currentGameType === 'solo') {
                 clearFreezeTimers();
+                stopTimer();
                 currentMatch.active = false;
                 const playerName = playerNamesMap[1] || 'Jugador/a';
                 saveToLocalStorage();
@@ -1462,8 +1513,11 @@
         }
 
         function endMatch(winnerId, reason) {
+            if (!currentMatch.active) return; // evita doble cierre (p. ej. completar y forzar a la vez)
             clearFreezeTimers();
+            stopTimer();
             currentMatch.active = false;
+            reason = `${reason} ⏱️ Tiempo: ${formatTime(getElapsedMs())}`;
             const winnerName = playerNamesMap[winnerId];
             const matchInRound = currentRoundMatches[currentMatchIndex];
             if (matchInRound) {
@@ -1479,7 +1533,7 @@
                 if (currentGameType === 'solo') {
                     showModal(
                         `🎉 ¡ENHORABUENA! 🎉`,
-                        `${winnerName} ha resuelto todo el Sudoku (${DIFFICULTY_META[currentDifficulty].label}) correctamente.`,
+                        `${winnerName} ha resuelto todo el Sudoku (${DIFFICULTY_META[currentDifficulty].label}) en ${formatTime(getElapsedMs())} con ${gameStates.left.errors} fallo(s).`,
                         () => {
                             hideModal();
                             setupNewGameMatch(1, null);
@@ -1528,6 +1582,11 @@
         /**
          * CONTROLES DOCENTES
          */
+        function currentTournamentMatchFinished() {
+            const m = currentRoundMatches[currentMatchIndex];
+            return currentGameType === 'tournament' && (!m || m.status === 'finished');
+        }
+
         function requestNewPuzzleMatch() {
             showConfirmModal("¿Cargar un tablero nuevo diferente del mismo nivel de dificultad?", () => {
                 setupNewGameMatch(currentMatch.p1, currentMatch.p2);
@@ -1538,6 +1597,10 @@
         }
 
         function requestRestartMatch() {
+            if (currentTournamentMatchFinished()) {
+                showToast('🏁 Este partido ya terminó: vuelve al cuadro');
+                return;
+            }
             showConfirmModal("¿Quieres reiniciar este mismo tablero desde cero?", executeRestartMatch);
         }
 
@@ -1546,6 +1609,7 @@
             initGameStates(currentMatch.p1, currentMatch.p2, currentMatch.originalDataLeft, currentMatch.originalDataRight);
             currentMatch.active = true;
             refreshGameScreenUI();
+            startTimer();
             saveToLocalStorage();
             showToast('Tablero reiniciado 🔄');
         }
@@ -1556,6 +1620,8 @@
 
         function resetSession() {
             clearFreezeTimers();
+            stopTimer();
+            restoreTimer(0, false);
             sessionActive = false;
             currentRoundMatches = [];
             localStorage.removeItem(STORAGE_KEY);
@@ -1571,6 +1637,10 @@
         }
 
         function openForceWinModal() {
+            if (!currentMatch.active) {
+                showToast('🏁 La partida ya ha terminado');
+                return;
+            }
             modalForceWin.classList.remove('hidden');
         }
 
@@ -1589,7 +1659,7 @@
 
             return {
                 app: "SudokuBattleKids",
-                version: "4.0",
+                version: "5.0",
                 timestamp: new Date().toISOString(),
                 config: {
                     gameType: currentGameType,
@@ -1603,6 +1673,8 @@
                     active: sessionActive,
                     currentRoundNumber: currentRoundNumber,
                     currentMatchIndex: currentMatchIndex,
+                    byeCounts: byeCounts,
+                    elapsedMs: getElapsedMs(),
                     playerNamesMap: playerNamesMap,
                     currentRoundMatches: currentRoundMatches,
                     currentMatch: currentMatch,
@@ -1682,8 +1754,19 @@
                 playerNamesMap = trn.playerNamesMap || {};
                 currentRoundMatches = trn.currentRoundMatches;
 
+                byeCounts = trn.byeCounts || {};
                 if (trn.currentMatch) currentMatch = trn.currentMatch;
                 if (trn.gameStates) gameStates = trn.gameStates;
+                // Un jugador guardado "congelado" (tras fallo) se quedaría bloqueado para siempre al recargar
+                ['left', 'right'].forEach(side => {
+                    if (gameStates[side]) { gameStates[side].frozen = false; gameStates[side].selectedCell = null; }
+                });
+                // Un JSON antiguo de la v4 puede traer tableros ambiguos: si el actual no tiene solución única, se avisa
+                const ld = currentMatch.originalDataLeft;
+                if (ld && Array.isArray(ld.puzzle) && countSolutions(ld.puzzle, currentGridSize, 2) !== 1) {
+                    setTimeout(() => showToast('⚠️ Tablero guardado ambiguo: pulsa 🎲 Nuevo Tablero o 🔄'), 400);
+                }
+                restoreTimer(trn.elapsedMs || 0, currentMatch.active);
 
                 startScreen.classList.add('hidden');
 
