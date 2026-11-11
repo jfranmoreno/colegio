@@ -73,6 +73,7 @@
 
     <!-- Input oculto para cargar archivos JSON -->
     <input type="file" id="json-file-input" accept=".json" class="hidden">
+    <input type="file" id="roster-file-input" accept=".json,.txt,.csv" class="hidden">
 
     <!-- Botones flotantes Superiores: Sonido y Pantalla Completa -->
     <div class="fixed top-3 right-3 z-[60] flex items-center gap-2">
@@ -101,7 +102,10 @@
                 <!-- Barra de Gestión JSON (Guardar / Cargar Configuración o Torneo) -->
                 <div class="bg-amber-50 p-2.5 rounded-2xl border-2 border-amber-200 flex flex-wrap items-center justify-between gap-2">
                     <span class="text-xs font-extrabold text-amber-800 uppercase tracking-wider ml-1">💾 Datos del Aula (JSON):</span>
-                    <div class="flex gap-2 flex-1 justify-end">
+                    <div class="flex flex-wrap gap-2 flex-1 justify-end">
+                        <button id="btn-autosave-file-start" class="autosave-file-btn bg-indigo-500 hover:bg-indigo-600 text-white text-xs md:text-sm font-extrabold px-3 py-1.5 rounded-xl shadow border-b-2 border-indigo-700 active:translate-y-0.5 transition-all flex items-center gap-1">
+                            📁 Autoguardar en archivo
+                        </button>
                         <button id="btn-export-setup" class="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-extrabold px-3 py-1.5 rounded-xl shadow border-b-2 border-amber-700 active:translate-y-0.5 transition-all flex items-center gap-1">
                             ⬇️ Guardar Config
                         </button>
@@ -209,13 +213,30 @@
                     </div>
                 </div>
 
+                <!-- Ayuda visual del teclado -->
+                <label for="pad-hints-input" class="flex items-center justify-between gap-3 bg-orange-50 p-2.5 rounded-2xl border-2 border-orange-100 cursor-pointer text-left">
+                    <span>
+                        <span class="block font-extrabold text-orange-700 text-xs uppercase">🔢 Desactivar números completados</span>
+                        <span class="block text-[11px] font-bold text-slate-500">Cuando un número ya está colocado todas las veces en el tablero, su botón del teclado se apaga.</span>
+                    </span>
+                    <input type="checkbox" id="pad-hints-input" checked class="w-6 h-6 shrink-0 accent-orange-500">
+                </label>
+
                 <!-- Lista de Nombres -->
                 <div class="text-left">
                     <div class="flex justify-between items-center mb-1 px-2">
                         <p class="text-xs font-extrabold text-slate-400 uppercase" id="participants-label">Participantes:</p>
-                        <button type="button" id="btn-shuffle-players" class="text-xs font-extrabold text-orange-600 hover:text-orange-700 bg-orange-100 px-3 py-1 rounded-full transition-colors">
-                            🎲 Mezclar Orden
-                        </button>
+                        <div class="flex flex-wrap gap-1.5 justify-end">
+                            <button type="button" id="btn-import-roster" title="Importar lista de jugadores (.json, .txt o .csv)" class="text-xs font-extrabold text-teal-700 hover:text-teal-800 bg-teal-100 px-3 py-1 rounded-full transition-colors">
+                                📥 Importar lista
+                            </button>
+                            <button type="button" id="btn-export-roster" title="Exportar la lista de jugadores en JSON" class="text-xs font-extrabold text-amber-700 hover:text-amber-800 bg-amber-100 px-3 py-1 rounded-full transition-colors">
+                                📤 Exportar lista
+                            </button>
+                            <button type="button" id="btn-shuffle-players" class="text-xs font-extrabold text-orange-600 hover:text-orange-700 bg-orange-100 px-3 py-1 rounded-full transition-colors">
+                                🎲 Mezclar Orden
+                            </button>
+                        </div>
                     </div>
                     <div id="players-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-orange-50/50 rounded-2xl border-2 border-orange-100"></div>
                 </div>
@@ -250,6 +271,9 @@
 
         <!-- Barra Docente en Clasificación -->
         <div id="teacher-bar-bracket" class="fixed bottom-0 w-full bg-slate-800 text-white p-2.5 flex flex-wrap justify-center gap-3 rounded-t-2xl opacity-95 z-50">
+            <button id="btn-autosave-file-bracket" class="autosave-file-btn bg-indigo-500 hover:bg-indigo-600 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
+                📁 Autoguardar en archivo
+            </button>
             <button id="btn-save-json-bracket" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold shadow hover:scale-105 transition-transform flex items-center gap-1">
                 💾 Guardar Torneo (JSON)
             </button>
@@ -327,6 +351,9 @@
             </button>
             <button id="btn-end-round" class="bg-blue-500 hover:bg-blue-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
                 ⏭️ Decidir Ganador
+            </button>
+            <button id="btn-autosave-file-game" class="autosave-file-btn bg-indigo-500 hover:bg-indigo-600 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
+                📁 Autoguardar en archivo
             </button>
             <button id="btn-save-json-game" class="bg-emerald-600 hover:bg-emerald-700 px-3.5 py-1.5 rounded-full text-xs md:text-sm font-extrabold flex items-center gap-1 shadow">
                 💾 Guardar JSON
@@ -566,6 +593,7 @@
         let playerNamesMap = {}; 
         let currentMatchIndex = 0;
         let byeCounts = {};
+        let matchHistory = []; // registro de partidas terminadas (queda en el JSON para evaluar)
 
         let currentMatch = {
             p1: null, 
@@ -953,6 +981,14 @@
 
             // Fichas PDF y códigos
             document.getElementById('btn-open-print').addEventListener('click', openPrintModal);
+
+            // Lista de jugadores y autoguardado en archivo
+            document.getElementById('btn-import-roster').addEventListener('click', () => document.getElementById('roster-file-input').click());
+            document.getElementById('roster-file-input').addEventListener('change', handleRosterImport);
+            document.getElementById('btn-export-roster').addEventListener('click', exportRoster);
+            document.querySelectorAll('.autosave-file-btn').forEach(btn => btn.addEventListener('click', linkAutosaveFile));
+            updateAutosaveFileUI();
+            window.addEventListener('beforeunload', () => { if (autosaveFileHandle) writeAutosaveFile(); });
             document.getElementById('btn-print-cancel').addEventListener('click', () => document.getElementById('modal-print').classList.add('hidden'));
             document.getElementById('btn-print-generate').addEventListener('click', generateWorksheetPDF);
             document.querySelectorAll('.print-per-btn').forEach(btn => btn.addEventListener('click', () => setPrintPerPage(parseInt(btn.dataset.per))));
@@ -966,7 +1002,14 @@
             document.getElementById('code-input').addEventListener('input', liveCheckCode);
             document.getElementById('code-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') startFromCode(); });
 
-            // Inicializar interfaz por defecto
+            // Opción de ayuda del teclado (se recuerda entre sesiones)
+            try { setPadHints(localStorage.getItem(PAD_HINTS_KEY) !== '0'); } catch (e) { setPadHints(true); }
+            document.getElementById('pad-hints-input').addEventListener('change', (e) => setPadHints(e.target.checked));
+
+            // Inicializar interfaz por defecto (recuperando la última lista de clase usada)
+            loadRememberedRoster();
+            const remembered = rosterCache.filter(n => String(n || '').trim()).length;
+            if (remembered >= MIN_PLAYERS) playerCountInput.value = Math.min(MAX_PLAYERS, remembered);
             setGameType('tournament');
             setDifficulty('medium');
             updateDifficultyClueLabels();
@@ -1086,10 +1129,138 @@
             return val;
         }
 
+        /**
+         * LISTA DE JUGADORES (se conserva completa aunque cambies de modo, y se recuerda en el navegador)
+         */
+        const ROSTER_KEY = 'sudoku_escolar_lista_clase';
+        const NAME_MAX_LEN = 22;
+        let rosterCache = [];
+
+        function syncRosterFromInputs() {
+            document.querySelectorAll('.player-name-input').forEach((inp, i) => { rosterCache[i] = inp.value; });
+            try { localStorage.setItem(ROSTER_KEY, JSON.stringify(rosterCache)); } catch (e) {}
+        }
+
+        function loadRememberedRoster() {
+            try {
+                const arr = JSON.parse(localStorage.getItem(ROSTER_KEY) || '[]');
+                if (Array.isArray(arr)) rosterCache = arr.map(v => String(v ?? '').slice(0, NAME_MAX_LEN));
+            } catch (e) { rosterCache = []; }
+        }
+
+        /** Acepta: ["Ana",...] · {jugadores:[...]} · {players:[...]} · [{nombre:"Ana"}] · JSON de configuración · texto (1 nombre por línea / CSV) */
+        function parseRosterText(text, fileName = '') {
+            const isJSON = /\.json$/i.test(fileName) || /^\s*[\[{]/.test(text);
+            let names = [];
+            if (isJSON) {
+                const data = JSON.parse(text);
+                let list = Array.isArray(data) ? data
+                    : data.jugadores || data.players || data.alumnos || data.nombres
+                    || (data.config && data.config.setupNames) || null;
+                if (!Array.isArray(list)) throw new Error('El JSON no contiene una lista de jugadores.');
+                names = list.map(it => typeof it === 'string' ? it
+                    : (it && (it.nombre || it.name || it.alumno || it.jugador)) || '');
+            } else {
+                const rows = text.split(/\r?\n/).filter(l => l.trim()).map(l => l.split(/[;\t]|,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, '').trim()));
+                const header = rows.length ? rows[0].map(h => h.toLowerCase()) : [];
+                const iName = header.findIndex(h => /^(nombre|name|alumno|alumna|jugador)/.test(h));
+                const iSurname = header.findIndex(h => /apellido/.test(h));
+                if (iName >= 0) {
+                    rows.shift();
+                    // Con columnas Nombre + Apellidos → «Ana G.» (corto para el monitor y más discreto)
+                    names = rows.map(r => {
+                        const nm = r[iName] || '';
+                        const sn = iSurname >= 0 ? (r[iSurname] || '') : '';
+                        return sn ? `${nm} ${sn.charAt(0).toUpperCase()}.` : nm;
+                    });
+                } else {
+                    names = rows.map(r => r[0]);
+                }
+            }
+            return names.map(n => String(n).trim().replace(/\s+/g, ' ')).filter(Boolean);
+        }
+
+        function applyRoster(names) {
+            let truncated = 0;
+            names = names.map(n => { if (n.length > NAME_MAX_LEN) { truncated++; return n.slice(0, NAME_MAX_LEN); } return n; });
+            const extra = Math.max(0, names.length - MAX_PLAYERS);
+            rosterCache = names.slice(0, MAX_PLAYERS);
+            playerCountInput.value = Math.max(MIN_PLAYERS, rosterCache.length);
+            if (rosterCache.length > 2 && currentGameType !== 'tournament') {
+                setGameType('tournament');
+            }
+            renderNameInputs(rosterCache);
+            syncRosterFromInputs();
+            let msg = `📥 ${rosterCache.length} jugador${rosterCache.length !== 1 ? 'es' : ''} importado${rosterCache.length !== 1 ? 's' : ''}`;
+            if (currentGameType === 'tournament' && rosterCache.length > 2) msg += ' · modo Torneo';
+            showToast(msg);
+            if (extra || truncated) {
+                const parts = [];
+                if (extra) parts.push(`La lista tenía ${names.length} nombres y el máximo es ${MAX_PLAYERS}: se han quedado fuera ${extra}.`);
+                if (truncated) parts.push(`${truncated} nombre(s) se han recortado a ${NAME_MAX_LEN} caracteres.`);
+                setTimeout(() => showModal('⚠️ Revisa la lista', parts.join(' '), hideModal, 'Entendido'), 300);
+            }
+        }
+
+        function handleRosterImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const names = parseRosterText(String(e.target.result).replace(/^\uFEFF/, ''), file.name);
+                    if (!names.length) throw new Error('No se ha encontrado ningún nombre.');
+                    applyRoster(names);
+                } catch (err) {
+                    showModal('⚠️ No se pudo importar', `${err.message || 'Archivo no válido.'} Usa un JSON exportado desde esta app, o un .txt/.csv con un nombre por línea.`, hideModal, 'Entendido');
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function exportRoster() {
+            syncRosterFromInputs();
+            const names = rosterCache.map(n => String(n || '').trim()).filter(Boolean);
+            if (!names.length) {
+                showToast('✏️ Escribe algún nombre antes de exportar');
+                return;
+            }
+            const data = {
+                app: 'SudokuEscolar',
+                tipo: 'lista_jugadores',
+                version: 1,
+                fecha: new Date().toISOString(),
+                total: names.length,
+                jugadores: names
+            };
+            downloadJSON(data, `jugadores_sudoku_${new Date().toISOString().slice(0, 10)}.json`);
+            showToast(`📤 Lista exportada (${names.length} jugadores)`);
+        }
+
+        function downloadJSON(obj, filename) {
+            const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
         function renderNameInputs(customNamesArray = null) {
             const count = getEffectivePlayerCount();
-            const currentInputs = playersListContainer.querySelectorAll('input');
-            const currentValues = customNamesArray || Array.from(currentInputs).map(i => i.value);
+            // Ojo: cuando se usa como manejador de eventos llega un Event, no una lista (antes borraba los nombres)
+            if (!Array.isArray(customNamesArray)) customNamesArray = null;
+            if (customNamesArray) {
+                rosterCache = customNamesArray.slice();
+            } else {
+                // Guarda lo escrito antes de redibujar: así al pasar de Torneo (20) a Solitario (1) y volver, no se pierde nadie
+                playersListContainer.querySelectorAll('input').forEach((inp, i) => { rosterCache[i] = inp.value; });
+            }
+            const currentValues = rosterCache;
+            // Si el número de casillas no cambia, no se redibuja (antes se perdía el foco al pulsar en un nombre)
+            if (!customNamesArray && playersListContainer.querySelectorAll('.player-name-input').length === count) return;
 
             playersListContainer.innerHTML = ''; 
             playersListContainer.className = count === 1 
@@ -1106,7 +1277,8 @@
                 
                 const input = document.createElement('input');
                 input.type = "text";
-                input.maxLength = 18;
+                input.maxLength = NAME_MAX_LEN;
+                input.addEventListener('input', syncRosterFromInputs);
                 input.className = "player-name-input flex-1 bg-transparent px-2 py-1 text-slate-700 text-sm focus:outline-none font-extrabold placeholder-orange-200";
                 input.placeholder = count === 1 ? "Nombre o Equipo" : `Jugador ${i + 1}`;
                 if (currentValues[i]) input.value = currentValues[i];
@@ -1124,7 +1296,8 @@
                 const j = Math.floor(Math.random() * (i + 1));
                 [values[i], values[j]] = [values[j], values[i]];
             }
-            renderNameInputs(values);
+            renderNameInputs(values.concat(rosterCache.slice(values.length)));
+            syncRosterFromInputs();
             playSound('select');
             showToast('¡Orden de jugadores mezclado! 🎲');
         }
@@ -1150,6 +1323,8 @@
             }
 
             sessionActive = true;
+            matchHistory = [];
+            syncRosterFromInputs();
             startScreen.classList.add('hidden');
 
             if (currentGameType === 'solo') {
@@ -1824,12 +1999,23 @@
         }
 
         /** Atenúa en el teclado los números que ya están colocados todas las veces (ayuda visual) */
+        /** Opción de configuración: apagar en el teclado los números ya completados */
+        const PAD_HINTS_KEY = 'sudoku_escolar_ayuda_teclado';
+        let padHints = true;
+
+        function setPadHints(value) {
+            padHints = !!value;
+            const chk = document.getElementById('pad-hints-input');
+            if (chk) chk.checked = padHints;
+            try { localStorage.setItem(PAD_HINTS_KEY, padHints ? '1' : '0'); } catch (e) {}
+        }
+
         function updatePadCompletion(side) {
             const pad = document.getElementById(`pad-${side}`);
             if (!pad || !gameStates[side].puzzle.length) return;
             pad.querySelectorAll('button[data-number]').forEach(btn => {
                 const d = parseInt(btn.dataset.number);
-                const done = gameStates[side].puzzle.filter(v => v === d).length >= currentGridSize;
+                const done = padHints && gameStates[side].puzzle.filter(v => v === d).length >= currentGridSize;
                 btn.classList.toggle('opacity-30', done);
                 btn.disabled = done;
             });
@@ -1857,6 +2043,7 @@
                 }
                 container.appendChild(btn);
             }
+            updatePadCompletion(side); // antes, al redibujar el teclado (p. ej. al reanudar) se perdía este estado
         }
 
         function selectCell(side, index) {
@@ -2003,6 +2190,21 @@
                 matchInRound.winner = winnerId;
                 matchInRound.status = 'finished';
             }
+            matchHistory.push({
+                fecha: new Date().toISOString(),
+                modo: currentGameType,
+                ronda: currentGameType === 'tournament' ? currentRoundNumber : null,
+                tablero: `${currentGridSize}x${currentGridSize}`,
+                dificultad: currentDifficulty,
+                codigo: currentMatch.code || null,
+                jugador1: playerNamesMap[currentMatch.p1] || null,
+                jugador2: currentMatch.p2 ? (playerNamesMap[currentMatch.p2] || null) : null,
+                ganador: winnerName || null,
+                motivo: reason,
+                tiempo: formatTime(getElapsedMs()),
+                fallos1: gameStates.left.errors,
+                fallos2: currentMatch.p2 ? gameStates.right.errors : null
+            });
             
             saveToLocalStorage();
             playSound('win');
@@ -2138,7 +2340,7 @@
 
             return {
                 app: "SudokuBattleKids",
-                version: "5.0",
+                version: "6.0",
                 timestamp: new Date().toISOString(),
                 config: {
                     gameType: currentGameType,
@@ -2146,6 +2348,7 @@
                     playerCount: clampPlayerCount(),
                     maxErrors: clampLivesCount(),
                     gridSize: parseInt(modeInput.value) || 6,
+                    padHints: padHints,
                     setupNames: setupNames
                 },
                 tournament: {
@@ -2154,6 +2357,7 @@
                     currentMatchIndex: currentMatchIndex,
                     byeCounts: byeCounts,
                     elapsedMs: getElapsedMs(),
+                    history: matchHistory,
                     playerNamesMap: playerNamesMap,
                     currentRoundMatches: currentRoundMatches,
                     currentMatch: currentMatch,
@@ -2191,7 +2395,14 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    const data = JSON.parse(e.target.result);
+                    const data = JSON.parse(String(e.target.result).replace(/^\uFEFF/, ''));
+                    // Si es una lista de jugadores (y no una partida), se importa como lista
+                    const looksLikeRoster = Array.isArray(data) || (data && !data.config && !data.tournament &&
+                        (data.tipo === 'lista_jugadores' || data.jugadores || data.players || data.alumnos || data.nombres));
+                    if (looksLikeRoster) {
+                        applyRoster(parseRosterText(JSON.stringify(data), 'lista.json'));
+                        return;
+                    }
                     applyImportedState(data);
                 } catch (err) {
                     showModal("⚠️ Error de archivo", "El archivo seleccionado no es un JSON válido.", hideModal);
@@ -2219,6 +2430,7 @@
 
             playerCountInput.value = pCount;
             livesInput.value = maxErrors;
+            if (typeof cfg.padHints === 'boolean') setPadHints(cfg.padHints);
             modeInput.value = currentGridSize;
             setGameType(importedType);
             setDifficulty(importedDiff);
@@ -2234,6 +2446,7 @@
                 currentRoundMatches = trn.currentRoundMatches;
 
                 byeCounts = trn.byeCounts || {};
+                matchHistory = Array.isArray(trn.history) ? trn.history : [];
                 if (trn.currentMatch) currentMatch = trn.currentMatch;
                 if (trn.gameStates) gameStates = trn.gameStates;
                 // Un jugador guardado "congelado" (tras fallo) se quedaría bloqueado para siempre al recargar
@@ -2276,6 +2489,96 @@
                 const stateObj = buildStateObject();
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(stateObj));
             } catch (e) {}
+            scheduleFileSave();
+        }
+
+        /**
+         * AUTOGUARDADO CONTINUO EN UN ARCHIVO JSON
+         * Usa la API de acceso a archivos (Chrome / Edge en ordenador). El docente elige UNA vez
+         * dónde guardar y, a partir de ahí, cada jugada se escribe sola en ese mismo archivo.
+         * Ese archivo se puede abrir después con «📂 Cargar JSON» para continuar.
+         */
+        let autosaveFileHandle = null;
+        let fileSaveTimeout = null;
+        let fileSaveBusy = false;
+        let fileSavePending = false;
+        let lastFileSaveAt = null;
+
+        function fileAutosaveSupported() {
+            return typeof window.showSaveFilePicker === 'function';
+        }
+
+        async function linkAutosaveFile() {
+            if (autosaveFileHandle) {
+                // Ya enlazado: ofrecer desconectar
+                showConfirmModal(`Se está guardando en «${autosaveFileHandle.name}». ¿Dejar de autoguardar en ese archivo?`, () => {
+                    autosaveFileHandle = null;
+                    updateAutosaveFileUI();
+                    showToast('📁 Autoguardado en archivo desactivado');
+                });
+                return;
+            }
+            if (!fileAutosaveSupported()) {
+                showModal('📁 No disponible en este navegador',
+                    'Guardar automáticamente en un archivo solo funciona en Chrome o Edge de ordenador. En este navegador la partida se sigue guardando sola en el propio navegador, y puedes descargar el JSON cuando quieras con «💾 Guardar Progreso».',
+                    hideModal, 'Entendido');
+                return;
+            }
+            try {
+                autosaveFileHandle = await window.showSaveFilePicker({
+                    suggestedName: `sudoku_partida_${new Date().toISOString().slice(0, 10)}.json`,
+                    types: [{ description: 'Partida de Sudoku (JSON)', accept: { 'application/json': ['.json'] } }]
+                });
+                await writeAutosaveFile();
+                showToast(`📁 Autoguardando en «${autosaveFileHandle.name}»`);
+            } catch (err) {
+                if (err && err.name === 'AbortError') return; // el docente canceló
+                autosaveFileHandle = null;
+                showModal('⚠️ No se pudo crear el archivo', 'El navegador no ha permitido guardar en esa ubicación. Prueba otra carpeta (por ejemplo, Documentos).', hideModal, 'Entendido');
+            }
+            updateAutosaveFileUI();
+        }
+
+        function scheduleFileSave() {
+            if (!autosaveFileHandle) return;
+            clearTimeout(fileSaveTimeout);
+            fileSaveTimeout = setTimeout(writeAutosaveFile, 600); // agrupa jugadas muy seguidas
+        }
+
+        async function writeAutosaveFile() {
+            if (!autosaveFileHandle) return;
+            if (fileSaveBusy) { fileSavePending = true; return; }
+            fileSaveBusy = true;
+            try {
+                const writable = await autosaveFileHandle.createWritable();
+                await writable.write(JSON.stringify(buildStateObject(), null, 2));
+                await writable.close();
+                lastFileSaveAt = new Date();
+            } catch (err) {
+                autosaveFileHandle = null;
+                showToast('⚠️ Se perdió el acceso al archivo: vuelve a pulsar 📁');
+            } finally {
+                fileSaveBusy = false;
+                updateAutosaveFileUI();
+                if (fileSavePending) { fileSavePending = false; writeAutosaveFile(); }
+            }
+        }
+
+        function updateAutosaveFileUI() {
+            document.querySelectorAll('.autosave-file-btn').forEach(btn => {
+                if (autosaveFileHandle) {
+                    const t = lastFileSaveAt ? lastFileSaveAt.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '…';
+                    btn.textContent = `✅ ${autosaveFileHandle.name} · ${t}`;
+                    btn.title = 'Guardando automáticamente cada jugada. Pulsa para desactivar.';
+                    btn.classList.replace('bg-indigo-500', 'bg-emerald-600');
+                    btn.classList.replace('hover:bg-indigo-600', 'hover:bg-emerald-700');
+                } else {
+                    btn.textContent = '📁 Autoguardar en archivo';
+                    btn.title = 'Elegir un archivo JSON donde se irá guardando la partida automáticamente';
+                    btn.classList.replace('bg-emerald-600', 'bg-indigo-500');
+                    btn.classList.replace('hover:bg-emerald-700', 'hover:bg-indigo-600');
+                }
+            });
         }
 
         function checkAutoSave() {
