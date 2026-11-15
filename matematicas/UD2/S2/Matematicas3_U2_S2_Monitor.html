@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Fábrica de Productos · Sesión 2 · ¡Sumamos grupos iguales!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ====== Paleta del área de Matemáticas (rojo) ====== */
+:root{
+  --rojo:#DC2626; --rojo2:#F87171; --rojo-osc:#991B1B; --pastel:#FEF2F2; --pastel2:#FEE2E2; --borde:#FECACA;
+  --fondo:#FFF7F5; --texto:#1F2937; --gris:#6B7280;
+  --verde:#16A34A; --verde-p:#F0FDF4; --azul:#2563EB; --azul-p:#EFF6FF; --ambar:#F59E0B; --ambar-p:#FFFBEB;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+/* El tamaño base escala con la pantalla: válido de portátil a SMART MX 4K */
+html{font-size:clamp(13px, min(1.02vw, 1.85vh), 48px)}
+html,body{height:100%}
+body{font-family:'Andika','Nunito','Quicksand',system-ui,sans-serif;background:var(--fondo);color:var(--texto);
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;overflow:hidden}
+button{font:inherit;cursor:pointer;border:none;min-width:60px;min-height:60px;border-radius:18px;transition:transform .12s, box-shadow .12s, background .2s}
+button:active{transform:scale(.96)}
+button:focus-visible{outline:4px solid var(--azul);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ====== Barra superior ====== */
+#barra{position:fixed;top:0;left:0;right:0;height:4.6rem;display:flex;align-items:center;gap:.7rem;padding:0 1rem;
+  background:#fff;box-shadow:0 3px 0 var(--borde);z-index:50}
+#barra::before{content:"";position:absolute;left:0;right:0;top:0;height:.35rem;background:linear-gradient(90deg,var(--rojo2),var(--rojo),var(--ambar))}
+.btn-icono{width:3.6rem;height:3.6rem;font-size:1.8rem;background:var(--pastel);box-shadow:0 4px 0 var(--borde);display:flex;align-items:center;justify-content:center}
+#titulo-barra{flex:1;font-size:1.5rem;font-weight:700;color:var(--rojo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#titulo-barra small{color:var(--gris);font-weight:400;font-size:1.05rem;margin-left:.6rem}
+#btnFullscreen{position:static;background:var(--rojo);color:#fff;box-shadow:0 4px 0 var(--rojo-osc)}
+
+/* ====== Escenario ====== */
+#escenario{position:absolute;top:4.6rem;bottom:0;left:0;right:0;display:flex;flex-direction:column}
+#contenido{flex:1;overflow:auto;padding:1.4rem 2.2rem 1rem 2.2rem}
+#nav{height:6rem;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:#fff;box-shadow:0 -3px 0 var(--borde)}
+.btn-nav{min-width:9rem;height:4.4rem;font-size:2rem;font-weight:700;background:var(--rojo);color:#fff;box-shadow:0 5px 0 var(--rojo-osc)}
+.btn-nav[disabled]{opacity:.3;cursor:default}
+#indicador{font-size:1.35rem;color:var(--gris);font-weight:700;text-align:center}
+#puntos{display:flex;gap:.45rem;justify-content:center;margin-top:.4rem}
+#puntos span{width:1rem;height:1rem;border-radius:50%;background:var(--borde)}
+#puntos span.on{background:var(--rojo)}
+
+/* ====== Tipografía y bloques ====== */
+h1{font-size:2.7rem;color:var(--rojo);line-height:1.15;margin-bottom:.4rem}
+.sub{font-size:1.4rem;color:var(--gris);margin-bottom:1.2rem}
+.grande{font-size:1.75rem;line-height:1.45}
+.enorme{font-size:3.6rem;font-weight:700;letter-spacing:.06em}
+.tarjeta{background:#fff;border:3px solid var(--borde);border-radius:26px;box-shadow:0 7px 0 var(--borde);padding:1.3rem}
+.tarjeta.roja{border-color:var(--rojo);box-shadow:0 7px 0 var(--rojo2);background:var(--pastel)}
+.tarjeta.verde{border-color:var(--verde);box-shadow:0 7px 0 #BBF7D0;background:var(--verde-p)}
+.tarjeta.azul{border-color:var(--azul);box-shadow:0 7px 0 #BFDBFE;background:var(--azul-p)}
+.tarjeta.ambar{border-color:var(--ambar);box-shadow:0 7px 0 #FDE68A;background:var(--ambar-p)}
+.fila{display:flex;gap:1.4rem;align-items:center}
+.fila.arriba{align-items:stretch}
+.col{display:flex;flex-direction:column;gap:1rem}
+.c{text-align:center}
+.flex1{flex:1}
+.pastilla{display:inline-block;border-radius:30px;padding:.35rem 1.2rem;font-weight:700;font-size:1.3rem;background:var(--pastel2);color:var(--rojo-osc)}
+.eq{font-size:2.9rem;font-weight:700;letter-spacing:.04em}
+.eq.r{color:var(--rojo)}
+.etiqueta{font-size:1.2rem;color:var(--gris)}
+.svgbox svg{width:100%;height:auto;max-height:31vh;display:block;margin:0 auto}
+.svgh svg{height:5.2rem;width:auto;display:block}
+
+/* ====== Botones de acción ====== */
+.btn{padding:.7rem 1.5rem;font-size:1.5rem;font-weight:700;background:var(--rojo);color:#fff;box-shadow:0 5px 0 var(--rojo-osc)}
+.btn.sec{background:#fff;color:var(--rojo);border:3px solid var(--rojo);box-shadow:0 5px 0 var(--borde)}
+.btn.verde{background:var(--verde);box-shadow:0 5px 0 #166534}
+.btn.azul{background:var(--azul);box-shadow:0 5px 0 #1E3A8A}
+.btn.ambar{background:var(--ambar);box-shadow:0 5px 0 #B45309}
+.btn.peq{font-size:1.25rem;padding:.5rem 1rem}
+.opciones{display:flex;gap:1.1rem;flex-wrap:wrap;justify-content:center;margin-top:1rem}
+.opcion{min-width:11rem;padding:1rem 1.6rem;font-size:2.1rem;font-weight:700;background:#fff;color:var(--texto);border:4px solid var(--borde);box-shadow:0 6px 0 var(--borde)}
+.opcion.ok{background:#DCFCE7;border-color:var(--verde);box-shadow:0 6px 0 #86EFAC}
+.opcion.ko{background:#FEE2E2;border-color:var(--rojo);box-shadow:0 6px 0 var(--rojo2);animation:temblor .35s}
+@keyframes temblor{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.fb{min-height:3.2rem;font-size:1.7rem;font-weight:700;text-align:center;margin-top:1rem}
+.fb.ok{color:var(--verde)} .fb.ko{color:var(--rojo)}
+
+/* Huecos que se descubren al tocar */
+.hueco{display:inline-flex;align-items:center;justify-content:center;min-width:3.6rem;height:3.6rem;padding:0 .6rem;border-radius:14px;
+  background:var(--pastel2);border:3px dashed var(--rojo2);color:transparent;font-weight:700;cursor:pointer;vertical-align:middle}
+.hueco.visto{background:#fff;border-style:solid;border-color:var(--verde);color:var(--verde);animation:pop .3s}
+@keyframes pop{50%{transform:scale(1.15)}}
+.oculto{visibility:hidden}
+
+/* Reglas numeradas */
+.regla{display:flex;align-items:center;gap:1.1rem;font-size:1.75rem;margin-bottom:1.1rem}
+.regla .n{flex:none;width:3.4rem;height:3.4rem;border-radius:50%;background:var(--rojo);color:#fff;font-weight:700;font-size:1.8rem;display:flex;align-items:center;justify-content:center}
+
+/* Deslizadores / contadores */
+.contador{display:flex;align-items:center;gap:.8rem;font-size:1.5rem;font-weight:700}
+.contador button{width:3.8rem;height:3.8rem;font-size:2rem;background:var(--pastel2);color:var(--rojo-osc);box-shadow:0 4px 0 var(--borde)}
+.contador .v{min-width:3rem;text-align:center;font-size:2.4rem;color:var(--rojo)}
+
+/* ====== Índice ====== */
+.portada{background:linear-gradient(135deg,var(--rojo2),var(--rojo) 60%,#B91C1C);color:#fff;border-radius:30px;padding:1.6rem 2rem;margin-bottom:1.4rem;
+  display:flex;align-items:center;gap:2rem;position:relative;overflow:hidden}
+.portada h1{color:#fff;font-size:3.2rem;margin:0}
+.portada .p1{font-size:1.4rem;opacity:.9;font-weight:700;letter-spacing:.08em}
+.portada .p2{font-size:1.7rem;margin-top:.3rem}
+.indice{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.ap{position:relative;text-align:left;background:#fff;border:3px solid var(--borde);box-shadow:0 7px 0 var(--borde);border-radius:26px;padding:1.1rem 1.2rem;min-height:10.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.ap .ico{font-size:2.8rem}
+.ap .t{font-size:1.45rem;font-weight:700;color:var(--texto);line-height:1.2}
+.ap .m{font-size:1.1rem;color:var(--gris);display:flex;justify-content:space-between;align-items:center}
+.ap .num{position:absolute;top:.8rem;right:1rem;font-weight:700;color:var(--rojo2);font-size:1.4rem}
+.ap.completo{border-color:var(--verde);box-shadow:0 7px 0 #BBF7D0}
+.ap.encurso{border-color:var(--ambar);box-shadow:0 7px 0 #FDE68A}
+.ap.final{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border-color:var(--ambar)}
+.ap.final.listo{animation:latido 1.6s infinite}
+@keyframes latido{50%{transform:scale(1.03)}}
+.pie-indice{display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem;color:var(--gris);font-size:1.2rem}
+
+/* ====== Ventanas modales (ruleta, marcador) ====== */
+.modal{position:fixed;inset:0;background:rgba(31,41,55,.55);display:flex;align-items:center;justify-content:center;z-index:200}
+.modal[hidden]{display:none}
+.caja{background:#fff;border-radius:30px;padding:1.6rem 2rem;min-width:44rem;max-width:90vw;max-height:88vh;overflow:auto;position:relative}
+.caja h2{font-size:2.2rem;color:var(--rojo);margin-bottom:1rem}
+.cerrar{position:absolute;top:1rem;right:1rem;width:3.6rem;height:3.6rem;font-size:1.8rem;background:var(--pastel2)}
+#ruleta-nombre{font-size:4.2rem;font-weight:700;color:var(--rojo);text-align:center;min-height:6.2rem;margin:1rem 0;padding:.6rem;border-radius:20px;background:var(--pastel)}
+#ruleta-nombre.girando{color:var(--gris)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0}
+.chips span{padding:.3rem .9rem;border-radius:20px;background:var(--pastel);font-size:1.1rem}
+.chips span.usado{opacity:.35;text-decoration:line-through}
+.equipo{display:flex;align-items:center;gap:1rem;padding:.6rem 0;border-bottom:2px solid var(--pastel2);font-size:1.6rem}
+.equipo .nom{flex:1;font-weight:700}
+.equipo .pts{min-width:4rem;text-align:center;font-size:2.4rem;font-weight:700;color:var(--rojo)}
+.equipo button{width:3.6rem;height:3.6rem;font-size:1.8rem;background:var(--pastel2);color:var(--rojo-osc)}
+textarea{width:100%;font:inherit;font-size:1.2rem;padding:.6rem;border-radius:14px;border:2px solid var(--borde);min-height:6rem}
+
+/* Temporizador */
+.reloj{position:relative;width:20rem;height:20rem}
+.reloj svg{width:100%;height:100%}
+.reloj .tiempo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:4.2rem;font-weight:700;color:var(--rojo)}
+
+/* Sello / estrella */
+.sello{display:inline-block;border:6px solid var(--rojo);color:var(--rojo);border-radius:16px;padding:.4rem 1.4rem;font-weight:700;font-size:2rem;transform:rotate(-6deg);letter-spacing:.1em}
+.estrella-gana{font-size:1.7rem;font-weight:700;color:var(--ambar);margin-top:.6rem;text-align:center}
+
+/* Brillo de resaltado en SVG */
+.brilla{filter:drop-shadow(0 0 6px #FBBF24) drop-shadow(0 0 12px #FBBF24)}
+
+/* Confeti */
+.confeti{position:fixed;top:-2rem;width:.9rem;height:1.3rem;border-radius:3px;z-index:300;pointer-events:none;animation:caer linear forwards}
+@keyframes caer{to{transform:translateY(110vh) rotate(720deg)}}
+#aviso{position:fixed;left:50%;bottom:7.2rem;transform:translateX(-50%);background:var(--texto);color:#fff;border-radius:20px;padding:.8rem 1.6rem;font-size:1.5rem;z-index:250;opacity:0;transition:opacity .3s;pointer-events:none}
+#aviso.on{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ====== Barra superior: siempre visible ====== -->
+<div id="barra">
+  <button class="btn-icono" id="btnInicio" aria-label="Volver al índice" title="Índice">🏠</button>
+  <div id="titulo-barra">La Fábrica de Productos <small>Sesión 2 · ¡Sumamos grupos iguales!</small></div>
+  <button class="btn-icono" id="btnRuleta" aria-label="Ruleta de voluntarios" title="Ruleta de voluntarios">🎯</button>
+  <button class="btn-icono" id="btnMarcador" aria-label="Marcador de fábricas" title="Marcador de fábricas">🏭</button>
+  <button class="btn-icono" id="btnSonido" aria-label="Silenciar" title="Sonido">🔊</button>
+  <button class="btn-icono" id="btnFullscreen" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+</div>
+
+<div id="escenario">
+  <div id="contenido"></div>
+  <div id="nav">
+    <button class="btn-nav" id="btnAnt" aria-label="Pantalla anterior">◀</button>
+    <div><div id="indicador"></div><div id="puntos"></div></div>
+    <button class="btn-nav" id="btnSig" aria-label="Pantalla siguiente">▶</button>
+  </div>
+</div>
+
+<!-- Ruleta de voluntarios -->
+<div class="modal" id="modalRuleta" hidden>
+  <div class="caja">
+    <button class="cerrar" data-cerrar aria-label="Cerrar">✖</button>
+    <h2>🎯 ¿Quién sale a la pantalla?</h2>
+    <div id="ruleta-nombre">¿…?</div>
+    <div class="fila" style="justify-content:center;gap:1rem">
+      <button class="btn" id="btnGirar">🎲 ¡Girar!</button>
+      <button class="btn sec" id="btnReiniciarRuleta">↺ Empezar lista</button>
+    </div>
+    <div class="chips" id="ruletaChips"></div>
+    <details><summary style="font-size:1.1rem;color:var(--gris);cursor:pointer;margin-top:.6rem">✏️ Editar nombres (uno por línea)</summary>
+      <textarea id="ruletaEditor"></textarea>
+      <button class="btn peq" id="btnGuardarNombres" style="margin-top:.6rem">Guardar nombres</button>
+    </details>
+  </div>
+</div>
+
+<!-- Marcador de fábricas -->
+<div class="modal" id="modalMarcador" hidden>
+  <div class="caja">
+    <button class="cerrar" data-cerrar aria-label="Cerrar">✖</button>
+    <h2>🏭 Sellos de las fábricas</h2>
+    <div id="listaEquipos"></div>
+    <button class="btn sec peq" id="btnCeroMarcador" style="margin-top:1rem">↺ Poner a cero</button>
+  </div>
+</div>
+
+<div id="aviso"></div>
+
+<script>
+// =====================================================================
+// ============ CONFIGURACIÓN DEL DOCENTE ============
+// ✏️ Modifica aquí nombres, equipos, tiempos y ejemplos.
+// =====================================================================
+const CONFIG = {
+  titulo: 'La Fábrica de Productos · Sesión 2',
+  // ✏️ Nombres para la ruleta de voluntarios (también se editan desde la propia ruleta)
+  alumnos: ['Alumno 1','Alumno 2','Alumno 3','Alumno 4','Alumno 5','Alumno 6','Alumno 7','Alumno 8',
+            'Alumno 9','Alumno 10','Alumno 11','Alumno 12','Alumno 13','Alumno 14','Alumno 15','Alumno 16',
+            'Alumno 17','Alumno 18','Alumno 19','Alumno 20','Alumno 21','Alumno 22','Alumno 23','Alumno 24'],
+  // ✏️ Nombres de las fábricas (equipos) para el marcador de sellos
+  equipos: ['Fábrica 1','Fábrica 2','Fábrica 3','Fábrica 4','Fábrica 5','Fábrica 6'],
+  // ✏️ Minutos del temporizador del trabajo individual
+  minutosFicha: 20,
+  // ✏️ Pedido urgente de Carmen: número de bolsas y caramelos por bolsa
+  pedido: { bolsas: 4, caramelos: 3 },
+  // ✏️ Ejemplo del RECUERDA y de la explicación: vasos y fichas por vaso
+  ejemplo: { vasos: 3, fichas: 4 },
+  // ✏️ Primer ejemplo de "¡Pizarras arriba!"
+  pizarra: { vasos: 2, fichas: 5 },
+  // ✏️ Multiplicaciones del juego "¿Cómo se lee?" (actividad 4 de la ficha)
+  lecturas: [[3,5],[4,2],[2,4],[5,6]],
+  // ✏️ Soluciones de la ficha que se descubren en la puesta en común
+  actividad2: [[2,5],[4,2],[3,3],[5,4]],
+  actividad3a: ['6 + 6 + 6','2 + 2 + 2 + 2 + 2 + 2','10 + 10 + 10 + 10','7 + 7'],
+  actividad3b: [[4,5],[3,9],[2,8]],
+  // Convención del aula: 3 grupos de 4 = 4 + 4 + 4 = 3 × 4 («3 veces 4»)
+};
+// =====================================================================
+
+const COLORES = ['#EF4444','#3B82F6','#F59E0B','#10B981','#8B5CF6','#EC4899','#14B8A6','#F97316','#6366F1','#84CC16'];
+const $ = s => document.querySelector(s);
+const azar = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const mezclar = arr => arr.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+const sumaTxt = (n,k) => Array(n).fill(k).join(' + ');
+
+// ---------------- Almacenamiento seguro ----------------
+const CLAVE = 'fabrica-u2-s2';
+let PROG = { estrellas:{}, visto:{}, equipos:null, alumnos:null };
+try { const g = JSON.parse(localStorage.getItem(CLAVE)); if (g) PROG = Object.assign(PROG, g); } catch(e) {}
+function guardar(){ try { localStorage.setItem(CLAVE, JSON.stringify(PROG)); } catch(e) {} }
+
+// ---------------- Sonido (Web Audio API, se crea al primer toque) ----------------
+let audioCtx = null, silencio = false;
+function tono(f1,f2,inicio,dur,tipo='sine',vol=.25){
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = tipo; o.frequency.setValueAtTime(f1,inicio); o.frequency.exponentialRampToValueAtTime(f2,inicio+dur);
+  g.gain.setValueAtTime(vol,inicio); g.gain.exponentialRampToValueAtTime(.001,inicio+dur);
+  o.connect(g).connect(audioCtx.destination); o.start(inicio); o.stop(inicio+dur);
+}
+function sonido(tipo){
+  if (silencio) return;
+  try {
+    audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const t = audioCtx.currentTime;
+    if (tipo==='ok')   tono(520,1040,t,.18);
+    if (tipo==='ko')   { tono(220,180,t,.15,'triangle'); tono(220,180,t+.2,.15,'triangle'); }
+    if (tipo==='win')  [523,659,784,1047].forEach((f,i)=>tono(f,f,t+i*.12,.25));
+    if (tipo==='pop')  tono(700,900,t,.07,'sine',.15);
+    if (tipo==='tic')  tono(1200,1200,t,.03,'square',.05);
+    if (tipo==='alarma') [0,.35,.7].forEach(d=>{tono(880,880,t+d,.22,'square',.12);});
+  } catch(e) {}
+}
+$('#btnSonido').addEventListener('click', ()=>{
+  silencio = !silencio;
+  $('#btnSonido').textContent = silencio ? '🔇' : '🔊';
+  $('#btnSonido').setAttribute('aria-label', silencio ? 'Activar sonido' : 'Silenciar');
+});
+
+// ---------------- Pantalla completa ----------------
+const btnFS = $('#btnFullscreen'), raiz = document.documentElement;
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+if (!(raiz.requestFullscreen || raiz.webkitRequestFullscreen)) btnFS.hidden = true;
+btnFS.addEventListener('click', ()=>{
+  if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  else (raiz.requestFullscreen || raiz.webkitRequestFullscreen).call(raiz);
+});
+function iconoFS(){ const a = !!fsEl(); btnFS.textContent = a ? '✖' : '⛶'; btnFS.setAttribute('aria-label', a ? 'Salir de pantalla completa' : 'Pantalla completa'); }
+document.addEventListener('fullscreenchange', iconoFS);
+document.addEventListener('webkitfullscreenchange', iconoFS);
+
+// ---------------- Avisos, confeti, bloqueo ----------------
+let bloqueado = false;          // En la SMART MX pueden tocar varios a la vez: bloqueamos durante el feedback
+function bloquear(ms=700){ bloqueado = true; setTimeout(()=>bloqueado=false, ms); }
+function aviso(txt){ const a=$('#aviso'); a.textContent=txt; a.classList.add('on'); clearTimeout(aviso.t); aviso.t=setTimeout(()=>a.classList.remove('on'),2200); }
+function confeti(n=70){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for (let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='confeti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=COLORES[i%COLORES.length];
+    c.style.animationDuration=(1.8+Math.random()*1.8)+'s'; c.style.animationDelay=(Math.random()*.5)+'s';
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4200);
+  }
+}
+function ganarEstrella(id){
+  if (!PROG.estrellas[id]) { PROG.estrellas[id]=true; guardar(); }
+  sonido('win'); confeti(); aviso('⭐ ¡Estrella conseguida!');
+}
+
+// ---------------- Dibujos SVG ----------------
+// Vasos con fichas. opts.brillo: 'grupos' | 'uno' | null
+function vasosSVG(n,k,opts={}){
+  const cw=56, gap=14, filas=Math.max(1,Math.ceil(k/2)), h=40+filas*20+12, w=n*(cw+gap)+gap;
+  let s='';
+  for (let i=0;i<n;i++){
+    const x0=gap+i*(cw+gap);
+    const brilloVaso = opts.brillo==='grupos' ? ' class="brilla"' : '';
+    s+=`<g${brilloVaso}><path d="M${x0},16 L${x0+cw},16 L${x0+cw-7},${h-4} L${x0+7},${h-4} Z" fill="#EFF6FF" stroke="#2563EB" stroke-width="2.5"/>`;
+    s+=`<ellipse cx="${x0+cw/2}" cy="16" rx="${cw/2}" ry="6" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/></g>`;
+    const brilloFicha = (opts.brillo==='uno' && i===0) ? ' class="brilla"' : '';
+    s+=`<g${brilloFicha}>`;
+    for (let j=0;j<k;j++){
+      const impar = (k%2===1 && j===k-1);
+      const cx = impar ? x0+cw/2 : x0+cw/2+(j%2===0?-10:10);
+      const cy = 32+Math.floor(j/2)*20;
+      s+=`<circle cx="${cx}" cy="${cy}" r="8" fill="${COLORES[i%COLORES.length]}" stroke="#1F2937" stroke-width="1"/>`;
+    }
+    s+='</g>';
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${n} vasos con ${k} fichas cada uno">${s}</svg>`;
+}
+// Bolsas de caramelos
+function bolsasSVG(n,k){
+  const bw=70, gap=18, filas=Math.max(1,Math.ceil(k/3)), h=50+filas*18+16, w=n*(bw+gap)+gap;
+  let s='';
+  for (let i=0;i<n;i++){
+    const x0=gap+i*(bw+gap);
+    s+=`<path d="M${x0+8},22 L${x0+bw-8},22 L${x0+bw},${h-8} Q${x0+bw/2},${h+2} ${x0},${h-8} Z" fill="#FEF2F2" stroke="#DC2626" stroke-width="2.5"/>`;
+    s+=`<path d="M${x0+12},22 Q${x0+bw/2},6 ${x0+bw-12},22" fill="none" stroke="#DC2626" stroke-width="2.5"/>`;
+    for (let j=0;j<k;j++){
+      const cx=x0+bw/2+((j%3)-1)*18, cy=40+Math.floor(j/3)*18;
+      s+=`<circle cx="${cx}" cy="${cy}" r="7" fill="${COLORES[(j+i)%COLORES.length]}" stroke="#1F2937" stroke-width="1"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${n} bolsas con ${k} caramelos cada una">${s}</svg>`;
+}
+
+// ---------------- Componentes reutilizables ----------------
+// Pregunta de opción múltiple. opciones: [{t:'texto', ok:true}], alAcertar: callback
+function pregunta(cont, opciones, alAcertar, msgOk='¡Lo has pillado! 🎉'){
+  const zona=document.createElement('div');
+  zona.innerHTML=`<div class="opciones"></div><div class="fb" aria-live="polite"></div>`;
+  const ops=zona.querySelector('.opciones'), fb=zona.querySelector('.fb');
+  let resuelto=false;
+  mezclar(opciones).forEach(o=>{
+    const b=document.createElement('button'); b.className='opcion'; b.innerHTML=o.t;
+    b.addEventListener('click',()=>{
+      if (bloqueado || resuelto) return;
+      bloquear();
+      if (o.ok){ resuelto=true; b.classList.add('ok'); b.innerHTML='✔️ '+o.t; fb.className='fb ok'; fb.textContent=msgOk; sonido('ok'); alAcertar && alAcertar(); }
+      else { b.classList.add('ko'); fb.className='fb ko'; fb.textContent='❌ Casi… ¡Inténtalo otra vez!'; sonido('ko'); setTimeout(()=>b.classList.remove('ko'),700); }
+    });
+    ops.appendChild(b);
+  });
+  cont.appendChild(zona);
+}
+// Huecos que se descubren al tocar
+function activarHuecos(cont){
+  cont.querySelectorAll('.hueco').forEach(h=>h.addEventListener('click',()=>{
+    if (h.classList.contains('visto')) return;
+    h.classList.add('visto'); sonido('pop');
+  }));
+}
+function hueco(v){ return `<span class="hueco" role="button" aria-label="Descubrir">${v}</span>`; }
+// Contador con + y −
+function contador(etq, valor, min, max, alCambiar){
+  const d=document.createElement('div'); d.className='contador';
+  d.innerHTML=`<span>${etq}</span><button aria-label="Menos">−</button><span class="v">${valor}</span><button aria-label="Más">+</button>`;
+  const [bm,bp]=d.querySelectorAll('button'), v=d.querySelector('.v');
+  const fijar=x=>{ valor=Math.max(min,Math.min(max,x)); v.textContent=valor; sonido('tic'); alCambiar(valor); };
+  bm.addEventListener('click',()=>fijar(valor-1)); bp.addEventListener('click',()=>fijar(valor+1));
+  return d;
+}
+
+// =====================================================================
+// ============ APARTADOS Y PANTALLAS ============
+// ✏️ Cada apartado tiene un icono, un título y sus pantallas.
+// La última pantalla de cada apartado es un minirreto que da una estrella.
+// =====================================================================
+const APARTADOS = [
+// ---------------------------------------------------------------- 1
+{ id:'calentamos', icono:'🔥', titulo:'Calentamos motores', tiempo:'0-10′', pantallas:[
+  el=>{
+    el.innerHTML=`<h1>Calentamos motores 🔥</h1><p class="sub">Contamos en voz alta. Tocad cada hueco para descubrir el número.</p>
+      <div class="fila" style="gap:1rem;margin-bottom:1.4rem;flex-wrap:wrap" id="pasos"></div>
+      <div class="tarjeta c" id="serie" style="padding:2rem"></div>`;
+    const pasos=el.querySelector('#pasos'), serie=el.querySelector('#serie');
+    const pintar=(paso,inicio)=>{
+      const nums=Array.from({length:7},(_,i)=>inicio+paso*i);
+      serie.innerHTML=`<div class="pastilla" style="margin-bottom:1.2rem">de ${paso} en ${paso}</div>
+        <div class="enorme" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;align-items:center">${nums.map((n,i)=>i<4?`<span>${n}</span>`:hueco(n)).join('<span style="color:var(--gris)">,</span>')}</div>`;
+      activarHuecos(serie);
+    };
+    [2,5,3].forEach(p=>{const b=document.createElement('button');b.className='btn';b.textContent=`de ${p} en ${p}`;b.onclick=()=>pintar(p,p);pasos.appendChild(b);});
+    const r=document.createElement('button');r.className='btn ambar';r.textContent='🎲 Otra serie';
+    r.onclick=()=>{const p=azar(2,10);pintar(p,p*azar(1,3));}; pasos.appendChild(r);
+    pintar(2,2);
+  },
+  el=>{
+    const p=azar(2,6), i=p*azar(1,2), nums=[i,i+p,i+2*p,i+3*p], sol=i+4*p;
+    el.innerHTML=`<h1>⭐ Minirreto</h1><p class="sub">¿Qué número sigue?</p>
+      <div class="tarjeta c"><div class="enorme">${nums.join(', ')}, <span style="color:var(--rojo)">?</span></div></div>`;
+    pregunta(el,[{t:sol,ok:true},{t:sol+1},{t:sol-p+1},{t:sol+p}].filter((o,ix,a)=>a.findIndex(x=>x.t===o.t)===ix),()=>ganarEstrella('calentamos'));
+  }
+]},
+// ---------------------------------------------------------------- 2
+{ id:'pedido', icono:'🍬', titulo:'¡Pedido urgente!', tiempo:'10-20′', pantallas:[
+  el=>{
+    let b=CONFIG.pedido.bolsas, k=CONFIG.pedido.caramelos;
+    el.innerHTML=`<h1>¡Pedido urgente! 🍬</h1><p class="sub">Carmen necesita caramelos para el Mercado.</p>
+      <div class="fila arriba">
+        <div class="tarjeta roja c flex1"><div class="svgbox" id="dib" style="max-width:40rem;margin:0 auto"></div>
+          <div class="grande" style="font-weight:700;margin-top:.6rem" id="txt"></div></div>
+        <div class="col" style="flex:.9">
+          <div class="regla"><span class="n">1</span><span>Montad el pedido con <b>vasos y fichas</b>.</span></div>
+          <div class="regla"><span class="n">2</span><span>Escribid la <b>suma</b> en la pizarra blanca.</span></div>
+          <div class="regla"><span class="n">3</span><span>¿Cuántos caramelos hay en total?</span></div>
+          <button class="btn verde" id="ver">👀 Descubrir la suma</button>
+          <div class="tarjeta c oculto" id="sol"><div class="eq" id="eqs"></div></div>
+        </div></div>
+      <div class="fila" style="justify-content:center;margin-top:1.2rem;gap:2.4rem" id="ctrl"></div>`;
+    const pinta=()=>{el.querySelector('#dib').innerHTML=bolsasSVG(b,k);el.querySelector('#txt').textContent=`${b} bolsas con ${k} caramelos`;
+      el.querySelector('#eqs').textContent=`${sumaTxt(b,k)} = ${b*k}`;el.querySelector('#sol').classList.add('oculto');};
+    el.querySelector('#ctrl').append(contador('Bolsas',b,1,6,v=>{b=v;pinta();}),contador('Caramelos en cada bolsa',k,1,9,v=>{k=v;pinta();}));
+    el.querySelector('#ver').onclick=()=>{el.querySelector('#sol').classList.remove('oculto');sonido('ok');};
+    pinta();
+  },
+  el=>{
+    const {bolsas:b,caramelos:k}=CONFIG.pedido;
+    el.innerHTML=`<h1>⭐ Minirreto</h1><p class="sub">${b} bolsas con ${k} caramelos. ¿Cuántos caramelos hay en total?</p>
+      <div class="tarjeta c"><div class="svgbox" style="max-width:36rem;margin:0 auto">${bolsasSVG(b,k)}</div></div>`;
+    pregunta(el,[{t:b*k,ok:true},{t:b+k},{t:`${b}${k}`},{t:b*k+k}].filter((o,ix,a)=>a.findIndex(x=>String(x.t)===String(o.t))===ix),()=>ganarEstrella('pedido'),`¡Sí! ${sumaTxt(b,k)} = ${b*k} 🎉`);
+  }
+]},
+// ---------------------------------------------------------------- 3
+{ id:'signo', icono:'✖️', titulo:'¡Llega el signo ×!', tiempo:'20-30′', pantallas:[
+  el=>{
+    let n=CONFIG.ejemplo.vasos; const k=CONFIG.ejemplo.fichas;
+    el.innerHTML=`<h1>Una suma muy repetida…</h1><p class="sub">Añade vasos. ¿Qué le pasa a la suma?</p>
+      <div class="fila arriba"><div class="tarjeta c" style="flex:1.1"><div class="svgbox" id="dib"></div><div class="grande" id="txt" style="margin-top:.5rem"></div></div>
+      <div class="col flex1"><div class="tarjeta c"><div class="etiqueta">Suma de sumandos iguales</div><div class="eq" id="eq" style="font-size:2.3rem;line-height:1.3"></div></div>
+      <div class="grande c" id="msg"></div></div></div>
+      <div class="fila" style="justify-content:center;margin-top:1.2rem" id="ctrl"></div>`;
+    const pinta=()=>{el.querySelector('#dib').innerHTML=vasosSVG(n,k);el.querySelector('#txt').innerHTML=`<b>${n} vasos</b> con <b>${k} fichas</b>`;
+      el.querySelector('#eq').textContent=`${sumaTxt(n,k)} = ${n*k}`;
+      el.querySelector('#msg').innerHTML= n>=6 ? '😮 ¡Qué suma tan larga! ¿Habrá una forma <b style="color:var(--rojo)">más corta</b>?' : 'Siempre sumamos el <b style="color:var(--rojo)">mismo número</b>.';};
+    el.querySelector('#ctrl').append(contador('Vasos',n,1,10,v=>{n=v;pinta();}));
+    pinta();
+  },
+  el=>{
+    let n=CONFIG.ejemplo.vasos, k=CONFIG.ejemplo.fichas;
+    el.innerHTML=`<h1>¡Llega el signo ×!</h1><p class="sub">Cambia los vasos y las fichas. Mira cómo cambian la suma y la multiplicación.</p>
+      <div class="fila arriba"><div class="tarjeta c flex1"><div class="svgbox" id="dib"></div></div>
+      <div class="col" style="flex:1.2"><div class="tarjeta c"><div class="etiqueta">Con una suma</div><div class="eq" id="s" style="font-size:2.2rem"></div></div>
+        <div class="c" style="font-size:2rem;color:var(--rojo);font-weight:700">↓ más corto ↓</div>
+        <div class="tarjeta roja c"><div class="etiqueta">Con una multiplicación</div><div class="eq r" id="m"></div><div class="grande" style="font-weight:700" id="l"></div></div></div></div>
+      <div class="fila" style="justify-content:center;margin-top:1.2rem;gap:2.4rem" id="ctrl"></div>`;
+    const pinta=()=>{el.querySelector('#dib').innerHTML=vasosSVG(n,k);el.querySelector('#s').textContent=`${sumaTxt(n,k)} = ${n*k}`;
+      el.querySelector('#m').textContent=`${n} × ${k} = ${n*k}`;el.querySelector('#l').textContent=`Se lee: «${n} veces ${k}»`;};
+    el.querySelector('#ctrl').append(contador('Vasos',n,1,6,v=>{n=v;pinta();}),contador('Fichas en cada vaso',k,1,8,v=>{k=v;pinta();}));
+    pinta();
+  },
+  el=>{
+    let n=CONFIG.ejemplo.vasos, k=CONFIG.ejemplo.fichas, modo=null;
+    el.innerHTML=`<h1>¿Qué nos dice cada número?</h1><p class="sub">Toca cada número para descubrirlo.</p>
+      <div class="fila arriba"><div class="col" style="flex:1"><div class="c" style="font-size:7rem;font-weight:700;line-height:1">
+        <button id="b1" class="btn" style="font-size:6rem;background:var(--azul);box-shadow:0 7px 0 #1E3A8A;padding:0 1.6rem"></button>
+        <span> × </span>
+        <button id="b2" class="btn" style="font-size:6rem;padding:0 1.6rem"></button></div>
+        <div class="tarjeta c grande" id="exp" style="min-height:7rem">👆 Toca un número</div>
+        <button class="btn ambar" id="otro" style="align-self:center">🎲 Otro ejemplo</button></div>
+      <div class="tarjeta c" style="flex:1"><div class="svgbox" id="dib"></div></div></div>`;
+    const pinta=()=>{el.querySelector('#b1').textContent=n;el.querySelector('#b2').textContent=k;el.querySelector('#dib').innerHTML=vasosSVG(n,k,{brillo:modo});
+      const e=el.querySelector('#exp');
+      if(modo==='grupos'){e.className='tarjeta azul c grande';e.innerHTML=`<b style="color:var(--azul);font-size:2.4rem">${n}</b> → cuántos <b>grupos</b> hay (vasos)`;}
+      else if(modo==='uno'){e.className='tarjeta roja c grande';e.innerHTML=`<b style="color:var(--rojo);font-size:2.4rem">${k}</b> → cuántos hay <b>en cada grupo</b> (fichas)`;}
+      else {e.className='tarjeta c grande';e.textContent='👆 Toca un número';}};
+    el.querySelector('#b1').onclick=()=>{modo='grupos';sonido('pop');pinta();};
+    el.querySelector('#b2').onclick=()=>{modo='uno';sonido('pop');pinta();};
+    el.querySelector('#otro').onclick=()=>{n=azar(2,6);do{k=azar(2,8);}while(k===n);modo=null;pinta();};
+    pinta();
+  },
+  el=>{
+    let n,k; do{n=azar(2,5);k=azar(2,6);}while(n===k);
+    el.innerHTML=`<h1>⭐ Minirreto</h1><p class="sub">¿Qué multiplicación corresponde a este dibujo?</p>
+      <div class="tarjeta c"><div class="svgbox" style="max-width:34rem;margin:0 auto">${vasosSVG(n,k)}</div><div class="grande">${n} vasos con ${k} fichas</div></div>`;
+    pregunta(el,[{t:`${n} × ${k}`,ok:true},{t:`${k} × ${n}`},{t:`${n} + ${k}`}],()=>ganarEstrella('signo'),`¡Exacto! ${n} grupos de ${k}: «${n} veces ${k}» 🎉`);
+  }
+]},
+// ---------------------------------------------------------------- 4
+{ id:'pizarras', icono:'🧑‍🏫', titulo:'¡Pizarras arriba!', tiempo:'20-30′', pantallas:[
+  el=>{
+    let n=CONFIG.pizarra.vasos, k=CONFIG.pizarra.fichas;
+    el.innerHTML=`<h1>¡Pizarras arriba! ✍️</h1><p class="sub">Escribid en la pizarra la suma y la multiplicación. Después, ¡lo comprobamos!</p>
+      <div class="fila arriba"><div class="tarjeta c flex1"><div class="svgbox" id="dib" style="max-width:30rem;margin:0 auto"></div></div>
+      <div class="col flex1">
+        <div class="grande">¿Cuántos grupos? ¿Cuántas fichas en cada grupo?</div>
+        <div class="tarjeta c"><div class="etiqueta">Suma</div><div class="eq" id="s"></div></div>
+        <div class="tarjeta roja c"><div class="etiqueta">Multiplicación</div><div class="eq r" id="m"></div><div class="grande" id="l" style="font-weight:700"></div></div>
+        <div class="fila" style="justify-content:center;flex-wrap:wrap;gap:.8rem">
+          <button class="btn verde" id="vs">👀 Suma</button><button class="btn" id="vm">👀 Multiplicación</button><button class="btn ambar" id="otro">🎲 Otro</button></div>
+      </div></div>`;
+    const S=el.querySelector('#s'),M=el.querySelector('#m'),L=el.querySelector('#l');
+    const pinta=()=>{el.querySelector('#dib').innerHTML=vasosSVG(n,k);S.textContent=`${sumaTxt(n,k)} = ${n*k}`;M.textContent=`${n} × ${k} = ${n*k}`;L.textContent=`«${n} veces ${k}»`;
+      [S,M,L].forEach(x=>x.classList.add('oculto'));};
+    el.querySelector('#vs').onclick=()=>{S.classList.remove('oculto');sonido('ok');};
+    el.querySelector('#vm').onclick=()=>{M.classList.remove('oculto');L.classList.remove('oculto');sonido('ok');};
+    el.querySelector('#otro').onclick=()=>{n=azar(2,5);k=azar(2,6);pinta();};
+    pinta();
+  },
+  el=>{
+    let i=0; const lista=CONFIG.lecturas;
+    const ronda=()=>{
+      const [n,k]=lista[i];
+      el.innerHTML=`<h1>¿Cómo se lee?</h1><p class="sub">Leemos el signo × como «veces». Elige la lectura y la suma correctas. (${i+1} de ${lista.length})</p>
+        <div class="c"><span class="tarjeta roja" style="display:inline-block;padding:.6rem 3rem"><span class="eq r" style="font-size:4.4rem">${n} × ${k}</span></span></div>
+        <div class="fila arriba" style="margin-top:1.2rem"><div class="flex1" id="z1"><div class="c pastilla">¿Cómo se lee?</div></div><div class="flex1" id="z2"><div class="c pastilla">¿Qué suma es?</div></div></div>
+        <div class="c" style="margin-top:.6rem"><button class="btn" id="sig" hidden>Siguiente ▶</button></div>`;
+      let aciertos=0; const comprobar=()=>{ if(++aciertos===2){ const b=el.querySelector('#sig'); b.hidden=false; if(i===lista.length-1){b.textContent='¡Terminado! 🎉';} } };
+      const otraSuma = n===k ? `${n} + ${k}` : sumaTxt(k,n);
+      pregunta(el.querySelector('#z1'),[{t:`«${n} veces ${k}»`,ok:true},{t:`«${k} veces ${n}»`},{t:`«${n} más ${k}»`}].filter((o,ix,a)=>a.findIndex(x=>x.t===o.t)===ix),comprobar,'¡Bien leído!');
+      pregunta(el.querySelector('#z2'),[{t:sumaTxt(n,k),ok:true},{t:otraSuma},{t:`${n} + ${k}`}].filter((o,ix,a)=>a.findIndex(x=>x.t===o.t)===ix),comprobar,'¡Suma correcta!');
+      el.querySelectorAll('.opcion').forEach(b=>{b.style.fontSize='1.6rem';b.style.minWidth='9rem';});
+      el.querySelector('#sig').onclick=()=>{ if(i<lista.length-1){i++;ronda();} else {sonido('win');confeti(40);} };
+    };
+    ronda();
+  },
+  el=>{
+    let n=3,k=2;
+    el.innerHTML=`<h1>Modo reto: ¡inventa tu pedido! 🏭</h1><p class="sub">Un voluntario elige los grupos y las fichas. La clase dice la suma y la multiplicación.</p>
+      <div class="fila arriba"><div class="tarjeta c flex1"><div class="svgbox" id="dib"></div></div>
+      <div class="col flex1"><div class="tarjeta c"><div class="etiqueta">Suma</div><div class="eq" id="s" style="font-size:2.2rem"></div></div>
+      <div class="tarjeta roja c"><div class="eq r" id="m"></div><div class="grande" id="l" style="font-weight:700"></div></div>
+      <button class="btn verde" id="ver" style="align-self:center">👀 Comprobar</button></div></div>
+      <div class="fila" style="justify-content:center;margin-top:1.2rem;gap:2.4rem" id="ctrl"></div>`;
+    const S=el.querySelector('#s'),M=el.querySelector('#m'),L=el.querySelector('#l');
+    const pinta=()=>{el.querySelector('#dib').innerHTML=vasosSVG(n,k);S.textContent=`${sumaTxt(n,k)} = ${n*k}`;M.textContent=`${n} × ${k} = ${n*k}`;L.textContent=`«${n} veces ${k}»`;[S,M,L].forEach(x=>x.classList.add('oculto'));};
+    el.querySelector('#ver').onclick=()=>{[S,M,L].forEach(x=>x.classList.remove('oculto'));sonido('ok');};
+    el.querySelector('#ctrl').append(contador('Grupos',n,1,6,v=>{n=v;pinta();}),contador('En cada grupo',k,1,8,v=>{k=v;pinta();}));
+    pinta();
+  },
+  el=>{
+    let n,k; do{n=azar(2,5);k=azar(2,9);}while(n===k);
+    el.innerHTML=`<h1>⭐ Minirreto</h1><p class="sub">Escribe esta suma como multiplicación.</p>
+      <div class="tarjeta c"><div class="enorme">${sumaTxt(n,k)}</div></div>`;
+    pregunta(el,[{t:`${n} × ${k}`,ok:true},{t:`${k} × ${n}`},{t:`${k} + ${n}`}],()=>ganarEstrella('pizarras'),`¡Sí! ${n} veces ${k} = ${n*k} 🎉`);
+  }
+]},
+// ---------------------------------------------------------------- 5
+{ id:'ficha', icono:'📝', titulo:'¡A vuestra ficha!', tiempo:'30-50′', pantallas:[
+  el=>{
+    el.innerHTML=`<h1>¡Cada fabricante, a su ficha! 📝</h1><p class="sub">Trabajo individual</p>
+      <div class="fila arriba"><div class="flex1">
+        <div class="regla"><span class="n">1</span><span><b>Mira</b> los grupos antes de escribir.</span></div>
+        <div class="regla"><span class="n">2</span><span>Primero la <b>suma</b>, después la <b>multiplicación</b>.</span></div>
+        <div class="regla"><span class="n">3</span><span>En los problemas: <b>DATOS · OPERACIÓN · SOLUCIÓN</b>.</span></div>
+        <div class="regla"><span class="n">4</span><span>¿Has terminado? ¡A por el <b>reto</b>!</span></div>
+        <button class="btn verde" id="fin" style="margin-top:.6rem">✅ ¡Hemos terminado la ficha!</button>
+      </div>
+      <div class="col c" style="align-items:center"><div class="reloj"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#fff" stroke="#FEE2E2" stroke-width="9"/>
+        <circle id="arco" cx="50" cy="50" r="44" fill="none" stroke="#DC2626" stroke-width="9" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg>
+        <div class="tiempo" id="t"></div></div>
+        <div class="fila" style="gap:.8rem"><button class="btn" id="play">▶ Empezar</button><button class="btn sec" id="reset">↺</button></div></div></div>`;
+    TEMP.montar(el);
+    el.querySelector('#fin').onclick=()=>{ganarEstrella('ficha');};
+  }
+]},
+// ---------------------------------------------------------------- 6
+{ id:'comun', icono:'🔍', titulo:'Puesta en común', tiempo:'50′', pantallas:[
+  el=>{
+    el.innerHTML=`<h1>Comprobamos: vasos y fichas</h1><p class="sub">Actividad 2 · Toca cada tarjeta para ver la solución.</p><div class="col" id="lista" style="gap:.8rem"></div>`;
+    CONFIG.actividad2.forEach(([n,k],i)=>{
+      const d=document.createElement('button'); d.className='tarjeta fila'; d.style.cssText='width:100%;text-align:left;padding:.45rem 1.4rem';
+      d.innerHTML=`<span class="pastilla" style="font-size:1.6rem">${'abcd'[i]}</span><span class="svgh" style="width:22rem;display:flex;justify-content:center">${vasosSVG(n,k)}</span>
+        <span class="flex1 grande sol oculto">${sumaTxt(n,k)} = ${n*k}</span><span class="eq r sol oculto" style="font-size:2.4rem">${n} × ${k} = ${n*k}</span><span class="grande pista" style="color:var(--gris)">👆 Toca</span>`;
+      d.onclick=()=>{d.querySelectorAll('.sol').forEach(s=>s.classList.remove('oculto'));const pi=d.querySelector('.pista'); if(pi) pi.remove();sonido('ok');};
+      el.querySelector('#lista').appendChild(d);
+    });
+  },
+  el=>{
+    el.innerHTML=`<h1>Comprobamos: ¡y al revés!</h1><p class="sub">Actividad 3 · Toca los huecos para descubrir la solución.</p>
+      <div class="fila arriba"><div class="tarjeta flex1"><div class="pastilla" style="margin-bottom:1rem">De suma a multiplicación</div>${
+        CONFIG.actividad3a.map(s=>{const p=s.split(' + ').map(Number);const n=p.length,k=p[0];return `<div class="grande" style="margin-bottom:.9rem">${s} = ${hueco(`${n} × ${k} = ${n*k}`)}</div>`;}).join('')}</div>
+      <div class="tarjeta flex1"><div class="pastilla" style="margin-bottom:1rem">De multiplicación a suma</div>${
+        CONFIG.actividad3b.map(([n,k])=>`<div class="grande" style="margin-bottom:.9rem">${n} × ${k} = ${hueco(`${sumaTxt(n,k)} = ${n*k}`)}</div>`).join('')}</div></div>`;
+    activarHuecos(el);
+  },
+  el=>{
+    const probs=[
+      {ico:'🍑',txt:'5 bandejas con 3 melocotones cada una',ok:true, op:'5 × 3 = 15', sol:'Hay 15 melocotones.'},
+      {ico:'✉️',txt:'4 sobres con 6 cromos cada uno',ok:true, op:'4 × 6 = 24', sol:'Tiene 24 cromos.'},
+      {ico:'🍋',txt:'Una caja con 8 limones y otra con 5 limones',ok:false, op:'8 + 5 = 13', sol:'Tiene 13 limones.'},
+    ];
+    let hechos=0;
+    el.innerHTML=`<h1>Pedidos del Mercado</h1><p class="sub">Actividad 6 · ¿Se puede usar una multiplicación? Votad y luego tocad SÍ o NO.</p><div class="fila arriba" id="pz"></div><div class="fb" id="fbg"></div>`;
+    probs.forEach(p=>{
+      const c=document.createElement('div'); c.className='tarjeta c flex1';
+      c.innerHTML=`<div style="font-size:4.4rem">${p.ico}</div><div class="grande" style="min-height:5.2rem">${p.txt}</div>
+        <div class="fila" style="justify-content:center;gap:.8rem;margin:.8rem 0"><button class="btn verde" data-v="1">SÍ</button><button class="btn" data-v="0">NO</button></div>
+        <div class="res oculto"><div class="eq" style="font-size:2.4rem;color:${p.ok?'var(--rojo)':'var(--texto)'}">${p.op}</div>
+        <div class="grande">${p.ok?'✔️ Grupos iguales: multiplicamos':'✋ Grupos distintos: ¡solo sumamos!'}</div><div class="etiqueta">${p.sol}</div></div>`;
+      let listo=false;
+      c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+        if(bloqueado||listo) return; bloquear();
+        if((b.dataset.v==='1')===p.ok){listo=true;sonido('ok');c.classList.add('verde');c.querySelector('.res').classList.remove('oculto');
+          if(++hechos===probs.length){ganarEstrella('comun');}}
+        else{sonido('ko');b.classList.add('ko');aviso('❌ ¡Pensadlo otra vez! ¿Los grupos son iguales?');setTimeout(()=>b.classList.remove('ko'),600);}
+      });
+      el.querySelector('#pz').appendChild(c);
+    });
+  }
+]},
+// ---------------------------------------------------------------- 7
+{ id:'averia', icono:'🛠️', titulo:'Reto: ¡carta de avería!', tiempo:'50′', pantallas:[
+  el=>{
+    el.innerHTML=`<h1>Reto: ¡carta de avería! 🛠️</h1><p class="sub">La máquina de la fábrica se ha estropeado. ¿Qué error tiene?</p>
+      <div class="c"><div class="tarjeta ambar" style="display:inline-block;padding:1.4rem 3.4rem"><div class="etiqueta" style="color:#B45309;font-weight:700">La máquina escribió:</div><div class="enorme">4 + 4 + 4 = 4 × 4</div></div></div>
+      <div id="q"></div><div id="rep" class="oculto fila arriba" style="margin-top:.6rem">
+        <div class="tarjeta c" style="flex:.8"><div class="svgbox" style="max-width:22rem;margin:0 auto">${vasosSVG(3,4,{brillo:'grupos'})}</div><div class="grande">Solo hay <b>3 grupos</b> de 4</div></div>
+        <div class="tarjeta roja c flex1"><div class="etiqueta">Lo correcto: 4 + 4 + 4</div><div class="eq r" style="font-size:3.4rem">3 × 4 = 12</div><div class="grande" style="font-weight:700">«3 veces 4»</div></div></div>`;
+    pregunta(el.querySelector('#q'),[
+      {t:'Hay 3 grupos, no 4 → 3 × 4',ok:true},{t:'Debería ser 4 + 4'},{t:'Está bien escrito'}],
+      ()=>{el.querySelector('#rep').classList.remove('oculto');},'🔧 ¡Avería reparada!');
+    el.querySelectorAll('.opcion').forEach(b=>b.style.fontSize='1.6rem');
+  },
+  el=>{
+    let k=1; const n=3, total=18;
+    el.innerHTML=`<h1>⭐ Reto b) Repartimos fichas</h1><p class="sub">Hay 3 vasos y 18 fichas. Todos los vasos tienen las mismas fichas. ¿Cuántas en cada vaso?</p>
+      <div class="fila arriba"><div class="tarjeta c flex1"><div class="svgbox" id="dib" style="max-width:26rem;margin:0 auto"></div></div>
+      <div class="col flex1"><div class="tarjeta c"><div class="etiqueta">Fichas usadas</div><div class="eq" id="m"></div></div>
+        <div class="fb" id="fb"></div></div></div>
+      <div class="fila" style="justify-content:center;margin-top:1rem" id="ctrl"></div>`;
+    let ganado=false;
+    const pinta=()=>{el.querySelector('#dib').innerHTML=vasosSVG(n,k);el.querySelector('#m').innerHTML=`${n} × ${k} = <span style="color:${n*k===total?'var(--verde)':'var(--rojo)'}">${n*k}</span>`;
+      const fb=el.querySelector('#fb');
+      if(n*k===total){fb.className='fb ok';fb.innerHTML=`✔️ ¡${k} fichas en cada vaso!<br>3 × 6 = 18`; if(!ganado){ganado=true;ganarEstrella('averia');}}
+      else if(n*k<total){fb.className='fb';fb.textContent=`Faltan ${total-n*k} fichas…`;}
+      else {fb.className='fb ko';fb.textContent=`¡Te pasas! Sobran ${n*k-total}.`;}};
+    el.querySelector('#ctrl').append(contador('Fichas en cada vaso',k,1,9,v=>{k=v;pinta();}));
+    pinta();
+  }
+]},
+// ---------------------------------------------------------------- 8
+{ id:'final', icono:'🏆', titulo:'Misión final', tiempo:'50-55′', final:true, pantallas:[
+  el=>{
+    // Cuestionario de repaso: 5 preguntas generadas al azar (tipo ticket de salida)
+    let i=0, aciertos=0; const N=5;
+    const gen=()=>{
+      const tipo=azar(1,4); let n,k; do{n=azar(2,5);k=azar(2,9);}while(n===k);
+      if(tipo===1){ const iguales=Math.random()<.5; const s= iguales? sumaTxt(n,k) : [k,k+azar(1,3),k].slice(0,Math.min(3,n)).join(' + ');
+        return {enun:`¿Es una suma de sumandos iguales?<br><span class="enorme">${s}</span>`, ops:[{t:'SÍ',ok:iguales},{t:'NO',ok:!iguales}]};}
+      if(tipo===2) return {enun:`Escribe como multiplicación:<br><span class="enorme">${sumaTxt(n,k)}</span>`, ops:[{t:`${n} × ${k}`,ok:true},{t:`${k} × ${n}`},{t:`${n} + ${k}`}]};
+      if(tipo===3) return {enun:`Escribe como suma:<br><span class="enorme">${n} × ${k}</span>`, ops:[{t:sumaTxt(n,k),ok:true},{t:sumaTxt(k,n)},{t:`${n} + ${k}`}]};
+      return {enun:`¿Cuántas fichas hay?<div class="svgbox" style="max-width:24rem;margin:.6rem auto 0">${vasosSVG(n,k)}</div>`, ops:[{t:n*k,ok:true},{t:n+k},{t:n*k+k}].filter((o,ix,a)=>a.findIndex(x=>x.t===o.t)===ix)};
+    };
+    const ronda=()=>{
+      if(i===N){ el.innerHTML=`<div class="c" style="margin-top:2rem"><div style="font-size:6rem">🏆</div><h1>¡Misión cumplida!</h1>
+          <div class="grande">Habéis acertado <b style="color:var(--rojo);font-size:2.6rem">${aciertos}</b> de ${N} a la primera.</div>
+          <div class="fila" style="justify-content:center;margin-top:1.6rem"><button class="btn ambar" id="otra">🔄 Jugar otra vez</button><button class="btn" id="sig2">Ver resumen ▶</button></div></div>`;
+        ganarEstrella('final');
+        el.querySelector('#otra').onclick=()=>{i=0;aciertos=0;ronda();};
+        el.querySelector('#sig2').onclick=()=>irA(ACTUAL.a,1);
+        return; }
+      const q=gen(); let primera=true;
+      el.innerHTML=`<h1>🏆 Misión final</h1><p class="sub">Pregunta ${i+1} de ${N} · Primero pensad en equipo, después toca la respuesta.</p><div class="tarjeta c grande" style="font-size:2rem">${q.enun}</div><div id="z"></div>`;
+      const ops=q.ops.map(o=>({...o}));
+      pregunta(el.querySelector('#z'),ops,()=>{ if(primera) aciertos++; setTimeout(()=>{i++;ronda();},1300);} ,'¡Correcto! 🎉');
+      el.querySelectorAll('.opcion').forEach(b=>b.addEventListener('click',()=>{ if(b.classList.contains('ko')) primera=false; }));
+    };
+    ronda();
+  },
+  el=>{
+    el.innerHTML=`<h1>¡Gran trabajo, fábricas! 🏭</h1><p class="sub">Hoy hemos aprendido</p>
+      <div class="fila arriba"><div class="tarjeta" style="flex:1.4">
+        <div class="regla"><span class="n" style="background:var(--verde)">✓</span><span>Una <b>suma de sumandos iguales</b> repite siempre el mismo número.</span></div>
+        <div class="regla"><span class="n" style="background:var(--verde)">✓</span><span>La escribimos más corta con el signo <b style="color:var(--rojo)">×</b>.</span></div>
+        <div class="regla"><span class="n" style="background:var(--verde)">✓</span><span><b>3 × 4</b> se lee <b>«3 veces 4»</b>: 3 grupos de 4.</span></div>
+        <div class="tarjeta roja c" style="margin-top:.6rem"><span class="eq">4 + 4 + 4 = </span><span class="eq r">3 × 4 = 12</span></div>
+      </div>
+      <div class="col flex1">
+        <div class="tarjeta verde c" style="border-style:dashed;padding:.9rem"><div style="font-size:2rem">✂️</div><div style="font-size:2.2rem;font-weight:700;color:var(--verde)">Ticket de salida</div><div class="grande">4 preguntas · Trabaja solo/a · Entrégalo al salir</div></div>
+        <div class="tarjeta c"><span class="sello" style="font-size:1.5rem">+1 SELLO DE CALIDAD</span><div class="grande" style="margin-top:.8rem;font-size:1.4rem">Próxima sesión: <b>grupos, saltos y cuadrículas</b></div><button class="btn ambar peq" id="fiesta" style="margin-top:.8rem">🎉 ¡Celebramos!</button></div></div></div>`;
+    el.querySelector('#fiesta').onclick=()=>{sonido('win');confeti(110);};
+  }
+]}
+];
+
+// ---------------- Temporizador (sigue contando aunque se cambie de pantalla) ----------------
+const TEMP = {
+  total: CONFIG.minutosFicha*60, resto: CONFIG.minutosFicha*60, id:null, el:null,
+  fmt(s){ return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; },
+  pintar(){ if(!this.el || !document.body.contains(this.el)) return;
+    this.el.querySelector('#t').textContent=this.fmt(this.resto);
+    this.el.querySelector('#arco').setAttribute('stroke-dashoffset', (276.46*(1-this.resto/this.total)).toFixed(2));
+    this.el.querySelector('#play').textContent = this.id ? '⏸ Pausa' : (this.resto<this.total && this.resto>0 ? '▶ Seguir' : '▶ Empezar'); },
+  montar(el){ this.el=el; el.querySelector('#play').onclick=()=>this.alternar(); el.querySelector('#reset').onclick=()=>this.reiniciar(); this.pintar(); },
+  alternar(){ if(this.id){clearInterval(this.id);this.id=null;} else { if(this.resto<=0) this.resto=this.total;
+      this.id=setInterval(()=>{ this.resto--; this.pintar(); if(this.resto<=0){clearInterval(this.id);this.id=null;this.pintar();sonido('alarma');aviso('⏰ ¡Tiempo! Terminamos la ficha.');} },1000);} this.pintar(); },
+  reiniciar(){ clearInterval(this.id); this.id=null; this.resto=this.total; this.pintar(); }
+};
+
+// ---------------- Navegación ----------------
+let ACTUAL = { a:null, p:0 };   // a = índice del apartado (null = índice general)
+function estado(ap){ if (PROG.estrellas[ap.id]) return 'completo'; if (PROG.visto[ap.id]) return 'encurso'; return ''; }
+function pintarIndice(){
+  ACTUAL={a:null,p:0};
+  const normales=APARTADOS.filter(a=>!a.final), hechos=normales.filter(a=>PROG.estrellas[a.id]).length;
+  const c=$('#contenido');
+  c.innerHTML=`<div class="portada"><div class="flex1"><div class="p1">UNIDAD 2 · LA MULTIPLICACIÓN · SESIÓN 2</div><h1>¡Sumamos grupos iguales!</h1>
+      <div class="p2">De la suma larga… al signo ×</div></div>
+      <div style="background:#fff;border-radius:22px;padding:.8rem 1.2rem;width:18rem" class="svgbox">${vasosSVG(3,4)}</div></div>
+    <div class="indice" id="ind"></div>
+    <div class="pie-indice"><span>⭐ ${hechos} de ${normales.length} apartados completados${hechos===normales.length?' · ¡La Misión final os espera!':''}</span>
+      <button class="btn sec peq" id="reiniciar">↺ Reiniciar progreso</button></div>`;
+  APARTADOS.forEach((ap,i)=>{
+    const b=document.createElement('button'); const est=estado(ap);
+    b.className=`ap ${est} ${ap.final?'final':''} ${ap.final&&hechos===normales.length?'listo':''}`;
+    b.innerHTML=`<span class="num">${i+1}</span><span class="ico">${ap.icono}</span><span class="t">${ap.titulo}</span>
+      <span class="m"><span>${ap.pantallas.length} ${ap.pantallas.length===1?'pantalla':'pantallas'} · ${ap.tiempo}</span><span style="font-size:1.6rem">${est==='completo'?'⭐':est==='encurso'?'🔵':'⚪'}</span></span>`;
+    b.onclick=()=>irA(i,0);
+    $('#ind').appendChild(b);
+  });
+  $('#reiniciar').onclick=()=>{ if(confirm('¿Borrar las estrellas y empezar de cero?')){PROG.estrellas={};PROG.visto={};guardar();pintarIndice();} };
+  $('#nav').style.display='none';
+  if (location.hash) history.replaceState(null,'',location.pathname+location.search);
+}
+function irA(a,p){
+  const ap=APARTADOS[a]; if(!ap) return pintarIndice();
+  p=Math.max(0,Math.min(ap.pantallas.length-1,p));
+  ACTUAL={a,p}; PROG.visto[ap.id]=true; guardar();
+  const c=$('#contenido'); c.innerHTML=''; c.scrollTop=0;
+  const pant=document.createElement('div'); c.appendChild(pant);
+  ap.pantallas[p](pant);
+  $('#nav').style.display='flex';
+  $('#btnAnt').disabled = (p===0);
+  $('#btnSig').textContent = (p===ap.pantallas.length-1) ? '🏠' : '▶';
+  $('#btnSig').setAttribute('aria-label', p===ap.pantallas.length-1 ? 'Volver al índice' : 'Pantalla siguiente');
+  $('#indicador').textContent=`${ap.icono} ${ap.titulo} · Pantalla ${p+1} de ${ap.pantallas.length}`;
+  $('#puntos').innerHTML=ap.pantallas.map((_,i)=>`<span class="${i===p?'on':''}"></span>`).join('');
+  history.replaceState(null,'',`#apartado-${a+1}${p>0?'-'+(p+1):''}`);
+}
+$('#btnInicio').onclick=()=>pintarIndice();
+$('#btnAnt').onclick=()=>{ if(ACTUAL.a!==null) irA(ACTUAL.a,ACTUAL.p-1); };
+$('#btnSig').onclick=()=>{ if(ACTUAL.a===null) return; const ap=APARTADOS[ACTUAL.a];
+  if(ACTUAL.p<ap.pantallas.length-1) irA(ACTUAL.a,ACTUAL.p+1); else pintarIndice(); };
+// Teclado / mando de presentación: flechas para avanzar y retroceder
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA') return;
+  if(['ArrowRight','PageDown'].includes(e.key) && ACTUAL.a!==null) $('#btnSig').click();
+  if(['ArrowLeft','PageUp'].includes(e.key) && ACTUAL.a!==null && ACTUAL.p>0) $('#btnAnt').click();
+  if(e.key==='Home') pintarIndice();
+});
+
+// ---------------- Modales ----------------
+function abrir(id){ $(id).hidden=false; }
+document.querySelectorAll('.modal').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m || e.target.hasAttribute('data-cerrar')) m.hidden=true; });
+});
+
+// Ruleta de voluntarios (no repite hasta que salen todos)
+let alumnos = PROG.alumnos || CONFIG.alumnos.slice(), usados = [];
+function pintarChips(){ $('#ruletaChips').innerHTML=alumnos.map(a=>`<span class="${usados.includes(a)?'usado':''}">${a}</span>`).join(''); }
+$('#btnRuleta').onclick=()=>{ $('#ruletaEditor').value=alumnos.join('\n'); pintarChips(); abrir('#modalRuleta'); };
+$('#btnGirar').onclick=()=>{
+  if(bloqueado) return; let quedan=alumnos.filter(a=>!usados.includes(a));
+  if(!quedan.length){ usados=[]; quedan=alumnos.slice(); aviso('🔄 Ya han salido todos. ¡Empezamos otra vuelta!'); }
+  if(!quedan.length) return;
+  bloquear(1700); const nom=$('#ruleta-nombre'); nom.classList.add('girando'); let t=0;
+  const giro=setInterval(()=>{ nom.textContent=alumnos[azar(0,alumnos.length-1)]; sonido('tic'); if((t+=90)>=1500){ clearInterval(giro);
+    const elegido=quedan[azar(0,quedan.length-1)]; usados.push(elegido); nom.textContent='🌟 '+elegido; nom.classList.remove('girando'); sonido('win'); pintarChips(); } },90);
+};
+$('#btnReiniciarRuleta').onclick=()=>{ usados=[]; $('#ruleta-nombre').textContent='¿…?'; pintarChips(); };
+$('#btnGuardarNombres').onclick=()=>{ const l=$('#ruletaEditor').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(l.length){ alumnos=l; usados=[]; PROG.alumnos=l; guardar(); pintarChips(); aviso('✅ Nombres guardados'); } };
+
+// Marcador de sellos por fábricas
+let equipos = PROG.equipos || CONFIG.equipos.map(n=>({n,p:0}));
+function pintarEquipos(){
+  $('#listaEquipos').innerHTML='';
+  equipos.forEach((e,i)=>{ const f=document.createElement('div'); f.className='equipo';
+    f.innerHTML=`<span class="nom">🏭 ${e.n}</span><button aria-label="Quitar sello">−</button><span class="pts">${e.p}</span><button aria-label="Añadir sello">+</button>`;
+    const [m,p]=f.querySelectorAll('button');
+    m.onclick=()=>{ e.p=Math.max(0,e.p-1); PROG.equipos=equipos; guardar(); pintarEquipos(); };
+    p.onclick=()=>{ e.p++; PROG.equipos=equipos; guardar(); sonido('ok'); pintarEquipos(); };
+    $('#listaEquipos').appendChild(f); });
+}
+$('#btnMarcador').onclick=()=>{ pintarEquipos(); abrir('#modalMarcador'); };
+$('#btnCeroMarcador').onclick=()=>{ equipos.forEach(e=>e.p=0); PROG.equipos=equipos; guardar(); pintarEquipos(); };
+
+// ---------------- Arranque (admite enlaces directos: #apartado-3 o #apartado-3-2) ----------------
+(function(){
+  const m=location.hash.match(/^#apartado-(\d+)(?:-(\d+))?$/);
+  if(m) irA(+m[1]-1, m[2]?+m[2]-1:0); else pintarIndice();
+})();
+</script>
+</body>
+</html>
