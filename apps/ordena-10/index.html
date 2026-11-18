@@ -119,6 +119,8 @@
     min-width: 48px; height: 44px; padding: 0 12px; border: 2px solid #333; border-radius: 10px;
     background: #fff; font-size: 1.2rem; cursor: pointer;
   }
+  .fs-btn { font-size: 1.4rem; font-weight: 700; }
+  .fs-corner { position: absolute; top: 14px; right: 14px; }
   #btn-referee { background: #FFD54F; font-weight: 700; font-size: 1rem; }
   #timer-display { background: #eee; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 1.3rem; }
 
@@ -174,6 +176,7 @@
 
 <!-- ===== MENÚ PRINCIPAL ===== -->
 <div id="screen-menu" class="screen">
+  <button class="bar-btn fs-btn fs-corner" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
   <h1>ORDENA NÚMEROS</h1>
   <div class="mode-selection">
     <div class="big-btn" onclick="goToSetup('solo')">
@@ -280,6 +283,7 @@
     <div class="bar-group">
       <button class="bar-btn" id="btn-reset" onclick="newBoards()" title="Nuevo tablero">🔄</button>
       <button class="bar-btn" id="btn-sound" onclick="toggleSound()" title="Sonido">🔊</button>
+      <button class="bar-btn fs-btn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
     </div>
   </div>
   <div id="game-board-container">
@@ -916,6 +920,36 @@ function toggleSound() {
   S.sound = !S.sound;
   document.getElementById('btn-sound').textContent = S.sound ? '🔊' : '🔇';
 }
+
+/* ---------------- PANTALLA COMPLETA ---------------- */
+function isFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function toggleFullscreen() {
+  const d = document.documentElement;
+  try {
+    if (!isFullscreen()) {
+      const req = d.requestFullscreen || d.webkitRequestFullscreen;
+      if (req) {
+        const r = req.call(d);
+        if (r && r.catch) r.catch(() => {});
+      } else {
+        alert('Este navegador no permite la pantalla completa (por ejemplo, Safari en iPhone).');
+      }
+    } else {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document);
+    }
+  } catch (e) { /* bloqueado por el navegador o por el marco donde está incrustado */ }
+}
+function updateFullscreenIcons() {
+  document.querySelectorAll('.fs-btn').forEach(b => {
+    b.textContent = isFullscreen() ? '🗗' : '⛶';
+    b.title = isFullscreen() ? 'Salir de pantalla completa' : 'Pantalla completa';
+  });
+  // al cambiar el tamaño, se recolocan los tableros
+  if (!document.getElementById('screen-game').classList.contains('hidden')) setTimeout(layout, 150);
+}
+document.addEventListener('fullscreenchange', updateFullscreenIcons);
+document.addEventListener('webkitfullscreenchange', updateFullscreenIcons);
 
 /* ---------------- INICIO ---------------- */
 window.addEventListener('resize', () => {
