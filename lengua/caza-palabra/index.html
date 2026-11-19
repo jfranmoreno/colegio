@@ -155,6 +155,32 @@
   .ficha.usada { opacity: .35; box-shadow: none; }
   .ficha.enUso { outline: 5px solid #F59E0B; outline-offset: 3px; }
   .ficha.sacudir { animation: sacudir .35s; }
+  .ficha { touch-action: none; cursor: grab; }
+  .ficha.origenArrastre { opacity: .45; }
+
+  /* ---------- Arrastrar y soltar ---------- */
+  .fantasma {
+    position: fixed; left: 0; top: 0; z-index: 1900; pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    width: 96px; height: 96px; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 3.2rem;
+    color: var(--texto); border: 5px solid; box-shadow: 0 14px 28px rgba(0,0,0,.28);
+    transform: translate(-50%, -115%) scale(1.05) rotate(-4deg);   /* flota por encima del dedo para ver dónde cae */
+  }
+  .fantasma.vocal { border-radius: 50%; border-color: var(--vocal); background: color-mix(in srgb, var(--vocal) 25%, white); }
+  .fantasma.consonante { border-radius: 18px; border-color: var(--consonante); background: color-mix(in srgb, var(--consonante) 25%, white); }
+  .fantasma.quitar { border-color: var(--error); background: #FEE2E2; }
+  .fantasma.quitar::after { content: '🗑️'; position: absolute; top: -18px; right: -18px; font-size: 1.8rem; }
+  #cajetin.soltarAqui { border-color: #F59E0B; border-style: solid; background: #FFFBEB; }
+  #cajetin .lc {
+    display: inline-block; cursor: grab; touch-action: none; border-radius: 12px; padding: 0 .03em;
+  }
+  #cajetin .lc:hover { background: #EEF2FF; }
+  #cajetin .lc.origenArrastre { opacity: .2; }
+  #cajetin .marcador {
+    display: inline-block; width: 7px; height: .95em; background: #F59E0B; border-radius: 4px;
+    margin: 0 5px; vertical-align: -0.1em; box-shadow: 0 0 0 4px #FDE68A;
+  }
+  #cajetin .ph { font-size: 1.6rem; letter-spacing: 0; color: #A5B4FC; }
   .vacioTablero { font-size: 1.4rem; color: var(--suave); }
   @keyframes aparecer { from { transform: scale(0) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
   @keyframes sacudir { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
@@ -181,7 +207,6 @@
   }
   #cajetin.ok { border-color: #86EFAC; border-style: solid; }
   #cajetin.mal { border-color: #FCA5A5; border-style: solid; }
-  #cajetin .ph { color: #CBD5E1; letter-spacing: .3em; }
   #cajetin .cursor { display: inline-block; width: 5px; height: .9em; background: var(--primario); margin-left: 6px; animation: parpadeo 1s steps(1) infinite; vertical-align: -0.08em; }
   @keyframes parpadeo { 50% { opacity: 0; } }
   #pista { min-height: 34px; text-align: center; font-size: 1.25rem; margin-top: 10px; }
@@ -878,6 +903,113 @@ $('btnLimpiar').addEventListener('click', limpiarPalabra);
 $('btnTilde').addEventListener('click', ponerTilde);
 $('btnProponer').addEventListener('click', proponer);
 
+// =====================================================================
+// ============= ARRASTRAR Y SOLTAR (ratón, MDI y tablet) ==============
+// =====================================================================
+// · Ficha del tablero → cajetín: inserta la letra donde se suelte.
+// · Letra del cajetín → otro sitio del cajetín: la cambia de posición.
+// · Letra del cajetín → fuera del cajetín: la quita.
+// Un toque corto (sin mover) sigue funcionando como antes.
+const UMBRAL_ARRASTRE = 10;   // ✏️ píxeles que hay que mover para que cuente como arrastre
+const drag = { id: null, activo: false, el: null, tipo: null, valor: null, idx: null, x0: 0, y0: 0, fantasma: null, dentro: false, destino: 0 };
+let suprimirClick = false;
+
+function iniciarArrastre(e, el, tipo, valor, idx) {
+  if (state.modal || !state.enJuego || drag.id !== null) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  Object.assign(drag, { id: e.pointerId, activo: false, el, tipo, valor, idx, x0: e.clientX, y0: e.clientY, dentro: false });
+  try { el.setPointerCapture(e.pointerId); } catch (err) {}
+}
+function empezarArrastreVisual() {
+  // En modo "sin repetir", una ficha que ya está en la palabra no se puede volver a usar
+  if (drag.tipo === 'ficha' && !state.repetir) {
+    const enUso = (state.palabra && construir(state.palabra, state.visibles, state.repetir)) || [];
+    if (enUso.includes(drag.idx)) {
+      drag.el.classList.remove('sacudir'); void drag.el.offsetWidth; drag.el.classList.add('sacudir');
+      mostrarAviso('Esa ficha ya está en la palabra', 'info');
+      sonido('error');
+      suprimirClick = true; setTimeout(() => suprimirClick = false, 80);
+      drag.id = null;
+      return false;
+    }
+  }
+  if (drag.tipo === 'ficha' && Array.from(state.palabra).length >= 16) { sonido('error'); drag.id = null; return false; }
+  drag.activo = true;
+  const f = document.createElement('div');
+  const letra = drag.tipo === 'ficha' ? drag.valor : normalizar(drag.valor);
+  f.className = 'fantasma ' + (esVocal(letra) ? 'vocal' : 'consonante');
+  f.textContent = drag.tipo === 'ficha' ? drag.valor : mostrar(drag.valor);
+  document.body.appendChild(f);
+  drag.fantasma = f;
+  drag.el.classList.add('origenArrastre');
+  sonido('toque');
+  return true;
+}
+document.addEventListener('pointermove', (e) => {
+  if (e.pointerId !== drag.id) return;
+  if (!drag.activo) {
+    if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < UMBRAL_ARRASTRE) return;
+    if (!empezarArrastreVisual()) return;
+  }
+  e.preventDefault();
+  drag.fantasma.style.left = e.clientX + 'px';
+  drag.fantasma.style.top = e.clientY + 'px';
+  actualizarDestino(e.clientX, e.clientY);
+});
+function actualizarDestino(x, y) {
+  const caj = $('cajetin');
+  const r = caj.getBoundingClientRect();
+  const margen = 30;   // zona de soltado algo más grande que el cajetín (más fácil en la MDI)
+  drag.dentro = x > r.left - margen && x < r.right + margen && y > r.top - margen && y < r.bottom + margen;
+  caj.classList.toggle('soltarAqui', drag.dentro);
+  drag.fantasma.classList.toggle('quitar', drag.tipo === 'letra' && !drag.dentro);
+  caj.querySelectorAll('.marcador').forEach(m => m.remove());
+  if (!drag.dentro) return;
+  // Calcula entre qué letras se soltaría
+  const letras = Array.from(caj.querySelectorAll('.lc'));
+  let destino = letras.length;
+  for (let i = 0; i < letras.length; i++) {
+    const lr = letras[i].getBoundingClientRect();
+    if (y < lr.bottom && x < lr.left + lr.width / 2) { destino = i; break; }
+  }
+  drag.destino = destino;
+  const marca = document.createElement('span');
+  marca.className = 'marcador';
+  const ph = caj.querySelector('.ph');
+  if (ph) ph.remove();
+  if (letras[destino]) caj.insertBefore(marca, letras[destino]);
+  else caj.insertBefore(marca, caj.querySelector('.cursor'));
+}
+function terminarArrastre(e, cancelado) {
+  if (e.pointerId !== drag.id) return;
+  const estaba = drag.activo;
+  drag.id = null;
+  if (!estaba) return;                      // fue un toque: lo gestiona el 'click'
+  suprimirClick = true; setTimeout(() => suprimirClick = false, 80);
+  drag.fantasma && drag.fantasma.remove();
+  drag.el.classList.remove('origenArrastre');
+  $('cajetin').classList.remove('soltarAqui');
+  const arr = Array.from(state.palabra);
+  if (!cancelado && drag.dentro) {
+    if (drag.tipo === 'ficha') {
+      arr.splice(drag.destino, 0, ...Array.from(drag.valor.toLowerCase()));
+      sonido('toque');
+    } else {
+      const [ch] = arr.splice(drag.idx, 1);
+      const destino = drag.destino > drag.idx ? drag.destino - 1 : drag.destino;
+      arr.splice(destino, 0, ch);
+    }
+    mostrarAviso('');
+  } else if (!cancelado && drag.tipo === 'letra') {
+    arr.splice(drag.idx, 1);                // soltada fuera → se quita
+    sonido('descarta');
+  }
+  state.palabra = arr.join('');
+  renderPalabra();
+}
+document.addEventListener('pointerup', (e) => terminarArrastre(e, false));
+document.addEventListener('pointercancel', (e) => terminarArrastre(e, true));
+
 // ---------- Teclado virtual ----------
 const FILAS_TECLADO = [
   ['Q','W','E','R','T','Y','U','I','O','P'],
@@ -1015,7 +1147,8 @@ function renderTablero() {
       b.textContent = l;
       b.className = 'ficha ' + (esVocal(l) ? 'vocal' : 'consonante');
       b.setAttribute('aria-label', (esVocal(l) ? 'Vocal ' : 'Consonante ') + l);
-      b.addEventListener('click', () => tocarFicha(i));
+      b.addEventListener('click', () => { if (!suprimirClick) tocarFicha(i); });
+      b.addEventListener('pointerdown', (e) => iniciarArrastre(e, b, 'ficha', l, i));
       if (cont.children[i]) cont.replaceChild(b, cont.children[i]); else cont.appendChild(b);
     }
     const usada = enUso.includes(i);
@@ -1045,11 +1178,19 @@ function renderPalabra() {
   const pista = $('pista');
   c.classList.remove('ok', 'mal');
   if (!p) {
-    c.innerHTML = '<span class="ph">_ _ _ _</span>';
-    pista.textContent = 'Toca las letras del tablero (o escribe) para formar una palabra';
+    c.innerHTML = '<span class="ph">⬇ Arrastra aquí las letras del tablero</span>';
+    pista.textContent = 'Arrastra o toca las letras para formar una palabra';
     pista.className = '';
   } else {
-    c.textContent = mostrar(p);
+    c.innerHTML = '';
+    Array.from(p).forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.className = 'lc';
+      s.textContent = mostrar(ch);
+      s.title = 'Arrastra para mover · arrastra fuera para quitar';
+      s.addEventListener('pointerdown', (e) => iniciarArrastre(e, s, 'letra', ch, i));
+      c.appendChild(s);
+    });
     const cur = document.createElement('span'); cur.className = 'cursor'; c.appendChild(cur);
     const ok = construir(p, state.visibles, state.repetir);
     c.classList.add(ok ? 'ok' : 'mal');
