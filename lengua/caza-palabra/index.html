@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caza palabras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vocal: #3B82F6;          /* se sobrescribe desde CONFIG */
+    --consonante: #10B981;     /* se sobrescribe desde CONFIG */
+    --fondo: #FFF8F0;
+    --panel: #FFFFFF;
+    --texto: #1F2937;
+    --suave: #6B7280;
+    --primario: #6366F1;
+    --acierto: #16A34A;
+    --error: #DC2626;
+    --aviso: #F59E0B;
+    --borde: #E5E7EB;
+    --radio: 20px;
+    --sombra: 0 6px 18px rgba(31, 41, 55, .10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Quicksand', 'Nunito', system-ui, sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-weight: 600;
+  }
+  button {
+    font: inherit; font-weight: 700; cursor: pointer; border: none;
+    min-width: 60px; min-height: 60px; border-radius: 16px;
+    transition: transform .08s ease, box-shadow .15s ease, background .15s ease;
+    touch-action: manipulation;
+  }
+  button:active { transform: scale(0.96); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button:focus-visible { outline: 4px solid #F59E0B; outline-offset: 3px; }
+  h1, h2, h3, .nunito { font-family: 'Nunito', 'Quicksand', system-ui, sans-serif; }
+
+  /* ---------- Botón pantalla completa ---------- */
+  #btnFullscreen {
+    position: fixed; top: 12px; right: 12px; z-index: 2000;
+    width: 64px; height: 64px; font-size: 1.8rem;
+    background: white; box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+
+  /* =================== PANTALLA DE CONFIGURACIÓN =================== */
+  #screenConfig { max-width: 1200px; margin: 0 auto; padding: 24px 24px 40px; }
+  .logo { text-align: center; margin: 8px 80px 22px; }
+  .logo h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); font-weight: 900; color: var(--primario); letter-spacing: 1px; }
+  .logo p { font-size: 1.4rem; color: var(--suave); margin-top: 4px; }
+  .bloque {
+    background: var(--panel); border-radius: var(--radio); box-shadow: var(--sombra);
+    padding: 20px 24px; margin-bottom: 18px;
+  }
+  .bloque h2 { font-size: 1.6rem; margin-bottom: 14px; }
+  .niveles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .nivelCard {
+    background: #F8FAFC; border: 4px solid var(--borde); padding: 16px 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+    min-height: 150px;
+  }
+  .nivelCard .ico { font-size: 2.6rem; }
+  .nivelCard .tit { font-size: 1.35rem; font-family: 'Nunito', sans-serif; font-weight: 900; }
+  .nivelCard .desc { font-size: 1rem; color: var(--suave); font-weight: 600; }
+  .nivelCard.activo { border-color: var(--primario); background: #EEF2FF; box-shadow: 0 0 0 4px #C7D2FE; }
+  .fila { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .chip {
+    background: #F1F5F9; border: 3px solid var(--borde); padding: 0 22px; font-size: 1.3rem;
+  }
+  .chip.activo { background: #EEF2FF; border-color: var(--primario); color: #3730A3; }
+  .etiqueta { font-size: 1.25rem; margin-right: 6px; }
+  .separador { height: 14px; }
+  #pickerLetras { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .pick {
+    width: 66px; height: 66px; font-size: 1.7rem; font-family: 'Nunito', sans-serif;
+    background: white; border: 3px dashed #CBD5E1; color: var(--suave);
+  }
+  .pick.vocal { border-radius: 50%; }
+  .pick.sel.vocal { background: color-mix(in srgb, var(--vocal) 20%, white); border: 4px solid var(--vocal); color: var(--texto); }
+  .pick.sel.consonante { background: color-mix(in srgb, var(--consonante) 20%, white); border: 4px solid var(--consonante); color: var(--texto); }
+  .nota { color: var(--suave); font-size: 1.05rem; margin-top: 8px; }
+
+  /* Interruptor */
+  .switch { display: inline-flex; align-items: center; gap: 14px; background: none; padding: 0; font-size: 1.3rem; }
+  .switch .pista {
+    width: 84px; height: 46px; border-radius: 30px; background: #CBD5E1; position: relative; transition: background .2s;
+    flex-shrink: 0;
+  }
+  .switch .pista::after {
+    content: ''; position: absolute; top: 5px; left: 5px; width: 36px; height: 36px; border-radius: 50%;
+    background: white; box-shadow: 0 2px 6px rgba(0,0,0,.2); transition: left .2s;
+  }
+  .switch[aria-checked="true"] .pista { background: var(--acierto); }
+  .switch[aria-checked="true"] .pista::after { left: 43px; }
+  .switch .estado { min-width: 40px; text-align: left; }
+
+  .acciones-inicio { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 8px; }
+  .btnGrande {
+    font-size: 2rem; padding: 18px 48px; background: var(--primario); color: white;
+    box-shadow: 0 6px 0 #4338CA; font-family: 'Nunito', sans-serif; font-weight: 900;
+  }
+  .btnGrande:active { box-shadow: 0 2px 0 #4338CA; transform: translateY(4px); }
+  .btnSec { font-size: 1.3rem; padding: 0 26px; background: white; border: 3px solid var(--borde); }
+
+  /* =================== PANTALLA DE JUEGO =================== */
+  #screenGame { display: flex; flex-direction: column; min-height: 100vh; }
+  .topbar {
+    display: flex; align-items: center; gap: 14px; padding: 12px 92px 12px 16px;
+    background: white; box-shadow: 0 2px 10px rgba(0,0,0,.06); flex-wrap: wrap;
+  }
+  .topbar h1 { font-size: 1.9rem; font-weight: 900; color: var(--primario); white-space: nowrap; }
+  .nivelTag { background: #EEF2FF; color: #3730A3; border-radius: 12px; padding: 6px 12px; font-size: 1.05rem; font-weight: 700; white-space: nowrap; }
+  .progreso { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 12px; }
+  .barra { flex: 1; height: 26px; background: #E5E7EB; border-radius: 20px; overflow: hidden; }
+  .barra > div { height: 100%; width: 0; background: linear-gradient(90deg, #22C55E, #16A34A); border-radius: 20px; transition: width .4s ease; }
+  .progreso .txt { font-size: 1.5rem; font-family: 'Nunito', sans-serif; font-weight: 900; white-space: nowrap; }
+  .topBtn { background: #F1F5F9; font-size: 1.15rem; padding: 0 16px; }
+  .topBtn.print { background: #FEF3C7; border: 3px solid #F59E0B; }
+  .topBtn.icon { font-size: 1.7rem; width: 64px; padding: 0; }
+
+  .zonaJuego { flex: 1; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr); gap: 18px; padding: 18px; }
+  .col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  /* Tablero de letras */
+  .tablero { background: white; border-radius: var(--radio); box-shadow: var(--sombra); padding: 16px 18px; }
+  .tableroCab { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .bolsaInfo { font-size: 1.3rem; }
+  .bolsaInfo b { font-family: 'Nunito', sans-serif; font-size: 1.5rem; }
+  .leyenda { display: flex; gap: 16px; font-size: 1.05rem; color: var(--suave); align-items: center; }
+  .leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+  .muestra { width: 22px; height: 22px; display: inline-block; border: 3px solid; }
+  .muestra.v { border-radius: 50%; border-color: var(--vocal); background: color-mix(in srgb, var(--vocal) 20%, white); }
+  .muestra.c { border-radius: 5px; border-color: var(--consonante); background: color-mix(in srgb, var(--consonante) 20%, white); }
+
+  #fichas { display: flex; flex-wrap: wrap; gap: 14px; min-height: 104px; align-items: center; }
+  .ficha {
+    width: clamp(76px, 7.2vw, 108px); height: clamp(76px, 7.2vw, 108px);
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: clamp(2.2rem, 3.6vw, 3.5rem);
+    color: var(--texto); border: 5px solid; box-shadow: 0 5px 0 rgba(0,0,0,.12);
+    animation: aparecer .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  .ficha.vocal { border-radius: 50%; border-color: var(--vocal); background: color-mix(in srgb, var(--vocal) 20%, white); }
+  .ficha.consonante { border-radius: 18px; border-color: var(--consonante); background: color-mix(in srgb, var(--consonante) 20%, white); }
+  .ficha.usada { opacity: .35; box-shadow: none; }
+  .ficha.enUso { outline: 5px solid #F59E0B; outline-offset: 3px; }
+  .ficha.sacudir { animation: sacudir .35s; }
+  .vacioTablero { font-size: 1.4rem; color: var(--suave); }
+  @keyframes aparecer { from { transform: scale(0) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+  @keyframes sacudir { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .controlLetras { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 16px; }
+  #btnSacar {
+    font-size: 1.6rem; padding: 0 28px; min-height: 76px; background: #F59E0B; color: #1F2937;
+    box-shadow: 0 5px 0 #B45309; font-family: 'Nunito', sans-serif; font-weight: 900;
+  }
+  #btnSacar:active { box-shadow: 0 1px 0 #B45309; transform: translateY(4px); }
+  .temporizador { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 12px; }
+  .temporizador .barra { height: 22px; }
+  .temporizador .barra > div { background: linear-gradient(90deg, #FBBF24, #F59E0B); transition: width .1s linear; }
+  .temporizador .seg { font-size: 1.25rem; white-space: nowrap; min-width: 120px; }
+  #btnPausa { background: #F1F5F9; font-size: 1.2rem; padding: 0 18px; }
+
+  /* Cajetín de palabra */
+  .zonaPalabra { background: white; border-radius: var(--radio); box-shadow: var(--sombra); padding: 16px 18px; }
+  #cajetin {
+    min-height: 116px; border: 5px dashed #C7D2FE; border-radius: 22px; background: #F8FAFF;
+    display: flex; align-items: center; justify-content: center; padding: 8px 20px;
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: clamp(2.6rem, 5.4vw, 4.6rem);
+    letter-spacing: .08em; word-break: break-all; text-align: center;
+  }
+  #cajetin.ok { border-color: #86EFAC; border-style: solid; }
+  #cajetin.mal { border-color: #FCA5A5; border-style: solid; }
+  #cajetin .ph { color: #CBD5E1; letter-spacing: .3em; }
+  #cajetin .cursor { display: inline-block; width: 5px; height: .9em; background: var(--primario); margin-left: 6px; animation: parpadeo 1s steps(1) infinite; vertical-align: -0.08em; }
+  @keyframes parpadeo { 50% { opacity: 0; } }
+  #pista { min-height: 34px; text-align: center; font-size: 1.25rem; margin-top: 10px; }
+  #pista.ok { color: var(--acierto); }
+  #pista.mal { color: #B45309; }
+  #aviso {
+    min-height: 0; text-align: center; font-size: 1.6rem; font-family: 'Nunito', sans-serif; font-weight: 900;
+    border-radius: 14px; transition: all .2s;
+  }
+  #aviso.visible { padding: 10px; margin-top: 8px; }
+  #aviso.error { background: #FEE2E2; color: #991B1B; animation: sacudir .35s; }
+  #aviso.info { background: #E0F2FE; color: #075985; }
+  #aviso.bien { background: #DCFCE7; color: #166534; }
+
+  .accionesPalabra { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr; gap: 12px; margin-top: 12px; }
+  .accionesPalabra button { font-size: 1.3rem; min-height: 72px; padding: 0 10px; }
+  #btnBorrar { background: #FEF3C7; }
+  #btnLimpiar { background: #FEE2E2; }
+  #btnTilde { background: #E0E7FF; }
+  #btnProponer {
+    background: var(--acierto); color: white; font-size: 1.7rem; font-family: 'Nunito', sans-serif; font-weight: 900;
+    box-shadow: 0 5px 0 #166534;
+  }
+  #btnProponer:active { box-shadow: 0 1px 0 #166534; transform: translateY(4px); }
+  .toggleTeclado { margin-top: 12px; background: #F1F5F9; font-size: 1.15rem; padding: 0 18px; }
+
+  /* Teclado virtual */
+  #teclado { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  #teclado .filaT { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  #teclado button {
+    width: clamp(56px, 5.4vw, 72px); height: 64px; font-size: 1.6rem; background: #F8FAFC;
+    border: 3px solid var(--borde); font-family: 'Nunito', sans-serif;
+  }
+
+  /* Banco de palabras */
+  .banco { background: white; border-radius: var(--radio); box-shadow: var(--sombra); padding: 16px; display: flex; flex-direction: column; }
+  .banco h2 { font-size: 1.55rem; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  #listaBanco {
+    list-style: none; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(10, auto);
+    grid-auto-flow: column; gap: 8px; flex: 1;
+  }
+  .hueco {
+    display: flex; align-items: center; gap: 8px; min-height: 54px; padding: 4px 6px 4px 4px;
+    border: 3px dashed #E5E7EB; border-radius: 14px; background: #FAFAFA;
+  }
+  .hueco .num {
+    width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; background: #E5E7EB; color: var(--suave);
+    display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-family: 'Nunito', sans-serif; font-weight: 900;
+  }
+  .hueco .pal { flex: 1; font-size: clamp(1.25rem, 1.7vw, 1.65rem); font-family: 'Nunito', sans-serif; font-weight: 800; overflow-wrap: anywhere; }
+  .hueco.lleno { border-style: solid; border-color: #BBF7D0; background: #F0FDF4; animation: aparecer .4s ease; }
+  .hueco.lleno .num { background: var(--acierto); color: white; }
+  .hueco.destacada { border-color: #DC2626; background: #FEE2E2; animation: sacudir .35s 3; }
+  .hueco .x { min-width: 44px; min-height: 44px; width: 44px; height: 44px; font-size: 1.1rem; background: #F3F4F6; color: #9CA3AF; border-radius: 12px; }
+  .hueco .confirmar { display: flex; gap: 6px; align-items: center; font-size: .95rem; }
+  .hueco .confirmar button { min-width: 48px; min-height: 44px; font-size: 1.1rem; }
+  .hueco .si { background: #FCA5A5; }
+  .hueco .no { background: #E5E7EB; }
+
+  /* =================== MODALES =================== */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, .55); z-index: 1500;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal {
+    background: white; border-radius: 28px; padding: 28px 32px; width: min(900px, 100%);
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.3); animation: aparecer .3s ease;
+  }
+  .modal .preg { font-size: 1.7rem; color: var(--suave); }
+  .modal .palabraGrande {
+    font-family: 'Nunito', sans-serif; font-weight: 900; font-size: clamp(3.2rem, 9vw, 6.5rem);
+    color: var(--primario); margin: 10px 0 18px; overflow-wrap: anywhere; letter-spacing: .05em;
+  }
+  .modal .botones { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .modal .botones button { min-height: 110px; font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-family: 'Nunito', sans-serif; font-weight: 900; color: white; }
+  .btnValida { background: var(--acierto); box-shadow: 0 6px 0 #166534; }
+  .btnNoValida { background: var(--error); box-shadow: 0 6px 0 #991B1B; }
+  .btnCancelar { margin-top: 16px; background: #F1F5F9; font-size: 1.15rem; padding: 0 22px; }
+  .modal h2 { font-size: 2.2rem; margin-bottom: 10px; }
+  .modal p { font-size: 1.4rem; margin-bottom: 18px; }
+  .modal .fila { justify-content: center; }
+  .final .trofeo { font-size: 5rem; }
+
+  #confeti { position: fixed; inset: 0; pointer-events: none; z-index: 1800; }
+
+  /* =================== RESPONSIVE =================== */
+  @media (max-width: 1000px) {
+    .zonaJuego { grid-template-columns: 1fr; }
+    .niveles { grid-template-columns: 1fr 1fr; }
+    .accionesPalabra { grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* =================== FICHA IMPRIMIBLE A4 =================== */
+  @media screen { #fichaImprimible { display: none; } }
+  @media print {
+    /* A4 = 210 × 297 mm. Con márgenes de 10 mm queda un área de 190 × 277 mm */
+    @page { size: A4 portrait; margin: 10mm; }
+    html, body { background: white !important; height: auto !important; min-height: 0 !important; margin: 0 !important; }
+    body > *:not(#fichaImprimible) { display: none !important; }
+    #fichaImprimible {
+      display: flex; flex-direction: column;
+      width: 190mm; height: 272mm;          /* algo menos que 277 mm por seguridad */
+      overflow: hidden; break-inside: avoid; page-break-inside: avoid; page-break-after: avoid;
+      color: #000; font-family: 'Quicksand', 'Nunito', Arial, sans-serif;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
+  #fichaImprimible .cab, #fichaImprimible .campos, #fichaImprimible .consigna { flex-shrink: 0; }
+  #fichaImprimible .cab { display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1.2mm solid #000; padding-bottom: 3mm; }
+  #fichaImprimible .cab h1 { font-family: 'Nunito', Arial, sans-serif; font-weight: 900; font-size: 30pt; letter-spacing: 1.5pt; }
+  #fichaImprimible .campos { display: grid; grid-template-columns: 1fr 52mm 60mm; gap: 6mm; margin-top: 5mm; font-size: 13pt; font-weight: 700; }
+  #fichaImprimible .campo { display: flex; align-items: flex-end; gap: 2mm; }
+  #fichaImprimible .campo span.l { flex: 1; border-bottom: .4mm solid #000; min-height: 7mm; font-weight: 600; padding-left: 1mm; }
+  #fichaImprimible .consigna { font-size: 12pt; margin: 4mm 0 3mm; font-weight: 600; }
+  #fichaImprimible .cajaLetras { border: .8mm solid #000; border-radius: 4mm; padding: 3mm 4mm 4mm; flex-shrink: 0; }
+  #fichaImprimible .cajaLetras h2 { font-size: 12pt; margin-bottom: 2.5mm; }
+  #fichaImprimible .letrasImp { display: flex; flex-wrap: wrap; gap: var(--hueco, 2.5mm); justify-content: center; }
+  #fichaImprimible .letraImp {
+    width: var(--lado, 16mm); height: var(--lado, 16mm); border: .7mm solid #000; display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', Arial, sans-serif; font-weight: 900; font-size: var(--letra, 24pt); border-radius: 2.5mm;
+  }
+  #fichaImprimible .letraImp.v { border-radius: 50%; }
+  #fichaImprimible .huecosImp {
+    flex: 1; min-height: 0;                      /* ocupa el espacio que sobre, sin salirse */
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(10, 1fr);
+    grid-auto-flow: column; column-gap: 8mm; margin-top: 4mm;
+  }
+  #fichaImprimible .renglon { display: flex; align-items: flex-end; gap: 3mm; min-height: 0; }
+  #fichaImprimible .renglon .n {
+    width: 8.5mm; height: 8.5mm; border: .5mm solid #000; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11pt; margin-bottom: 1mm;
+  }
+  #fichaImprimible .renglon .linea { flex: 1; height: 75%; max-height: 13mm; border-bottom: .5mm solid #000; position: relative; }
+  #fichaImprimible .renglon .linea::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: .3mm dashed #888;
+  }
+  #fichaImprimible .pie { flex-shrink: 0; margin-top: 3mm; font-size: 10pt; text-align: right; color: #333; }
+</style>
+</head>
+<body>
+
+<button id="btnFullscreen" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+
+<!-- =================== PANTALLA DE CONFIGURACIÓN =================== -->
+<main id="screenConfig">
+  <div class="logo">
+    <h1>🔎 Caza palabras</h1>
+    <p>Forma palabras con las letras que van saliendo. ¿Cazaréis <span id="metaTxt">20</span>?</p>
+  </div>
+
+  <section class="bloque">
+    <h2>1. Elige el nivel</h2>
+    <div class="niveles" id="niveles"></div>
+    <div id="bloquePersonal" hidden>
+      <p class="nota">Toca las letras para elegirlas (máximo <span id="maxPersonal">18</span>). Llevas <b id="cuentaPersonal">0</b>.</p>
+      <div id="pickerLetras"></div>
+      <div class="separador"></div>
+      <div class="fila">
+        <span class="etiqueta">Mínimo de letras por palabra:</span>
+        <div class="fila" id="chipsMin"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloque">
+    <h2>2. ¿Cómo salen las letras?</h2>
+    <div class="fila">
+      <button class="chip activo" data-modo="manual">✋ Manual</button>
+      <button class="chip" data-modo="auto">⏱️ Automático</button>
+    </div>
+    <div class="fila" id="filaIntervalo" hidden style="margin-top:12px">
+      <span class="etiqueta">Una letra cada:</span>
+      <div class="fila" id="chipsIntervalo"></div>
+    </div>
+  </section>
+
+  <section class="bloque">
+    <h2>3. Reglas</h2>
+    <button class="switch" id="swRepetir" role="switch" aria-checked="true">
+      <span class="pista"></span>
+      <span>Permitir repetir letras en la misma palabra: <b class="estado" id="swRepetirTxt">Sí</b></span>
+    </button>
+    <p class="nota">Si está en «No», cada ficha del tablero solo se puede usar una vez por palabra.</p>
+  </section>
+
+  <div class="acciones-inicio">
+    <button class="btnGrande" id="btnEmpezar">¡Empezar! 🚀</button>
+    <button class="btnSec" id="btnPlantillaVacia">🖨️ Imprimir plantilla vacía</button>
+  </div>
+</main>
+
+<!-- =================== PANTALLA DE JUEGO =================== -->
+<div id="screenGame" hidden>
+  <header class="topbar">
+    <h1>🔎 Caza palabras</h1>
+    <span class="nivelTag" id="nivelTag"></span>
+    <div class="progreso" aria-live="polite">
+      <div class="barra"><div id="barraProgreso"></div></div>
+      <span class="txt" id="txtProgreso">0 / 20 palabras</span>
+    </div>
+    <button class="topBtn print" id="btnImprimir">🖨️ Imprimir Ficha de <span class="metaN">20</span> Palabras</button>
+    <button class="topBtn icon" id="btnSonido" aria-label="Silenciar sonido" title="Sonido">🔊</button>
+    <button class="topBtn" id="btnNueva">⚙️ Nueva partida</button>
+  </header>
+
+  <div class="zonaJuego">
+    <div class="col">
+      <!-- Tablero -->
+      <section class="tablero">
+        <div class="tableroCab">
+          <div class="bolsaInfo" id="bolsaInfo">🎒 Han salido <b>0</b> · Quedan <b>0</b></div>
+          <div class="leyenda">
+            <span><i class="muestra v"></i> vocal</span>
+            <span><i class="muestra c"></i> consonante</span>
+          </div>
+        </div>
+        <div id="fichas"></div>
+        <div class="controlLetras">
+          <button id="btnSacar">🎲 Sacar nueva letra</button>
+          <div class="temporizador" id="temporizador" hidden>
+            <div class="barra"><div id="barraTiempo"></div></div>
+            <span class="seg" id="txtTiempo">Nueva letra en 30 s</span>
+            <button id="btnPausa">⏸ Pausa</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Palabra -->
+      <section class="zonaPalabra">
+        <div id="cajetin" aria-live="polite"></div>
+        <div id="pista"></div>
+        <div id="aviso" role="status"></div>
+        <div class="accionesPalabra">
+          <button id="btnBorrar">⌫ Borrar letra</button>
+          <button id="btnLimpiar">🧹 Limpiar palabra</button>
+          <button id="btnTilde" title="Pone o quita la tilde a la última vocal">´ Tilde</button>
+          <button id="btnProponer">✋ Proponer palabra</button>
+        </div>
+        <button class="toggleTeclado" id="btnTeclado">⌨️ Mostrar teclado</button>
+        <div id="teclado" hidden></div>
+      </section>
+    </div>
+
+    <!-- Banco -->
+    <aside class="banco">
+      <h2><span>📚 Banco de palabras</span></h2>
+      <ol id="listaBanco"></ol>
+    </aside>
+  </div>
+</div>
+
+<!-- =================== MODAL VALIDACIÓN DOCENTE =================== -->
+<div class="overlay" id="modalValidar" hidden>
+  <div class="modal">
+    <div class="preg">Maestro/a: ¿es una palabra válida?</div>
+    <div class="palabraGrande" id="palabraValidar"></div>
+    <div class="botones">
+      <button class="btnValida" id="btnValida">✔ Válida<br><small>(Añadir al banco)</small></button>
+      <button class="btnNoValida" id="btnNoValida">✖ No válida<br><small>(Descartar)</small></button>
+    </div>
+    <button class="btnCancelar" id="btnCancelarValidar">↩ Volver a editarla</button>
+  </div>
+</div>
+
+<!-- =================== MODAL CONFIRMAR =================== -->
+<div class="overlay" id="modalConfirmar" hidden>
+  <div class="modal">
+    <h2 id="confTitulo">¿Seguro?</h2>
+    <p id="confTexto"></p>
+    <div class="fila">
+      <button class="btnSec" id="confNo">↩ No, seguir jugando</button>
+      <button class="btnGrande" id="confSi">Sí</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== PANTALLA FINAL =================== -->
+<div class="overlay" id="modalFinal" hidden>
+  <div class="modal final">
+    <div class="trofeo">🏆</div>
+    <h2>¡Lo habéis conseguido!</h2>
+    <p>Habéis cazado <b id="finalN">20</b> palabras. ¡Sois unos auténticos cazapalabras!</p>
+    <div class="fila">
+      <button class="btnSec" id="finalVer">👀 Ver el banco</button>
+      <button class="btnSec" id="finalImprimir">🖨️ Imprimir ficha</button>
+      <button class="btnGrande" id="finalOtra">🔁 Jugar otra vez</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confeti"></canvas>
+
+<!-- =================== FICHA IMPRIMIBLE (solo papel) =================== -->
+<div id="fichaImprimible">
+  <div class="cab"><h1>CAZA PALABRAS</h1><div>🔎</div></div>
+  <div class="campos">
+    <div class="campo">Nombre: <span class="l"></span></div>
+    <div class="campo">Fecha: <span class="l"></span></div>
+    <div class="campo">Nivel: <span class="l" id="impNivel"></span></div>
+  </div>
+  <p class="consigna" id="impConsigna"></p>
+  <div class="cajaLetras">
+    <h2>Letras de la partida</h2>
+    <div class="letrasImp" id="impLetras"></div>
+  </div>
+  <div class="huecosImp" id="impHuecos"></div>
+  <div class="pie">He cazado ______ palabras de <span class="metaN">20</span>.</div>
+</div>
+
+<script>
+// =====================================================================
+// ============ ✏️ CONFIGURACIÓN DEL DOCENTE (edita aquí) ==============
+// =====================================================================
+const CONFIG = {
+  // ✏️ Meta de la partida (NUMERO_MAXIMO_PALABRAS)
+  maxPalabras: 20,
+
+  // ✏️ Valor inicial del interruptor "Permitir repetir letras" (true = Sí, false = No)
+  permitirRepetirLetras: true,
+
+  // ✏️ Colores de las fichas
+  colorVocales: '#3B82F6',
+  colorConsonantes: '#10B981',
+
+  // ✏️ Letras que aparecen ya en el tablero al empezar (0 = tablero vacío)
+  letrasIniciales: 2,
+
+  // ✏️ Modo automático: segundos disponibles y el marcado por defecto
+  intervalosAuto: [20, 30, 45, 60],
+  intervaloPorDefecto: 30,
+
+  // ✏️ true = palabras en MAYÚSCULAS en pantalla; false = en minúsculas
+  mostrarEnMayusculas: false,
+
+  // ✏️ NIVELES. Cada nivel une varios "grupos" de letras:
+  //    - pool: letras posibles del grupo
+  //    - fijas: letras que salen SIEMPRE (opcional)
+  //    - cuantas: cuántas letras se toman de ese grupo (incluidas las fijas)
+  //    Las letras se eligen al azar en cada partida → la partida es rejugable.
+  niveles: {
+    1: {
+      nombre: 'Nivel 1 · Inicial', icono: '🌱',
+      descripcion: '3 vocales + 5 consonantes frecuentes',
+      minLetras: 2,
+      grupos: [
+        { pool: ['A', 'E', 'I', 'O', 'U'], fijas: ['A'], cuantas: 3 },
+        { pool: ['M', 'P', 'L', 'S', 'T', 'D', 'N', 'R'], cuantas: 5 },
+      ],
+    },
+    2: {
+      nombre: 'Nivel 2 · Intermedio', icono: '🌿',
+      descripcion: '4 vocales + 7 consonantes (con C, B, V, G, F, J)',
+      minLetras: 3,
+      grupos: [
+        { pool: ['A', 'E', 'I', 'O', 'U'], fijas: ['A', 'E', 'O'], cuantas: 4 },
+        { pool: ['M', 'P', 'L', 'S', 'T', 'D', 'N', 'R'], cuantas: 4 },
+        { pool: ['C', 'B', 'V', 'G', 'F', 'J'], cuantas: 3 },
+      ],
+    },
+    3: {
+      nombre: 'Nivel 3 · Avanzado', icono: '🌳',
+      descripcion: '14 letras con Ñ, Z, CH, H, Q, Y… (mínimo 4 letras)',
+      minLetras: 4,
+      grupos: [
+        { pool: ['A', 'E', 'I', 'O', 'U'], fijas: ['A', 'E', 'I', 'O', 'U'], cuantas: 5 },
+        { pool: ['M', 'P', 'L', 'S', 'T', 'D', 'N', 'R', 'C', 'B'], cuantas: 5 },
+        { pool: ['Ñ', 'Z', 'CH', 'H', 'Q', 'Y', 'X', 'G', 'F', 'J', 'V'], cuantas: 4 },
+      ],
+    },
+  },
+
+  // ✏️ Letras que se pueden elegir en el modo "Personalizado"
+  letrasPersonalizables: ['A','E','I','O','U','B','C','CH','D','F','G','H','J','K','L','LL','M','N','Ñ','P','Q','R','RR','S','T','V','W','X','Y','Z'],
+  maxLetrasPersonalizadas: 18,
+};
+// =====================================================================
+
+const VOCALES = ['A', 'E', 'I', 'O', 'U'];
+const $ = (id) => document.getElementById(id);
+
+// ---------- Estado ----------
+const state = {
+  nivel: 1,                 // 1, 2, 3 o 'P' (personalizado)
+  personal: ['A', 'E', 'O', 'M', 'S', 'L', 'P', 'T'],
+  minPersonal: 2,
+  modo: 'manual',
+  intervalo: CONFIG.intervaloPorDefecto,
+  repetir: CONFIG.permitirRepetirLetras,
+  bolsa: [],                // letras pendientes de salir
+  visibles: [],             // letras en el tablero
+  total: 0,
+  minLetras: 2,
+  palabra: '',
+  palabras: [],
+  silencio: false,
+  enJuego: false,
+  modal: false,
+  ganado: false,
+  auto: { restante: 0, pausado: false, ultimo: 0, id: null },
+};
+
+// Aplicar colores y meta desde CONFIG
+document.documentElement.style.setProperty('--vocal', CONFIG.colorVocales);
+document.documentElement.style.setProperty('--consonante', CONFIG.colorConsonantes);
+document.querySelectorAll('.metaN').forEach(e => e.textContent = CONFIG.maxPalabras);
+$('metaTxt').textContent = CONFIG.maxPalabras;
+$('maxPersonal').textContent = CONFIG.maxLetrasPersonalizadas;
+
+// ---------- Utilidades ----------
+const esVocal = (l) => VOCALES.includes(l);
+function barajar(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+// Pasa a mayúsculas y quita tildes y diéresis (pero conserva la Ñ)
+function normalizar(txt) {
+  const mapa = { 'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ü': 'U' };
+  return Array.from(txt.toUpperCase()).map(c => mapa[c] || c).join('');
+}
+const mostrar = (txt) => CONFIG.mostrarEnMayusculas ? txt.toUpperCase() : txt;
+
+// Comprueba si la palabra se puede formar con las fichas visibles.
+// Devuelve la lista de fichas usadas (índices) o null si no se puede.
+// Tiene en cuenta fichas dobles (CH, LL, RR) y el modo "sin repetir".
+function construir(palabra, fichas, repetir) {
+  const chars = Array.from(normalizar(palabra));
+  const usado = new Array(fichas.length).fill(false);
+  const camino = [];
+  function rec(i) {
+    if (i === chars.length) return true;
+    for (const len of [2, 1]) {
+      if (i + len > chars.length) continue;
+      const trozo = chars.slice(i, i + len).join('');
+      for (let t = 0; t < fichas.length; t++) {
+        if (fichas[t] !== trozo) continue;
+        if (!repetir && usado[t]) continue;
+        const antes = usado[t];
+        usado[t] = true; camino.push(t);
+        if (rec(i + len)) return true;
+        camino.pop(); usado[t] = antes;
+        if (repetir) break;
+      }
+    }
+    return false;
+  }
+  return rec(0) ? camino : null;
+}
+
+// =====================================================================
+// ============================== AUDIO ===============================
+// =====================================================================
+let audioCtx = null;
+function tono(fIni, fFin, inicio, dur, tipo = 'sine', vol = 0.22) {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = tipo;
+  osc.frequency.setValueAtTime(fIni, inicio);
+  osc.frequency.exponentialRampToValueAtTime(fFin, inicio + dur);
+  gain.gain.setValueAtTime(0.0001, inicio);
+  gain.gain.exponentialRampToValueAtTime(vol, inicio + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, inicio + dur);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(inicio); osc.stop(inicio + dur + 0.02);
+}
+function sonido(tipo) {
+  if (state.silencio) return;
+  try {
+    audioCtx ??= new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) { return; }
+  const t = audioCtx.currentTime;
+  switch (tipo) {
+    case 'letra':   // sacar letra: "pop" doble
+      tono(500, 800, t, 0.12); tono(800, 1200, t + 0.09, 0.14); break;
+    case 'toque':   // tocar ficha / tecla
+      tono(700, 650, t, 0.06, 'sine', 0.08); break;
+    case 'valida':  // palabra válida: arpegio ascendente
+      [523, 659, 784].forEach((f, i) => tono(f, f * 1.01, t + i * 0.09, 0.2)); break;
+    case 'error':   // regla no cumplida / repetida: doble pulso suave
+      tono(330, 260, t, 0.15, 'triangle', 0.2); tono(330, 260, t + 0.2, 0.15, 'triangle', 0.2); break;
+    case 'descarta':
+      tono(392, 262, t, 0.3, 'sine', 0.15); break;
+    case 'victoria':
+      [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tono(f, f, t + i * 0.13, 0.3, 'triangle', 0.22));
+      [523, 659, 784].forEach(f => tono(f, f, t + 0.85, 0.9, 'sine', 0.12));
+      break;
+  }
+}
+
+// =====================================================================
+// ===================== PANTALLA DE CONFIGURACIÓN ====================
+// =====================================================================
+function pintarNiveles() {
+  const cont = $('niveles');
+  cont.innerHTML = '';
+  const opciones = Object.entries(CONFIG.niveles).map(([k, n]) => ({ id: Number(k), ...n }));
+  opciones.push({ id: 'P', icono: '🎨', nombre: 'Personalizado', descripcion: 'El docente elige las letras' });
+  opciones.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'nivelCard' + (state.nivel === o.id ? ' activo' : '');
+    b.innerHTML = `<span class="ico">${o.icono}</span><span class="tit">${o.nombre}</span><span class="desc">${o.descripcion}</span>`;
+    b.addEventListener('click', () => { state.nivel = o.id; pintarNiveles(); sonido('toque'); });
+    cont.appendChild(b);
+  });
+  $('bloquePersonal').hidden = state.nivel !== 'P';
+}
+function pintarPicker() {
+  const cont = $('pickerLetras');
+  cont.innerHTML = '';
+  CONFIG.letrasPersonalizables.forEach(l => {
+    const b = document.createElement('button');
+    const sel = state.personal.includes(l);
+    b.className = 'pick ' + (esVocal(l) ? 'vocal' : 'consonante') + (sel ? ' sel' : '');
+    b.textContent = l;
+    b.setAttribute('aria-pressed', sel);
+    b.addEventListener('click', () => {
+      if (sel) state.personal = state.personal.filter(x => x !== l);
+      else if (state.personal.length < CONFIG.maxLetrasPersonalizadas) state.personal.push(l);
+      else { sonido('error'); return; }
+      sonido('toque');
+      pintarPicker();
+    });
+    cont.appendChild(b);
+  });
+  $('cuentaPersonal').textContent = state.personal.length;
+  const chips = $('chipsMin');
+  chips.innerHTML = '';
+  [2, 3, 4, 5].forEach(n => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (state.minPersonal === n ? ' activo' : '');
+    b.textContent = n;
+    b.addEventListener('click', () => { state.minPersonal = n; pintarPicker(); });
+    chips.appendChild(b);
+  });
+}
+function pintarIntervalos() {
+  const c = $('chipsIntervalo');
+  c.innerHTML = '';
+  CONFIG.intervalosAuto.forEach(s => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (state.intervalo === s ? ' activo' : '');
+    b.textContent = s + ' s';
+    b.addEventListener('click', () => { state.intervalo = s; pintarIntervalos(); });
+    c.appendChild(b);
+  });
+}
+document.querySelectorAll('[data-modo]').forEach(b => b.addEventListener('click', () => {
+  state.modo = b.dataset.modo;
+  document.querySelectorAll('[data-modo]').forEach(x => x.classList.toggle('activo', x === b));
+  $('filaIntervalo').hidden = state.modo !== 'auto';
+}));
+function pintarSwitch() {
+  $('swRepetir').setAttribute('aria-checked', state.repetir);
+  $('swRepetirTxt').textContent = state.repetir ? 'Sí' : 'No';
+}
+$('swRepetir').addEventListener('click', () => { state.repetir = !state.repetir; pintarSwitch(); sonido('toque'); });
+
+$('btnEmpezar').addEventListener('click', empezar);
+$('btnPlantillaVacia').addEventListener('click', () => imprimir(true));
+
+// =====================================================================
+// ============================== JUEGO ===============================
+// =====================================================================
+function crearBolsa() {
+  if (state.nivel === 'P') {
+    state.minLetras = state.minPersonal;
+    return barajar(state.personal);
+  }
+  const nivel = CONFIG.niveles[state.nivel];
+  state.minLetras = nivel.minLetras;
+  let letras = [];
+  nivel.grupos.forEach(g => {
+    const fijas = g.fijas || [];
+    const resto = barajar(g.pool.filter(l => !fijas.includes(l) && !letras.includes(l)));
+    letras = letras.concat(fijas, resto.slice(0, Math.max(0, g.cuantas - fijas.length)));
+  });
+  return barajar(letras);
+}
+
+function empezar() {
+  if (state.nivel === 'P' && state.personal.length < 3) {
+    alertaConfig('Elige al menos 3 letras para la partida personalizada.');
+    return;
+  }
+  sonido('toque');
+  state.bolsa = crearBolsa();
+  // Que la primera letra visible sea una vocal (si la hay), para arrancar con juego
+  const iv = state.bolsa.findIndex(esVocal);
+  if (iv > 0) [state.bolsa[0], state.bolsa[iv]] = [state.bolsa[iv], state.bolsa[0]];
+  state.total = state.bolsa.length;
+  state.visibles = [];
+  state.palabras = [];
+  state.palabra = '';
+  state.ganado = false;
+  state.enJuego = true;
+  for (let i = 0; i < CONFIG.letrasIniciales && state.bolsa.length; i++) state.visibles.push(state.bolsa.shift());
+
+  $('nivelTag').textContent = nombreNivel() + (state.repetir ? '' : ' · sin repetir') + ` · mín. ${state.minLetras} letras`;
+  $('screenConfig').hidden = true;
+  $('screenGame').hidden = false;
+  $('temporizador').hidden = state.modo !== 'auto';
+  iniciarAuto();
+  mostrarAviso('');
+  renderTodo();
+  window.scrollTo(0, 0);
+}
+function nombreNivel() {
+  return state.nivel === 'P' ? 'Personalizado' : CONFIG.niveles[state.nivel].nombre;
+}
+
+function sacarLetra() {
+  if (!state.bolsa.length || state.modal) return;
+  state.visibles.push(state.bolsa.shift());
+  sonido('letra');
+  if (state.modo === 'auto') state.auto.restante = state.intervalo * 1000;
+  renderTablero();
+  renderPalabra();
+  if (!state.bolsa.length) mostrarAviso('🎒 ¡Ya han salido todas las letras!', 'info');
+}
+$('btnSacar').addEventListener('click', sacarLetra);
+
+// ---------- Modo automático ----------
+function iniciarAuto() {
+  clearInterval(state.auto.id);
+  state.auto.pausado = false;
+  $('btnPausa').textContent = '⏸ Pausa';
+  if (state.modo !== 'auto') return;
+  state.auto.restante = state.intervalo * 1000;
+  state.auto.ultimo = performance.now();
+  state.auto.id = setInterval(tickAuto, 100);
+  tickAuto();
+}
+function tickAuto() {
+  const ahora = performance.now();
+  const delta = ahora - state.auto.ultimo;
+  state.auto.ultimo = ahora;
+  if (!state.bolsa.length || state.ganado) {
+    $('barraTiempo').style.width = '0%';
+    $('txtTiempo').textContent = state.ganado ? '🏆 ¡Partida terminada!' : '🎒 Bolsa vacía';
+    $('btnPausa').disabled = true;
+    return;
+  }
+  $('btnPausa').disabled = false;
+  if (!state.auto.pausado) {
+    state.auto.restante -= delta;
+    if (state.auto.restante <= 0) sacarLetra();
+  }
+  const total = state.intervalo * 1000;
+  $('barraTiempo').style.width = (100 * (1 - state.auto.restante / total)) + '%';
+  $('txtTiempo').textContent = state.auto.pausado ? '⏸ En pausa' : `Nueva letra en ${Math.ceil(state.auto.restante / 1000)} s`;
+}
+$('btnPausa').addEventListener('click', () => {
+  state.auto.pausado = !state.auto.pausado;
+  $('btnPausa').textContent = state.auto.pausado ? '▶ Reanudar' : '⏸ Pausa';
+  tickAuto();
+});
+
+// ---------- Construcción de la palabra ----------
+function anadir(txt) {
+  if (state.modal || !state.enJuego) return;
+  if (Array.from(state.palabra).length >= 16) { sonido('error'); return; }
+  state.palabra += txt.toLowerCase();
+  sonido('toque');
+  mostrarAviso('');
+  renderPalabra();
+}
+function borrarLetra() {
+  const a = Array.from(state.palabra); a.pop();
+  state.palabra = a.join('');
+  renderPalabra();
+}
+function limpiarPalabra() { state.palabra = ''; mostrarAviso(''); renderPalabra(); }
+function ponerTilde() {
+  const conTilde = { a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú' };
+  const sinTilde = { á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u' };
+  const a = Array.from(state.palabra);
+  for (let i = a.length - 1; i >= 0; i--) {
+    if (conTilde[a[i]]) { a[i] = conTilde[a[i]]; break; }
+    if (sinTilde[a[i]]) { a[i] = sinTilde[a[i]]; break; }
+  }
+  state.palabra = a.join('');
+  sonido('toque');
+  renderPalabra();
+}
+$('btnBorrar').addEventListener('click', borrarLetra);
+$('btnLimpiar').addEventListener('click', limpiarPalabra);
+$('btnTilde').addEventListener('click', ponerTilde);
+$('btnProponer').addEventListener('click', proponer);
+
+// ---------- Teclado virtual ----------
+const FILAS_TECLADO = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L','Ñ'],
+  ['Z','X','C','V','B','N','M'],
+];
+FILAS_TECLADO.forEach(fila => {
+  const f = document.createElement('div');
+  f.className = 'filaT';
+  fila.forEach(l => {
+    const b = document.createElement('button');
+    b.textContent = l;
+    b.addEventListener('click', () => anadir(l));
+    f.appendChild(b);
+  });
+  $('teclado').appendChild(f);
+});
+$('btnTeclado').addEventListener('click', () => {
+  const t = $('teclado');
+  t.hidden = !t.hidden;
+  $('btnTeclado').textContent = t.hidden ? '⌨️ Mostrar teclado' : '⌨️ Ocultar teclado';
+});
+
+// ---------- Teclado físico ----------
+document.addEventListener('keydown', (e) => {
+  if (!state.enJuego) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (state.modal) { if (e.key === 'Enter' || e.key === ' ') e.preventDefault(); return; }
+  if (e.key === 'Enter') { e.preventDefault(); proponer(); }
+  else if (e.key === 'Backspace') { e.preventDefault(); borrarLetra(); }
+  else if (e.key === 'Escape') { limpiarPalabra(); }
+  else if (e.key === ' ') { e.preventDefault(); }
+  else if (/^[a-zñáéíóúü]$/i.test(e.key)) { e.preventDefault(); anadir(e.key); }
+});
+
+// ---------- Proponer y validar ----------
+function proponer() {
+  if (state.modal || !state.enJuego) return;
+  const p = state.palabra.trim();
+  if (!p) { mostrarAviso('✏️ Primero forma una palabra', 'info'); sonido('error'); return; }
+  if (state.palabras.length >= CONFIG.maxPalabras) { mostrarAviso('📚 El banco ya está completo', 'info'); return; }
+  const largo = Array.from(p).length;
+  if (largo < state.minLetras) {
+    mostrarAviso(`📏 Tiene que tener al menos ${state.minLetras} letras`, 'error'); sonido('error'); return;
+  }
+  if (!construir(p, state.visibles, state.repetir)) {
+    mostrarAviso(state.repetir ? '🔍 Usa solo letras que estén en el tablero' : '🔍 Usa solo letras del tablero, y cada ficha una vez', 'error');
+    sonido('error'); sacudirCajetin(); return;
+  }
+  const idx = state.palabras.indexOf(p.toLowerCase());
+  if (idx !== -1) {
+    mostrarAviso('🔁 ¡Palabra repetida!', 'error');
+    sonido('error');
+    destacarHueco(idx);
+    return;
+  }
+  // Supera las reglas técnicas → validación del docente
+  $('palabraValidar').textContent = mostrar(p);
+  abrirModal('modalValidar');
+}
+function abrirModal(id) {
+  state.modal = true;
+  if (document.activeElement) document.activeElement.blur();
+  $(id).hidden = false;
+}
+function cerrarModal(id) { $(id).hidden = true; state.modal = false; }
+
+$('btnValida').addEventListener('click', () => {
+  if ($('modalValidar').hidden) return;
+  cerrarModal('modalValidar');
+  state.palabras.push(state.palabra.trim().toLowerCase());
+  state.palabra = '';
+  sonido('valida');
+  mostrarAviso('⭐ ¡Palabra cazada!', 'bien');
+  renderTodo();
+  if (state.palabras.length >= CONFIG.maxPalabras) setTimeout(victoria, 450);
+});
+$('btnNoValida').addEventListener('click', () => {
+  if ($('modalValidar').hidden) return;
+  cerrarModal('modalValidar');
+  state.palabra = '';
+  sonido('descarta');
+  mostrarAviso('💪 Esa no vale. ¡Probad con otra!', 'info');
+  renderPalabra();
+});
+$('btnCancelarValidar').addEventListener('click', () => cerrarModal('modalValidar'));
+
+// ---------- Avisos ----------
+let temporizadorAviso = null;
+function mostrarAviso(txt, tipo = 'info') {
+  const a = $('aviso');
+  clearTimeout(temporizadorAviso);
+  a.className = '';
+  void a.offsetWidth; // reinicia la animación
+  a.textContent = txt;
+  if (txt) {
+    a.className = 'visible ' + tipo;
+    temporizadorAviso = setTimeout(() => { a.className = ''; a.textContent = ''; }, 3200);
+  }
+}
+function sacudirCajetin() {
+  const c = $('cajetin');
+  c.style.animation = 'none'; void c.offsetWidth; c.style.animation = 'sacudir .35s';
+}
+function destacarHueco(i) {
+  const h = $('listaBanco').children[i];
+  if (!h) return;
+  h.classList.remove('destacada'); void h.offsetWidth;
+  h.classList.add('destacada');
+  h.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  setTimeout(() => h.classList.remove('destacada'), 2200);
+}
+
+// =====================================================================
+// ============================= RENDER ===============================
+// =====================================================================
+function renderTodo() { renderTablero(); renderPalabra(); renderBanco(); renderProgreso(); }
+
+function renderTablero() {
+  const cont = $('fichas');
+  const enUso = (state.palabra && construir(state.palabra, state.visibles, state.repetir)) || [];
+  // Reutilizamos las fichas ya pintadas para que solo se anime la nueva
+  while (cont.children.length > state.visibles.length || (cont.firstChild && cont.firstChild.classList.contains('vacioTablero'))) {
+    cont.removeChild(cont.lastChild);
+  }
+  if (!state.visibles.length) {
+    cont.innerHTML = '<span class="vacioTablero">Pulsa «Sacar nueva letra» para empezar 🎲</span>';
+  }
+  state.visibles.forEach((l, i) => {
+    let b = cont.children[i];
+    if (!b || b.dataset.letra !== l) {
+      b = document.createElement('button');
+      b.dataset.letra = l;
+      b.dataset.i = i;
+      b.textContent = l;
+      b.className = 'ficha ' + (esVocal(l) ? 'vocal' : 'consonante');
+      b.setAttribute('aria-label', (esVocal(l) ? 'Vocal ' : 'Consonante ') + l);
+      b.addEventListener('click', () => tocarFicha(i));
+      if (cont.children[i]) cont.replaceChild(b, cont.children[i]); else cont.appendChild(b);
+    }
+    const usada = enUso.includes(i);
+    b.classList.toggle('enUso', usada && state.repetir);
+    b.classList.toggle('usada', usada && !state.repetir);
+  });
+  $('bolsaInfo').innerHTML = `🎒 Han salido <b>${state.visibles.length}</b> · Quedan <b>${state.bolsa.length}</b>`;
+  $('btnSacar').disabled = !state.bolsa.length || state.ganado;
+  $('btnSacar').textContent = state.bolsa.length ? '🎲 Sacar nueva letra' : '🎒 Bolsa vacía';
+}
+function tocarFicha(i) {
+  if (state.modal) return;
+  const enUso = (state.palabra && construir(state.palabra, state.visibles, state.repetir)) || [];
+  if (!state.repetir && enUso.includes(i)) {
+    const f = $('fichas').children[i];
+    f.classList.remove('sacudir'); void f.offsetWidth; f.classList.add('sacudir');
+    mostrarAviso('Esa ficha ya está en la palabra', 'info');
+    sonido('error');
+    return;
+  }
+  anadir(state.visibles[i]);
+}
+
+function renderPalabra() {
+  const c = $('cajetin');
+  const p = state.palabra;
+  const pista = $('pista');
+  c.classList.remove('ok', 'mal');
+  if (!p) {
+    c.innerHTML = '<span class="ph">_ _ _ _</span>';
+    pista.textContent = 'Toca las letras del tablero (o escribe) para formar una palabra';
+    pista.className = '';
+  } else {
+    c.textContent = mostrar(p);
+    const cur = document.createElement('span'); cur.className = 'cursor'; c.appendChild(cur);
+    const ok = construir(p, state.visibles, state.repetir);
+    c.classList.add(ok ? 'ok' : 'mal');
+    pista.textContent = ok ? '✔ Se puede formar con las letras del tablero' : '⚠ Hay alguna letra que no está en el tablero' + (state.repetir ? '' : ' o se repite');
+    pista.className = ok ? 'ok' : 'mal';
+  }
+  marcarFichas();
+}
+function marcarFichas() {
+  const enUso = (state.palabra && construir(state.palabra, state.visibles, state.repetir)) || [];
+  Array.from($('fichas').querySelectorAll('.ficha')).forEach((b, i) => {
+    const usada = enUso.includes(i);
+    b.classList.toggle('enUso', usada && state.repetir);
+    b.classList.toggle('usada', usada && !state.repetir);
+  });
+}
+
+function renderBanco() {
+  const ol = $('listaBanco');
+  ol.innerHTML = '';
+  ol.style.gridTemplateRows = `repeat(${Math.ceil(CONFIG.maxPalabras / 2)}, auto)`;
+  for (let i = 0; i < CONFIG.maxPalabras; i++) {
+    const li = document.createElement('li');
+    const w = state.palabras[i];
+    li.className = 'hueco' + (w ? ' lleno' : '');
+    li.innerHTML = `<span class="num">${i + 1}</span><span class="pal">${w ? mostrar(w) : ''}</span>`;
+    if (w) {
+      const x = document.createElement('button');
+      x.className = 'x'; x.textContent = '✕'; x.title = 'Quitar palabra';
+      x.setAttribute('aria-label', 'Quitar ' + w);
+      x.addEventListener('click', () => pedirBorrado(li, i));
+      li.appendChild(x);
+    }
+    ol.appendChild(li);
+  }
+}
+function pedirBorrado(li, i) {
+  if (state.modal) return;
+  li.querySelector('.x').remove();
+  const box = document.createElement('span');
+  box.className = 'confirmar';
+  box.innerHTML = '¿Quitar?';
+  const si = document.createElement('button'); si.className = 'si'; si.textContent = '✔';
+  const no = document.createElement('button'); no.className = 'no'; no.textContent = '✖';
+  si.addEventListener('click', () => {
+    state.palabras.splice(i, 1);
+    if (state.palabras.length < CONFIG.maxPalabras) state.ganado = false;
+    sonido('descarta');
+    renderTodo();
+    if (state.modo === 'auto') tickAuto();
+  });
+  no.addEventListener('click', renderBanco);
+  box.append(si, no);
+  li.appendChild(box);
+}
+
+function renderProgreso() {
+  const n = state.palabras.length;
+  $('barraProgreso').style.width = (100 * n / CONFIG.maxPalabras) + '%';
+  $('txtProgreso').textContent = `${n} / ${CONFIG.maxPalabras} palabras`;
+}
+
+// =====================================================================
+// ===================== VICTORIA Y CONFETI ===========================
+// =====================================================================
+function victoria() {
+  state.ganado = true;
+  sonido('victoria');
+  lanzarConfeti();
+  $('finalN').textContent = state.palabras.length;
+  abrirModal('modalFinal');
+  renderTablero();
+}
+$('finalVer').addEventListener('click', () => cerrarModal('modalFinal'));
+$('finalImprimir').addEventListener('click', () => { cerrarModal('modalFinal'); imprimir(false); });
+$('finalOtra').addEventListener('click', () => { cerrarModal('modalFinal'); volverConfig(); });
+
+function lanzarConfeti() {
+  const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducido) return;
+  const cv = $('confeti');
+  const ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  const colores = [CONFIG.colorVocales, CONFIG.colorConsonantes, '#F59E0B', '#EC4899', '#8B5CF6', '#EF4444'];
+  const piezas = Array.from({ length: 220 }, () => ({
+    x: Math.random() * cv.width, y: -20 - Math.random() * cv.height * 0.6,
+    w: 8 + Math.random() * 8, h: 12 + Math.random() * 10,
+    vx: -2 + Math.random() * 4, vy: 3 + Math.random() * 4,
+    r: Math.random() * Math.PI, vr: -0.2 + Math.random() * 0.4,
+    c: colores[Math.floor(Math.random() * colores.length)],
+  }));
+  const inicio = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    piezas.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.r += p.vr; p.vy += 0.03;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+      ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    if (t - inicio < 4500) requestAnimationFrame(frame);
+    else ctx.clearRect(0, 0, cv.width, cv.height);
+  })(inicio);
+}
+
+// =====================================================================
+// ========================= NUEVA PARTIDA ============================
+// =====================================================================
+function alertaConfig(txt) {
+  $('confTitulo').textContent = '⚠️ Atención';
+  $('confTexto').textContent = txt;
+  $('confSi').hidden = true;
+  $('confNo').textContent = 'Entendido';
+  abrirModal('modalConfirmar');
+}
+$('btnNueva').addEventListener('click', () => {
+  if (state.modal) return;
+  if (!state.palabras.length) { volverConfig(); return; }
+  $('confTitulo').textContent = '¿Empezar una nueva partida?';
+  $('confTexto').textContent = `Se borrarán las ${state.palabras.length} palabras del banco. Si queréis guardarlas, imprimid antes la ficha.`;
+  $('confSi').hidden = false;
+  $('confSi').textContent = 'Sí, nueva partida';
+  $('confNo').textContent = '↩ No, seguir jugando';
+  abrirModal('modalConfirmar');
+});
+$('confSi').addEventListener('click', () => { cerrarModal('modalConfirmar'); volverConfig(); });
+$('confNo').addEventListener('click', () => cerrarModal('modalConfirmar'));
+
+function volverConfig() {
+  clearInterval(state.auto.id);
+  state.enJuego = false;
+  state.modal = false;
+  $('screenGame').hidden = true;
+  $('screenConfig').hidden = false;
+  window.scrollTo(0, 0);
+}
+
+// =====================================================================
+// ========================= SONIDO ON/OFF ============================
+// =====================================================================
+$('btnSonido').addEventListener('click', () => {
+  state.silencio = !state.silencio;
+  $('btnSonido').textContent = state.silencio ? '🔇' : '🔊';
+  $('btnSonido').setAttribute('aria-label', state.silencio ? 'Activar sonido' : 'Silenciar sonido');
+  if (!state.silencio) sonido('toque');
+});
+
+// =====================================================================
+// ======================== FICHA IMPRIMIBLE ==========================
+// =====================================================================
+// vacia = true → plantilla con recuadros en blanco (antes de jugar)
+function imprimir(vacia) {
+  const letras = vacia ? [] : state.visibles;
+  const contL = $('impLetras');
+  contL.innerHTML = '';
+  // Ajuste automático: hasta 10 letras en una fila; con más, dos filas (letras grandes y legibles)
+  const nCajas = letras.length || (state.enJuego && state.total ? state.total : 12);
+  const porFila = nCajas <= 10 ? nCajas : Math.ceil(nCajas / 2);
+  const hueco = 2.5;
+  const lado = Math.min(16, (180 - (porFila - 1) * hueco) / porFila);
+  contL.style.setProperty('--lado', lado.toFixed(1) + 'mm');
+  contL.style.setProperty('--hueco', hueco + 'mm');
+  contL.style.setProperty('--letra', Math.round(lado * 1.5) + 'pt');
+  if (letras.length) {
+    letras.forEach(l => {
+      const d = document.createElement('div');
+      d.className = 'letraImp' + (esVocal(l) ? ' v' : '');
+      d.textContent = l;
+      contL.appendChild(d);
+    });
+  } else {
+    // ✏️ Número de recuadros en blanco de la plantilla vacía
+    const huecos = state.enJuego && state.total ? state.total : 12;
+    for (let i = 0; i < huecos; i++) {
+      const d = document.createElement('div'); d.className = 'letraImp'; contL.appendChild(d);
+    }
+  }
+  $('impNivel').textContent = vacia ? '' : nombreNivel();
+  let consigna = `Forma palabras usando solo estas letras. ¡Intenta cazar ${CONFIG.maxPalabras}!`;
+  if (!vacia) {
+    if (!state.repetir) consigna += ' Cada letra solo se puede usar una vez en cada palabra.';
+    if (state.minLetras > 2) consigna += ` Cada palabra debe tener al menos ${state.minLetras} letras.`;
+  }
+  $('impConsigna').textContent = consigna;
+  const contH = $('impHuecos');
+  contH.innerHTML = '';
+  for (let i = 1; i <= CONFIG.maxPalabras; i++) {
+    const r = document.createElement('div');
+    r.className = 'renglon';
+    r.innerHTML = `<span class="n">${i}</span><span class="linea"></span>`;
+    contH.appendChild(r);
+  }
+  contH.style.gridTemplateRows = `repeat(${Math.ceil(CONFIG.maxPalabras / 2)}, 1fr)`;
+  setTimeout(() => window.print(), 50);
+}
+$('btnImprimir').addEventListener('click', () => { if (!state.modal) imprimir(false); });
+
+// =====================================================================
+// ======================== PANTALLA COMPLETA =========================
+// =====================================================================
+const btnFS = $('btnFullscreen');
+const raiz = document.documentElement;
+const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+if (!(raiz.requestFullscreen || raiz.webkitRequestFullscreen)) btnFS.hidden = true;
+btnFS.addEventListener('click', () => {
+  try {
+    if (fsElement()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (raiz.requestFullscreen || raiz.webkitRequestFullscreen).call(raiz);
+  } catch (e) { /* sin soporte */ }
+});
+function actualizarIconoFS() {
+  const activo = !!fsElement();
+  btnFS.textContent = activo ? '✖' : '⛶';
+  btnFS.setAttribute('aria-label', activo ? 'Salir de pantalla completa' : 'Pantalla completa');
+}
+document.addEventListener('fullscreenchange', actualizarIconoFS);
+document.addEventListener('webkitfullscreenchange', actualizarIconoFS);
+
+// ---------- Arranque ----------
+pintarNiveles();
+pintarPicker();
+pintarIntervalos();
+pintarSwitch();
+</script>
+</body>
+</html>
