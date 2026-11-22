@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detectives de Palabras · Categorías gramaticales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fondo:#FFF8F0; --texto:#2D3142; --suave:#6B7280; --primario:#5B8DEF; --primario2:#3F6FD8;
+  --acierto:#2E9E5B; --aciertoSuave:#D6F5E3; --error:#D9534F; --errorSuave:#FDE2E1;
+  --borde:#E8DFD3; --cielo:#E3F0FF; --menta:#E0F5EC; --melocoton:#FFE8D6; --lila:#EFE7FA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:'Quicksand','Nunito',system-ui,sans-serif;background:var(--fondo);color:var(--texto);
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;font-weight:600;font-size:18px;line-height:1.35}
+h1,h2,h3,.titulo{font-family:'Nunito','Quicksand',system-ui,sans-serif;font-weight:900}
+button{font:inherit;font-weight:700;cursor:pointer;border:none;min-width:60px;min-height:60px;border-radius:16px;
+  transition:transform .08s, box-shadow .15s, background .2s;color:inherit}
+button:active{transform:scale(.96)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:4px solid #222;outline-offset:3px}
+input,select{font:inherit;user-select:text;-webkit-user-select:text}
+.oculto{display:none!important}
+.pantalla{min-height:100vh;padding:16px 18px 40px}
+
+/* Botones fijos */
+#btnFullscreen,#btnMute{position:fixed;top:12px;z-index:1000;width:64px;height:64px;font-size:1.7rem;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+#btnFullscreen{right:12px}
+#btnMute{right:86px}
+
+/* ---------- INICIO ---------- */
+.cabecera{text-align:center;padding:6px 160px 8px}
+.cabecera h1{font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.1}
+.cabecera p{color:var(--suave);font-size:1.15rem;margin-top:4px}
+.perfil{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px auto 16px;max-width:1200px}
+.pill{background:#fff;border-radius:999px;padding:10px 18px;box-shadow:0 2px 8px rgba(0,0,0,.08);font-size:1.15rem;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.barraRango{width:140px;height:12px;background:#EEE6DA;border-radius:99px;overflow:hidden;display:inline-block}
+.barraRango i{display:block;height:100%;background:linear-gradient(90deg,#FFC94D,#FF9F43)}
+.paso{background:#fff;border-radius:24px;padding:18px 20px;margin:0 auto 16px;max-width:1200px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.paso h2{font-size:1.55rem;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.num{background:var(--primario);color:#fff;border-radius:50%;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem}
+.rejilla{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.tarjeta{background:var(--fondo);border:4px solid transparent;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:118px;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.tarjeta.sel{border-color:var(--primario);background:var(--cielo);box-shadow:0 0 0 4px rgba(91,141,239,.2)}
+.tarjeta .t0{font-size:.95rem;color:var(--suave);font-weight:700;display:flex;justify-content:space-between}
+.tarjeta .t1{font-size:1.3rem;font-weight:800;font-family:'Nunito',sans-serif}
+.tarjeta .t2{font-size:.95rem;color:var(--suave);font-weight:600}
+.tarjeta .ico{font-size:2.2rem;line-height:1}
+.puntos{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto}
+.punto{width:20px;height:20px;border-radius:50%;border:2px solid rgba(0,0,0,.12)}
+.filaNivel{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+#selNivel{flex:0 1 460px;min-height:64px;font-size:1.35rem;font-weight:800;padding:8px 48px 8px 16px;border-radius:16px;border:4px solid var(--primario);
+  background:var(--cielo) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='14'%3E%3Cpath d='M2 2l9 9 9-9' fill='none' stroke='%233F6FD8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;
+  color:var(--texto);appearance:none;-webkit-appearance:none;cursor:pointer;max-width:100%}
+.catsNivel{display:flex;flex-wrap:wrap;gap:8px}
+.catNivel{display:inline-flex;align-items:center;gap:6px;background:var(--fondo);border-radius:999px;padding:6px 12px;font-size:1rem}
+.catNivel .punto{width:18px;height:18px}
+.checks{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.check{display:flex;align-items:center;gap:8px;background:var(--fondo);padding:10px 14px;border-radius:14px;min-height:56px;cursor:pointer;font-size:1.05rem}
+.check input{width:26px;height:26px}
+.zonaEmpezar{text-align:center;margin:10px auto 18px}
+.btnGrande{background:var(--primario);color:#fff;font-size:1.8rem;padding:14px 46px;box-shadow:0 6px 0 var(--primario2);font-family:'Nunito',sans-serif;font-weight:900}
+.btnGrande:active{box-shadow:0 2px 0 var(--primario2);transform:translateY(4px)}
+.btnSec{background:#fff;border:3px solid var(--borde);padding:8px 20px;font-size:1.2rem}
+.aviso{color:var(--error);font-weight:700;margin-top:10px;font-size:1.1rem}
+details.docente{max-width:1200px;margin:0 auto 16px;background:#fff;border-radius:24px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+details.docente summary{cursor:pointer;padding:18px 22px;font-size:1.35rem;font-weight:800;min-height:60px;list-style:none;font-family:'Nunito',sans-serif}
+details.docente summary::-webkit-details-marker{display:none}
+.opciones{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding:0 22px 18px}
+.campo{display:flex;flex-direction:column;gap:6px;font-size:1rem;color:var(--suave)}
+.campo select,.campo input[type=text]{min-height:56px;border-radius:14px;border:3px solid var(--borde);padding:8px 12px;background:var(--fondo);color:var(--texto);font-weight:700;font-size:1.1rem}
+.bloqueJson{padding:4px 22px 22px;border-top:2px dashed var(--borde);margin-top:4px}
+.bloqueJson h3{font-size:1.25rem;margin:14px 0 8px}
+.filaBotones{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.estado{margin-top:10px;font-size:1rem;white-space:pre-line}
+.estado.ok{color:var(--acierto)} .estado.mal{color:var(--error)}
+.logros{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1200px;margin:0 auto 10px}
+.logro{background:#fff;border-radius:14px;padding:6px 12px;font-size:.95rem;box-shadow:0 2px 6px rgba(0,0,0,.06);display:flex;align-items:center;gap:6px}
+.logro.bloq{filter:grayscale(1);opacity:.45}
+.logro b{font-size:1.4rem}
+
+/* ---------- JUEGO ---------- */
+.barra{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-right:160px;margin-bottom:12px}
+.btnIcono{background:#fff;width:64px;height:64px;font-size:1.7rem;box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.modoNombre{font-size:1.5rem;font-family:'Nunito',sans-serif;font-weight:900}
+.marcadores{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.barraTiempo{position:relative;height:34px;background:#fff;border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 6px rgba(0,0,0,.08);margin-bottom:12px}
+.barraTiempo .relleno{height:100%;background:linear-gradient(90deg,#8BD3A8,#5CC48A);transition:width .1s linear}
+.barraTiempo.urgente .relleno{background:linear-gradient(90deg,#F7A1A1,#E86A6A)}
+.barraTiempo span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.25rem}
+.tablero{max-width:1250px;margin:0 auto}
+.consigna{text-align:center;font-size:clamp(1.4rem,2.8vw,2.1rem);font-weight:700;margin:6px 0 14px;font-family:'Nunito',sans-serif}
+.etiqueta{background:var(--c);color:var(--ct);padding:2px 14px;border-radius:12px;font-weight:900;letter-spacing:.5px;white-space:nowrap}
+.contador{display:inline-block;background:#fff;border-radius:99px;padding:2px 14px;margin-left:6px;box-shadow:0 2px 6px rgba(0,0,0,.08);font-size:.85em}
+.frase{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px 12px;padding:30px 18px;background:#fff;border-radius:24px;box-shadow:0 6px 20px rgba(0,0,0,.07);min-height:150px}
+.chip{font-size:clamp(1.7rem,3.7vw,3.1rem);font-weight:700;padding:6px 18px;min-height:68px;background:#F6F1EA;border:3px solid #E5DCCF;border-radius:16px;position:relative;font-family:'Quicksand',sans-serif;touch-action:manipulation}
+.chip.ok,.chip.revelada{background:var(--c);color:var(--ct);border-color:var(--c)}
+.chip.ok{animation:pop .3s}
+.chip.ok::after{content:'✔';position:absolute;top:-14px;right:-12px;background:#fff;color:var(--acierto);border-radius:50%;width:30px;height:30px;font-size:1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.chip.revelada{border-style:dashed;border-color:rgba(255,255,255,.9);box-shadow:0 0 0 2px var(--c)}
+.chip.inerte{background:transparent;border-color:transparent;color:#A3A3A3;cursor:default}
+.chip.sel{box-shadow:0 0 0 6px var(--primario);transform:translateY(-4px)}
+.chip.mal{animation:shake .45s;background:var(--errorSuave);border-color:var(--error)}
+.chip.estatico{cursor:default}
+.chip.hueco{border:4px dashed var(--c);background:#fff;color:var(--c);min-width:150px}
+.par{display:inline-flex;align-items:center;white-space:nowrap}
+.par .punct{margin-left:4px}
+.punct{font-size:clamp(1.7rem,3.7vw,3.1rem);font-weight:700;margin-left:-10px}
+.paleta{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+.paleta button{background:var(--c);color:var(--ct);padding:8px 20px;font-size:1.35rem;box-shadow:0 4px 0 rgba(0,0,0,.18);text-transform:capitalize}
+.msg{text-align:center;min-height:48px;font-size:clamp(1.25rem,2.4vw,1.7rem);font-weight:700;margin-top:14px;padding:6px 12px;border-radius:14px}
+.msg.ok{color:var(--acierto)} .msg.mal{color:var(--error)}
+.controles{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.leyenda{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}
+.leyenda button{background:#fff;display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:1.05rem;box-shadow:0 2px 6px rgba(0,0,0,.08);text-transform:capitalize}
+.pregunta{text-align:center;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;margin:20px 0 14px;font-family:'Nunito',sans-serif}
+.pregunta small{display:block;font-size:.6em;color:var(--suave);font-weight:700;margin-top:6px;font-family:'Quicksand',sans-serif}
+.opcionesResp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:1000px;margin:0 auto}
+.opcionesResp button{background:#fff;border:4px solid var(--borde);font-size:clamp(1.3rem,2.6vw,1.9rem);padding:12px;min-height:84px;display:flex;align-items:center;justify-content:center;gap:10px}
+.opcionesResp button:disabled{opacity:1}
+.opcionesResp button.correcta{background:var(--aciertoSuave);border-color:var(--acierto)}
+.opcionesResp button.correcta::before{content:'✔ ';color:var(--acierto)}
+.opcionesResp button.incorrecta{background:var(--errorSuave);border-color:var(--error)}
+.opcionesResp button.incorrecta::before{content:'✘ ';color:var(--error)}
+.entrada{display:block;margin:6px auto 0;width:min(520px,92%);min-height:68px;font-size:1.7rem;text-align:center;border:4px solid var(--borde);border-radius:18px;font-weight:700;color:var(--texto)}
+.panelDocente{max-width:1000px;margin:18px auto 0;background:var(--lila);border-radius:20px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.panelDocente .tit{width:100%;text-align:center;font-weight:800;color:#6A4C93}
+.btnOk{background:var(--acierto);color:#fff;font-size:1.4rem;padding:8px 26px;box-shadow:0 4px 0 #1f7a45}
+.btnNo{background:var(--error);color:#fff;font-size:1.4rem;padding:8px 26px;box-shadow:0 4px 0 #a73b38}
+
+/* Duelo */
+.duelo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panel{position:relative;border-radius:26px;padding:12px;border:5px solid}
+.panel.j0{background:#FFF0F0;border-color:#FF8A80}
+.panel.j1{background:#EEF5FF;border-color:#82B1FF}
+.cabJug{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.nombreJ{font-size:1.6rem;font-family:'Nunito',sans-serif;font-weight:900}
+.dots{display:flex;gap:6px}
+.dot{width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.dot.lleno{background:#FFC94D;border-color:#E6A817}
+.duelo .chip,.duelo .punct{font-size:clamp(1.3rem,2.4vw,2.2rem)}
+.duelo .chip{min-height:60px;padding:4px 12px}
+.duelo .frase{padding:18px 10px;min-height:120px}
+.duelo .consigna{font-size:clamp(1.15rem,2vw,1.6rem)}
+.duelo .msg{min-height:36px;font-size:1.2rem}
+.hielo{position:absolute;inset:0;background:rgba(190,225,255,.78);display:flex;align-items:center;justify-content:center;font-size:2.4rem;font-weight:900;border-radius:22px;z-index:5;font-family:'Nunito',sans-serif}
+
+/* Final */
+.final{max-width:900px;margin:30px auto;background:#fff;border-radius:30px;padding:30px 24px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+.final .grande{font-size:5rem;line-height:1}
+.final h2{font-size:clamp(2rem,4vw,2.8rem);margin:10px 0}
+.estrellas{font-size:3.6rem;letter-spacing:8px;margin:6px 0 14px}
+.estrellas .apagada{filter:grayscale(1);opacity:.3}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.stat{background:var(--fondo);border-radius:18px;padding:14px}
+.stat b{display:block;font-size:2rem;font-family:'Nunito',sans-serif}
+.nuevosLogros{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:10px 0}
+
+/* Modal y avisos */
+.modal{position:fixed;inset:0;background:rgba(30,30,50,.45);display:flex;align-items:center;justify-content:center;z-index:1100;padding:16px}
+.caja{background:#fff;border-radius:24px;max-width:860px;width:100%;max-height:90vh;overflow:auto;padding:22px}
+.caja h2{margin-bottom:10px}
+.caja p,.caja li{margin:8px 0;font-size:1.05rem}
+.caja ul{padding-left:22px}
+pre{background:#272A36;color:#F8F8F2;padding:14px;border-radius:14px;overflow:auto;font-size:.92rem;user-select:text;-webkit-user-select:text;white-space:pre}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2D3142;color:#fff;padding:14px 24px;border-radius:18px;font-size:1.25rem;z-index:1200;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:92vw;text-align:center;animation:subir .3s}
+.confeti{position:fixed;top:-20px;width:12px;height:18px;z-index:1150;pointer-events:none;border-radius:3px;animation:caer linear forwards}
+
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+@keyframes caer{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes subir{from{transform:translate(-50%,30px);opacity:0}}
+@media (max-width:900px){
+  .duelo{grid-template-columns:1fr}
+  .cabecera{padding:84px 10px 8px}
+  .barra{padding-right:0;padding-top:72px}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<button id="btnMute" aria-label="Silenciar sonido" title="Sonido">🔊</button>
+<button id="btnFullscreen" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+
+<!-- ================= PANTALLA DE INICIO ================= -->
+<section id="inicio" class="pantalla">
+  <header class="cabecera">
+    <h1 id="titulo">🔍 Detectives de Palabras</h1>
+    <p>Descubre qué es cada palabra de la frase</p>
+  </header>
+  <div class="perfil" id="perfil"></div>
+  <div class="logros" id="listaLogros"></div>
+
+  <div class="paso">
+    <h2><span class="num">1</span> Elige tu nivel</h2>
+    <div class="filaNivel">
+      <select id="selNivel" aria-label="Nivel de dificultad"></select>
+      <div class="catsNivel" id="catsNivel" aria-label="Categorías de este nivel"></div>
+    </div>
+    <div id="bloqueCustom" class="oculto">
+      <p style="margin-top:14px;color:var(--suave)">Marca las categorías con las que quieres jugar:</p>
+      <div class="checks" id="checksCats"></div>
+    </div>
+  </div>
+
+  <div class="paso">
+    <h2><span class="num">2</span> Elige el modo de juego</h2>
+    <div class="rejilla" id="rejillaModos"></div>
+  </div>
+
+  <div class="zonaEmpezar">
+    <button class="btnGrande" id="btnEmpezar">¡A jugar! 🚀</button>
+    <div class="aviso" id="avisoInicio"></div>
+  </div>
+
+  <details class="docente" id="panelDocente">
+    <summary>⚙️ Opciones del docente</summary>
+    <div class="opciones">
+      <label class="campo">Frases por partida (Práctica, Pregunta, Incógnita)
+        <select id="optRondas"><option>5</option><option>10</option><option>15</option><option>20</option></select></label>
+      <label class="campo">Tiempo del Reto rápido
+        <select id="optTiempo"><option value="30">30 segundos</option><option value="60">1 minuto</option><option value="90">1 minuto y medio</option><option value="120">2 minutos</option></select></label>
+      <label class="campo">Frases para ganar el 1 contra 1
+        <select id="optMeta"><option>3</option><option>5</option><option>7</option><option>10</option></select></label>
+      <label class="campo">Tarea en Práctica
+        <select id="optTarea"><option value="buscar">Buscar: toca todas las palabras de una categoría</option><option value="clasificar">Clasificar: di qué es cada palabra</option></select></label>
+      <label class="campo">Tiempo verbal de las frases
+        <select id="optTiempoVerbal"><option value="todos">Todos</option><option value="presente">Solo presente</option><option value="pasado">Solo pasado</option><option value="futuro">Solo futuro</option></select></label>
+      <label class="campo">Frases que se usan
+        <select id="optFuente"><option value="todas">Todas</option><option value="base">Solo el banco del juego</option><option value="imp">Solo las frases importadas</option></select></label>
+      <label class="campo">Nombre del jugador 1 (rojo)
+        <input type="text" id="optJ1" maxlength="18"></label>
+      <label class="campo">Nombre del jugador 2 (azul)
+        <input type="text" id="optJ2" maxlength="18"></label>
+    </div>
+    <div class="bloqueJson">
+      <h3>📂 Añadir frases con archivos JSON</h3>
+      <div class="filaBotones">
+        <input type="file" id="inpJson" accept=".json,application/json" multiple class="oculto">
+        <button class="btnSec" id="btnCargarJson">📥 Cargar archivo JSON</button>
+        <button class="btnSec" id="btnPlantilla">📄 Descargar plantilla</button>
+        <button class="btnSec" id="btnFormato">❓ Ver formato</button>
+        <button class="btnSec" id="btnExportar">💾 Exportar todas las frases</button>
+        <button class="btnSec" id="btnBorrarImp">🗑️ Borrar frases importadas</button>
+      </div>
+      <div class="estado" id="estadoBanco"></div>
+      <div class="estado" id="estadoImport"></div>
+      <h3>🏆 Progreso</h3>
+      <div class="filaBotones">
+        <button class="btnSec" id="btnReset">🔄 Reiniciar puntos y logros</button>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ================= PANTALLA DE JUEGO ================= -->
+<section id="juego" class="pantalla oculto">
+  <div class="barra">
+    <button class="btnIcono" id="btnCasa" aria-label="Volver al inicio" title="Inicio">🏠</button>
+    <span class="modoNombre" id="modoNombre"></span>
+    <span class="pill" id="progreso"></span>
+    <div class="marcadores" id="marcadores">
+      <span class="pill" id="marcPuntos">⭐ 0</span>
+      <span class="pill" id="marcRacha">🔥 0</span>
+    </div>
+  </div>
+  <div class="barraTiempo oculto" id="barraTiempo"><div class="relleno" id="relleno"></div><span id="segundos"></span></div>
+  <div id="zona"></div>
+  <div class="leyenda" id="leyenda"></div>
+</section>
+
+<!-- ================= PANTALLA FINAL ================= -->
+<section id="final" class="pantalla oculto"><div class="final" id="cajaFinal"></div></section>
+
+<!-- Modal para copiar JSON (si el navegador no deja descargar) -->
+<div class="modal oculto" id="modalCopia" role="dialog" aria-modal="true">
+  <div class="caja">
+    <h2 id="tituloCopia">💾 Frases en JSON</h2>
+    <p>Si no se ha descargado el archivo, copia el texto y pégalo en un archivo nuevo terminado en <b>.json</b>.</p>
+    <pre id="preCopia" style="max-height:45vh"></pre>
+    <div class="controles"><button class="btnSec" id="btnCopiar">📋 Copiar</button><button class="btnGrande" id="btnCerrarCopia">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- Modal de formato JSON -->
+<div class="modal oculto" id="modalFormato" role="dialog" aria-modal="true">
+  <div class="caja">
+    <h2>📄 Formato de los archivos JSON</h2>
+    <p>Cada frase lleva su <b>texto</b> y, en listas, las palabras de cada categoría <b>tal y como aparecen en la frase</b>. Las categorías que no uses se pueden quitar. El <b>tiempo</b> (presente, pasado o futuro) es opcional y sirve para el modo Pregunta.</p>
+    <pre id="preFormato"></pre>
+    <div class="filaBotones" style="margin-top:8px"><button class="btnSec" id="btnCopiarPlantilla">📋 Copiar plantilla</button></div>
+    <ul>
+      <li>Categorías válidas: <code>sustantivos, articulos, adjetivos, verbos, determinantes, pronombres, adverbios, preposiciones, conjunciones</code>.</li>
+      <li><code>articulos</code> son solo el, la, los, las, un, una, unos, unas. Los posesivos (mi, tu, su…), numerales (dos, tres…) y demostrativos (este, aquel…) van en <code>determinantes</code>.</li>
+      <li>Si un sustantivo propio va al principio de la frase, añade <code>"propios": ["Lucía"]</code> para que el modo Pregunta lo reconozca.</li>
+      <li>Las palabras que no pongas en ninguna lista se muestran, pero no se preguntan.</li>
+      <li>Truco: puedes pedir a una IA «Genera 20 frases para 3º de Primaria con este formato JSON» y pegarle la plantilla. Revisa siempre el resultado antes de usarlo en clase.</li>
+    </ul>
+    <div class="controles"><button class="btnGrande" id="btnCerrarModal">Entendido</button></div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// ============ CONFIGURACIÓN DEL DOCENTE ==============================
+// ✏️ Todo lo que puedes cambiar está en este bloque.
+// =====================================================================
+const CONFIG = {
+  titulo: '🔍 Detectives de Palabras',
+
+  // ✏️ Categorías: c = color de fondo, t = color del texto encima.
+  //    Los verbos no tenían color asignado: se han puesto en VERDE (cámbialo aquí si quieres).
+  categorias: {
+    sustantivos:   { nombre:'sustantivo',   plural:'sustantivos',   un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#E53935', t:'#FFFFFF',
+                     pista:'Nombra personas, animales, cosas o lugares: perro, Lucía, mesa, Murcia.' },
+    articulos:     { nombre:'artículo',     plural:'artículos',     un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#1E73D8', t:'#FFFFFF',
+                     pista:'Va delante del sustantivo y nos dice si es masculino o femenino, singular o plural: el, la, los, las, un, una, unos, unas.' },
+    adjetivos:     { nombre:'adjetivo',     plural:'adjetivos',     un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#FDD835', t:'#2D3142',
+                     pista:'Dice cómo es el sustantivo: grande, azul, simpático. Cambia con él: perro pequeño → perras pequeñas.' },
+    verbos:        { nombre:'verbo',        plural:'verbos',        un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#2E7D32', t:'#FFFFFF',
+                     pista:'Dice lo que se hace o lo que pasa: salta, comió, jugará. Cambia según cuándo ocurre: hoy salta, ayer saltó, mañana saltará.' },
+    determinantes: { nombre:'determinante', plural:'determinantes', un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#00838F', t:'#FFFFFF',
+                     pista:'Como el artículo, va delante del sustantivo y lo presenta: mi, tu, su, nuestro (posesivos); dos, nueve (numerales); este, aquel (demostrativos).' },
+    pronombres:    { nombre:'pronombre',    plural:'pronombres',    un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#8E24AA', t:'#FFFFFF',
+                     pista:'Sustituye al sustantivo para no repetirlo: yo, tú, él, ella, nosotros, vosotras, ellos.' },
+    adverbios:     { nombre:'adverbio',     plural:'adverbios',     un:'un',  el:'el', los:'los', cuantos:'Cuántos', c:'#FB8C00', t:'#2D3142',
+                     pista:'Dice cómo, cuándo, dónde o cuánto se hace algo: bien, hoy, cerca, mucho, siempre, no.' },
+    preposiciones: { nombre:'preposición',  plural:'preposiciones', un:'una', el:'la', los:'las', cuantos:'Cuántas', c:'#616161', t:'#FFFFFF',
+                     pista:'Palabra pequeña que une otras palabras: a, con, de, en, para, por, sobre…' },
+    conjunciones:  { nombre:'conjunción',   plural:'conjunciones',  un:'una', el:'la', los:'las', cuantos:'Cuántas', c:'#D81B60', t:'#FFFFFF',
+                     pista:'Une palabras o frases: y, o, pero, ni.' },
+  },
+
+  // ✏️ Niveles de dificultad. "curso" es solo orientativo: ajústalo a tu programación.
+  niveles: [
+    { nombre:'Sustantivos',     curso:'3º', icono:'🐣', cats:['sustantivos'] },
+    { nombre:'+ Adjetivos',     curso:'3º', icono:'🐥', cats:['sustantivos','adjetivos'] },
+    { nombre:'+ Artículos',     curso:'3º', icono:'🦊', cats:['sustantivos','adjetivos','articulos'] },
+    { nombre:'+ Verbos',        curso:'3º', icono:'🦉', cats:['sustantivos','adjetivos','articulos','verbos'] },
+    { nombre:'+ Determinantes', curso:'4º', icono:'🐬', cats:['sustantivos','adjetivos','articulos','verbos','determinantes'] },
+    { nombre:'+ Pronombres',    curso:'5º', icono:'🦁', cats:['sustantivos','adjetivos','articulos','verbos','determinantes','pronombres'] },
+    { nombre:'+ Adverbios',     curso:'5º', icono:'🐉', cats:['sustantivos','adjetivos','articulos','verbos','determinantes','pronombres','adverbios'] },
+    { nombre:'Todas',           curso:'6º', icono:'👑', cats:['sustantivos','adjetivos','articulos','verbos','determinantes','pronombres','adverbios','preposiciones','conjunciones'] },
+  ],
+
+  // ✏️ Valores por defecto de la partida
+  rondas: 10, tiempoReto: 60, metaDuelo: 5,
+  jugadores: ['Jugador 1', 'Jugador 2'],
+  puntosAcierto: 10,     // por cada palabra acertada (se multiplica con la racha)
+  bonusFrase: 20,        // frase sin errores y sin pista
+  congelacionDuelo: 1200,// milisegundos que se congela un jugador al fallar en el 1 contra 1
+
+  // ✏️ Rangos (puntos acumulados en este dispositivo)
+  rangos: [
+    { desde:0,    icono:'🐣', nombre:'Aprendiz' },
+    { desde:300,  icono:'🧭', nombre:'Explorador/a' },
+    { desde:1000, icono:'🔍', nombre:'Detective' },
+    { desde:2500, icono:'🕵️', nombre:'Inspector/a' },
+    { desde:5000, icono:'👑', nombre:'Maestro/a de la Gramática' },
+  ],
+
+  // ✏️ Logros
+  logros: [
+    { id:'primera',  icono:'🎉', nombre:'Primera partida' },
+    { id:'racha5',   icono:'🔥', nombre:'Racha de 5' },
+    { id:'racha10',  icono:'⚡', nombre:'Racha de 10' },
+    { id:'perfecta', icono:'💎', nombre:'Partida sin fallos' },
+    { id:'reto10',   icono:'⏱️', nombre:'10 frases en un reto' },
+    { id:'duelo',    icono:'🤺', nombre:'Primer duelo' },
+    { id:'sabio',    icono:'🦉', nombre:'3 estrellas en Pregunta' },
+    { id:'verbos',   icono:'🏅', nombre:'3 estrellas en nivel 4' },
+    { id:'creativo', icono:'🎨', nombre:'5 incógnitas válidas' },
+  ],
+
+  // ✏️ Mensajes de ánimo
+  mensajes: {
+    acierto: ['¡Bien visto!', '¡Genial!', '¡Eso es!', '¡Ojo de detective!', '¡Muy bien!', '¡Lo has pillado!', '¡Crack!'],
+    frase:   ['¡Frase resuelta! 🎉', '¡Caso cerrado! 🔍', '¡Perfecto! 🌟', '¡Eres un hacha de la gramática! 🪓', '¡Misión cumplida! 🚀'],
+    error:   ['Casi… ¡piensa otra vez!', '¡Ánimo, tú puedes!', 'Fíjate bien y vuelve a probar.', 'Los detectives también fallan. ¡Sigue!'],
+    fin3:    ['¡Increíble! Eres un/a detective de primera.', '¡Matrícula de honor gramatical!'],
+    fin2:    ['¡Muy buen trabajo! Un poco más y lo bordas.', '¡Bien hecho! Vas por buen camino.'],
+    fin1:    ['¡Buen intento! Repasa las pistas y vuelve a jugar.', 'Cada partida te hace más fuerte. ¡Otra!'],
+  },
+};
+
+// ✏️ BANCO DE FRASES POR DEFECTO (300 frases de 3º: banco 1 con 100 y banco 2 con 200,
+//    + 24 de ampliación con pronombres, adverbios, preposiciones y conjunciones). Para añadir frases sin tocar
+//    el código, usa «Opciones del docente → Cargar archivo JSON».
+const BANCO_BASE = [{"texto": "El perro negro ladra.", "tiempo": "presente", "sustantivos": ["perro"], "articulos": ["El"], "adjetivos": ["negro"], "verbos": ["ladra"]}, {"texto": "Mi hermana pequeña lee un cuento.", "tiempo": "presente", "sustantivos": ["hermana", "cuento"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["pequeña"], "verbos": ["lee"]}, {"texto": "Los niños alegres juegan un partido.", "tiempo": "presente", "sustantivos": ["niños", "partido"], "articulos": ["Los", "un"], "adjetivos": ["alegres"], "verbos": ["juegan"]}, {"texto": "Lucía dibuja una flor amarilla.", "tiempo": "presente", "sustantivos": ["Lucía", "flor"], "articulos": ["una"], "adjetivos": ["amarilla"], "verbos": ["dibuja"], "propios": ["Lucía"]}, {"texto": "El sol veraniego brilla.", "tiempo": "presente", "sustantivos": ["sol"], "articulos": ["El"], "adjetivos": ["veraniego"], "verbos": ["brilla"]}, {"texto": "Las niñas cantan una canción pegadiza.", "tiempo": "presente", "sustantivos": ["niñas", "canción"], "articulos": ["Las", "una"], "adjetivos": ["pegadiza"], "verbos": ["cantan"]}, {"texto": "La maestra explica una lección nueva.", "tiempo": "presente", "sustantivos": ["maestra", "lección"], "articulos": ["La", "una"], "adjetivos": ["nueva"], "verbos": ["explica"]}, {"texto": "El gato gris duerme.", "tiempo": "presente", "sustantivos": ["gato"], "articulos": ["El"], "adjetivos": ["gris"], "verbos": ["duerme"]}, {"texto": "El niño come una manzana verde.", "tiempo": "presente", "sustantivos": ["niño", "manzana"], "articulos": ["El", "una"], "adjetivos": ["verde"], "verbos": ["come"]}, {"texto": "Mis abuelos tienen una casa blanca.", "tiempo": "presente", "sustantivos": ["abuelos", "casa"], "articulos": ["una"], "determinantes": ["Mis"], "adjetivos": ["blanca"], "verbos": ["tienen"]}, {"texto": "El tren largo llega.", "tiempo": "presente", "sustantivos": ["tren"], "articulos": ["El"], "adjetivos": ["largo"], "verbos": ["llega"]}, {"texto": "Pablo lleva unas zapatillas azules.", "tiempo": "presente", "sustantivos": ["Pablo", "zapatillas"], "articulos": ["unas"], "adjetivos": ["azules"], "verbos": ["lleva"], "propios": ["Pablo"]}, {"texto": "Las abejas trabajadoras fabrican miel.", "tiempo": "presente", "sustantivos": ["abejas", "miel"], "articulos": ["Las"], "adjetivos": ["trabajadoras"], "verbos": ["fabrican"]}, {"texto": "Mi vecina escribe una carta bonita.", "tiempo": "presente", "sustantivos": ["vecina", "carta"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["bonita"], "verbos": ["escribe"]}, {"texto": "El río ancho atraviesa la ciudad.", "tiempo": "presente", "sustantivos": ["río", "ciudad"], "articulos": ["El", "la"], "adjetivos": ["ancho"], "verbos": ["atraviesa"]}, {"texto": "Mi padre cocina un arroz delicioso.", "tiempo": "presente", "sustantivos": ["padre", "arroz"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["delicioso"], "verbos": ["cocina"]}, {"texto": "Los pájaros migratorios vuelan.", "tiempo": "presente", "sustantivos": ["pájaros"], "articulos": ["Los"], "adjetivos": ["migratorios"], "verbos": ["vuelan"]}, {"texto": "Los alumnos pintan un mural gigante.", "tiempo": "presente", "sustantivos": ["alumnos", "mural"], "articulos": ["Los", "un"], "adjetivos": ["gigante"], "verbos": ["pintan"]}, {"texto": "La niña rubia salta una valla baja.", "tiempo": "presente", "sustantivos": ["niña", "valla"], "articulos": ["La", "una"], "adjetivos": ["rubia", "baja"], "verbos": ["salta"]}, {"texto": "El bebé dormilón bosteza.", "tiempo": "presente", "sustantivos": ["bebé"], "articulos": ["El"], "adjetivos": ["dormilón"], "verbos": ["bosteza"]}, {"texto": "Mi equipo favorito gana el partido.", "tiempo": "presente", "sustantivos": ["equipo", "partido"], "articulos": ["el"], "determinantes": ["Mi"], "adjetivos": ["favorito"], "verbos": ["gana"]}, {"texto": "Carlos riega las plantas mustias.", "tiempo": "presente", "sustantivos": ["Carlos", "plantas"], "articulos": ["las"], "adjetivos": ["mustias"], "verbos": ["riega"], "propios": ["Carlos"]}, {"texto": "Las hojas secas caen.", "tiempo": "presente", "sustantivos": ["hojas"], "articulos": ["Las"], "adjetivos": ["secas"], "verbos": ["caen"]}, {"texto": "Mi tía toca una flauta plateada.", "tiempo": "presente", "sustantivos": ["tía", "flauta"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["plateada"], "verbos": ["toca"]}, {"texto": "El autobús amarillo espera.", "tiempo": "presente", "sustantivos": ["autobús"], "articulos": ["El"], "adjetivos": ["amarillo"], "verbos": ["espera"]}, {"texto": "Mi madre conduce un coche eléctrico.", "tiempo": "presente", "sustantivos": ["madre", "coche"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["eléctrico"], "verbos": ["conduce"]}, {"texto": "Los estudiantes atentos leen libros interesantes.", "tiempo": "presente", "sustantivos": ["estudiantes", "libros"], "articulos": ["Los"], "adjetivos": ["atentos", "interesantes"], "verbos": ["leen"]}, {"texto": "El caracol lento avanza.", "tiempo": "presente", "sustantivos": ["caracol"], "articulos": ["El"], "adjetivos": ["lento"], "verbos": ["avanza"]}, {"texto": "Marta comparte su bocadillo grande.", "tiempo": "presente", "sustantivos": ["Marta", "bocadillo"], "determinantes": ["su"], "adjetivos": ["grande"], "verbos": ["comparte"], "propios": ["Marta"]}, {"texto": "La luna llena ilumina el campo.", "tiempo": "presente", "sustantivos": ["luna", "campo"], "articulos": ["La", "el"], "adjetivos": ["llena"], "verbos": ["ilumina"]}, {"texto": "El chico ordenado limpia su habitación.", "tiempo": "presente", "sustantivos": ["chico", "habitación"], "articulos": ["El"], "determinantes": ["su"], "adjetivos": ["ordenado"], "verbos": ["limpia"]}, {"texto": "El cartero simpático trae un paquete.", "tiempo": "presente", "sustantivos": ["cartero", "paquete"], "articulos": ["El", "un"], "adjetivos": ["simpático"], "verbos": ["trae"]}, {"texto": "Mi tío tiene un camión enorme.", "tiempo": "presente", "sustantivos": ["tío", "camión"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["enorme"], "verbos": ["tiene"]}, {"texto": "Las vacas tranquilas comen hierba.", "tiempo": "presente", "sustantivos": ["vacas", "hierba"], "articulos": ["Las"], "adjetivos": ["tranquilas"], "verbos": ["comen"]}, {"texto": "Las amigas preparan una sorpresa secreta.", "tiempo": "presente", "sustantivos": ["amigas", "sorpresa"], "articulos": ["Las", "una"], "adjetivos": ["secreta"], "verbos": ["preparan"]}, {"texto": "El viento fuerte mueve las ramas.", "tiempo": "presente", "sustantivos": ["viento", "ramas"], "articulos": ["El", "las"], "adjetivos": ["fuerte"], "verbos": ["mueve"]}, {"texto": "Sara ordena sus libros viejos.", "tiempo": "presente", "sustantivos": ["Sara", "libros"], "determinantes": ["sus"], "adjetivos": ["viejos"], "verbos": ["ordena"], "propios": ["Sara"]}, {"texto": "El reloj antiguo marca la hora.", "tiempo": "presente", "sustantivos": ["reloj", "hora"], "articulos": ["El", "la"], "adjetivos": ["antiguo"], "verbos": ["marca"]}, {"texto": "Los delfines juguetones saltan.", "tiempo": "presente", "sustantivos": ["delfines"], "articulos": ["Los"], "adjetivos": ["juguetones"], "verbos": ["saltan"]}, {"texto": "Mi abuela teje una bufanda roja.", "tiempo": "presente", "sustantivos": ["abuela", "bufanda"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["roja"], "verbos": ["teje"]}, {"texto": "Juan perdió su gorra azul.", "tiempo": "pasado", "sustantivos": ["Juan", "gorra"], "determinantes": ["su"], "adjetivos": ["azul"], "verbos": ["perdió"], "propios": ["Juan"]}, {"texto": "Los bomberos valientes apagaron el fuego.", "tiempo": "pasado", "sustantivos": ["bomberos", "fuego"], "articulos": ["Los", "el"], "adjetivos": ["valientes"], "verbos": ["apagaron"]}, {"texto": "Mi prima encontró una moneda redonda.", "tiempo": "pasado", "sustantivos": ["prima", "moneda"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["redonda"], "verbos": ["encontró"]}, {"texto": "Los alumnos visitaron un museo famoso.", "tiempo": "pasado", "sustantivos": ["alumnos", "museo"], "articulos": ["Los", "un"], "adjetivos": ["famoso"], "verbos": ["visitaron"]}, {"texto": "El gato travieso rompió un jarrón.", "tiempo": "pasado", "sustantivos": ["gato", "jarrón"], "articulos": ["El", "un"], "adjetivos": ["travieso"], "verbos": ["rompió"]}, {"texto": "Laura ganó una medalla dorada.", "tiempo": "pasado", "sustantivos": ["Laura", "medalla"], "articulos": ["una"], "adjetivos": ["dorada"], "verbos": ["ganó"], "propios": ["Laura"]}, {"texto": "Mi hermano terminó los deberes pendientes.", "tiempo": "pasado", "sustantivos": ["hermano", "deberes"], "articulos": ["los"], "determinantes": ["Mi"], "adjetivos": ["pendientes"], "verbos": ["terminó"]}, {"texto": "Los turistas cansados subieron la montaña.", "tiempo": "pasado", "sustantivos": ["turistas", "montaña"], "articulos": ["Los", "la"], "adjetivos": ["cansados"], "verbos": ["subieron"]}, {"texto": "El viento frío abrió la ventana.", "tiempo": "pasado", "sustantivos": ["viento", "ventana"], "articulos": ["El", "la"], "adjetivos": ["frío"], "verbos": ["abrió"]}, {"texto": "Mi primo comió dos yogures frescos.", "tiempo": "pasado", "sustantivos": ["primo", "yogures"], "determinantes": ["Mi", "dos"], "adjetivos": ["frescos"], "verbos": ["comió"]}, {"texto": "La clase plantó un árbol joven.", "tiempo": "pasado", "sustantivos": ["clase", "árbol"], "articulos": ["La", "un"], "adjetivos": ["joven"], "verbos": ["plantó"]}, {"texto": "Mi amigo puntual llegó.", "tiempo": "pasado", "sustantivos": ["amigo"], "determinantes": ["Mi"], "adjetivos": ["puntual"], "verbos": ["llegó"]}, {"texto": "El pintor pintó la puerta verde.", "tiempo": "pasado", "sustantivos": ["pintor", "puerta"], "articulos": ["El", "la"], "adjetivos": ["verde"], "verbos": ["pintó"]}, {"texto": "Los niños construyeron un castillo alto.", "tiempo": "pasado", "sustantivos": ["niños", "castillo"], "articulos": ["Los", "un"], "adjetivos": ["alto"], "verbos": ["construyeron"]}, {"texto": "La panadera vendió un pan tierno.", "tiempo": "pasado", "sustantivos": ["panadera", "pan"], "articulos": ["La", "un"], "adjetivos": ["tierno"], "verbos": ["vendió"]}, {"texto": "El ratón asustado escapó.", "tiempo": "pasado", "sustantivos": ["ratón"], "articulos": ["El"], "adjetivos": ["asustado"], "verbos": ["escapó"]}, {"texto": "Ana escribió un poema precioso.", "tiempo": "pasado", "sustantivos": ["Ana", "poema"], "articulos": ["un"], "adjetivos": ["precioso"], "verbos": ["escribió"], "propios": ["Ana"]}, {"texto": "Los delegados borraron la pizarra entera.", "tiempo": "pasado", "sustantivos": ["delegados", "pizarra"], "articulos": ["Los", "la"], "adjetivos": ["entera"], "verbos": ["borraron"]}, {"texto": "El médico amable curó la herida.", "tiempo": "pasado", "sustantivos": ["médico", "herida"], "articulos": ["El", "la"], "adjetivos": ["amable"], "verbos": ["curó"]}, {"texto": "La tormenta eléctrica apagó las luces.", "tiempo": "pasado", "sustantivos": ["tormenta", "luces"], "articulos": ["La", "las"], "adjetivos": ["eléctrica"], "verbos": ["apagó"]}, {"texto": "Mi abuelo contó una historia increíble.", "tiempo": "pasado", "sustantivos": ["abuelo", "historia"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["increíble"], "verbos": ["contó"]}, {"texto": "Los jugadores contentos celebraron el gol.", "tiempo": "pasado", "sustantivos": ["jugadores", "gol"], "articulos": ["Los", "el"], "adjetivos": ["contentos"], "verbos": ["celebraron"]}, {"texto": "Mi tía regaló un libro ilustrado.", "tiempo": "pasado", "sustantivos": ["tía", "libro"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["ilustrado"], "verbos": ["regaló"]}, {"texto": "El cocinero preparó una paella sabrosa.", "tiempo": "pasado", "sustantivos": ["cocinero", "paella"], "articulos": ["El", "una"], "adjetivos": ["sabrosa"], "verbos": ["preparó"]}, {"texto": "Nuestro equipo pintó una valla vieja.", "tiempo": "pasado", "sustantivos": ["equipo", "valla"], "articulos": ["una"], "determinantes": ["Nuestro"], "adjetivos": ["vieja"], "verbos": ["pintó"]}, {"texto": "La princesa valiente tenía un caballo blanco.", "tiempo": "pasado", "sustantivos": ["princesa", "caballo"], "articulos": ["La", "un"], "adjetivos": ["valiente", "blanco"], "verbos": ["tenía"]}, {"texto": "Mi abuelo coleccionaba canicas brillantes.", "tiempo": "pasado", "sustantivos": ["abuelo", "canicas"], "determinantes": ["Mi"], "adjetivos": ["brillantes"], "verbos": ["coleccionaba"]}, {"texto": "Los dinosaurios gigantescos comían plantas.", "tiempo": "pasado", "sustantivos": ["dinosaurios", "plantas"], "articulos": ["Los"], "adjetivos": ["gigantescos"], "verbos": ["comían"]}, {"texto": "Las familias felices paseaban.", "tiempo": "pasado", "sustantivos": ["familias"], "articulos": ["Las"], "adjetivos": ["felices"], "verbos": ["paseaban"]}, {"texto": "El niño curioso miraba las estrellas.", "tiempo": "pasado", "sustantivos": ["niño", "estrellas"], "articulos": ["El", "las"], "adjetivos": ["curioso"], "verbos": ["miraba"]}, {"texto": "Mi perro peludo dormía.", "tiempo": "pasado", "sustantivos": ["perro"], "determinantes": ["Mi"], "adjetivos": ["peludo"], "verbos": ["dormía"]}, {"texto": "Las niñas cantaban canciones populares.", "tiempo": "pasado", "sustantivos": ["niñas", "canciones"], "articulos": ["Las"], "adjetivos": ["populares"], "verbos": ["cantaban"]}, {"texto": "Elena tenía una bici roja.", "tiempo": "pasado", "sustantivos": ["Elena", "bici"], "articulos": ["una"], "adjetivos": ["roja"], "verbos": ["tenía"], "propios": ["Elena"]}, {"texto": "El pastor cuidaba las ovejas blancas.", "tiempo": "pasado", "sustantivos": ["pastor", "ovejas"], "articulos": ["El", "las"], "adjetivos": ["blancas"], "verbos": ["cuidaba"]}, {"texto": "Mi tío leía una revista deportiva.", "tiempo": "pasado", "sustantivos": ["tío", "revista"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["deportiva"], "verbos": ["leía"]}, {"texto": "Los alumnos verán una película divertida.", "tiempo": "futuro", "sustantivos": ["alumnos", "película"], "articulos": ["Los", "una"], "adjetivos": ["divertida"], "verbos": ["verán"]}, {"texto": "Mi hermana mayor cumplirá nueve años.", "tiempo": "futuro", "sustantivos": ["hermana", "años"], "determinantes": ["Mi", "nueve"], "adjetivos": ["mayor"], "verbos": ["cumplirá"]}, {"texto": "El tren nocturno saldrá.", "tiempo": "futuro", "sustantivos": ["tren"], "articulos": ["El"], "adjetivos": ["nocturno"], "verbos": ["saldrá"]}, {"texto": "Los exploradores harán una excursión larga.", "tiempo": "futuro", "sustantivos": ["exploradores", "excursión"], "articulos": ["Los", "una"], "adjetivos": ["larga"], "verbos": ["harán"]}, {"texto": "Mi primo arreglará la bici rota.", "tiempo": "futuro", "sustantivos": ["primo", "bici"], "articulos": ["la"], "determinantes": ["Mi"], "adjetivos": ["rota"], "verbos": ["arreglará"]}, {"texto": "La maestra corregirá los exámenes difíciles.", "tiempo": "futuro", "sustantivos": ["maestra", "exámenes"], "articulos": ["La", "los"], "adjetivos": ["difíciles"], "verbos": ["corregirá"]}, {"texto": "Mis primos traerán regalos sorprendentes.", "tiempo": "futuro", "sustantivos": ["primos", "regalos"], "determinantes": ["Mis"], "adjetivos": ["sorprendentes"], "verbos": ["traerán"]}, {"texto": "El alumno nuevo aprenderá inglés.", "tiempo": "futuro", "sustantivos": ["alumno", "inglés"], "articulos": ["El"], "adjetivos": ["nuevo"], "verbos": ["aprenderá"]}, {"texto": "El sol radiante saldrá.", "tiempo": "futuro", "sustantivos": ["sol"], "articulos": ["El"], "adjetivos": ["radiante"], "verbos": ["saldrá"]}, {"texto": "Lucas jugará un partido importante.", "tiempo": "futuro", "sustantivos": ["Lucas", "partido"], "articulos": ["un"], "adjetivos": ["importante"], "verbos": ["jugará"], "propios": ["Lucas"]}, {"texto": "Las flores silvestres crecerán.", "tiempo": "futuro", "sustantivos": ["flores"], "articulos": ["Las"], "adjetivos": ["silvestres"], "verbos": ["crecerán"]}, {"texto": "Los ganadores recibirán un premio especial.", "tiempo": "futuro", "sustantivos": ["ganadores", "premio"], "articulos": ["Los", "un"], "adjetivos": ["especial"], "verbos": ["recibirán"]}, {"texto": "Mi padre lavará el coche sucio.", "tiempo": "futuro", "sustantivos": ["padre", "coche"], "articulos": ["el"], "determinantes": ["Mi"], "adjetivos": ["sucio"], "verbos": ["lavará"]}, {"texto": "El grupo presentará un proyecto original.", "tiempo": "futuro", "sustantivos": ["grupo", "proyecto"], "articulos": ["El", "un"], "adjetivos": ["original"], "verbos": ["presentará"]}, {"texto": "Las amigas viajeras visitarán Cartagena.", "tiempo": "futuro", "sustantivos": ["amigas", "Cartagena"], "articulos": ["Las"], "adjetivos": ["viajeras"], "verbos": ["visitarán"], "propios": ["Cartagena"]}, {"texto": "El perro pequeño mordió una pelota vieja.", "tiempo": "pasado", "sustantivos": ["perro", "pelota"], "articulos": ["El", "una"], "adjetivos": ["pequeño", "vieja"], "verbos": ["mordió"]}, {"texto": "La niña simpática regaló una flor preciosa.", "tiempo": "pasado", "sustantivos": ["niña", "flor"], "articulos": ["La", "una"], "adjetivos": ["simpática", "preciosa"], "verbos": ["regaló"]}, {"texto": "Mi gato blanco caza ratones grises.", "tiempo": "presente", "sustantivos": ["gato", "ratones"], "determinantes": ["Mi"], "adjetivos": ["blanco", "grises"], "verbos": ["caza"]}, {"texto": "Los alumnos responsables recogieron sus mochilas pesadas.", "tiempo": "pasado", "sustantivos": ["alumnos", "mochilas"], "articulos": ["Los"], "determinantes": ["sus"], "adjetivos": ["responsables", "pesadas"], "verbos": ["recogieron"]}, {"texto": "Una enorme ballena nadaba.", "tiempo": "pasado", "sustantivos": ["ballena"], "articulos": ["Una"], "adjetivos": ["enorme"], "verbos": ["nadaba"]}, {"texto": "El hermoso jardín tenía flores rojas.", "tiempo": "pasado", "sustantivos": ["jardín", "flores"], "articulos": ["El"], "adjetivos": ["hermoso", "rojas"], "verbos": ["tenía"]}, {"texto": "Un pequeño ratón comió queso fresco.", "tiempo": "pasado", "sustantivos": ["ratón", "queso"], "articulos": ["Un"], "adjetivos": ["pequeño", "fresco"], "verbos": ["comió"]}, {"texto": "Mi mejor amiga escribirá una carta larga.", "tiempo": "futuro", "sustantivos": ["amiga", "carta"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["mejor", "larga"], "verbos": ["escribirá"]}, {"texto": "Aquel viejo faro iluminaba el mar oscuro.", "tiempo": "pasado", "sustantivos": ["faro", "mar"], "articulos": ["el"], "determinantes": ["Aquel"], "adjetivos": ["viejo", "oscuro"], "verbos": ["iluminaba"]}, {"texto": "Estas galletas caseras tienen chocolate negro.", "tiempo": "presente", "sustantivos": ["galletas", "chocolate"], "determinantes": ["Estas"], "adjetivos": ["caseras", "negro"], "verbos": ["tienen"]}, {"texto": "La vaca blanca muge.", "tiempo": "presente", "sustantivos": ["vaca"], "articulos": ["La"], "adjetivos": ["blanca"], "verbos": ["muge"]}, {"texto": "El caballo marrón galopa.", "tiempo": "presente", "sustantivos": ["caballo"], "articulos": ["El"], "adjetivos": ["marrón"], "verbos": ["galopa"]}, {"texto": "Mi primo pequeño ríe.", "tiempo": "presente", "sustantivos": ["primo"], "determinantes": ["Mi"], "adjetivos": ["pequeño"], "verbos": ["ríe"]}, {"texto": "Las ovejas lanudas pastan.", "tiempo": "presente", "sustantivos": ["ovejas"], "articulos": ["Las"], "adjetivos": ["lanudas"], "verbos": ["pastan"]}, {"texto": "El cocinero corta una cebolla morada.", "tiempo": "presente", "sustantivos": ["cocinero", "cebolla"], "articulos": ["El", "una"], "adjetivos": ["morada"], "verbos": ["corta"]}, {"texto": "La abuela cariñosa prepara una tarta.", "tiempo": "presente", "sustantivos": ["abuela", "tarta"], "articulos": ["La", "una"], "adjetivos": ["cariñosa"], "verbos": ["prepara"]}, {"texto": "El conejo blanco salta.", "tiempo": "presente", "sustantivos": ["conejo"], "articulos": ["El"], "adjetivos": ["blanco"], "verbos": ["salta"]}, {"texto": "Mi profesora nueva enseña música.", "tiempo": "presente", "sustantivos": ["profesora", "música"], "determinantes": ["Mi"], "adjetivos": ["nueva"], "verbos": ["enseña"]}, {"texto": "Los coches rojos corren.", "tiempo": "presente", "sustantivos": ["coches"], "articulos": ["Los"], "adjetivos": ["rojos"], "verbos": ["corren"]}, {"texto": "Pedro come una pera madura.", "tiempo": "presente", "sustantivos": ["Pedro", "pera"], "articulos": ["una"], "adjetivos": ["madura"], "verbos": ["come"], "propios": ["Pedro"]}, {"texto": "La ardilla inquieta guarda bellotas.", "tiempo": "presente", "sustantivos": ["ardilla", "bellotas"], "articulos": ["La"], "adjetivos": ["inquieta"], "verbos": ["guarda"]}, {"texto": "El niño moreno lanza una pelota.", "tiempo": "presente", "sustantivos": ["niño", "pelota"], "articulos": ["El", "una"], "adjetivos": ["moreno"], "verbos": ["lanza"]}, {"texto": "Las estrellas brillantes adornan el cielo.", "tiempo": "presente", "sustantivos": ["estrellas", "cielo"], "articulos": ["Las", "el"], "adjetivos": ["brillantes"], "verbos": ["adornan"]}, {"texto": "Mi hermano mayor estudia inglés.", "tiempo": "presente", "sustantivos": ["hermano", "inglés"], "determinantes": ["Mi"], "adjetivos": ["mayor"], "verbos": ["estudia"]}, {"texto": "El pez naranja nada.", "tiempo": "presente", "sustantivos": ["pez"], "articulos": ["El"], "adjetivos": ["naranja"], "verbos": ["nada"]}, {"texto": "La puerta vieja chirría.", "tiempo": "presente", "sustantivos": ["puerta"], "articulos": ["La"], "adjetivos": ["vieja"], "verbos": ["chirría"]}, {"texto": "Los gatos negros maúllan.", "tiempo": "presente", "sustantivos": ["gatos"], "articulos": ["Los"], "adjetivos": ["negros"], "verbos": ["maúllan"]}, {"texto": "Inés canta una nana dulce.", "tiempo": "presente", "sustantivos": ["Inés", "nana"], "articulos": ["una"], "adjetivos": ["dulce"], "verbos": ["canta"], "propios": ["Inés"]}, {"texto": "El agua fría refresca.", "tiempo": "presente", "sustantivos": ["agua"], "articulos": ["El"], "adjetivos": ["fría"], "verbos": ["refresca"]}, {"texto": "Mis amigas llevan vestidos largos.", "tiempo": "presente", "sustantivos": ["amigas", "vestidos"], "determinantes": ["Mis"], "adjetivos": ["largos"], "verbos": ["llevan"]}, {"texto": "El panadero madrugador hornea pan.", "tiempo": "presente", "sustantivos": ["panadero", "pan"], "articulos": ["El"], "adjetivos": ["madrugador"], "verbos": ["hornea"]}, {"texto": "La mariposa amarilla vuela.", "tiempo": "presente", "sustantivos": ["mariposa"], "articulos": ["La"], "adjetivos": ["amarilla"], "verbos": ["vuela"]}, {"texto": "Los alumnos atentos escuchan una explicación.", "tiempo": "presente", "sustantivos": ["alumnos", "explicación"], "articulos": ["Los", "una"], "adjetivos": ["atentos"], "verbos": ["escuchan"]}, {"texto": "El tigre feroz ruge.", "tiempo": "presente", "sustantivos": ["tigre"], "articulos": ["El"], "adjetivos": ["feroz"], "verbos": ["ruge"]}, {"texto": "Mi madre lee una novela larga.", "tiempo": "presente", "sustantivos": ["madre", "novela"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["larga"], "verbos": ["lee"]}, {"texto": "Las nubes grises tapan el sol.", "tiempo": "presente", "sustantivos": ["nubes", "sol"], "articulos": ["Las", "el"], "adjetivos": ["grises"], "verbos": ["tapan"]}, {"texto": "Álvaro tiene una mochila nueva.", "tiempo": "presente", "sustantivos": ["Álvaro", "mochila"], "articulos": ["una"], "adjetivos": ["nueva"], "verbos": ["tiene"], "propios": ["Álvaro"]}, {"texto": "La rana verde croa.", "tiempo": "presente", "sustantivos": ["rana"], "articulos": ["La"], "adjetivos": ["verde"], "verbos": ["croa"]}, {"texto": "El jardinero cuidadoso poda los rosales.", "tiempo": "presente", "sustantivos": ["jardinero", "rosales"], "articulos": ["El", "los"], "adjetivos": ["cuidadoso"], "verbos": ["poda"]}, {"texto": "Los patos blancos nadan.", "tiempo": "presente", "sustantivos": ["patos"], "articulos": ["Los"], "adjetivos": ["blancos"], "verbos": ["nadan"]}, {"texto": "Mi abuelo bebe un café caliente.", "tiempo": "presente", "sustantivos": ["abuelo", "café"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["caliente"], "verbos": ["bebe"]}, {"texto": "La niña morena dibuja un paisaje.", "tiempo": "presente", "sustantivos": ["niña", "paisaje"], "articulos": ["La", "un"], "adjetivos": ["morena"], "verbos": ["dibuja"]}, {"texto": "El león hambriento busca comida.", "tiempo": "presente", "sustantivos": ["león", "comida"], "articulos": ["El"], "adjetivos": ["hambriento"], "verbos": ["busca"]}, {"texto": "Las gallinas ponen huevos marrones.", "tiempo": "presente", "sustantivos": ["gallinas", "huevos"], "articulos": ["Las"], "adjetivos": ["marrones"], "verbos": ["ponen"]}, {"texto": "Raquel pinta un cuadro bonito.", "tiempo": "presente", "sustantivos": ["Raquel", "cuadro"], "articulos": ["un"], "adjetivos": ["bonito"], "verbos": ["pinta"], "propios": ["Raquel"]}, {"texto": "El volcán activo humea.", "tiempo": "presente", "sustantivos": ["volcán"], "articulos": ["El"], "adjetivos": ["activo"], "verbos": ["humea"]}, {"texto": "Mis tíos tienen un huerto grande.", "tiempo": "presente", "sustantivos": ["tíos", "huerto"], "articulos": ["un"], "determinantes": ["Mis"], "adjetivos": ["grande"], "verbos": ["tienen"]}, {"texto": "La lluvia fina moja las calles.", "tiempo": "presente", "sustantivos": ["lluvia", "calles"], "articulos": ["La", "las"], "adjetivos": ["fina"], "verbos": ["moja"]}, {"texto": "El elefante gris levanta la trompa.", "tiempo": "presente", "sustantivos": ["elefante", "trompa"], "articulos": ["El", "la"], "adjetivos": ["gris"], "verbos": ["levanta"]}, {"texto": "Los bomberos rápidos llegan.", "tiempo": "presente", "sustantivos": ["bomberos"], "articulos": ["Los"], "adjetivos": ["rápidos"], "verbos": ["llegan"]}, {"texto": "Mi vecino amable saluda.", "tiempo": "presente", "sustantivos": ["vecino"], "determinantes": ["Mi"], "adjetivos": ["amable"], "verbos": ["saluda"]}, {"texto": "La cigüeña blanca construye un nido.", "tiempo": "presente", "sustantivos": ["cigüeña", "nido"], "articulos": ["La", "un"], "adjetivos": ["blanca"], "verbos": ["construye"]}, {"texto": "El bebé sonriente juega.", "tiempo": "presente", "sustantivos": ["bebé"], "articulos": ["El"], "adjetivos": ["sonriente"], "verbos": ["juega"]}, {"texto": "Las fresas maduras tienen un olor dulce.", "tiempo": "presente", "sustantivos": ["fresas", "olor"], "articulos": ["Las", "un"], "adjetivos": ["maduras", "dulce"], "verbos": ["tienen"]}, {"texto": "Daniel toca un tambor enorme.", "tiempo": "presente", "sustantivos": ["Daniel", "tambor"], "articulos": ["un"], "adjetivos": ["enorme"], "verbos": ["toca"], "propios": ["Daniel"]}, {"texto": "El búho sabio observa el bosque.", "tiempo": "presente", "sustantivos": ["búho", "bosque"], "articulos": ["El", "el"], "adjetivos": ["sabio"], "verbos": ["observa"]}, {"texto": "La clase entera aplaude.", "tiempo": "presente", "sustantivos": ["clase"], "articulos": ["La"], "adjetivos": ["entera"], "verbos": ["aplaude"]}, {"texto": "Los niños curiosos hacen preguntas.", "tiempo": "presente", "sustantivos": ["niños", "preguntas"], "articulos": ["Los"], "adjetivos": ["curiosos"], "verbos": ["hacen"]}, {"texto": "Mi gata blanca duerme.", "tiempo": "presente", "sustantivos": ["gata"], "determinantes": ["Mi"], "adjetivos": ["blanca"], "verbos": ["duerme"]}, {"texto": "El barco pesquero sale.", "tiempo": "presente", "sustantivos": ["barco"], "articulos": ["El"], "adjetivos": ["pesquero"], "verbos": ["sale"]}, {"texto": "La maestra paciente revisa los cuadernos.", "tiempo": "presente", "sustantivos": ["maestra", "cuadernos"], "articulos": ["La", "los"], "adjetivos": ["paciente"], "verbos": ["revisa"]}, {"texto": "Las hormigas trabajadoras llevan migas.", "tiempo": "presente", "sustantivos": ["hormigas", "migas"], "articulos": ["Las"], "adjetivos": ["trabajadoras"], "verbos": ["llevan"]}, {"texto": "Nuria escribe una poesía corta.", "tiempo": "presente", "sustantivos": ["Nuria", "poesía"], "articulos": ["una"], "adjetivos": ["corta"], "verbos": ["escribe"], "propios": ["Nuria"]}, {"texto": "El ratón gris roe un queso.", "tiempo": "presente", "sustantivos": ["ratón", "queso"], "articulos": ["El", "un"], "adjetivos": ["gris"], "verbos": ["roe"]}, {"texto": "Mi padre lava los platos sucios.", "tiempo": "presente", "sustantivos": ["padre", "platos"], "articulos": ["los"], "determinantes": ["Mi"], "adjetivos": ["sucios"], "verbos": ["lava"]}, {"texto": "La tortuga lenta camina.", "tiempo": "presente", "sustantivos": ["tortuga"], "articulos": ["La"], "adjetivos": ["lenta"], "verbos": ["camina"]}, {"texto": "Los árboles altos dan sombra.", "tiempo": "presente", "sustantivos": ["árboles", "sombra"], "articulos": ["Los"], "adjetivos": ["altos"], "verbos": ["dan"]}, {"texto": "El payaso divertido hace bromas.", "tiempo": "presente", "sustantivos": ["payaso", "bromas"], "articulos": ["El"], "adjetivos": ["divertido"], "verbos": ["hace"]}, {"texto": "Mi hermana menor colorea un dibujo.", "tiempo": "presente", "sustantivos": ["hermana", "dibujo"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["menor"], "verbos": ["colorea"]}, {"texto": "La campana dorada suena.", "tiempo": "presente", "sustantivos": ["campana"], "articulos": ["La"], "adjetivos": ["dorada"], "verbos": ["suena"]}, {"texto": "Los perros pequeños ladran.", "tiempo": "presente", "sustantivos": ["perros"], "articulos": ["Los"], "adjetivos": ["pequeños"], "verbos": ["ladran"]}, {"texto": "Javier ordena su escritorio desordenado.", "tiempo": "presente", "sustantivos": ["Javier", "escritorio"], "determinantes": ["su"], "adjetivos": ["desordenado"], "verbos": ["ordena"], "propios": ["Javier"]}, {"texto": "El mar azul brilla.", "tiempo": "presente", "sustantivos": ["mar"], "articulos": ["El"], "adjetivos": ["azul"], "verbos": ["brilla"]}, {"texto": "Las niñas valientes suben la escalera.", "tiempo": "presente", "sustantivos": ["niñas", "escalera"], "articulos": ["Las", "la"], "adjetivos": ["valientes"], "verbos": ["suben"]}, {"texto": "Mi tía compra unas naranjas jugosas.", "tiempo": "presente", "sustantivos": ["tía", "naranjas"], "articulos": ["unas"], "determinantes": ["Mi"], "adjetivos": ["jugosas"], "verbos": ["compra"]}, {"texto": "El oso pardo pesca salmones.", "tiempo": "presente", "sustantivos": ["oso", "salmones"], "articulos": ["El"], "adjetivos": ["pardo"], "verbos": ["pesca"]}, {"texto": "La biblioteca municipal abre.", "tiempo": "presente", "sustantivos": ["biblioteca"], "articulos": ["La"], "adjetivos": ["municipal"], "verbos": ["abre"]}, {"texto": "Los alumnos nuevos traen libros.", "tiempo": "presente", "sustantivos": ["alumnos", "libros"], "articulos": ["Los"], "adjetivos": ["nuevos"], "verbos": ["traen"]}, {"texto": "El cielo nublado anuncia lluvia.", "tiempo": "presente", "sustantivos": ["cielo", "lluvia"], "articulos": ["El"], "adjetivos": ["nublado"], "verbos": ["anuncia"]}, {"texto": "Mi equipo tiene una camiseta verde.", "tiempo": "presente", "sustantivos": ["equipo", "camiseta"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["verde"], "verbos": ["tiene"]}, {"texto": "La serpiente venenosa sisea.", "tiempo": "presente", "sustantivos": ["serpiente"], "articulos": ["La"], "adjetivos": ["venenosa"], "verbos": ["sisea"]}, {"texto": "Los camareros amables sirven la comida.", "tiempo": "presente", "sustantivos": ["camareros", "comida"], "articulos": ["Los", "la"], "adjetivos": ["amables"], "verbos": ["sirven"]}, {"texto": "Irene lleva unas gafas redondas.", "tiempo": "presente", "sustantivos": ["Irene", "gafas"], "articulos": ["unas"], "adjetivos": ["redondas"], "verbos": ["lleva"], "propios": ["Irene"]}, {"texto": "El huerto murciano produce limones.", "tiempo": "presente", "sustantivos": ["huerto", "limones"], "articulos": ["El"], "adjetivos": ["murciano"], "verbos": ["produce"]}, {"texto": "La pianista famosa toca una melodía.", "tiempo": "presente", "sustantivos": ["pianista", "melodía"], "articulos": ["La", "una"], "adjetivos": ["famosa"], "verbos": ["toca"]}, {"texto": "Los niños pequeños construyen torres.", "tiempo": "presente", "sustantivos": ["niños", "torres"], "articulos": ["Los"], "adjetivos": ["pequeños"], "verbos": ["construyen"]}, {"texto": "Mi vecina riega sus macetas floridas.", "tiempo": "presente", "sustantivos": ["vecina", "macetas"], "determinantes": ["Mi", "sus"], "adjetivos": ["floridas"], "verbos": ["riega"]}, {"texto": "El gallo madrugador canta.", "tiempo": "presente", "sustantivos": ["gallo"], "articulos": ["El"], "adjetivos": ["madrugador"], "verbos": ["canta"]}, {"texto": "Las abuelas charlatanas cuentan chistes.", "tiempo": "presente", "sustantivos": ["abuelas", "chistes"], "articulos": ["Las"], "adjetivos": ["charlatanas"], "verbos": ["cuentan"]}, {"texto": "El cartero puntual reparte cartas.", "tiempo": "presente", "sustantivos": ["cartero", "cartas"], "articulos": ["El"], "adjetivos": ["puntual"], "verbos": ["reparte"]}, {"texto": "El niño travieso rompió un cristal.", "tiempo": "pasado", "sustantivos": ["niño", "cristal"], "articulos": ["El", "un"], "adjetivos": ["travieso"], "verbos": ["rompió"]}, {"texto": "Mi madre preparó una sopa caliente.", "tiempo": "pasado", "sustantivos": ["madre", "sopa"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["caliente"], "verbos": ["preparó"]}, {"texto": "Los alumnos atentos resolvieron el problema.", "tiempo": "pasado", "sustantivos": ["alumnos", "problema"], "articulos": ["Los", "el"], "adjetivos": ["atentos"], "verbos": ["resolvieron"]}, {"texto": "La gata blanca tuvo tres gatitos.", "tiempo": "pasado", "sustantivos": ["gata", "gatitos"], "articulos": ["La"], "determinantes": ["tres"], "adjetivos": ["blanca"], "verbos": ["tuvo"]}, {"texto": "Mario encontró una llave oxidada.", "tiempo": "pasado", "sustantivos": ["Mario", "llave"], "articulos": ["una"], "adjetivos": ["oxidada"], "verbos": ["encontró"], "propios": ["Mario"]}, {"texto": "El viento fuerte tiró la valla.", "tiempo": "pasado", "sustantivos": ["viento", "valla"], "articulos": ["El", "la"], "adjetivos": ["fuerte"], "verbos": ["tiró"]}, {"texto": "Las niñas ganaron un trofeo dorado.", "tiempo": "pasado", "sustantivos": ["niñas", "trofeo"], "articulos": ["Las", "un"], "adjetivos": ["dorado"], "verbos": ["ganaron"]}, {"texto": "Mi abuelo plantó un limonero joven.", "tiempo": "pasado", "sustantivos": ["abuelo", "limonero"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["joven"], "verbos": ["plantó"]}, {"texto": "El tren rápido salió.", "tiempo": "pasado", "sustantivos": ["tren"], "articulos": ["El"], "adjetivos": ["rápido"], "verbos": ["salió"]}, {"texto": "La profesora nueva repartió los libros.", "tiempo": "pasado", "sustantivos": ["profesora", "libros"], "articulos": ["La", "los"], "adjetivos": ["nueva"], "verbos": ["repartió"]}, {"texto": "Los perros hambrientos comieron pienso.", "tiempo": "pasado", "sustantivos": ["perros", "pienso"], "articulos": ["Los"], "adjetivos": ["hambrientos"], "verbos": ["comieron"]}, {"texto": "Lucía perdió su pendiente plateado.", "tiempo": "pasado", "sustantivos": ["Lucía", "pendiente"], "determinantes": ["su"], "adjetivos": ["plateado"], "verbos": ["perdió"], "propios": ["Lucía"]}, {"texto": "El pájaro azul cantó.", "tiempo": "pasado", "sustantivos": ["pájaro"], "articulos": ["El"], "adjetivos": ["azul"], "verbos": ["cantó"]}, {"texto": "Mi primo mayor aprobó el examen.", "tiempo": "pasado", "sustantivos": ["primo", "examen"], "articulos": ["el"], "determinantes": ["Mi"], "adjetivos": ["mayor"], "verbos": ["aprobó"]}, {"texto": "La tormenta fuerte rompió una rama.", "tiempo": "pasado", "sustantivos": ["tormenta", "rama"], "articulos": ["La", "una"], "adjetivos": ["fuerte"], "verbos": ["rompió"]}, {"texto": "Los turistas alemanes visitaron la catedral.", "tiempo": "pasado", "sustantivos": ["turistas", "catedral"], "articulos": ["Los", "la"], "adjetivos": ["alemanes"], "verbos": ["visitaron"]}, {"texto": "Sergio compró una bicicleta nueva.", "tiempo": "pasado", "sustantivos": ["Sergio", "bicicleta"], "articulos": ["una"], "adjetivos": ["nueva"], "verbos": ["compró"], "propios": ["Sergio"]}, {"texto": "El cocinero famoso ganó un premio.", "tiempo": "pasado", "sustantivos": ["cocinero", "premio"], "articulos": ["El", "un"], "adjetivos": ["famoso"], "verbos": ["ganó"]}, {"texto": "Las hojas amarillas cubrieron el suelo.", "tiempo": "pasado", "sustantivos": ["hojas", "suelo"], "articulos": ["Las", "el"], "adjetivos": ["amarillas"], "verbos": ["cubrieron"]}, {"texto": "Mi hermana pequeña dibujó un dragón.", "tiempo": "pasado", "sustantivos": ["hermana", "dragón"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["pequeña"], "verbos": ["dibujó"]}, {"texto": "El público entusiasmado aplaudió.", "tiempo": "pasado", "sustantivos": ["público"], "articulos": ["El"], "adjetivos": ["entusiasmado"], "verbos": ["aplaudió"]}, {"texto": "La niña curiosa abrió la caja.", "tiempo": "pasado", "sustantivos": ["niña", "caja"], "articulos": ["La", "la"], "adjetivos": ["curiosa"], "verbos": ["abrió"]}, {"texto": "Los niños alegres cantaron villancicos.", "tiempo": "pasado", "sustantivos": ["niños", "villancicos"], "articulos": ["Los"], "adjetivos": ["alegres"], "verbos": ["cantaron"]}, {"texto": "Carmen escribió una carta larga.", "tiempo": "pasado", "sustantivos": ["Carmen", "carta"], "articulos": ["una"], "adjetivos": ["larga"], "verbos": ["escribió"], "propios": ["Carmen"]}, {"texto": "El perro juguetón mordió la zapatilla.", "tiempo": "pasado", "sustantivos": ["perro", "zapatilla"], "articulos": ["El", "la"], "adjetivos": ["juguetón"], "verbos": ["mordió"]}, {"texto": "Mi padre pintó la pared blanca.", "tiempo": "pasado", "sustantivos": ["padre", "pared"], "articulos": ["la"], "determinantes": ["Mi"], "adjetivos": ["blanca"], "verbos": ["pintó"]}, {"texto": "Las abejas laboriosas llenaron la colmena.", "tiempo": "pasado", "sustantivos": ["abejas", "colmena"], "articulos": ["Las", "la"], "adjetivos": ["laboriosas"], "verbos": ["llenaron"]}, {"texto": "El sol brillante secó la ropa.", "tiempo": "pasado", "sustantivos": ["sol", "ropa"], "articulos": ["El", "la"], "adjetivos": ["brillante"], "verbos": ["secó"]}, {"texto": "La clase entera visitó una granja.", "tiempo": "pasado", "sustantivos": ["clase", "granja"], "articulos": ["La", "una"], "adjetivos": ["entera"], "verbos": ["visitó"]}, {"texto": "Los jugadores cansados descansaron.", "tiempo": "pasado", "sustantivos": ["jugadores"], "articulos": ["Los"], "adjetivos": ["cansados"], "verbos": ["descansaron"]}, {"texto": "Andrés leyó un cómic divertido.", "tiempo": "pasado", "sustantivos": ["Andrés", "cómic"], "articulos": ["un"], "adjetivos": ["divertido"], "verbos": ["leyó"], "propios": ["Andrés"]}, {"texto": "El gato negro cazó un ratón.", "tiempo": "pasado", "sustantivos": ["gato", "ratón"], "articulos": ["El", "un"], "adjetivos": ["negro"], "verbos": ["cazó"]}, {"texto": "Mi abuela regaló una muñeca antigua.", "tiempo": "pasado", "sustantivos": ["abuela", "muñeca"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["antigua"], "verbos": ["regaló"]}, {"texto": "La lluvia intensa inundó la calle.", "tiempo": "pasado", "sustantivos": ["lluvia", "calle"], "articulos": ["La", "la"], "adjetivos": ["intensa"], "verbos": ["inundó"]}, {"texto": "Los alumnos responsables recogieron la clase.", "tiempo": "pasado", "sustantivos": ["alumnos", "clase"], "articulos": ["Los", "la"], "adjetivos": ["responsables"], "verbos": ["recogieron"]}, {"texto": "El niño rubio marcó un gol.", "tiempo": "pasado", "sustantivos": ["niño", "gol"], "articulos": ["El", "un"], "adjetivos": ["rubio"], "verbos": ["marcó"]}, {"texto": "Las vecinas simpáticas trajeron pasteles.", "tiempo": "pasado", "sustantivos": ["vecinas", "pasteles"], "articulos": ["Las"], "adjetivos": ["simpáticas"], "verbos": ["trajeron"]}, {"texto": "Mi hermano construyó una cabaña pequeña.", "tiempo": "pasado", "sustantivos": ["hermano", "cabaña"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["pequeña"], "verbos": ["construyó"]}, {"texto": "El caballo blanco ganó la carrera.", "tiempo": "pasado", "sustantivos": ["caballo", "carrera"], "articulos": ["El", "la"], "adjetivos": ["blanco"], "verbos": ["ganó"]}, {"texto": "La maestra alegre contó un cuento.", "tiempo": "pasado", "sustantivos": ["maestra", "cuento"], "articulos": ["La", "un"], "adjetivos": ["alegre"], "verbos": ["contó"]}, {"texto": "Los pescadores murcianos pescaron sardinas.", "tiempo": "pasado", "sustantivos": ["pescadores", "sardinas"], "articulos": ["Los"], "adjetivos": ["murcianos"], "verbos": ["pescaron"]}, {"texto": "Paula ganó una medalla plateada.", "tiempo": "pasado", "sustantivos": ["Paula", "medalla"], "articulos": ["una"], "adjetivos": ["plateada"], "verbos": ["ganó"], "propios": ["Paula"]}, {"texto": "El fuego peligroso quemó el bosque.", "tiempo": "pasado", "sustantivos": ["fuego", "bosque"], "articulos": ["El", "el"], "adjetivos": ["peligroso"], "verbos": ["quemó"]}, {"texto": "Mi tío arregló el grifo roto.", "tiempo": "pasado", "sustantivos": ["tío", "grifo"], "articulos": ["el"], "determinantes": ["Mi"], "adjetivos": ["roto"], "verbos": ["arregló"]}, {"texto": "La ardilla rápida escondió una nuez.", "tiempo": "pasado", "sustantivos": ["ardilla", "nuez"], "articulos": ["La", "una"], "adjetivos": ["rápida"], "verbos": ["escondió"]}, {"texto": "Los músicos jóvenes tocaron una canción.", "tiempo": "pasado", "sustantivos": ["músicos", "canción"], "articulos": ["Los", "una"], "adjetivos": ["jóvenes"], "verbos": ["tocaron"]}, {"texto": "El médico atento examinó la garganta.", "tiempo": "pasado", "sustantivos": ["médico", "garganta"], "articulos": ["El", "la"], "adjetivos": ["atento"], "verbos": ["examinó"]}, {"texto": "Las flores rojas adornaron la mesa.", "tiempo": "pasado", "sustantivos": ["flores", "mesa"], "articulos": ["Las", "la"], "adjetivos": ["rojas"], "verbos": ["adornaron"]}, {"texto": "Mi amiga inglesa aprendió español.", "tiempo": "pasado", "sustantivos": ["amiga", "español"], "determinantes": ["Mi"], "adjetivos": ["inglesa"], "verbos": ["aprendió"]}, {"texto": "El autobús escolar llegó.", "tiempo": "pasado", "sustantivos": ["autobús"], "articulos": ["El"], "adjetivos": ["escolar"], "verbos": ["llegó"]}, {"texto": "El abuelo sabio contaba historias.", "tiempo": "pasado", "sustantivos": ["abuelo", "historias"], "articulos": ["El"], "adjetivos": ["sabio"], "verbos": ["contaba"]}, {"texto": "La casa vieja tenía un jardín.", "tiempo": "pasado", "sustantivos": ["casa", "jardín"], "articulos": ["La", "un"], "adjetivos": ["vieja"], "verbos": ["tenía"]}, {"texto": "Los niños pequeños jugaban.", "tiempo": "pasado", "sustantivos": ["niños"], "articulos": ["Los"], "adjetivos": ["pequeños"], "verbos": ["jugaban"]}, {"texto": "Mi madre cantaba canciones bonitas.", "tiempo": "pasado", "sustantivos": ["madre", "canciones"], "determinantes": ["Mi"], "adjetivos": ["bonitas"], "verbos": ["cantaba"]}, {"texto": "El caballero valiente llevaba una armadura.", "tiempo": "pasado", "sustantivos": ["caballero", "armadura"], "articulos": ["El", "una"], "adjetivos": ["valiente"], "verbos": ["llevaba"]}, {"texto": "La niña tímida miraba el suelo.", "tiempo": "pasado", "sustantivos": ["niña", "suelo"], "articulos": ["La", "el"], "adjetivos": ["tímida"], "verbos": ["miraba"]}, {"texto": "Los romanos construían calzadas largas.", "tiempo": "pasado", "sustantivos": ["romanos", "calzadas"], "articulos": ["Los"], "adjetivos": ["largas"], "verbos": ["construían"]}, {"texto": "Mi perro viejo dormía.", "tiempo": "pasado", "sustantivos": ["perro"], "determinantes": ["Mi"], "adjetivos": ["viejo"], "verbos": ["dormía"]}, {"texto": "El río caudaloso llevaba agua.", "tiempo": "pasado", "sustantivos": ["río", "agua"], "articulos": ["El"], "adjetivos": ["caudaloso"], "verbos": ["llevaba"]}, {"texto": "Las brujas malvadas preparaban pociones.", "tiempo": "pasado", "sustantivos": ["brujas", "pociones"], "articulos": ["Las"], "adjetivos": ["malvadas"], "verbos": ["preparaban"]}, {"texto": "Rosa tenía un gato gordo.", "tiempo": "pasado", "sustantivos": ["Rosa", "gato"], "articulos": ["un"], "adjetivos": ["gordo"], "verbos": ["tenía"], "propios": ["Rosa"]}, {"texto": "El rey poderoso gobernaba un reino.", "tiempo": "pasado", "sustantivos": ["rey", "reino"], "articulos": ["El", "un"], "adjetivos": ["poderoso"], "verbos": ["gobernaba"]}, {"texto": "La luna redonda iluminaba la noche.", "tiempo": "pasado", "sustantivos": ["luna", "noche"], "articulos": ["La", "la"], "adjetivos": ["redonda"], "verbos": ["iluminaba"]}, {"texto": "Los pastores pacientes cuidaban rebaños.", "tiempo": "pasado", "sustantivos": ["pastores", "rebaños"], "articulos": ["Los"], "adjetivos": ["pacientes"], "verbos": ["cuidaban"]}, {"texto": "Mi abuela usaba unas gafas grandes.", "tiempo": "pasado", "sustantivos": ["abuela", "gafas"], "articulos": ["unas"], "determinantes": ["Mi"], "adjetivos": ["grandes"], "verbos": ["usaba"]}, {"texto": "El dragón verde vigilaba el tesoro.", "tiempo": "pasado", "sustantivos": ["dragón", "tesoro"], "articulos": ["El", "el"], "adjetivos": ["verde"], "verbos": ["vigilaba"]}, {"texto": "Las niñas alegres saltaban.", "tiempo": "pasado", "sustantivos": ["niñas"], "articulos": ["Las"], "adjetivos": ["alegres"], "verbos": ["saltaban"]}, {"texto": "El molino antiguo molía trigo.", "tiempo": "pasado", "sustantivos": ["molino", "trigo"], "articulos": ["El"], "adjetivos": ["antiguo"], "verbos": ["molía"]}, {"texto": "Mi hermano pequeño lloraba.", "tiempo": "pasado", "sustantivos": ["hermano"], "determinantes": ["Mi"], "adjetivos": ["pequeño"], "verbos": ["lloraba"]}, {"texto": "La princesa triste esperaba.", "tiempo": "pasado", "sustantivos": ["princesa"], "articulos": ["La"], "adjetivos": ["triste"], "verbos": ["esperaba"]}, {"texto": "El circo famoso llegará.", "tiempo": "futuro", "sustantivos": ["circo"], "articulos": ["El"], "adjetivos": ["famoso"], "verbos": ["llegará"]}, {"texto": "Mi prima pequeña cumplirá siete años.", "tiempo": "futuro", "sustantivos": ["prima", "años"], "determinantes": ["Mi", "siete"], "adjetivos": ["pequeña"], "verbos": ["cumplirá"]}, {"texto": "Los alumnos valientes subirán la montaña.", "tiempo": "futuro", "sustantivos": ["alumnos", "montaña"], "articulos": ["Los", "la"], "adjetivos": ["valientes"], "verbos": ["subirán"]}, {"texto": "La nieve blanca cubrirá el pueblo.", "tiempo": "futuro", "sustantivos": ["nieve", "pueblo"], "articulos": ["La", "el"], "adjetivos": ["blanca"], "verbos": ["cubrirá"]}, {"texto": "Martín comprará un balón nuevo.", "tiempo": "futuro", "sustantivos": ["Martín", "balón"], "articulos": ["un"], "adjetivos": ["nuevo"], "verbos": ["comprará"], "propios": ["Martín"]}, {"texto": "El equipo local ganará la liga.", "tiempo": "futuro", "sustantivos": ["equipo", "liga"], "articulos": ["El", "la"], "adjetivos": ["local"], "verbos": ["ganará"]}, {"texto": "Las golondrinas viajeras volverán.", "tiempo": "futuro", "sustantivos": ["golondrinas"], "articulos": ["Las"], "adjetivos": ["viajeras"], "verbos": ["volverán"]}, {"texto": "Mi madre preparará un pastel delicioso.", "tiempo": "futuro", "sustantivos": ["madre", "pastel"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["delicioso"], "verbos": ["preparará"]}, {"texto": "El concierto escolar empezará.", "tiempo": "futuro", "sustantivos": ["concierto"], "articulos": ["El"], "adjetivos": ["escolar"], "verbos": ["empezará"]}, {"texto": "La biblioteca nueva tendrá ordenadores.", "tiempo": "futuro", "sustantivos": ["biblioteca", "ordenadores"], "articulos": ["La"], "adjetivos": ["nueva"], "verbos": ["tendrá"]}, {"texto": "Los astronautas valientes viajarán.", "tiempo": "futuro", "sustantivos": ["astronautas"], "articulos": ["Los"], "adjetivos": ["valientes"], "verbos": ["viajarán"]}, {"texto": "Mi abuelo sembrará pimientos rojos.", "tiempo": "futuro", "sustantivos": ["abuelo", "pimientos"], "determinantes": ["Mi"], "adjetivos": ["rojos"], "verbos": ["sembrará"]}, {"texto": "El pintor famoso expondrá sus cuadros.", "tiempo": "futuro", "sustantivos": ["pintor", "cuadros"], "articulos": ["El"], "determinantes": ["sus"], "adjetivos": ["famoso"], "verbos": ["expondrá"]}, {"texto": "Las clases nuevas empezarán.", "tiempo": "futuro", "sustantivos": ["clases"], "articulos": ["Las"], "adjetivos": ["nuevas"], "verbos": ["empezarán"]}, {"texto": "Ángela escribirá una historia fantástica.", "tiempo": "futuro", "sustantivos": ["Ángela", "historia"], "articulos": ["una"], "adjetivos": ["fantástica"], "verbos": ["escribirá"], "propios": ["Ángela"]}, {"texto": "El parque grande tendrá columpios.", "tiempo": "futuro", "sustantivos": ["parque", "columpios"], "articulos": ["El"], "adjetivos": ["grande"], "verbos": ["tendrá"]}, {"texto": "La cocinera experta hará croquetas.", "tiempo": "futuro", "sustantivos": ["cocinera", "croquetas"], "articulos": ["La"], "adjetivos": ["experta"], "verbos": ["hará"]}, {"texto": "Los niños disfrazados desfilarán.", "tiempo": "futuro", "sustantivos": ["niños"], "articulos": ["Los"], "adjetivos": ["disfrazados"], "verbos": ["desfilarán"]}, {"texto": "Mi hermana mayor conducirá un coche.", "tiempo": "futuro", "sustantivos": ["hermana", "coche"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["mayor"], "verbos": ["conducirá"]}, {"texto": "El huracán peligroso destruirá casas.", "tiempo": "futuro", "sustantivos": ["huracán", "casas"], "articulos": ["El"], "adjetivos": ["peligroso"], "verbos": ["destruirá"]}, {"texto": "La familia entera celebrará la Navidad.", "tiempo": "futuro", "sustantivos": ["familia", "Navidad"], "articulos": ["La", "la"], "adjetivos": ["entera"], "verbos": ["celebrará"], "propios": ["Navidad"]}, {"texto": "Los científicos curiosos descubrirán un planeta.", "tiempo": "futuro", "sustantivos": ["científicos", "planeta"], "articulos": ["Los", "un"], "adjetivos": ["curiosos"], "verbos": ["descubrirán"]}, {"texto": "Mi vecino simpático regará las plantas.", "tiempo": "futuro", "sustantivos": ["vecino", "plantas"], "articulos": ["las"], "determinantes": ["Mi"], "adjetivos": ["simpático"], "verbos": ["regará"]}, {"texto": "El granjero trabajador recogerá la cosecha.", "tiempo": "futuro", "sustantivos": ["granjero", "cosecha"], "articulos": ["El", "la"], "adjetivos": ["trabajador"], "verbos": ["recogerá"]}, {"texto": "Las niñas rubias bailarán una jota.", "tiempo": "futuro", "sustantivos": ["niñas", "jota"], "articulos": ["Las", "una"], "adjetivos": ["rubias"], "verbos": ["bailarán"]}, {"texto": "Hugo leerá un libro gordo.", "tiempo": "futuro", "sustantivos": ["Hugo", "libro"], "articulos": ["un"], "adjetivos": ["gordo"], "verbos": ["leerá"], "propios": ["Hugo"]}, {"texto": "El tren nuevo tendrá vagones modernos.", "tiempo": "futuro", "sustantivos": ["tren", "vagones"], "articulos": ["El"], "adjetivos": ["nuevo", "modernos"], "verbos": ["tendrá"]}, {"texto": "La orquesta juvenil tocará una sinfonía.", "tiempo": "futuro", "sustantivos": ["orquesta", "sinfonía"], "articulos": ["La", "una"], "adjetivos": ["juvenil"], "verbos": ["tocará"]}, {"texto": "Mis padres pintarán la cocina vieja.", "tiempo": "futuro", "sustantivos": ["padres", "cocina"], "articulos": ["la"], "determinantes": ["Mis"], "adjetivos": ["vieja"], "verbos": ["pintarán"]}, {"texto": "El sol caliente derretirá el hielo.", "tiempo": "futuro", "sustantivos": ["sol", "hielo"], "articulos": ["El", "el"], "adjetivos": ["caliente"], "verbos": ["derretirá"]}, {"texto": "Este perro marrón tiene una cola larga.", "tiempo": "presente", "sustantivos": ["perro", "cola"], "articulos": ["una"], "determinantes": ["Este"], "adjetivos": ["marrón", "larga"], "verbos": ["tiene"]}, {"texto": "Esa niña simpática lleva un lazo rosa.", "tiempo": "presente", "sustantivos": ["niña", "lazo"], "articulos": ["un"], "determinantes": ["Esa"], "adjetivos": ["simpática", "rosa"], "verbos": ["lleva"]}, {"texto": "Aquellos árboles altos tienen hojas verdes.", "tiempo": "presente", "sustantivos": ["árboles", "hojas"], "determinantes": ["Aquellos"], "adjetivos": ["altos", "verdes"], "verbos": ["tienen"]}, {"texto": "Una pequeña ardilla comía nueces sabrosas.", "tiempo": "pasado", "sustantivos": ["ardilla", "nueces"], "articulos": ["Una"], "adjetivos": ["pequeña", "sabrosas"], "verbos": ["comía"]}, {"texto": "El valiente bombero rescató un gato asustado.", "tiempo": "pasado", "sustantivos": ["bombero", "gato"], "articulos": ["El", "un"], "adjetivos": ["valiente", "asustado"], "verbos": ["rescató"]}, {"texto": "Estas flores silvestres tienen colores alegres.", "tiempo": "presente", "sustantivos": ["flores", "colores"], "determinantes": ["Estas"], "adjetivos": ["silvestres", "alegres"], "verbos": ["tienen"]}, {"texto": "Mi mejor amigo tiene una bici roja.", "tiempo": "presente", "sustantivos": ["amigo", "bici"], "articulos": ["una"], "determinantes": ["Mi"], "adjetivos": ["mejor", "roja"], "verbos": ["tiene"]}, {"texto": "Tres niños altos jugaban un partido emocionante.", "tiempo": "pasado", "sustantivos": ["niños", "partido"], "articulos": ["un"], "determinantes": ["Tres"], "adjetivos": ["altos", "emocionante"], "verbos": ["jugaban"]}, {"texto": "Aquel castillo antiguo tenía torres altas.", "tiempo": "pasado", "sustantivos": ["castillo", "torres"], "determinantes": ["Aquel"], "adjetivos": ["antiguo", "altas"], "verbos": ["tenía"]}, {"texto": "La hermosa princesa llevaba una corona dorada.", "tiempo": "pasado", "sustantivos": ["princesa", "corona"], "articulos": ["La", "una"], "adjetivos": ["hermosa", "dorada"], "verbos": ["llevaba"]}, {"texto": "Ese gato gordo come pescado fresco.", "tiempo": "presente", "sustantivos": ["gato", "pescado"], "determinantes": ["Ese"], "adjetivos": ["gordo", "fresco"], "verbos": ["come"]}, {"texto": "Dos pájaros azules construirán un nido pequeño.", "tiempo": "futuro", "sustantivos": ["pájaros", "nido"], "articulos": ["un"], "determinantes": ["Dos"], "adjetivos": ["azules", "pequeño"], "verbos": ["construirán"]}, {"texto": "El enorme elefante bebió agua fresca.", "tiempo": "pasado", "sustantivos": ["elefante", "agua"], "articulos": ["El"], "adjetivos": ["enorme", "fresca"], "verbos": ["bebió"]}, {"texto": "Esta maestra nueva explica lecciones divertidas.", "tiempo": "presente", "sustantivos": ["maestra", "lecciones"], "determinantes": ["Esta"], "adjetivos": ["nueva", "divertidas"], "verbos": ["explica"]}, {"texto": "Nuestra vieja casa tiene ventanas grandes.", "tiempo": "presente", "sustantivos": ["casa", "ventanas"], "determinantes": ["Nuestra"], "adjetivos": ["vieja", "grandes"], "verbos": ["tiene"]}, {"texto": "Aquellas nubes negras traerán una tormenta fuerte.", "tiempo": "futuro", "sustantivos": ["nubes", "tormenta"], "articulos": ["una"], "determinantes": ["Aquellas"], "adjetivos": ["negras", "fuerte"], "verbos": ["traerán"]}, {"texto": "Un simpático payaso regaló globos rojos.", "tiempo": "pasado", "sustantivos": ["payaso", "globos"], "articulos": ["Un"], "adjetivos": ["simpático", "rojos"], "verbos": ["regaló"]}, {"texto": "Cinco alumnos atentos resolvieron un problema difícil.", "tiempo": "pasado", "sustantivos": ["alumnos", "problema"], "articulos": ["un"], "determinantes": ["Cinco"], "adjetivos": ["atentos", "difícil"], "verbos": ["resolvieron"]}, {"texto": "Esos zapatos nuevos tienen cordones blancos.", "tiempo": "presente", "sustantivos": ["zapatos", "cordones"], "determinantes": ["Esos"], "adjetivos": ["nuevos", "blancos"], "verbos": ["tienen"]}, {"texto": "Mi pequeño hermano pintó un sol amarillo.", "tiempo": "pasado", "sustantivos": ["hermano", "sol"], "articulos": ["un"], "determinantes": ["Mi"], "adjetivos": ["pequeño", "amarillo"], "verbos": ["pintó"]}, {"texto": "Ella canta muy bien.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Ella"], "verbos": ["canta"], "adverbios": ["muy", "bien"]}, {"texto": "Nosotros jugamos hoy en el parque.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Nosotros"], "verbos": ["jugamos"], "adverbios": ["hoy"], "preposiciones": ["en"], "articulos": ["el"], "sustantivos": ["parque"]}, {"texto": "Mañana visitaremos la playa de Calblanque.", "tiempo": "futuro", "ampliacion": true, "adverbios": ["Mañana"], "verbos": ["visitaremos"], "articulos": ["la"], "sustantivos": ["playa", "Calblanque"], "preposiciones": ["de"], "propios": ["Calblanque"]}, {"texto": "Él corre rápidamente por la pista.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Él"], "verbos": ["corre"], "adverbios": ["rápidamente"], "preposiciones": ["por"], "articulos": ["la"], "sustantivos": ["pista"]}, {"texto": "Mi hermano siempre llega tarde.", "tiempo": "presente", "ampliacion": true, "determinantes": ["Mi"], "sustantivos": ["hermano"], "adverbios": ["siempre", "tarde"], "verbos": ["llega"]}, {"texto": "Ellos comieron un helado muy frío.", "tiempo": "pasado", "ampliacion": true, "pronombres": ["Ellos"], "verbos": ["comieron"], "articulos": ["un"], "sustantivos": ["helado"], "adverbios": ["muy"], "adjetivos": ["frío"]}, {"texto": "Tú lees cuentos de piratas.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Tú"], "verbos": ["lees"], "sustantivos": ["cuentos", "piratas"], "preposiciones": ["de"]}, {"texto": "Ayer llovió mucho en Murcia.", "tiempo": "pasado", "ampliacion": true, "adverbios": ["Ayer", "mucho"], "verbos": ["llovió"], "preposiciones": ["en"], "sustantivos": ["Murcia"], "propios": ["Murcia"]}, {"texto": "Vosotras bailáis bastante bien.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Vosotras"], "verbos": ["bailáis"], "adverbios": ["bastante", "bien"]}, {"texto": "El tren llegó pronto a la estación.", "tiempo": "pasado", "ampliacion": true, "articulos": ["El", "la"], "sustantivos": ["tren", "estación"], "verbos": ["llegó"], "adverbios": ["pronto"], "preposiciones": ["a"]}, {"texto": "Yo nunca como verduras amargas.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Yo"], "adverbios": ["nunca"], "verbos": ["como"], "sustantivos": ["verduras"], "adjetivos": ["amargas"]}, {"texto": "Los niños y las niñas juegan en el patio.", "tiempo": "presente", "ampliacion": true, "articulos": ["Los", "las", "el"], "sustantivos": ["niños", "niñas", "patio"], "conjunciones": ["y"], "verbos": ["juegan"], "preposiciones": ["en"]}, {"texto": "Ana estudia mucho, pero hoy descansa.", "tiempo": "presente", "ampliacion": true, "sustantivos": ["Ana"], "verbos": ["estudia", "descansa"], "adverbios": ["mucho", "hoy"], "conjunciones": ["pero"], "propios": ["Ana"]}, {"texto": "Nosotras llegaremos temprano a clase.", "tiempo": "futuro", "ampliacion": true, "pronombres": ["Nosotras"], "verbos": ["llegaremos"], "adverbios": ["temprano"], "preposiciones": ["a"], "sustantivos": ["clase"]}, {"texto": "Ellas viven cerca de la plaza.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Ellas"], "verbos": ["viven"], "adverbios": ["cerca"], "preposiciones": ["de"], "articulos": ["la"], "sustantivos": ["plaza"]}, {"texto": "El abuelo camina despacio con su bastón.", "tiempo": "presente", "ampliacion": true, "articulos": ["El"], "sustantivos": ["abuelo", "bastón"], "verbos": ["camina"], "adverbios": ["despacio"], "preposiciones": ["con"], "determinantes": ["su"]}, {"texto": "Ella compró pan y leche.", "tiempo": "pasado", "ampliacion": true, "pronombres": ["Ella"], "verbos": ["compró"], "sustantivos": ["pan", "leche"], "conjunciones": ["y"]}, {"texto": "Mi perro ladra bastante por la noche.", "tiempo": "presente", "ampliacion": true, "determinantes": ["Mi"], "sustantivos": ["perro", "noche"], "verbos": ["ladra"], "adverbios": ["bastante"], "preposiciones": ["por"], "articulos": ["la"]}, {"texto": "Vosotros iréis mañana a la huerta.", "tiempo": "futuro", "ampliacion": true, "pronombres": ["Vosotros"], "verbos": ["iréis"], "adverbios": ["mañana"], "preposiciones": ["a"], "articulos": ["la"], "sustantivos": ["huerta"]}, {"texto": "El gato duerme encima de la cama.", "tiempo": "presente", "ampliacion": true, "articulos": ["El", "la"], "sustantivos": ["gato", "cama"], "verbos": ["duerme"], "adverbios": ["encima"], "preposiciones": ["de"]}, {"texto": "Ellos no quieren sopa caliente.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Ellos"], "adverbios": ["no"], "verbos": ["quieren"], "sustantivos": ["sopa"], "adjetivos": ["caliente"]}, {"texto": "Las golondrinas vuelan sobre el río Segura.", "tiempo": "presente", "ampliacion": true, "articulos": ["Las", "el"], "sustantivos": ["golondrinas", "río", "Segura"], "verbos": ["vuelan"], "preposiciones": ["sobre"], "propios": ["Segura"]}, {"texto": "Yo escribo una carta para mi abuela.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Yo"], "verbos": ["escribo"], "articulos": ["una"], "sustantivos": ["carta", "abuela"], "preposiciones": ["para"], "determinantes": ["mi"]}, {"texto": "Tú cantas bien, pero ella baila mejor.", "tiempo": "presente", "ampliacion": true, "pronombres": ["Tú", "ella"], "verbos": ["cantas", "baila"], "adverbios": ["bien", "mejor"], "conjunciones": ["pero"]}];
+// =====================================================================
+
+const MODOS = {
+  practica:  { icono:'🎯', nombre:'Práctica',    desc:'Sin prisa. Busca las palabras que se piden.' },
+  reto:      { icono:'⏱️', nombre:'Reto rápido', desc:'¿Cuántas frases resuelves antes de que acabe el tiempo?' },
+  duelo:     { icono:'🤺', nombre:'1 contra 1',  desc:'Dos jugadores. Gana quien complete antes las frases.' },
+  pregunta:  { icono:'❓', nombre:'Pregunta',    desc:'Responde preguntas sobre la frase.' },
+  incognita: { icono:'🕵️', nombre:'Incógnita',   desc:'Falta una palabra. ¿Cuál pondrías? Valida el docente.' },
+};
+const CAT_KEYS = Object.keys(CONFIG.categorias);
+const CAT = CONFIG.categorias;
+
+// ---------- Utilidades ----------
+const $ = s => document.querySelector(s);
+const aleatorio = a => a[Math.floor(Math.random() * a.length)];
+const barajar = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const mayus = s => s.charAt(0).toUpperCase() + s.slice(1);
+const etiqueta = (cat, txt) => `<span class="etiqueta" style="--c:${CAT[cat].c};--ct:${CAT[cat].t}">${txt}</span>`;
+const reducido = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function colorear(el, cat) { el.style.setProperty('--c', CAT[cat].c); el.style.setProperty('--ct', CAT[cat].t); }
+
+// ---------- Almacenamiento ----------
+const CLAVE = 'detectivesPalabras_v1';
+const nuevoStore = () => ({ puntos:0, logros:[], records:{}, importadas:[], ajustes:{}, silencio:false, incValidas:0 });
+function cargarStore() { try { const d = JSON.parse(localStorage.getItem(CLAVE)); if (d) return Object.assign(nuevoStore(), d); } catch (e) {} return nuevoStore(); }
+function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(store)); } catch (e) {} }
+let store = cargarStore();
+const A = Object.assign({ nivel:0, personalizado:false, cats:['sustantivos'], modo:'practica', rondas:CONFIG.rondas,
+  tiempo:CONFIG.tiempoReto, meta:CONFIG.metaDuelo, tarea:'buscar', tiempoVerbal:'todos', fuente:'todas',
+  j1:CONFIG.jugadores[0], j2:CONFIG.jugadores[1] }, store.ajustes);
+
+// ---------- Audio (Web Audio API, se crea con el primer toque) ----------
+let audioCtx = null;
+let silencio = !!store.silencio;
+function initAudio() {
+  try { audioCtx ??= new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {}
+}
+function tono(f1, f2, ini, dur, tipo = 'sine', vol = 0.22) {
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = tipo; o.frequency.setValueAtTime(f1, ini); o.frequency.exponentialRampToValueAtTime(f2, ini + dur);
+  g.gain.setValueAtTime(vol, ini); g.gain.exponentialRampToValueAtTime(0.001, ini + dur);
+  o.connect(g).connect(audioCtx.destination); o.start(ini); o.stop(ini + dur + 0.02);
+}
+function playSound(tipo) {
+  if (silencio) return; initAudio(); if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  if (tipo === 'success') tono(520, 1040, t, 0.16);
+  if (tipo === 'error') { tono(230, 180, t, 0.14, 'triangle'); tono(230, 180, t + 0.18, 0.14, 'triangle'); }
+  if (tipo === 'frase') [659, 784, 1047].forEach((f, i) => tono(f, f, t + 0.12 + i * 0.09, 0.18));
+  if (tipo === 'win') [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tono(f, f, t + i * 0.12, 0.26));
+  if (tipo === 'tick') tono(880, 880, t, 0.05, 'square', 0.06);
+  if (tipo === 'hielo') tono(1200, 300, t, 0.35, 'sawtooth', 0.06);
+}
+const btnMute = $('#btnMute');
+function pintarMute() { btnMute.textContent = silencio ? '🔇' : '🔊'; btnMute.setAttribute('aria-label', silencio ? 'Activar sonido' : 'Silenciar sonido'); }
+btnMute.addEventListener('click', () => { silencio = !silencio; store.silencio = silencio; guardar(); pintarMute(); if (!silencio) playSound('success'); });
+pintarMute();
+
+// ---------- Pantalla completa ----------
+const btnFS = $('#btnFullscreen'), raiz = document.documentElement;
+const fsElement = () => document.fullscreenElement || document.webkitFullscreenElement;
+if (!(raiz.requestFullscreen || raiz.webkitRequestFullscreen)) btnFS.hidden = true;
+btnFS.addEventListener('click', () => {
+  try {
+    if (fsElement()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else (raiz.requestFullscreen || raiz.webkitRequestFullscreen).call(raiz);
+  } catch (e) {}
+});
+function iconoFS() { const a = !!fsElement(); btnFS.textContent = a ? '✖' : '⛶'; btnFS.setAttribute('aria-label', a ? 'Salir de pantalla completa' : 'Pantalla completa'); }
+document.addEventListener('fullscreenchange', iconoFS);
+document.addEventListener('webkitfullscreenchange', iconoFS);
+
+// ---------- Avisos, confeti ----------
+let toastTimer;
+function toast(html, ms = 2600) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const d = document.createElement('div'); d.className = 'toast'; d.innerHTML = html; document.body.appendChild(d);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => d.remove(), ms);
+}
+function confeti(n = 40) {
+  if (reducido()) return;
+  const colores = Object.values(CAT).map(c => c.c);
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('div'); d.className = 'confeti';
+    d.style.left = Math.random() * 100 + 'vw'; d.style.background = aleatorio(colores);
+    d.style.animationDuration = (1.2 + Math.random() * 1.4) + 's'; d.style.animationDelay = (Math.random() * 0.3) + 's';
+    document.body.appendChild(d); setTimeout(() => d.remove(), 3000);
+  }
+}
+
+// ---------- Frases ----------
+// Separa la frase en palabras y signos, y asigna a cada palabra su categoría.
+function analizar(frase) {
+  const mapa = {};
+  CAT_KEYS.forEach(c => (frase[c] || []).forEach(w => { const k = String(w).toLowerCase(); (mapa[k] ??= []).push(c); }));
+  const partes = frase.texto.match(/[\p{L}\p{N}]+|[^\p{L}\p{N}]+/gu) || [];
+  let i = 0;
+  return partes.map(p => {
+    if (/[\p{L}\p{N}]/u.test(p)) { const k = p.toLowerCase(); const cat = mapa[k] && mapa[k].length ? mapa[k].shift() : null; return { t:p, cat, w:true, i:i++ }; }
+    return { t:p, w:false };
+  });
+}
+function esPropio(tok, frase) {
+  if (frase.propios) return frase.propios.some(p => p.toLowerCase() === tok.t.toLowerCase());
+  return /^\p{Lu}/u.test(tok.t) && tok.i > 0;
+}
+function todasLasFrases() {
+  return [...BANCO_BASE.map(f => ({ ...f, origen:'base' })), ...store.importadas.map(f => ({ ...f, origen:'imp' }))];
+}
+const CATS_AMPLIACION = ['pronombres', 'adverbios', 'preposiciones', 'conjunciones'];
+function catsActivas() { return A.personalizado ? A.cats.filter(c => CAT[c]) : CONFIG.niveles[A.nivel].cats; }
+function poolFrases(cats) {
+  let fs = todasLasFrases();
+  if (A.fuente === 'base') fs = fs.filter(f => f.origen === 'base');
+  if (A.fuente === 'imp') fs = fs.filter(f => f.origen === 'imp');
+  if (A.tiempoVerbal !== 'todos') fs = fs.filter(f => f.tiempo === A.tiempoVerbal);
+  const conAmpliacion = cats.some(c => CATS_AMPLIACION.includes(c));
+  fs = fs.filter(f => f.origen === 'imp' || !f.ampliacion || conAmpliacion);
+  return fs.filter(f => analizar(f).some(t => t.w && cats.includes(t.cat)));
+}
+
+// =====================================================================
+// PANTALLA DE INICIO
+// =====================================================================
+function rango(p) {
+  let r = CONFIG.rangos[0], sig = null;
+  CONFIG.rangos.forEach((x, i) => { if (p >= x.desde) { r = x; sig = CONFIG.rangos[i + 1] || null; } });
+  return { r, sig };
+}
+function pintarPerfil() {
+  const { r, sig } = rango(store.puntos);
+  const pct = sig ? Math.round(100 * (store.puntos - r.desde) / (sig.desde - r.desde)) : 100;
+  $('#perfil').innerHTML = `<span class="pill">⭐ <b>${store.puntos}</b> puntos de la clase</span>
+    <span class="pill">${r.icono} <b>${r.nombre}</b></span>
+    <span class="pill">${sig ? `Siguiente: ${sig.icono} ${sig.nombre}` : '¡Rango máximo!'} <span class="barraRango"><i style="width:${pct}%"></i></span></span>`;
+  $('#listaLogros').innerHTML = CONFIG.logros.map(l =>
+    `<span class="logro ${store.logros.includes(l.id) ? '' : 'bloq'}" title="${esc(l.nombre)}"><b>${l.icono}</b>${esc(l.nombre)}</span>`).join('');
+}
+function puntitos(cats) { return `<div class="puntos">${cats.map(c => `<span class="punto" style="background:${CAT[c].c}" title="${CAT[c].plural}"></span>`).join('')}</div>`; }
+function pintarNiveles() {
+  // ✏️ El desplegable se construye con CONFIG.niveles
+  const sel = $('#selNivel');
+  sel.innerHTML = CONFIG.niveles.map((n, i) => `<option value="${i}">${n.icono} Nivel ${i + 1} · ${esc(n.nombre)} (${n.curso})</option>`).join('')
+    + '<option value="custom">🛠️ Personalizado: elige tú las categorías</option>';
+  sel.value = A.personalizado ? 'custom' : String(A.nivel);
+  pintarCatsNivel();
+  $('#bloqueCustom').classList.toggle('oculto', !A.personalizado);
+  $('#checksCats').innerHTML = CAT_KEYS.map(c => `<label class="check"><input type="checkbox" value="${c}" ${A.cats.includes(c) ? 'checked' : ''}>
+    <span class="punto" style="background:${CAT[c].c}"></span>${mayus(CAT[c].plural)}</label>`).join('');
+  $('#checksCats').querySelectorAll('input').forEach(ch => ch.addEventListener('change', () => {
+    A.cats = [...$('#checksCats').querySelectorAll('input:checked')].map(x => x.value); guardarAjustes(); pintarCatsNivel();
+  }));
+}
+function pintarCatsNivel() {
+  const cats = catsActivas();
+  $('#catsNivel').innerHTML = cats.length
+    ? cats.map(c => `<span class="catNivel"><span class="punto" style="background:${CAT[c].c}"></span>${mayus(CAT[c].plural)}</span>`).join('')
+    : '<span class="catNivel">Marca al menos una categoría</span>';
+}
+$('#selNivel').addEventListener('change', e => {
+  const v = e.target.value;
+  if (v === 'custom') A.personalizado = true; else { A.personalizado = false; A.nivel = Number(v); }
+  guardarAjustes(); pintarNiveles();
+});
+function pintarModos() {
+  const r = $('#rejillaModos'); r.innerHTML = '';
+  Object.entries(MODOS).forEach(([k, m]) => {
+    const b = document.createElement('button');
+    b.className = 'tarjeta' + (A.modo === k ? ' sel' : '');
+    b.setAttribute('aria-pressed', A.modo === k);
+    b.innerHTML = `<span class="ico">${m.icono}</span><span class="t1">${m.nombre}</span><span class="t2">${m.desc}</span>`;
+    b.addEventListener('click', () => { A.modo = k; guardarAjustes(); pintarModos(); });
+    r.appendChild(b);
+  });
+}
+function guardarAjustes() { store.ajustes = A; guardar(); $('#avisoInicio').textContent = ''; }
+function enlazarOpciones() {
+  const pares = [['#optRondas','rondas',Number],['#optTiempo','tiempo',Number],['#optMeta','meta',Number],['#optTarea','tarea',String],
+    ['#optTiempoVerbal','tiempoVerbal',String],['#optFuente','fuente',String],['#optJ1','j1',String],['#optJ2','j2',String]];
+  pares.forEach(([sel, k, tipo]) => {
+    const el = $(sel); el.value = A[k];
+    el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', () => { A[k] = tipo(el.value); guardarAjustes(); });
+  });
+}
+function pintarEstadoBanco() {
+  const base = BANCO_BASE.filter(f => !f.ampliacion).length, amp = BANCO_BASE.length - base;
+  $('#estadoBanco').textContent = `Banco actual: ${base} frases de 3º + ${amp} de ampliación + ${store.importadas.length} importadas.`;
+}
+function irInicio() {
+  limpiar(); mostrar('inicio'); pintarPerfil(); pintarNiveles(); pintarModos(); pintarEstadoBanco();
+}
+function mostrar(id) { ['inicio','juego','final'].forEach(x => $('#' + x).classList.toggle('oculto', x !== id)); window.scrollTo(0, 0); }
+
+// =====================================================================
+// MOTOR DEL JUEGO
+// =====================================================================
+let S = null;
+function limpiar() {
+  if (!S) return;
+  clearInterval(S.intervalo); (S.timeouts || []).forEach(clearTimeout); S.timeouts = []; S.activo = false;
+}
+function despues(fn, ms) { const id = setTimeout(() => { if (S && S.activo) fn(); }, ms); S.timeouts.push(id); }
+
+function empezar() {
+  initAudio();
+  const cats = catsActivas();
+  if (!cats.length) { $('#avisoInicio').textContent = 'Marca al menos una categoría para jugar.'; return; }
+  const pool = poolFrases(cats);
+  if (!pool.length) { $('#avisoInicio').textContent = 'No hay frases para esta combinación. Cambia las opciones del docente (tiempo verbal o frases que se usan).'; return; }
+  S = { modo:A.modo, cats, cola:barajar(pool), idx:-1, rondas:A.rondas, tiempo:A.tiempo, meta:A.meta,
+        tarea:A.tarea, jugadores:[A.j1 || 'Jugador 1', A.j2 || 'Jugador 2'],
+        puntos:0, racha:0, mejorRacha:0, aciertos:0, errores:0, frasesOK:0, timeouts:[], activo:true, nuevosLogros:[],
+        nivelTxt: A.personalizado ? 'Personalizado' : `Nivel ${A.nivel + 1}`, tgt:{} };
+  mostrar('juego');
+  $('#modoNombre').textContent = `${MODOS[S.modo].icono} ${MODOS[S.modo].nombre} · ${S.nivelTxt}`;
+  $('#marcadores').classList.toggle('oculto', S.modo === 'duelo');
+  $('#barraTiempo').classList.toggle('oculto', S.modo !== 'reto');
+  pintarLeyenda(); marcadores();
+  if (S.modo === 'reto') iniciarReto();
+  else if (S.modo === 'duelo') iniciarDuelo();
+  else siguienteFrase();
+}
+function pintarLeyenda() {
+  const l = $('#leyenda'); l.innerHTML = '';
+  S.cats.forEach(c => {
+    const b = document.createElement('button');
+    b.innerHTML = `<span class="punto" style="background:${CAT[c].c}"></span>${CAT[c].plural}`;
+    b.title = 'Ver pista';
+    b.addEventListener('click', () => toast(`<b>💡 ${mayus(CAT[c].plural)}</b><br>${CAT[c].pista}`, 4500));
+    l.appendChild(b);
+  });
+}
+function multiplicador() { return S.racha >= 8 ? 3 : S.racha >= 4 ? 2 : 1; }
+function marcadores() {
+  $('#marcPuntos').textContent = `⭐ ${S.puntos}`;
+  const m = multiplicador();
+  $('#marcRacha').textContent = `🔥 ${S.racha}${m > 1 ? ' ×' + m : ''}`;
+  actualizarProgreso();
+}
+function actualizarProgreso() {
+  const p = $('#progreso');
+  if (S.modo === 'reto') p.textContent = `✅ ${S.frasesOK} frases`;
+  else if (S.modo === 'duelo') p.textContent = `🏁 Gana quien llegue a ${S.meta}`;
+  else p.textContent = `Frase ${Math.min(S.idx + 1, S.rondas)} de ${S.rondas}`;
+}
+function sumarAcierto() {
+  S.racha++; S.mejorRacha = Math.max(S.mejorRacha, S.racha); S.aciertos++;
+  S.puntos += CONFIG.puntosAcierto * multiplicador();
+  if (S.racha === 5) logro('racha5');
+  if (S.racha === 10) logro('racha10');
+  if (S.racha === 4 || S.racha === 8) toast(`🔥 ¡Racha de ${S.racha}! Puntos ×${multiplicador()}`, 1500);
+  marcadores();
+}
+function sumarError() { S.racha = 0; S.errores++; marcadores(); }
+function fraseCompleta(b) {
+  S.frasesOK++;
+  if (b.errores === 0 && !b.pista) S.puntos += CONFIG.bonusFrase;
+  marcadores();
+}
+function logro(id) {
+  if (store.logros.includes(id)) return;
+  const l = CONFIG.logros.find(x => x.id === id); if (!l) return;
+  store.logros.push(id); guardar(); if (S) S.nuevosLogros.push(l);
+  setTimeout(() => toast(`🏅 ¡Logro desbloqueado! ${l.icono} <b>${esc(l.nombre)}</b>`, 2800), 300);
+}
+
+// ---------- Tablero de palabras (Buscar / Clasificar) ----------
+function nuevoTablero(el, frase, tarea, cb, op = {}) {
+  const b = { el, frase, tarea, cb, toks:analizar(frase), bloqueado:false, terminado:false, sel:null, errores:0, hechos:0,
+              penal:op.penal || 350, pista:false };
+  if (tarea === 'buscar') {
+    const presentes = S.cats.filter(c => b.toks.some(t => t.cat === c));
+    let opciones = presentes.filter(c => c !== op.ultimo); if (!opciones.length) opciones = presentes;
+    b.target = op.target && presentes.includes(op.target) ? op.target : aleatorio(opciones);
+    b.objetivos = b.toks.filter(t => t.w && t.cat === b.target);
+  } else b.objetivos = b.toks.filter(t => t.w && S.cats.includes(t.cat));
+  el.innerHTML = `<div class="consigna"></div><div class="frase"></div><div class="paleta oculto"></div><div class="msg" aria-live="polite"></div>`;
+  b.cons = el.querySelector('.consigna'); b.fraseEl = el.querySelector('.frase'); b.paleta = el.querySelector('.paleta'); b.msgEl = el.querySelector('.msg');
+  pintarFrase(b.fraseEl, b.toks, tok => (tarea === 'clasificar' && !S.cats.includes(tok.cat)) ? null : () => tocar(b, tok));
+  if (tarea === 'clasificar') {
+    S.cats.forEach(c => {
+      const p = document.createElement('button'); colorear(p, c); p.textContent = CAT[c].nombre;
+      p.addEventListener('click', () => elegirCat(b, c)); b.paleta.appendChild(p);
+    });
+  }
+  consigna(b);
+  return b;
+}
+// Dibuja las palabras. accion(tok) devuelve la función al tocar o null (palabra no interactiva).
+function pintarFrase(cont, toks, accion) {
+  cont.innerHTML = ''; let ultimo = null;
+  toks.forEach(tok => {
+    if (!tok.w) {
+      const p = tok.t.trim(); if (!p) return;
+      const s = document.createElement('span'); s.className = 'punct'; s.textContent = p;
+      // El signo va pegado a la palabra anterior para que no salte solo a otra línea
+      if (ultimo) { let w = ultimo.parentElement; if (!w.classList.contains('par')) { w = document.createElement('span'); w.className = 'par'; ultimo.replaceWith(w); w.appendChild(ultimo); } w.appendChild(s); }
+      else cont.appendChild(s);
+      return;
+    }
+    const btn = document.createElement('button'); btn.className = 'chip'; btn.textContent = tok.t; tok.el = btn;
+    const fn = accion ? accion(tok) : null;
+    if (!fn) { btn.classList.add(accion ? 'inerte' : 'estatico'); btn.tabIndex = -1; }
+    else {
+      // pointerdown permite que dos niños toquen a la vez en la pizarra (1 contra 1)
+      btn.addEventListener('pointerdown', e => { e.preventDefault(); fn(); });
+      btn.addEventListener('click', e => { if (e.detail === 0) fn(); }); // teclado
+    }
+    cont.appendChild(btn); ultimo = btn;
+  });
+}
+function consigna(b) {
+  if (b.tarea === 'buscar') {
+    const c = CAT[b.target], uno = b.objetivos.length === 1;
+    b.cons.innerHTML = `Toca ${uno ? c.el : c.los} ${etiqueta(b.target, (uno ? c.nombre : c.plural).toUpperCase())}<span class="contador">${b.hechos}/${b.objetivos.length}</span>`;
+  } else {
+    b.cons.innerHTML = b.sel ? `¿Qué es <b>«${esc(b.sel.t)}»</b>? Elige abajo 👇<span class="contador">${b.hechos}/${b.objetivos.length}</span>`
+      : `Toca una palabra y di qué es<span class="contador">${b.hechos}/${b.objetivos.length}</span>`;
+  }
+}
+function tocar(b, tok) {
+  if (b.bloqueado || b.terminado || tok.ok) return;
+  initAudio();
+  if (b.tarea === 'buscar') {
+    if (tok.cat === b.target) acertar(b, tok);
+    else {
+      const c = CAT[b.target];
+      let txt = `«${tok.t}» no es ${c.un} ${c.nombre}.`;
+      if (tok.cat && S.cats.includes(tok.cat)) txt += ` Es ${CAT[tok.cat].un} ${CAT[tok.cat].nombre}.`;
+      fallar(b, tok, txt);
+    }
+  } else {
+    b.toks.forEach(t => t.el && t.el.classList.remove('sel'));
+    b.sel = tok; tok.el.classList.add('sel'); b.paleta.classList.remove('oculto'); consigna(b);
+  }
+}
+function elegirCat(b, cat) {
+  if (!b.sel || b.bloqueado || b.terminado) return;
+  const tok = b.sel;
+  if (tok.cat === cat) { tok.el.classList.remove('sel'); b.sel = null; b.paleta.classList.add('oculto'); acertar(b, tok); }
+  else fallar(b, tok, `«${tok.t}» no es ${CAT[cat].un} ${CAT[cat].nombre}. ¡Prueba otra vez!`);
+}
+function acertar(b, tok) {
+  tok.ok = true; colorear(tok.el, tok.cat); tok.el.classList.add('ok'); b.hechos++;
+  playSound('success'); b.cb.acierto(b, tok);
+  if (b.hechos >= b.objetivos.length) { b.terminado = true; b.paleta.classList.add('oculto'); playSound('frase'); consigna(b); b.cb.completa(b); }
+  else consigna(b);
+}
+function fallar(b, tok, txt) {
+  b.errores++; const el = tok.el;
+  el.classList.remove('mal'); void el.offsetWidth; el.classList.add('mal'); setTimeout(() => el.classList.remove('mal'), 500);
+  playSound('error'); b.bloqueado = true; setTimeout(() => { b.bloqueado = false; }, b.penal);
+  b.cb.error(b, tok, txt);
+}
+function revelar(b) { // al terminar, colorea el resto de palabras de las categorías activas
+  b.toks.forEach(t => { if (t.w && !t.ok && S.cats.includes(t.cat)) { colorear(t.el, t.cat); t.el.classList.add('revelada'); } });
+}
+function msg(el, txt, tipo = '') { el.textContent = txt; el.className = 'msg ' + tipo; }
+
+// ---------- Flujo por rondas (Práctica, Pregunta, Incógnita) ----------
+function siguienteFrase() {
+  S.idx++;
+  if (S.idx >= S.rondas) return terminar();
+  S.frase = S.cola[S.idx % S.cola.length];
+  actualizarProgreso();
+  ({ practica:pintarPractica, pregunta:pintarPregunta, incognita:pintarIncognita })[S.modo]();
+}
+function botonSiguiente() {
+  const b = $('#bSig'); b.classList.remove('oculto'); b.focus({ preventScroll:true });
+  b.onclick = () => { b.onclick = null; siguienteFrase(); };
+  if (S.idx + 1 >= S.rondas) b.textContent = 'Ver resultados 🏆';
+}
+
+// ========== MODO 1: PRÁCTICA ==========
+function pintarPractica() {
+  const tarea = (S.tarea === 'clasificar' && S.cats.length > 1) ? 'clasificar' : 'buscar';
+  $('#zona').innerHTML = `<div class="tablero" id="tab"></div>
+    <div class="controles"><button class="btnSec" id="bPista">💡 Pista</button><button class="btnSec" id="bSaltar">⏭️ Saltar</button>
+    <button class="btnGrande oculto" id="bSig">Siguiente ▶</button></div>`;
+  const b = nuevoTablero($('#tab'), S.frase, tarea, {
+    acierto: (b) => { sumarAcierto(); msg(b.msgEl, aleatorio(CONFIG.mensajes.acierto), 'ok'); },
+    error: (b, tok, txt) => { sumarError(); msg(b.msgEl, txt + ' ' + aleatorio(CONFIG.mensajes.error), 'mal'); },
+    completa: (b) => {
+      fraseCompleta(b); revelar(b);
+      msg(b.msgEl, aleatorio(CONFIG.mensajes.frase) + (b.errores === 0 && !b.pista ? ` +${CONFIG.bonusFrase} de bonus` : ''), 'ok');
+      confeti(25); $('#bPista').classList.add('oculto'); $('#bSaltar').classList.add('oculto'); botonSiguiente();
+    }
+  }, { ultimo:S.ultimo });
+  S.ultimo = b.target;
+  $('#bPista').addEventListener('click', () => {
+    b.pista = true;
+    const c = tarea === 'buscar' ? b.target : (b.sel ? b.sel.cat : null);
+    if (c) msg(b.msgEl, `💡 ${mayus(CAT[c].plural)}: ${CAT[c].pista}`, '');
+    else msg(b.msgEl, '💡 Toca primero una palabra y te doy una pista.', '');
+  });
+  $('#bSaltar').addEventListener('click', () => siguienteFrase());
+}
+
+// ========== MODO 2: RETO RÁPIDO ==========
+function iniciarReto() {
+  S.finTiempo = Date.now() + S.tiempo * 1000; S.ultimoSeg = null;
+  S.intervalo = setInterval(tickReto, 100);
+  tickReto(); siguienteReto();
+}
+function tickReto() {
+  const resta = S.finTiempo - Date.now();
+  if (resta <= 0) { $('#relleno').style.width = '0%'; $('#segundos').textContent = '¡Tiempo!'; terminar(); return; }
+  const seg = Math.ceil(resta / 1000);
+  $('#relleno').style.width = (100 * resta / (S.tiempo * 1000)) + '%';
+  $('#segundos').textContent = `⏱️ ${seg} s`;
+  $('#barraTiempo').classList.toggle('urgente', seg <= 10);
+  if (seg <= 5 && seg !== S.ultimoSeg) playSound('tick');
+  S.ultimoSeg = seg;
+}
+function siguienteReto() {
+  S.idx++; S.frase = S.cola[S.idx % S.cola.length];
+  $('#zona').innerHTML = `<div class="tablero" id="tab"></div>`;
+  const b = nuevoTablero($('#tab'), S.frase, 'buscar', {
+    acierto: (b) => { sumarAcierto(); msg(b.msgEl, aleatorio(CONFIG.mensajes.acierto), 'ok'); },
+    error: (b, tok, txt) => { sumarError(); msg(b.msgEl, txt, 'mal'); },
+    completa: (b) => { fraseCompleta(b); msg(b.msgEl, aleatorio(CONFIG.mensajes.frase), 'ok'); despues(siguienteReto, 650); }
+  }, { ultimo:S.ultimo });
+  S.ultimo = b.target;
+}
+
+// ========== MODO 3: 1 CONTRA 1 ==========
+function iniciarDuelo() {
+  $('#zona').innerHTML = `<div class="duelo">${[0, 1].map(i => `
+    <div class="panel j${i}">
+      <div class="cabJug"><span class="nombreJ">${i ? '🔵' : '🔴'} ${esc(S.jugadores[i])}</span><span class="dots" id="dots${i}"></span></div>
+      <div id="tab${i}"></div>
+      <div class="hielo oculto" id="hielo${i}">❄️ ¡Congelado!</div>
+    </div>`).join('')}</div>`;
+  S.js = [0, 1].map(i => ({ i, score:0, idx:-1, tab:null }));
+  S.js.forEach(j => { pintarDots(j); siguienteDuelo(j); });
+  actualizarProgreso();
+}
+function pintarDots(j) {
+  $('#dots' + j.i).innerHTML = Array.from({ length:S.meta }, (_, k) => `<span class="dot ${k < j.score ? 'lleno' : ''}">${k < j.score ? '⭐' : ''}</span>`).join('');
+}
+function siguienteDuelo(j) {
+  j.idx++;
+  const k = j.idx, frase = S.cola[k % S.cola.length];
+  // Los dos jugadores reciben la misma frase y la misma consigna en cada turno (es justo).
+  j.tab = nuevoTablero($('#tab' + j.i), frase, 'buscar', {
+    acierto: (b) => msg(b.msgEl, '✔ ' + aleatorio(CONFIG.mensajes.acierto), 'ok'),
+    error: (b) => { msg(b.msgEl, '✘ ¡Ups!', 'mal'); congelar(j); },
+    completa: () => {
+      j.score++; pintarDots(j);
+      if (j.score >= S.meta) ganaDuelo(j); else despues(() => siguienteDuelo(j), 600);
+    }
+  }, { penal:CONFIG.congelacionDuelo, target:S.tgt[k] });
+  S.tgt[k] = j.tab.target;
+}
+function congelar(j) {
+  const h = $('#hielo' + j.i); h.classList.remove('oculto'); playSound('hielo');
+  setTimeout(() => h.classList.add('oculto'), CONFIG.congelacionDuelo);
+}
+function ganaDuelo(j) {
+  S.js.forEach(x => { if (x.tab) x.tab.terminado = true; });
+  playSound('win'); confeti(80);
+  despues(() => terminar({ ganador:j }), 1300);
+}
+
+// ========== MODO 4: PREGUNTA ==========
+function generarPregunta(f, toks) {
+  const ws = toks.filter(t => t.w);
+  const presentes = S.cats.filter(c => ws.some(t => t.cat === c));
+  const tipos = [];
+  presentes.forEach(c => { if (ws.some(t => t.cat !== c)) tipos.push(['cual', c]); tipos.push(['cuantos', c]); });
+  if (S.cats.length > 1 && ws.some(t => S.cats.includes(t.cat))) tipos.push(['quees'], ['quees']);
+  if (S.cats.includes('sustantivos') && ws.some(t => t.cat === 'sustantivos')) tipos.push(['propio']);
+  if (S.cats.includes('verbos') && ['presente','pasado','futuro'].includes(f.tiempo) && ws.some(t => t.cat === 'verbos')) tipos.push(['tiempo'], ['tiempo']);
+  const [tipo, c] = aleatorio(tipos);
+  const unicos = arr => { const vistos = new Set(); return arr.filter(t => { const k = t.t.toLowerCase(); if (vistos.has(k)) return false; vistos.add(k); return true; }); };
+
+  if (tipo === 'cual') {
+    const ok = aleatorio(ws.filter(t => t.cat === c));
+    const malas = barajar(unicos(ws.filter(t => t.cat !== c && t.t.toLowerCase() !== ok.t.toLowerCase()))).slice(0, 3);
+    return { html:`¿Qué palabra es ${CAT[c].un} ${etiqueta(c, CAT[c].nombre)}?`,
+      opciones:barajar([{ txt:ok.t, ok:true }, ...malas.map(t => ({ txt:t.t }))]), resaltar:[ok],
+      expl:`«${ok.t}» es ${CAT[c].un} ${CAT[c].nombre}.` };
+  }
+  if (tipo === 'cuantos') {
+    const lista = ws.filter(t => t.cat === c), n = lista.length;
+    const cand = barajar([n - 1, n + 1, n + 2].filter(x => x >= 0)).slice(0, 2);
+    return { html:`¿${CAT[c].cuantos} ${etiqueta(c, CAT[c].plural)} hay en la frase?`,
+      opciones:[n, ...cand].sort((a, b) => a - b).map(x => ({ txt:String(x), ok:x === n })), resaltar:lista,
+      expl:`Hay ${n}: ${lista.map(t => '«' + t.t + '»').join(', ')}.` };
+  }
+  if (tipo === 'quees') {
+    const tok = aleatorio(ws.filter(t => S.cats.includes(t.cat)));
+    const otras = barajar(S.cats.filter(x => x !== tok.cat)).slice(0, 3);
+    return { html:`La palabra <b>«${esc(tok.t)}»</b> es…`,
+      opciones:barajar([tok.cat, ...otras]).map(x => ({ txt:`${mayus(CAT[x].un)} ${CAT[x].nombre}`, ok:x === tok.cat, dot:x })), resaltar:[tok],
+      expl:CAT[tok.cat].pista };
+  }
+  if (tipo === 'propio') {
+    const sus = ws.filter(t => t.cat === 'sustantivos'), propios = sus.filter(t => esPropio(t, f));
+    const tok = propios.length && Math.random() < 0.5 ? aleatorio(propios) : aleatorio(sus);
+    const prop = esPropio(tok, f);
+    return { html:`El sustantivo <b>«${esc(tok.t)}»</b> es…`,
+      opciones:[{ txt:'Propio', ok:prop }, { txt:'Común', ok:!prop }], resaltar:[tok],
+      expl:prop ? 'Es propio: es el nombre de una persona, un animal o un lugar concreto, y va con mayúscula.' : 'Es común: nombra cualquier persona, animal o cosa de ese tipo.' };
+  }
+  // tipo === 'tiempo'
+  const v = ws.find(t => t.cat === 'verbos');
+  const ops = [['presente','Ahora → presente'], ['pasado','Antes → pasado'], ['futuro','Después → futuro']];
+  return { html:`¿Cuándo pasa lo que dice el verbo <b>«${esc(v.t)}»</b>?`,
+    opciones:ops.map(([k, t]) => ({ txt:t, ok:f.tiempo === k })), resaltar:[v],
+    expl:`«${v.t}» está en ${f.tiempo}.` };
+}
+function pintarPregunta() {
+  const toks = analizar(S.frase), q = generarPregunta(S.frase, toks);
+  $('#zona').innerHTML = `<div class="tablero"><div class="frase" id="fr"></div><div class="pregunta">${q.html}</div>
+    <div class="opcionesResp" id="ops"></div><div class="msg" id="msgP" aria-live="polite"></div></div>
+    <div class="controles"><button class="btnGrande oculto" id="bSig">Siguiente ▶</button></div>`;
+  pintarFrase($('#fr'), toks, null);
+  let respondida = false;
+  q.opciones.forEach(o => {
+    const b = document.createElement('button');
+    b.innerHTML = (o.dot ? `<span class="punto" style="background:${CAT[o.dot].c}"></span>` : '') + esc(o.txt);
+    o.el = b;
+    b.addEventListener('click', () => {
+      if (respondida) return; respondida = true;
+      q.opciones.forEach(x => { x.el.disabled = true; if (x.ok) x.el.classList.add('correcta'); });
+      if (o.ok) { sumarAcierto(); S.frasesOK++; playSound('success'); msg($('#msgP'), `${aleatorio(CONFIG.mensajes.acierto)} ${q.expl}`, 'ok'); confeti(20); }
+      else { b.classList.add('incorrecta'); sumarError(); playSound('error'); msg($('#msgP'), `La correcta está en verde. ${q.expl}`, 'mal'); }
+      q.resaltar.forEach(t => { colorear(t.el, t.cat); t.el.classList.add('ok'); });
+      botonSiguiente();
+    });
+    $('#ops').appendChild(b);
+  });
+}
+
+// ========== MODO 5: INCÓGNITA (validación del docente) ==========
+function pintarIncognita() {
+  const toks = analizar(S.frase);
+  const cands = toks.filter(t => t.w && S.cats.includes(t.cat));
+  const hueco = aleatorio(cands), c = CAT[hueco.cat];
+  const concord = ['sustantivos','adjetivos','articulos','determinantes'].includes(hueco.cat)
+    ? 'Tiene que concordar en género y número con las palabras de al lado.' : (hueco.cat === 'verbos' ? 'Tiene que encajar con quién hace la acción.' : 'Lee la frase entera con tu palabra.');
+  $('#zona').innerHTML = `<div class="tablero"><div class="frase" id="fr"></div>
+    <div class="pregunta">Falta ${c.un} ${etiqueta(hueco.cat, c.nombre)}. ¿Qué palabra pondrías?<small>${concord}</small></div>
+    <input class="entrada" id="inpInc" placeholder="Escribe aquí (opcional)" autocomplete="off" maxlength="24">
+    <div class="msg" id="msgI" aria-live="polite"></div>
+    <div class="panelDocente"><div class="tit">👩‍🏫 Para el docente</div>
+      <button class="btnSec" id="bVer">👁️ Ver palabra original</button>
+      <button class="btnSec" id="bLetra">💡 Primera letra</button>
+      <button class="btnOk" id="bVale">✔ ¡Vale!</button>
+      <button class="btnNo" id="bNoVale">✘ No vale</button>
+    </div></div>
+    <div class="controles"><button class="btnGrande oculto" id="bSig">Siguiente ▶</button></div>`;
+  pintarFrase($('#fr'), toks, null);
+  colorear(hueco.el, hueco.cat); hueco.el.classList.add('hueco'); hueco.el.textContent = '❓';
+  let visto = false, hecho = false;
+  $('#bVer').addEventListener('click', () => { visto = !visto; hueco.el.textContent = visto ? hueco.t : '❓'; $('#bVer').textContent = visto ? '🙈 Ocultar' : '👁️ Ver palabra original'; });
+  $('#bLetra').addEventListener('click', () => msg($('#msgI'), `💡 La palabra original empieza por «${hueco.t.charAt(0).toLowerCase()}».`, ''));
+  $('#bVale').addEventListener('click', () => {
+    if (hecho) return; hecho = true;
+    const propuesta = $('#inpInc').value.trim();
+    hueco.el.classList.remove('hueco'); hueco.el.classList.add('ok'); hueco.el.textContent = propuesta || hueco.t;
+    sumarAcierto(); S.frasesOK++; store.incValidas = (store.incValidas || 0) + 1; guardar();
+    if (store.incValidas >= 5) logro('creativo');
+    playSound('success'); playSound('frase'); confeti(25);
+    msg($('#msgI'), `${aleatorio(CONFIG.mensajes.frase)}${propuesta && propuesta.toLowerCase() !== hueco.t.toLowerCase() ? ` La original era «${hueco.t}».` : ''}`, 'ok');
+    $('#bVale').disabled = $('#bNoVale').disabled = true; botonSiguiente();
+  });
+  $('#bNoVale').addEventListener('click', () => {
+    if (hecho) return;
+    sumarError(); playSound('error');
+    msg($('#msgI'), 'Esa palabra no encaja todavía. ¡Prueba con otra!', 'mal');
+    $('#inpInc').value = ''; botonSiguiente(); $('#bSig').textContent = S.idx + 1 >= S.rondas ? 'Ver resultados 🏆' : 'Pasar a otra frase ▶';
+  });
+}
+
+// =====================================================================
+// PANTALLA FINAL
+// =====================================================================
+function terminar(extra = {}) {
+  if (!S || !S.activo) return;
+  limpiar();
+  logro('primera');
+  const caja = $('#cajaFinal');
+  if (S.modo === 'duelo') {
+    logro('duelo');
+    const g = extra.ganador, p = S.js[1 - g.i];
+    caja.innerHTML = `<div class="grande">🏆</div><h2>¡Gana ${esc(S.jugadores[g.i])}!</h2>
+      <div class="stats"><div class="stat"><b>${g.score}</b>${esc(S.jugadores[g.i])}</div><div class="stat"><b>${p.score}</b>${esc(S.jugadores[p.i])}</div></div>
+      <p>¡Gran duelo! ${esc(S.jugadores[p.i])}, ¿pides la revancha? 😉</p>${botonesFinal()}`;
+    mostrar('final'); enlazarFinal(); return;
+  }
+  store.puntos += S.puntos;
+  let prec;
+  if (S.modo === 'practica' || S.modo === 'reto') prec = S.aciertos / Math.max(1, S.aciertos + S.errores);
+  else prec = S.frasesOK / Math.max(1, S.rondas);
+  let est = prec >= 0.9 ? 3 : prec >= 0.7 ? 2 : 1;
+  if (S.modo === 'reto' && S.frasesOK === 0) est = 1;
+  if (S.modo === 'practica' && S.errores === 0 && S.rondas >= 5 && S.frasesOK >= S.rondas) logro('perfecta');
+  if (S.modo === 'reto' && S.frasesOK >= 10) logro('reto10');
+  if (S.modo === 'pregunta' && est === 3) logro('sabio');
+  if (!A.personalizado && A.nivel === 3 && est === 3 && S.modo !== 'incognita') logro('verbos');
+  let extraHtml = '';
+  if (S.modo === 'reto') {
+    const k = `${S.nivelTxt}_${S.tiempo}`, ant = store.records[k] || 0;
+    if (S.frasesOK > ant) { store.records[k] = S.frasesOK; if (ant > 0) extraHtml = `<p style="font-size:1.4rem">🎊 <b>¡Nuevo récord!</b> Antes: ${ant}</p>`; }
+    else extraHtml = `<p style="font-size:1.2rem">Récord en este nivel: <b>${ant}</b> frases</p>`;
+  }
+  guardar();
+  const titulo = S.modo === 'reto' ? `¡${S.frasesOK} frases en ${S.tiempo} segundos!` : aleatorio(CONFIG.mensajes['fin' + est]);
+  const stats = S.modo === 'reto' || S.modo === 'practica'
+    ? [['✅', S.frasesOK, 'frases'], ['🎯', S.aciertos, 'aciertos'], ['🔁', S.errores, 'a mejorar'], ['🔥', S.mejorRacha, 'mejor racha']]
+    : [['✅', `${S.frasesOK}/${S.rondas}`, S.modo === 'pregunta' ? 'acertadas' : 'válidas'], ['🔥', S.mejorRacha, 'mejor racha']];
+  caja.innerHTML = `<div class="grande">${est === 3 ? '🏆' : est === 2 ? '🥈' : '💪'}</div>
+    <h2>${esc(titulo)}</h2>
+    <div class="estrellas">${[1, 2, 3].map(i => `<span class="${i <= est ? '' : 'apagada'}">⭐</span>`).join('')}</div>
+    <div class="stats"><div class="stat"><b>+${S.puntos}</b>puntos</div>${stats.map(s => `<div class="stat"><b>${s[0]} ${s[1]}</b>${s[2]}</div>`).join('')}</div>
+    ${extraHtml}
+    ${S.nuevosLogros.length ? `<p><b>Logros nuevos:</b></p><div class="nuevosLogros">${S.nuevosLogros.map(l => `<span class="logro"><b>${l.icono}</b>${esc(l.nombre)}</span>`).join('')}</div>` : ''}
+    ${botonesFinal()}`;
+  mostrar('final'); enlazarFinal();
+  playSound(est >= 2 ? 'win' : 'frase'); if (est === 3) confeti(90);
+}
+function botonesFinal() { return `<div class="controles"><button class="btnGrande" id="bOtra">🔁 Jugar otra vez</button><button class="btnSec" id="bMenu">🏠 Cambiar nivel o modo</button></div>`; }
+function enlazarFinal() { $('#bOtra').addEventListener('click', empezar); $('#bMenu').addEventListener('click', irInicio); }
+
+// =====================================================================
+// IMPORTAR / EXPORTAR FRASES (JSON)
+// =====================================================================
+const ALIAS = { sustantivo:'sustantivos', sustantivos:'sustantivos', nombre:'sustantivos', nombres:'sustantivos',
+  articulo:'articulos', articulos:'articulos', adjetivo:'adjetivos', adjetivos:'adjetivos', verbo:'verbos', verbos:'verbos',
+  determinante:'determinantes', determinantes:'determinantes', pronombre:'pronombres', pronombres:'pronombres',
+  adverbio:'adverbios', adverbios:'adverbios', preposicion:'preposiciones', preposiciones:'preposiciones',
+  conjuncion:'conjunciones', conjunciones:'conjunciones' };
+const sinTildes = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+function normalizarFrase(o) {
+  if (!o || typeof o !== 'object') return null;
+  const texto = o.texto ?? o.frase; if (typeof texto !== 'string' || !texto.trim()) return null;
+  const f = { texto:texto.trim() };
+  for (const [k, v] of Object.entries(o)) {
+    const kk = sinTildes(k), lista = () => (Array.isArray(v) ? v : String(v).split(',')).map(x => String(x).trim()).filter(Boolean);
+    if (ALIAS[kk]) f[ALIAS[kk]] = (f[ALIAS[kk]] || []).concat(lista());
+    else if (kk === 'tiempo') { const t = sinTildes(String(v)); f.tiempo = /pret|pasad|imperf|indef/.test(t) ? 'pasado' : /fut/.test(t) ? 'futuro' : /pres/.test(t) ? 'presente' : t; }
+    else if (kk === 'propios') f.propios = lista();
+  }
+  if (!CAT_KEYS.some(c => (f[c] || []).length)) return null;
+  const palabras = (f.texto.match(/[\p{L}\p{N}]+/gu) || []).map(w => w.toLowerCase());
+  const raras = [];
+  CAT_KEYS.forEach(c => { if (!f[c]) return;
+    f[c] = f[c].filter(w => { const ok = palabras.includes(w.toLowerCase()); if (!ok) raras.push(w); return ok; });
+    if (!f[c].length) delete f[c]; });
+  if (!CAT_KEYS.some(c => (f[c] || []).length)) return null; // ninguna palabra coincide con el texto
+  return { f, raras };
+}
+function importarTexto(txt, nombre) {
+  let datos; try { datos = JSON.parse(txt); } catch (e) { return { err:`${nombre}: no es un JSON válido (${e.message}).` }; }
+  const lista = Array.isArray(datos) ? datos : (datos && Array.isArray(datos.frases) ? datos.frases : null);
+  if (!lista) return { err:`${nombre}: no encuentro la lista "frases".` };
+  const existentes = new Set(todasLasFrases().map(f => f.texto.toLowerCase()));
+  let ok = 0, malas = 0, rep = 0; const avisos = [];
+  lista.forEach((o, i) => {
+    const r = normalizarFrase(o);
+    if (!r) { malas++; return; }
+    if (existentes.has(r.f.texto.toLowerCase())) { rep++; return; }
+    if (r.raras.length) avisos.push(`«${r.f.texto}»: se ignora ${r.raras.map(w => '«' + w + '»').join(', ')} porque no está en la frase`);
+    store.importadas.push(r.f); existentes.add(r.f.texto.toLowerCase()); ok++;
+  });
+  return { ok, malas, rep, avisos };
+}
+$('#btnCargarJson').addEventListener('click', () => $('#inpJson').click());
+$('#inpJson').addEventListener('change', async e => {
+  const est = $('#estadoImport'); const lineas = []; let total = 0, hayError = false;
+  for (const file of e.target.files) {
+    const r = importarTexto(await file.text(), file.name);
+    if (r.err) { lineas.push('❌ ' + r.err); hayError = true; continue; }
+    total += r.ok;
+    lineas.push(`✅ ${file.name}: ${r.ok} frases añadidas${r.rep ? `, ${r.rep} repetidas` : ''}${r.malas ? `, ${r.malas} sin formato válido` : ''}.`);
+    r.avisos.slice(0, 8).forEach(a => lineas.push('⚠️ ' + a));
+  }
+  guardar(); pintarEstadoBanco();
+  est.textContent = lineas.join('\n'); est.className = 'estado ' + (hayError && !total ? 'mal' : 'ok');
+  e.target.value = '';
+});
+const PLANTILLA = { frases:[
+  { texto:'El perro negro ladra.', tiempo:'presente', articulos:['El'], sustantivos:['perro'], adjetivos:['negro'], verbos:['ladra'] },
+  { texto:'Mi abuela preparó un pastel delicioso.', tiempo:'pasado', determinantes:['Mi'], sustantivos:['abuela','pastel'], verbos:['preparó'], articulos:['un'], adjetivos:['delicioso'] },
+  { texto:'Mañana visitaremos la playa de Calblanque.', tiempo:'futuro', adverbios:['Mañana'], verbos:['visitaremos'], articulos:['la'], sustantivos:['playa','Calblanque'], preposiciones:['de'] },
+]};
+async function copiar(txt) {
+  try { await navigator.clipboard.writeText(txt); toast('📋 Copiado. Pégalo en un archivo .json'); }
+  catch (e) { toast('No se pudo copiar automáticamente: selecciona el texto y cópialo.'); }
+}
+function descargar(nombre, obj) {
+  const txt = JSON.stringify(obj, null, 2);
+  $('#tituloCopia').textContent = '💾 ' + nombre; $('#preCopia').textContent = txt;
+  $('#btnCopiar').onclick = () => copiar(txt);
+  $('#modalCopia').classList.remove('oculto');
+  try {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  } catch (e) { toast('No se pudo descargar. Copia el formato desde «Ver formato».'); }
+}
+$('#btnPlantilla').addEventListener('click', () => descargar('plantilla-frases.json', PLANTILLA));
+$('#btnExportar').addEventListener('click', () => descargar('frases-detectives.json',
+  { frases:todasLasFrases().map(({ origen, ...f }) => f) }));
+$('#btnBorrarImp').addEventListener('click', () => {
+  if (!store.importadas.length) { toast('No hay frases importadas.'); return; }
+  const b = $('#btnBorrarImp');
+  if (b.dataset.confirmar) { store.importadas = []; guardar(); pintarEstadoBanco(); b.textContent = '🗑️ Borrar frases importadas'; delete b.dataset.confirmar; toast('Frases importadas borradas.'); }
+  else { b.dataset.confirmar = '1'; b.textContent = '⚠️ Pulsa otra vez para borrar'; setTimeout(() => { b.textContent = '🗑️ Borrar frases importadas'; delete b.dataset.confirmar; }, 4000); }
+});
+$('#btnReset').addEventListener('click', () => {
+  const b = $('#btnReset');
+  if (b.dataset.confirmar) { store.puntos = 0; store.logros = []; store.records = {}; store.incValidas = 0; guardar(); pintarPerfil(); b.textContent = '🔄 Reiniciar puntos y logros'; delete b.dataset.confirmar; toast('Progreso reiniciado.'); }
+  else { b.dataset.confirmar = '1'; b.textContent = '⚠️ Pulsa otra vez para reiniciar'; setTimeout(() => { b.textContent = '🔄 Reiniciar puntos y logros'; delete b.dataset.confirmar; }, 4000); }
+});
+$('#btnFormato').addEventListener('click', () => { $('#preFormato').textContent = JSON.stringify(PLANTILLA, null, 2); $('#modalFormato').classList.remove('oculto'); });
+$('#btnCopiarPlantilla').addEventListener('click', () => copiar(JSON.stringify(PLANTILLA, null, 2)));
+$('#btnCerrarCopia').addEventListener('click', () => $('#modalCopia').classList.add('oculto'));
+$('#btnCerrarModal').addEventListener('click', () => $('#modalFormato').classList.add('oculto'));
+$('#modalFormato').addEventListener('click', e => { if (e.target.id === 'modalFormato') $('#modalFormato').classList.add('oculto'); });
+
+// ---------- Arranque ----------
+$('#titulo').textContent = CONFIG.titulo;
+$('#btnEmpezar').addEventListener('click', empezar);
+$('#btnCasa').addEventListener('click', irInicio);
+enlazarOpciones();
+irInicio();
+</script>
+</body>
+</html>
