@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misión Multiplicación 3º</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   ESTILOS · pensados para Chromebook 11" (1366×768), MDI y tablet
+   ========================================================= */
+:root{
+  --fondo:#EEF3FF; --tarjeta:#FFFFFF; --primario:#3B5BDB; --primario2:#DCE4FF;
+  --texto:#1E2240; --suave:#565E80; --acierto:#1C7C44; --acierto-bg:#D3F5E0;
+  --error:#C02626; --error-bg:#FFE3E3; --aviso:#E67700; --aviso-bg:#FFF0D1;
+  --oro:#F2B705; --sombra:0 6px 18px rgba(30,34,64,.12); --radio:18px;
+  --alto-header:68px; --tecla:clamp(60px, 9vh, 80px); --celda:clamp(52px, 8.6vh, 76px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:clamp(14px, calc(0.75vw + 0.95vh), 22px)}
+body{
+  font-family:'Nunito','Quicksand',system-ui,'Segoe UI',Roboto,sans-serif;
+  background:var(--fondo); color:var(--texto);
+  height:100vh; height:100dvh; overflow:hidden; display:flex; flex-direction:column;
+  touch-action:manipulation; user-select:none; -webkit-user-select:none;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--aviso);outline-offset:2px}
+.btn{min-height:60px;padding:.4rem 1.2rem;border-radius:16px;font-weight:800;font-size:1.15rem;
+  box-shadow:0 4px 0 rgba(0,0,0,.18);transition:transform .08s;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn:active,.tecla:active,.btn-op:active,.tarjeta-nivel:active,.modo:active{transform:scale(.96)}
+.btn-pri{background:var(--primario);color:#fff}
+.btn-ok{background:var(--acierto);color:#fff}
+.btn-sec{background:#fff;color:var(--primario);border:3px solid var(--primario)}
+.btn-aviso{background:var(--aviso);color:#fff}
+.btn-peligro{background:var(--error);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+[hidden]{display:none !important}
+
+/* ---------- CABECERA ---------- */
+header{height:var(--alto-header);flex:0 0 var(--alto-header);background:var(--primario);color:#fff;
+  display:flex;align-items:center;gap:.6rem;padding:0 .6rem;box-shadow:0 3px 10px rgba(0,0,0,.15);z-index:20}
+.hbtn{width:58px;height:58px;min-width:58px;border-radius:14px;background:rgba(255,255,255,.16);font-size:1.5rem;display:flex;align-items:center;justify-content:center}
+.hbtn.activo{background:#fff;color:var(--primario)}
+.htitulo{font-weight:900;font-size:1.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hprogreso{flex:1;display:flex;align-items:center;gap:.5rem;min-width:80px;max-width:420px;margin:0 auto}
+.barra{flex:1;height:16px;background:rgba(255,255,255,.3);border-radius:10px;overflow:hidden}
+.barra>div{height:100%;background:linear-gradient(90deg,#FFD43B,#FAB005);border-radius:10px;transition:width .6s}
+.hchip{background:rgba(255,255,255,.18);border-radius:14px;padding:.25rem .7rem;font-weight:900;font-size:1.1rem;white-space:nowrap}
+#btnFullscreen{width:62px;height:60px}
+
+main{flex:1;min-height:0;position:relative}
+.pantalla{display:none;height:100%;overflow-y:auto;overflow-x:hidden;padding:clamp(8px,1.6vh,18px) clamp(10px,1.6vw,24px)}
+.pantalla.activa{display:block}
+
+/* ---------- MASCOTA ---------- */
+.mascota{display:flex;align-items:flex-end;gap:.6rem}
+.mascota svg{flex:0 0 auto}
+.bocadillo{background:#fff;border-radius:18px;padding:.7rem 1rem;box-shadow:var(--sombra);font-weight:800;font-size:1.1rem;position:relative;line-height:1.35}
+.bocadillo::before{content:"";position:absolute;left:-12px;bottom:18px;border:8px solid transparent;border-right:12px solid #fff;border-left:0}
+.flota{animation:flota 3s ease-in-out infinite}
+@keyframes flota{50%{transform:translateY(-6px)}}
+
+/* ---------- INICIO ---------- */
+.inicio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(12px,2vw,28px);height:100%;align-items:center;max-width:1300px;margin:0 auto}
+.inicio h1{font-size:2.5rem;font-weight:900;color:var(--primario);line-height:1.05;margin-bottom:.4rem}
+.perfil-btn{margin-top:.8rem}
+.stats{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.stat{background:#fff;border-radius:16px;padding:.5rem .9rem;box-shadow:var(--sombra);font-weight:900;font-size:1.15rem}
+.stat small{display:block;font-size:.8rem;color:var(--suave);font-weight:800}
+.modos{display:flex;flex-direction:column;gap:clamp(8px,1.4vh,14px)}
+.modo{display:flex;align-items:center;gap:1rem;background:#fff;border-radius:22px;padding:clamp(10px,1.7vh,18px) 1.2rem;box-shadow:var(--sombra);text-align:left;border:4px solid transparent;transition:transform .1s}
+.modo:hover{border-color:var(--primario2)}
+.modo .ico{font-size:2.6rem;width:4.2rem;height:4.2rem;border-radius:18px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.modo b{font-size:1.35rem;display:block}
+.modo span{color:var(--suave);font-weight:700}
+.fila-botones{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* ---------- MAPA DE NIVELES ---------- */
+.cab-pantalla{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:clamp(6px,1.2vh,14px);flex-wrap:wrap}
+.cab-pantalla h2{font-size:1.7rem;font-weight:900}
+.mapa{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.4vw,16px)}
+.tarjeta-nivel{background:#fff;border-radius:22px;padding:clamp(8px,1.5vh,16px) .8rem;box-shadow:var(--sombra);display:flex;flex-direction:column;align-items:center;gap:.25rem;text-align:center;border-bottom:8px solid var(--c);min-height:clamp(150px,30vh,240px);justify-content:center;position:relative}
+.tarjeta-nivel .ico{font-size:2.7rem}
+.tarjeta-nivel .num{font-weight:900;color:var(--c);font-size:.95rem;text-transform:uppercase;letter-spacing:.05em}
+.tarjeta-nivel .tit{font-weight:900;font-size:1.2rem;line-height:1.1}
+.tarjeta-nivel .desc{color:var(--suave);font-size:.9rem;font-weight:700;line-height:1.2}
+.estrellas{font-size:1.4rem;letter-spacing:.1em}
+.estrellas .off{filter:grayscale(1);opacity:.3}
+.tarjeta-nivel.bloqueado{opacity:.55;filter:grayscale(.8)}
+.candado{position:absolute;top:8px;right:10px;font-size:1.5rem}
+.mejor{font-size:.85rem;font-weight:800;color:var(--suave)}
+
+/* ---------- JUEGO ---------- */
+#pJuego.activa{display:flex;flex-direction:column;gap:clamp(6px,1.1vh,12px)}
+.hud{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.hud .etq{font-weight:900;font-size:1.15rem;background:#fff;border-radius:14px;padding:.35rem .9rem;box-shadow:var(--sombra);border-left:8px solid var(--c,var(--primario))}
+.puntos-prog{display:flex;gap:6px;flex:1;justify-content:center}
+.puntos-prog i{width:18px;height:18px;border-radius:50%;background:#C9D2F0;display:block}
+.puntos-prog i.primera{background:var(--acierto)} .puntos-prog i.pista{background:var(--aviso)} .puntos-prog i.fallo{background:var(--error)}
+.puntos-prog i.actual{outline:4px solid var(--primario);outline-offset:2px}
+.reloj{flex:1;display:flex;align-items:center;gap:.6rem;font-weight:900;font-size:1.4rem}
+.reloj .barra{height:22px;background:#D5DCF5}
+.reloj .barra>div{background:linear-gradient(90deg,#51CF66,#2F9E44);transition:width .2s linear}
+.reloj .barra.poco>div{background:linear-gradient(90deg,#FF8787,#E03131)}
+.racha{font-weight:900;font-size:1.2rem;background:#fff;border-radius:14px;padding:.35rem .8rem;box-shadow:var(--sombra)}
+.racha.caliente{background:#FFE8CC;animation:latido .6s}
+@keyframes latido{50%{transform:scale(1.15)}}
+.vidas{font-size:1.6rem;letter-spacing:.1em}
+
+.juego-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:clamp(8px,1.2vw,16px);flex:1;min-height:0}
+.zona{background:#fff;border-radius:var(--radio);box-shadow:var(--sombra);padding:clamp(10px,1.6vh,18px) clamp(12px,1.4vw,20px);display:flex;flex-direction:column;min-height:0;overflow-y:auto;overflow-x:hidden}
+.enunciado{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.6rem}
+.enunciado .txt{flex:1;font-size:1.55rem;font-weight:800;line-height:1.3}
+.mini-btn{min-width:56px;min-height:56px;border-radius:14px;background:var(--primario2);font-size:1.5rem;display:flex;align-items:center;justify-content:center}
+.mini-btn.pista{background:var(--aviso-bg)}
+#zonaVisual{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;min-height:0}
+#zonaResp{justify-content:center;gap:.7rem}
+.instr{font-weight:800;color:var(--suave);font-size:1.1rem;text-align:center;line-height:1.3}
+
+.expr{font-size:2.6rem;font-weight:900;letter-spacing:.03em;text-align:center;line-height:1.2}
+.expr .hueco-expr{display:inline-block;min-width:1.6em;border:4px dashed var(--aviso);border-radius:12px;color:var(--aviso);padding:0 .2em}
+.expr.peq{font-size:1.8rem}
+
+/* Teclado numérico */
+.display{min-height:calc(var(--tecla)*1.05);font-size:2.5rem;font-weight:900;border:4px solid var(--primario);border-radius:16px;display:flex;align-items:center;justify-content:center;background:#F8FAFF;letter-spacing:.06em}
+.display:empty::after{content:"?";color:#B3BCDD}
+.teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tecla{height:var(--tecla);border-radius:16px;background:#EEF1FB;font-size:2rem;font-weight:900;box-shadow:0 4px 0 #C3CBE6}
+.tecla-borrar{background:var(--aviso-bg);color:var(--aviso)}
+.tecla-ok{background:var(--acierto);color:#fff;box-shadow:0 4px 0 #11592f}
+.objetivo{outline:5px solid var(--aviso) !important;outline-offset:2px}
+
+/* Opciones */
+.opciones{display:grid;gap:10px}
+.btn-op{min-height:64px;border-radius:16px;background:#F2F5FF;border:3px solid #C9D2F0;font-size:1.45rem;font-weight:900;padding:.4rem .8rem;display:flex;align-items:center;gap:.7rem;text-align:left;box-shadow:0 4px 0 #C9D2F0}
+.btn-op .tecla-n{width:2rem;height:2rem;min-width:2rem;border-radius:10px;background:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;color:var(--suave)}
+.btn-op.bien{background:var(--acierto-bg);border-color:var(--acierto)}
+.btn-op.mal{background:var(--error-bg);border-color:var(--error);opacity:.7}
+.btn-op.mal::after{content:"❌";margin-left:auto}
+.btn-op.bien::after{content:"✔️";margin-left:auto}
+
+/* Grupos / bandejas */
+.grupos{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.grupo{position:relative;background:#FFF4D6;border:4px solid #F2C14E;border-radius:20px;padding:.5rem;min-width:6.5rem;max-width:9.5rem;min-height:5.5rem;display:flex;align-items:center;justify-content:center}
+.grupo .items{display:flex;flex-wrap:wrap;gap:.1rem;justify-content:center;font-size:var(--tam,2rem);line-height:1.1}
+.grupo.resaltado{border-color:var(--primario);background:var(--primario2);box-shadow:0 0 0 5px rgba(59,91,219,.25)}
+.grupo .cuenta{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);background:var(--texto);color:#fff;border-radius:12px;padding:0 .55rem;font-weight:900;font-size:1rem}
+.grupos.llenar .grupo{cursor:pointer;min-width:8rem;min-height:7rem;border-style:dashed}
+.grupo.mal{border-color:var(--error);background:var(--error-bg)}
+.grupo .vaciar{position:absolute;top:-14px;right:-14px;width:44px;height:44px;border-radius:50%;background:#fff;border:3px solid var(--aviso);font-size:1.2rem;color:var(--aviso);font-weight:900}
+.matriz{display:grid;gap:4px;font-size:1.9rem;background:#FFF4D6;border:4px solid #F2C14E;border-radius:18px;padding:.5rem;transition:transform .5s}
+.matriz.girando{transform:rotate(90deg)}
+
+/* Saltos (contar de n en n) */
+.saltos{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px}
+.saltos .chip{background:var(--primario2);border-radius:12px;padding:.2rem .55rem;font-weight:900;font-size:1.3rem;position:relative}
+.saltos .chip small{position:absolute;top:-10px;right:-6px;background:var(--aviso);color:#fff;border-radius:8px;font-size:.7rem;padding:0 .3rem}
+.saltos .fl{color:var(--suave);font-weight:900;font-size:.9rem}
+
+/* Operación con etiquetas */
+.op-etq{display:flex;align-items:flex-end;justify-content:center;gap:.5rem;font-size:2.6rem;font-weight:900}
+.op-etq .caja{display:flex;flex-direction:column;align-items:center}
+.op-etq .num{background:#F2F5FF;border:4px solid #C9D2F0;border-radius:16px;min-width:2.2em;padding:0 .2em;text-align:center}
+.op-etq .num.marca{border-color:var(--aviso);background:var(--aviso-bg);box-shadow:0 0 0 5px rgba(230,119,0,.25)}
+.op-etq .lab{font-size:1rem;color:var(--suave);height:1.4em}
+.plantilla{font-weight:900;font-size:1.3rem;background:var(--primario2);border-radius:14px;padding:.4rem .8rem;display:inline-block}
+
+/* Series */
+.serie{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+.serie .n,.serie .hueco{min-width:4.2rem;height:4.2rem;border-radius:16px;font-size:2rem;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 .4rem}
+.serie .n{background:var(--primario2)}
+.serie .hueco{background:#fff;border:4px dashed var(--aviso);color:var(--texto)}
+.serie .hueco:empty::after{content:"?";color:#E5B07A}
+.serie .hueco.mal{border-color:var(--error);background:var(--error-bg);border-style:solid}
+.serie .hueco.bien{border-color:var(--acierto);background:var(--acierto-bg);border-style:solid}
+.serie .sep{color:#9AA3C7;font-weight:900}
+
+/* Valor posicional */
+.vp{border-collapse:separate;border-spacing:6px}
+.vp th{font-size:1rem;color:#fff;background:var(--suave);border-radius:10px;padding:.2rem .5rem;min-width:3.2rem}
+.vp th.U{background:#1C7ED6} .vp th.D{background:#E03131} .vp th.C{background:#2F9E44} .vp th.UM{background:#7048E8} .vp th.DM{background:#E8590C}
+.vp td{font-size:2.1rem;font-weight:900;text-align:center;background:#F2F5FF;border-radius:12px;height:3.4rem}
+.vp td.cero{background:var(--aviso-bg);color:var(--aviso);animation:entra .6s both}
+@keyframes entra{from{transform:translateX(40px);opacity:0}}
+
+/* Algoritmo */
+.algo{display:grid;gap:6px;justify-content:center;align-items:center}
+.algo .c{width:var(--celda);height:var(--celda);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900}
+.algo .lab{height:auto;font-size:1rem;color:#fff;border-radius:10px;padding:.15rem 0}
+.algo .llevada{width:calc(var(--celda)*.72);height:calc(var(--celda)*.72);justify-self:center;border:3px dashed #ADB5D6;border-radius:12px;font-size:1.4rem;color:var(--aviso);background:#FFFBF2}
+.algo .llevada:empty::after{content:"+";color:#C9CFE6;font-size:1rem}
+.algo .linea{grid-column:1 / -1;height:5px;background:var(--texto);border-radius:3px}
+.algo .res{border:4px solid #C9D2F0;border-radius:14px;background:#F8FAFF}
+.algo .res.mal{border-color:var(--error);background:var(--error-bg)}
+.algo .res.bien{border-color:var(--acierto);background:var(--acierto-bg)}
+.pasos{text-align:left;font-size:1.1rem;font-weight:700;line-height:1.5;padding-left:1.2rem}
+.pasos li{margin:.2rem 0}
+
+/* Problemas */
+.problema{font-size:1.45rem;font-weight:700;line-height:1.65;background:#FFFBEF;border-radius:16px;padding:.8rem 1rem;border-left:8px solid var(--oro);align-self:stretch}
+.dato{display:inline-block;min-width:2.4em;min-height:48px;padding:0 .3em;border-radius:12px;border:3px solid #E9C46A;background:#fff;font-weight:900;font-size:1.5rem;margin:0 .1em}
+.dato.sel{background:var(--primario);color:#fff;border-color:var(--primario)}
+.dato.bien{background:var(--acierto);color:#fff;border-color:var(--acierto)}
+.pasos-prob{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
+.pasos-prob span{padding:.25rem .7rem;border-radius:12px;background:#EEF1FB;font-weight:800;color:var(--suave)}
+.pasos-prob span.act{background:var(--primario);color:#fff}
+.pasos-prob span.hecho{background:var(--acierto-bg);color:var(--acierto)}
+.ops{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ops .btn-op{justify-content:center;flex-direction:column;font-size:2.2rem;gap:0;text-align:center}
+.ops .btn-op small{font-size:.9rem}
+.ops .btn-op.mal::after,.ops .btn-op.bien::after{content:none}
+.esquema{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;font-weight:900;font-size:1.3rem}
+.esquema .cj{background:#FFF4D6;border:3px solid #F2C14E;border-radius:12px;padding:.3rem .6rem}
+
+/* ---------- MODAL Y AVISOS ---------- */
+#modal{position:fixed;inset:0;background:rgba(20,24,50,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:12px}
+.modal-caja{background:#fff;border-radius:24px;max-width:min(820px,96vw);width:100%;max-height:92vh;overflow-y:auto;padding:clamp(14px,2.4vh,26px) clamp(16px,2vw,28px);box-shadow:0 20px 50px rgba(0,0,0,.3);animation:aparece .25s}
+@keyframes aparece{from{transform:scale(.9);opacity:0}}
+.modal-caja h3{font-size:1.6rem;font-weight:900;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.modal-caja .cuerpo{font-size:1.25rem;font-weight:700;line-height:1.45;display:flex;flex-direction:column;gap:.7rem;align-items:center;text-align:center}
+.modal-caja.pista{border-top:10px solid var(--aviso)}
+.modal-caja.solucion{border-top:10px solid var(--primario)}
+.modal-botones{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+.respuesta-ok{background:var(--acierto-bg);color:var(--acierto);border-radius:14px;padding:.4rem 1rem;font-weight:900;font-size:1.5rem}
+#toast{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:1rem 1.8rem;box-shadow:0 18px 40px rgba(0,0,0,.25);z-index:90;font-weight:900;font-size:1.8rem;text-align:center;border:5px solid var(--acierto);pointer-events:none;animation:pop .3s;max-width:90vw}
+#toast.error{border-color:var(--error)}
+#toast small{display:block;font-size:1.1rem;color:var(--suave);margin-top:.3rem}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.6);opacity:0}}
+#cuentaAtras{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:12rem;font-weight:900;color:var(--primario);background:rgba(238,243,255,.92);z-index:95}
+input.txt{font:inherit;font-size:1.4rem;font-weight:800;padding:.6rem 1rem;border:4px solid var(--primario2);border-radius:16px;width:100%;min-height:60px}
+input.txt:focus{outline:none;border-color:var(--primario)}
+.lista-perfiles{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+.chip-sel{min-width:64px;min-height:64px;border-radius:16px;background:#EEF1FB;font-size:1.5rem;font-weight:900;border:4px solid transparent}
+.chip-sel.on{background:var(--primario);color:#fff}
+canvas#confeti{position:fixed;inset:0;pointer-events:none;z-index:120}
+
+/* ---------- INFORME ---------- */
+.informe{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(10px,1.4vw,18px)}
+.inf-cab{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:1rem;background:#fff;border-radius:var(--radio);padding:.6rem 1rem;box-shadow:var(--sombra);border-left:10px solid var(--c,var(--primario));flex-wrap:wrap}
+.inf-cab h2{font-size:1.5rem;font-weight:900}
+.inf-cab .meta{color:var(--suave);font-weight:800}
+.card{background:#fff;border-radius:var(--radio);box-shadow:var(--sombra);padding:clamp(10px,1.6vh,16px) 1rem}
+.card h3{font-size:1.2rem;font-weight:900;margin-bottom:.5rem}
+.resumen-top{display:flex;align-items:center;gap:1rem;justify-content:center;flex-wrap:wrap}
+.anillo text{font-family:inherit;font-weight:900}
+.estrellas.grandes{font-size:2.4rem}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:.8rem}
+.tile{border-radius:14px;padding:.4rem .5rem;text-align:center;background:#F2F5FF}
+.tile b{display:block;font-size:1.6rem;font-weight:900}
+.tile span{font-size:.85rem;font-weight:800;color:var(--suave)}
+.tile.v{background:var(--acierto-bg)} .tile.v b{color:var(--acierto)}
+.tile.n{background:var(--aviso-bg)} .tile.n b{color:var(--aviso)}
+.tile.r{background:var(--error-bg)} .tile.r b{color:var(--error)}
+.barras{display:flex;align-items:flex-end;gap:10px;height:120px;padding-top:18px;border-bottom:3px solid #D5DCF5}
+.barras .b{flex:1;max-width:60px;background:#B7C4F0;border-radius:10px 10px 0 0;position:relative;min-height:6px}
+.barras .b.act{background:var(--primario)}
+.barras .b span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:.85rem;font-weight:900}
+.barras-et{display:flex;gap:10px;margin-top:3px}
+.barras-et span{flex:1;max-width:60px;text-align:center;font-size:.75rem;font-weight:800;color:var(--suave)}
+.hab{display:grid;grid-template-columns:minmax(0,1fr) 110px 54px;gap:.5rem;align-items:center;margin:.3rem 0;font-weight:800}
+.hab .mini{height:14px;background:#E3E8F8;border-radius:8px;overflow:hidden}
+.hab .mini div{height:100%;border-radius:8px}
+.repaso li{list-style:none;padding:.35rem .6rem;background:#F8FAFF;border-radius:10px;margin:.25rem 0;font-weight:800;display:flex;justify-content:space-between;gap:.6rem}
+.repaso li b{color:var(--acierto);white-space:nowrap}
+.mini-mapa{display:flex;gap:6px;flex-wrap:wrap}
+.mini-mapa div{flex:1;min-width:52px;text-align:center;background:#F2F5FF;border-radius:12px;padding:.3rem .2rem;font-size:1.3rem;border-bottom:5px solid var(--c)}
+.mini-mapa div small{display:block;font-size:.7rem;letter-spacing:0}
+.mini-mapa div.actual{outline:4px solid var(--primario)}
+.insignia-nueva{display:flex;align-items:center;gap:.8rem;background:linear-gradient(90deg,#FFF3BF,#FFE8CC);border-radius:16px;padding:.5rem .9rem;font-weight:900;margin-top:.5rem}
+.insignia-nueva .i{font-size:2.4rem}
+.inf-botones{grid-column:1 / -1;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;padding-bottom:.5rem}
+.consejo{background:var(--primario2);border-radius:14px;padding:.6rem .8rem;font-weight:800;margin-top:.6rem;line-height:1.35}
+
+/* Insignias y progreso */
+.insignias{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.insignia{background:#fff;border-radius:20px;padding:.8rem;text-align:center;box-shadow:var(--sombra)}
+.insignia .i{font-size:3rem}
+.insignia b{display:block;font-size:1.05rem}
+.insignia span{font-size:.85rem;color:var(--suave);font-weight:700}
+.insignia.off{opacity:.45;filter:grayscale(1)}
+table.prog{width:100%;border-collapse:separate;border-spacing:0 6px;font-weight:800}
+table.prog th{text-align:left;color:var(--suave);font-size:.9rem;padding:0 .6rem}
+table.prog td{background:#fff;padding:.45rem .6rem}
+table.prog td:first-child{border-radius:12px 0 0 12px;border-left:8px solid var(--c)}
+table.prog td:last-child{border-radius:0 12px 12px 0}
+
+/* ---------- ADAPTACIÓN A PANTALLAS ---------- */
+@media (max-width:900px), (orientation:portrait){
+  .inicio,.informe{grid-template-columns:1fr;height:auto}
+  .juego-grid{grid-template-columns:1fr;flex:none}
+  #pJuego.activa{display:block} #pJuego .hud{margin-bottom:8px} .zona{margin-bottom:8px}
+  .mapa{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .htitulo{display:none}
+}
+@media (max-height:620px){ .enunciado .txt{font-size:1.35rem} .expr{font-size:2.2rem} }
+@media (prefers-reduced-motion:reduce){ *{animation:none !important;transition:none !important} }
+
+/* ---------- IMPRESIÓN DEL INFORME ---------- */
+@media print{
+  body{height:auto;overflow:visible;background:#fff}
+  header,.inf-botones,.no-print,#modal,#toast{display:none !important}
+  main{overflow:visible}
+  .pantalla{display:none !important}
+  .pantalla.activa{display:block !important;height:auto;overflow:visible}
+  .card,.inf-cab{box-shadow:none;border:2px solid #ddd;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="hbtn" id="btnCasa" aria-label="Volver al inicio" title="Inicio">🏠</button>
+  <div class="htitulo" id="hTitulo">Misión Multiplicación 3º</div>
+  <div class="hprogreso" title="Progreso de la misión">
+    <span>🚀</span><div class="barra"><div id="barraGlobal" style="width:0%"></div></div><span id="txtGlobal" class="hchip">0%</span>
+  </div>
+  <span class="hchip" id="hGemas" title="Gemas">💎 0</span>
+  <button class="hbtn" id="btnVozAuto" aria-label="Lectura automática en voz alta" title="Leer los enunciados automáticamente">🗣️</button>
+  <button class="hbtn" id="btnSonido" aria-label="Silenciar sonido" title="Sonido">🔊</button>
+  <button class="hbtn" id="btnFullscreen" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+</header>
+
+<main>
+  <!-- INICIO -->
+  <section class="pantalla" id="pInicio"></section>
+  <!-- MAPA DE NIVELES -->
+  <section class="pantalla" id="pMapa"></section>
+  <!-- MENÚ CONTRARRELOJ -->
+  <section class="pantalla" id="pReloj"></section>
+  <!-- JUEGO -->
+  <section class="pantalla" id="pJuego">
+    <div class="hud" id="hud"></div>
+    <div class="juego-grid">
+      <div class="zona" id="zonaPreg">
+        <div class="enunciado">
+          <div class="txt" id="enunciado"></div>
+          <button class="mini-btn" id="btnLeer" aria-label="Leer en voz alta" title="Leer en voz alta">🔈</button>
+          <button class="mini-btn pista" id="btnPista" aria-label="Pedir una pista" title="Pedir pista">💡</button>
+        </div>
+        <div id="zonaVisual"></div>
+      </div>
+      <div class="zona" id="zonaResp"></div>
+    </div>
+  </section>
+  <!-- INFORME -->
+  <section class="pantalla" id="pInforme"></section>
+  <!-- MI PROGRESO -->
+  <section class="pantalla" id="pProgreso"></section>
+  <!-- INSIGNIAS -->
+  <section class="pantalla" id="pInsignias"></section>
+</main>
+
+<div id="modal" hidden><div class="modal-caja" id="modalCaja" role="dialog" aria-modal="true"></div></div>
+<div id="toast" hidden></div>
+<div id="cuentaAtras" hidden></div>
+<canvas id="confeti" hidden></canvas>
+
+<script>
+/* =====================================================================
+   ✏️ CONFIGURACIÓN DEL DOCENTE · Cambia aquí títulos, nombres y reglas
+   ===================================================================== */
+const CONFIG = {
+  titulo: 'Misión Multiplicación 3º',      // ✏️ Título de la aplicación
+  mascota: 'Calculín',                      // ✏️ Nombre del robot guía
+  preguntasPorNivel: 8,                     // ✏️ Retos por nivel (Modo Entrenamiento)
+  segundosContrarreloj: 60,                 // ✏️ Duración del Reto Contrarreloj
+  vidasDesafio: 3,                          // ✏️ Vidas del Desafío Final
+  preguntasDesafio: 15,                     // ✏️ Retos para completar el Desafío Final
+  bloquearNiveles: true,                    // ✏️ true = hay que superar un nivel para abrir el siguiente
+  // ✏️ Nombres que protagonizan los problemas (puedes poner los de tu clase)
+  nombresProblemas: ['Lucía','Hugo','Martina','Mateo','Sofía','Leo','Valeria','Daniel','Carmen','Álvaro','Paula','Adam'],
+  saltosSeries: [2,3,4,5,6,7,8,9,10],       // ✏️ De cuánto en cuánto van las series del nivel 4
+  // ✏️ Los 8 niveles: icono, título, descripción, insignia y color
+  niveles: [
+    {id:1, icono:'🧺', titulo:'Grupos iguales',        desc:'Cuenta grupos y lo que hay en cada uno', insignia:'Cazagrupos',             color:'#E8590C'},
+    {id:2, icono:'➕', titulo:'Suma y multiplica',     desc:'De sumas repetidas a multiplicaciones',  insignia:'Varita de las sumas',    color:'#2F9E44'},
+    {id:3, icono:'🏷️', titulo:'Factores y productos', desc:'Los nombres de la multiplicación',        insignia:'Sello de los factores',  color:'#7048E8'},
+    {id:4, icono:'🐸', titulo:'Series numéricas',      desc:'Cuenta de 2 en 2, de 5 en 5…',            insignia:'Rana saltaseries',       color:'#0C8599'},
+    {id:5, icono:'🔟', titulo:'× 10, × 100, × 1000',   desc:'Cálculo mental con ceros',                insignia:'Cohete de los ceros',    color:'#D9480F'},
+    {id:6, icono:'📋', titulo:'Tablas de multiplicar', desc:'Elige tus tablas y practica',             insignia:'Corona de las tablas',   color:'#1971C2'},
+    {id:7, icono:'🧮', titulo:'El algoritmo',          desc:'Multiplica en vertical paso a paso',      insignia:'Engranaje del algoritmo',color:'#C2255C'},
+    {id:8, icono:'🕵️', titulo:'Problemas',            desc:'Datos, operación y solución',             insignia:'Lupa de detective',      color:'#5F3DC4'},
+  ],
+};
+// Insignias extra (no cambies los "id")
+const EXTRAS = [
+  {id:'racha10', i:'🔥', n:'Racha de fuego',  d:'10 aciertos seguidos a la primera'},
+  {id:'perfecto',i:'💯', n:'Nivel perfecto',  d:'Todo bien a la primera en un nivel'},
+  {id:'reloj15', i:'⚡', n:'Rayo veloz',      d:'15 aciertos o más en el Contrarreloj'},
+  {id:'desafio', i:'🏆', n:'Superviviente',   d:'Completa el Desafío Final'},
+  {id:'gemas100',i:'💎', n:'Coleccionista',   d:'Consigue 100 gemas'},
+  {id:'todos',   i:'🚀', n:'Misión cumplida', d:'Consigue estrellas en los 8 niveles'},
+];
+// ✏️ Objetos para los dibujos (emoji, plural, género, recipiente)
+const ITEMS = [
+  {e:'🍎',p:'manzanas',g:'f',c:'cesta'},   {e:'🍪',p:'galletas',g:'f',c:'bandeja'},
+  {e:'🍓',p:'fresas',g:'f',c:'cesta'},     {e:'⭐',p:'estrellas',g:'f',c:'caja'},
+  {e:'🧁',p:'magdalenas',g:'f',c:'bandeja'},{e:'🍊',p:'naranjas',g:'f',c:'bolsa'},
+  {e:'⚽',p:'balones',g:'m',c:'caja'},     {e:'🐟',p:'peces',g:'m',c:'pecera'},
+  {e:'🥚',p:'huevos',g:'m',c:'huevera'},   {e:'🧸',p:'peluches',g:'m',c:'caja'},
+];
+/* ===================================================================== */
+
+// ---------- UTILIDADES ----------
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const plano = h => String(h).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+const repSuma = (k,g) => Array(g).fill(k).join(' + ');
+const valorSuma = s => String(s).split('+').reduce((t,x)=>t+Number(x),0);
+const NIV = id => CONFIG.niveles.find(n=>n.id===id);
+const mmss = ms => { const s=Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+const fecha = t => new Date(t).toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+function opciones(correcta, candidatos, n=4){
+  const res=[correcta];
+  for(const c of candidatos){ if(res.length>=n) break; if(c===undefined||c===null) continue; if(typeof c==='number'&&c<1) continue; if(!res.includes(c)) res.push(c); }
+  return shuffle(res);
+}
+
+// ---------- SONIDO (Web Audio API, se crea con el primer toque) ----------
+let audioCtx=null, silencio=false;
+function tono(f1,f2,ini,dur,tipo='sine',vol=.22){
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type=tipo; o.frequency.setValueAtTime(f1,ini); o.frequency.exponentialRampToValueAtTime(f2,ini+dur);
+  g.gain.setValueAtTime(vol,ini); g.gain.exponentialRampToValueAtTime(.001,ini+dur);
+  o.connect(g).connect(audioCtx.destination); o.start(ini); o.stop(ini+dur+.02);
+}
+function sonido(t){
+  if(silencio) return;
+  try{
+    audioCtx ??= new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const n=audioCtx.currentTime;
+    if(t==='success'){ tono(520,1040,n,.16); tono(780,1560,n+.09,.14,'sine',.12); }
+    if(t==='error'){ tono(240,190,n,.14,'triangle',.18); tono(220,170,n+.18,.16,'triangle',.18); }
+    if(t==='tic') tono(900,700,n,.04,'sine',.06);
+    if(t==='combo') [660,880,1100].forEach((f,i)=>tono(f,f*1.02,n+i*.07,.12));
+    if(t==='win') [523,659,784,1047,1319].forEach((f,i)=>tono(f,f,n+i*.12,.28));
+    if(t==='nivel') [392,523,659,784,1047].forEach((f,i)=>tono(f,f,n+i*.1,.3,'triangle',.2));
+  }catch(e){}
+}
+
+// ---------- VOZ (Web Speech API en español) ----------
+let vozAuto=false;
+function paraVoz(t){
+  return plano(t).replace(/=\s*\?/g,' es igual a cuánto').replace(/\?(?=\s*[×=])/g,' cuánto ')
+    .replace(/×/g,' por ').replace(/−/g,' menos ').replace(/\+/g,' más ').replace(/=/g,' es igual a ')
+    .replace(/[🔈💡✔️❌⬅️➡️]/gu,'');
+}
+function hablar(t){
+  if(!('speechSynthesis' in window)) { toast('Tu navegador no puede leer en voz alta 😕',1500,true); return; }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(paraVoz(t)); u.lang='es-ES'; u.rate=.9;
+  const v=speechSynthesis.getVoices().find(v=>/^es(-|_)ES/i.test(v.lang))||speechSynthesis.getVoices().find(v=>/^es/i.test(v.lang));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+
+// ---------- GUARDADO (localStorage, varios alumnos en el mismo equipo) ----------
+const CLAVE='misionMultiplicacion3_v1';
+function cargar(){ try{ const d=JSON.parse(localStorage.getItem(CLAVE)); if(d&&d.perfiles) return d; }catch(e){} return {perfiles:{},actual:null,desbloqueoDocente:false,silencio:false}; }
+let DB=cargar();
+function guardar(){ try{ localStorage.setItem(CLAVE,JSON.stringify(DB)); }catch(e){} }
+function perfilNuevo(){ return {gemas:0,mejorRacha:0,niveles:{},insignias:[],reloj:{mejor:0,hist:[]},desafio:{mejor:0,completado:false,hist:[]}}; }
+function P(){ if(!DB.actual||!DB.perfiles[DB.actual]){ DB.actual='Invitado'; DB.perfiles['Invitado'] ??= perfilNuevo(); } return DB.perfiles[DB.actual]; }
+function estrellasTotales(){ return CONFIG.niveles.reduce((t,n)=>t+(P().niveles[n.id]?.estrellas||0),0); }
+function nivelAbierto(id){ return id===1 || !CONFIG.bloquearNiveles || DB.desbloqueoDocente || (P().niveles[id-1]?.estrellas||0)>0; }
+function sumarGemas(n){ P().gemas+=n; actualizarHeader(); }
+
+// ---------- MASCOTA (SVG en línea) ----------
+function robot(tam=120, animo='feliz'){
+  const boca = animo==='triste' ? 'M48 74 Q60 66 72 74' : animo==='wow' ? 'M54 70 Q60 80 66 70 Z' : 'M46 68 Q60 80 74 68';
+  return `<svg width="${tam}" height="${tam*1.08}" viewBox="0 0 120 130" aria-hidden="true">
+    <line x1="60" y1="10" x2="60" y2="28" stroke="#3B5BDB" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="60" cy="9" r="7" fill="#FAB005"/>
+    <rect x="4" y="50" width="13" height="26" rx="6" fill="#FAB005"/><rect x="103" y="50" width="13" height="26" rx="6" fill="#FAB005"/>
+    <rect x="14" y="27" width="92" height="70" rx="24" fill="#74C0FC" stroke="#1E2240" stroke-width="4"/>
+    <rect x="27" y="40" width="66" height="44" rx="16" fill="#fff"/>
+    <circle cx="45" cy="56" r="7" fill="#1E2240"/><circle cx="75" cy="56" r="7" fill="#1E2240"/>
+    <circle cx="47" cy="54" r="2.4" fill="#fff"/><circle cx="77" cy="54" r="2.4" fill="#fff"/>
+    <circle cx="34" cy="70" r="4" fill="#FFA8A8"/><circle cx="86" cy="70" r="4" fill="#FFA8A8"/>
+    <path d="${boca}" stroke="#1E2240" stroke-width="4" fill="${animo==='wow'?'#1E2240':'none'}" stroke-linecap="round"/>
+    <rect x="36" y="99" width="48" height="27" rx="9" fill="#3B5BDB" stroke="#1E2240" stroke-width="3"/>
+    <text x="60" y="120" text-anchor="middle" font-size="20" font-weight="900" fill="#fff" font-family="sans-serif">×</text>
+  </svg>`;
+}
+const mascotaDice = (txt,tam=90,animo='feliz') => `<div class="mascota">${robot(tam,animo)}<div class="bocadillo">${txt}</div></div>`;
+
+// ---------- MODAL, AVISOS Y CONFETI (nunca alert/confirm/prompt) ----------
+let modalAbierto=false;
+function abrirModal({titulo='',html='',botones=[{txt:'Vale'}],clase='',cerrable=true,leer=null}){
+  const c=$('#modalCaja');
+  c.className='modal-caja '+clase;
+  c.innerHTML=`${titulo?`<h3>${titulo}${leer?` <button class="mini-btn" id="mLeer" aria-label="Leer en voz alta">🔈</button>`:''}</h3>`:''}<div class="cuerpo">${html}</div>
+    <div class="modal-botones">${botones.map((b,i)=>`<button class="btn ${b.clase||'btn-pri'}" data-i="${i}">${b.txt}</button>`).join('')}</div>`;
+  c.querySelectorAll('.modal-botones button').forEach(btn=>btn.onclick=()=>{
+    const b=botones[+btn.dataset.i]; if(!b.mantener) cerrarModal(); b.fn&&b.fn();
+  });
+  if(leer) $('#mLeer').onclick=()=>hablar(leer);
+  $('#modal').dataset.cerrable=cerrable?'1':'';
+  $('#modal').hidden=false; modalAbierto=true;
+  if(vozAuto&&leer) hablar(leer);
+}
+function cerrarModal(){ $('#modal').hidden=true; modalAbierto=false; }
+$('#modal').addEventListener('click',e=>{ if(e.target.id==='modal'&&$('#modal').dataset.cerrable) cerrarModal(); });
+let toastT=null;
+function toast(html,ms=1300,error=false){
+  const t=$('#toast'); t.innerHTML=html; t.className=error?'error':''; t.hidden=false;
+  t.style.animation='none'; void t.offsetWidth; t.style.animation='';
+  clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,ms);
+}
+function confeti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv=$('#confeti'), cx=cv.getContext('2d'); cv.hidden=false; cv.width=innerWidth; cv.height=innerHeight;
+  const cols=['#FAB005','#3B5BDB','#2F9E44','#E8590C','#C2255C','#74C0FC'];
+  const ps=Array.from({length:120},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,vx:(Math.random()-.5)*4,vy:2+Math.random()*4,r:4+Math.random()*6,c:pick(cols),a:Math.random()*6}));
+  const t0=performance.now();
+  (function paso(t){ cx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=.1;cx.fillStyle=p.c;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);cx.restore();});
+    if(t-t0<2200) requestAnimationFrame(paso); else cv.hidden=true; })(t0);
+}
+
+// ---------- PANTALLA COMPLETA ----------
+const btnFS=$('#btnFullscreen'), raiz=document.documentElement;
+const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
+if(!(raiz.requestFullscreen||raiz.webkitRequestFullscreen)) btnFS.hidden=true;
+btnFS.addEventListener('click',()=>{ try{ if(fsEl()) (document.exitFullscreen||document.webkitExitFullscreen).call(document); else (raiz.requestFullscreen||raiz.webkitRequestFullscreen).call(raiz); }catch(e){} });
+function iconoFS(){ const a=!!fsEl(); btnFS.textContent=a?'✖':'⛶'; btnFS.setAttribute('aria-label',a?'Salir de pantalla completa':'Pantalla completa'); }
+document.addEventListener('fullscreenchange',iconoFS); document.addEventListener('webkitfullscreenchange',iconoFS);
+
+// ---------- NAVEGACIÓN ENTRE PANTALLAS ----------
+let pantalla='pInicio';
+function mostrar(id){ if(id==='pInforme'){ $('#toast').hidden=true; } $$('.pantalla').forEach(p=>p.classList.toggle('activa',p.id===id)); pantalla=id; $('#'+id).scrollTop=0; actualizarHeader(); }
+function actualizarHeader(){
+  const pct=Math.round(estrellasTotales()/24*100);
+  $('#barraGlobal').style.width=pct+'%'; $('#txtGlobal').textContent=pct+'%';
+  $('#hGemas').textContent='💎 '+P().gemas;
+  $('#hTitulo').textContent=CONFIG.titulo;
+  $('#btnSonido').textContent=silencio?'🔇':'🔊';
+  $('#btnSonido').setAttribute('aria-label',silencio?'Activar sonido':'Silenciar sonido');
+  $('#btnVozAuto').classList.toggle('activo',vozAuto);
+}
+$('#btnSonido').onclick=()=>{ silencio=!silencio; DB.silencio=silencio; guardar(); actualizarHeader(); if(!silencio) sonido('tic'); };
+$('#btnVozAuto').onclick=()=>{ vozAuto=!vozAuto; actualizarHeader(); toast(vozAuto?'🗣️ Lectura automática activada':'🗣️ Lectura automática desactivada',1300); if(vozAuto&&pantalla==='pJuego'&&S?.q) hablar(S.q.voz||S.q.enunciado); };
+$('#btnCasa').onclick=()=>{
+  if(pantalla==='pJuego'&&S&&!S.terminado){
+    abrirModal({titulo:'🚪 ¿Quieres salir?',html:mascotaDice('Si sales ahora, esta partida no se guardará en tu informe.',80,'triste'),
+      botones:[{txt:'Seguir jugando',clase:'btn-sec'},{txt:'Salir',clase:'btn-peligro',fn:()=>{salirJuego();irInicio();}}]});
+  } else irInicio();
+};
+function irInicio(){ pintarInicio(); mostrar('pInicio'); }
+
+// ---------- PANTALLA DE INICIO ----------
+function pintarInicio(){
+  const p=P(), ins=p.insignias.length, totalIns=8+EXTRAS.length;
+  $('#pInicio').innerHTML=`<div class="inicio">
+    <div>
+      <h1>${esc(CONFIG.titulo)}</h1>
+      <div class="flota">${mascotaDice(`¡Hola, <span style="color:var(--primario)">${esc(DB.actual)}</span>! Soy ${esc(CONFIG.mascota)}, el robot de la fábrica de multiplicaciones. ¿Empezamos la misión?`,130)}</div>
+      <div class="stats">
+        <div class="stat"><small>Gemas</small>💎 ${p.gemas}</div>
+        <div class="stat"><small>Estrellas</small>⭐ ${estrellasTotales()} / 24</div>
+        <div class="stat"><small>Insignias</small>🏅 ${ins} / ${totalIns}</div>
+      </div>
+      <div class="fila-botones perfil-btn">
+        <button class="btn btn-sec" id="iPerfil">👤 Cambiar de jugador</button>
+        <button class="btn btn-sec" id="iInsignias">🏅 Insignias</button>
+        <button class="btn btn-sec" id="iProgreso">📊 Mi progreso</button>
+      </div>
+    </div>
+    <div class="modos">
+      <button class="modo" id="mEntreno"><span class="ico" style="background:#D3F9D8">🎓</span><div><b>Modo Entrenamiento</b><span>8 niveles, sin tiempo, con pistas. ¡Avanza paso a paso!</span></div></button>
+      <button class="modo" id="mReloj"><span class="ico" style="background:#FFE8CC">⏱️</span><div><b>Reto Contrarreloj</b><span>${CONFIG.segundosContrarreloj} segundos. ¿Cuántas aciertas?</span></div></button>
+      <button class="modo" id="mDesafio"><span class="ico" style="background:#F3D9FA">🏆</span><div><b>Desafío Final</b><span>Retos de los 8 niveles mezclados. Tienes ${CONFIG.vidasDesafio} vidas ❤️</span></div></button>
+      <button class="btn btn-sec no-print" id="iDocente" style="align-self:flex-end;font-size:.95rem">👩‍🏫 Opciones del docente</button>
+    </div>
+  </div>`;
+  $('#mEntreno').onclick=()=>{ pintarMapa(); mostrar('pMapa'); };
+  $('#mReloj').onclick=()=>{ pintarMenuReloj(); mostrar('pReloj'); };
+  $('#mDesafio').onclick=iniciarDesafio;
+  $('#iPerfil').onclick=modalPerfil;
+  $('#iInsignias').onclick=()=>{ pintarInsignias(); mostrar('pInsignias'); };
+  $('#iProgreso').onclick=()=>{ pintarProgreso(); mostrar('pProgreso'); };
+  $('#iDocente').onclick=modalDocente;
+}
+
+// ---------- PERFILES ----------
+function modalPerfil(){
+  const nombres=Object.keys(DB.perfiles);
+  abrirModal({titulo:'👤 ¿Quién juega?',cerrable:!!DB.actual,
+    html:`${nombres.length?`<div class="lista-perfiles">${nombres.map(n=>`<button class="btn ${n===DB.actual?'btn-pri':'btn-sec'} perf" data-n="${esc(n)}">${esc(n)}</button>`).join('')}</div><p>o escribe un nombre nuevo:</p>`:'<p>Escribe tu nombre para guardar tu progreso:</p>'}
+      <input class="txt" id="nuevoNombre" maxlength="20" placeholder="Tu nombre" autocomplete="off">`,
+    botones:[{txt:'✔ Jugar',clase:'btn-ok',mantener:true,fn:()=>{
+      const n=$('#nuevoNombre').value.trim();
+      if(!n){ $('#nuevoNombre').focus(); $('#nuevoNombre').style.borderColor='var(--error)'; return; }
+      elegirPerfil(n); cerrarModal();
+    }}]});
+  $$('.perf').forEach(b=>b.onclick=()=>{ elegirPerfil(b.dataset.n); cerrarModal(); });
+  $('#nuevoNombre').onkeydown=e=>{ if(e.key==='Enter') $('#modalCaja .modal-botones .btn').click(); };
+  setTimeout(()=>$('#nuevoNombre')?.focus(),100);
+}
+function elegirPerfil(n){ DB.perfiles[n] ??= perfilNuevo(); DB.actual=n; guardar(); irInicio(); }
+
+// ---------- OPCIONES DEL DOCENTE ----------
+function modalDocente(){
+  abrirModal({titulo:'👩‍🏫 Opciones del docente',
+    html:`<p>Jugador actual: <b>${esc(DB.actual)}</b></p>
+      <button class="btn ${DB.desbloqueoDocente?'btn-ok':'btn-sec'}" id="dDesb">${DB.desbloqueoDocente?'🔓 Niveles desbloqueados (pulsa para bloquear)':'🔒 Desbloquear todos los niveles'}</button>
+      <button class="btn btn-aviso" id="dBorrar">🧹 Borrar el progreso de ${esc(DB.actual)}</button>
+      <button class="btn btn-peligro" id="dTodo">🗑️ Borrar todos los jugadores</button>`,
+    botones:[{txt:'Cerrar',clase:'btn-sec'}]});
+  $('#dDesb').onclick=()=>{ DB.desbloqueoDocente=!DB.desbloqueoDocente; guardar(); cerrarModal(); modalDocente(); };
+  $('#dBorrar').onclick=()=>confirmar(`¿Seguro que quieres borrar todo el progreso de ${esc(DB.actual)}?`,()=>{ DB.perfiles[DB.actual]=perfilNuevo(); guardar(); irInicio(); toast('🧹 Progreso borrado'); });
+  $('#dTodo').onclick=()=>confirmar('¿Seguro que quieres borrar a todos los jugadores? No se puede deshacer.',()=>{ DB={perfiles:{},actual:null,desbloqueoDocente:false,silencio}; guardar(); P(); irInicio(); modalPerfil(); });
+}
+function confirmar(txt,fn){ abrirModal({titulo:'⚠️ Atención',html:`<p>${txt}</p>`,botones:[{txt:'Cancelar',clase:'btn-sec'},{txt:'Sí, borrar',clase:'btn-peligro',fn}]}); }
+
+// ---------- MAPA DE NIVELES ----------
+function pintarMapa(){
+  const p=P();
+  $('#pMapa').innerHTML=`<div class="cab-pantalla"><h2>🎓 Modo Entrenamiento · Elige tu nivel</h2>
+      <span class="instr">Consigue al menos ⭐ en un nivel para abrir el siguiente.</span></div>
+    <div class="mapa">${CONFIG.niveles.map(n=>{
+      const r=p.niveles[n.id]||{estrellas:0,mejor:0,intentos:[]}, abierto=nivelAbierto(n.id);
+      return `<button class="tarjeta-nivel ${abierto?'':'bloqueado'}" style="--c:${n.color}" data-id="${n.id}" aria-label="Nivel ${n.id}: ${n.titulo}${abierto?'':' (bloqueado)'}">
+        ${abierto?'':'<span class="candado">🔒</span>'}
+        <span class="ico">${n.icono}</span><span class="num">Nivel ${n.id}</span><span class="tit">${n.titulo}</span>
+        <span class="desc">${n.desc}</span>
+        <span class="estrellas">${estrellasHTML(r.estrellas)}</span>
+        <span class="mejor">${r.intentos.length?`Mejor: ${r.mejor}% · ${r.intentos.length} ${r.intentos.length===1?'intento':'intentos'}`:'¡Sin empezar!'}</span>
+      </button>`;}).join('')}</div>`;
+  $$('#pMapa .tarjeta-nivel').forEach(b=>b.onclick=()=>{
+    const id=+b.dataset.id;
+    if(!nivelAbierto(id)){ sonido('error'); toast(`🔒 Antes supera el nivel ${id-1}`,1500,true); return; }
+    iniciarNivel(id);
+  });
+}
+const estrellasHTML = n => [1,2,3].map(i=>`<span class="${i<=n?'':'off'}">⭐</span>`).join('');
+
+// ---------- SELECTOR DE TABLAS (nivel 6 y contrarreloj) ----------
+function selectorTablas(alElegir){
+  let sel=new Set([1,2,3,4,5,6,7,8,9,10]);
+  abrirModal({titulo:'📋 ¿Qué tablas quieres practicar?',
+    html:`<div class="chips" id="chTablas">${[1,2,3,4,5,6,7,8,9,10].map(t=>`<button class="chip-sel on" data-t="${t}">${t}</button>`).join('')}</div>
+      <div class="fila-botones"><button class="btn btn-sec" id="tTodas">Todas mezcladas</button><button class="btn btn-sec" id="tNinguna">Quitar todas</button></div>`,
+    botones:[{txt:'Cancelar',clase:'btn-sec'},{txt:'▶ ¡A practicar!',clase:'btn-ok',mantener:true,fn:()=>{
+      if(!sel.size){ toast('Elige al menos una tabla 😉',1300,true); return; }
+      cerrarModal(); alElegir([...sel].sort((a,b)=>a-b));
+    }}]});
+  const pintar=()=>$$('#chTablas .chip-sel').forEach(c=>c.classList.toggle('on',sel.has(+c.dataset.t)));
+  $$('#chTablas .chip-sel').forEach(c=>c.onclick=()=>{ const t=+c.dataset.t; sel.has(t)?sel.delete(t):sel.add(t); pintar(); sonido('tic'); });
+  $('#tTodas').onclick=()=>{ sel=new Set([1,2,3,4,5,6,7,8,9,10]); pintar(); };
+  $('#tNinguna').onclick=()=>{ sel=new Set(); pintar(); };
+}
+
+/* =====================================================================
+   AYUDAS VISUALES (dibujos reutilizables)
+   ===================================================================== */
+const tamEmoji = n => n<=4?'2.3rem':n<=6?'1.9rem':n<=9?'1.6rem':'1.35rem';
+function gruposHTML(cuentas,it,op={}){
+  return `<div class="grupos">${cuentas.map((n,i)=>`<div class="grupo ${op.resaltar===i?'resaltado':''}"><div class="items" style="--tam:${tamEmoji(n)}">${`<span>${it.e}</span>`.repeat(n)}</div>${op.etiquetas?`<span class="cuenta">${op.etiquetas[i]}</span>`:''}</div>`).join('')}</div>`;
+}
+function matrizHTML(filas,cols,e,id=''){
+  return `<div class="matriz" ${id?`id="${id}"`:''} style="grid-template-columns:repeat(${cols},auto)">${`<span>${e}</span>`.repeat(filas*cols)}</div>`;
+}
+function saltosHTML(paso,n,indices=true){
+  let h='<div class="saltos">';
+  for(let i=1;i<=n;i++){ if(i>1) h+=`<span class="fl">+${paso}→</span>`; h+=`<span class="chip">${paso*i}${indices?`<small>${i}</small>`:''}</span>`; }
+  return h+'</div>';
+}
+function opEtqHTML(a,b,p,op={}){
+  const caja=(v,lab,i)=>`<div class="caja"><span class="num ${op.marca===i?'marca':''}">${v}</span><span class="lab">${op.etiquetas?lab:''}</span></div>`;
+  return `<div class="op-etq">${caja(a,'factor',0)}<span>×</span>${caja(b,'factor',1)}<span>=</span>${caja(p,'producto',2)}</div>`;
+}
+function vpHTML(n,ceros=0){
+  const d=String(n).split(''), L=d.length, nombres=['DM','UM','C','D','U'].slice(-L);
+  return `<table class="vp"><tr>${nombres.map(x=>`<th class="${x}">${x}</th>`).join('')}</tr><tr>${d.map((x,i)=>`<td class="${i>=L-ceros?'cero':''}" style="animation-delay:${(i-(L-ceros))*.15}s">${x}</td>`).join('')}</tr></table>`;
+}
+const PLANTILLA = `<div class="plantilla">factor × factor = producto</div><div>Por ejemplo, en <b>2 × 3 = 6</b>: el 2 y el 3 son los <b>factores</b> y el 6 es el <b>producto</b> (el resultado).</div>`;
+function descomponerMult(a,b){
+  const g=Math.max(a,b), p=Math.min(a,b);
+  if(g<10) return {pista:`Cuenta de ${g} en ${g}, ${p} veces:`+saltosHTML(g,p,false), sol:saltosHTML(g,p)};
+  const dec=Math.floor(g/10)*10, uni=g%10;
+  if(!uni) return {pista:`${p} × ${g/10} = ? … y añade un cero.`, sol:`${p} × ${g/10} = ${p*g/10} → ${p} × ${g} = <b>${p*g}</b>`};
+  return {pista:`Descompón el ${g} en ${dec} + ${uni}:<div class="expr peq">${p} × ${dec} = ?<br>${p} × ${uni} = ?</div>Después suma los dos resultados (o usa el algoritmo en tu cuaderno).`,
+          sol:`<div class="expr peq">${p} × ${dec} = ${p*dec}<br>${p} × ${uni} = ${p*uni}<br>${p*dec} + ${p*uni} = ${p*g}</div>`};
+}
+
+/* =====================================================================
+   GENERADORES DE EJERCICIOS (nunca estáticos)
+   Cada ejercicio devuelve: tipo, hab (habilidad para el informe), enunciado,
+   visual, correcta, pista, solucion y resumen.
+   ✏️ Puedes cambiar los rangos de números (rnd(min,max)) de cada nivel.
+   ===================================================================== */
+const GEN = {};
+
+// ---- NIVEL 1 · Grupos iguales y representación ----
+GEN[1] = { subtipos:['grupos','porGrupo','suma','iguales','llenar','total'], gen(sub){
+  const it=pick(ITEMS), g=rnd(2,5), k=rnd(2,6), C=it.c, Cs=it.c+'s', cu=it.g==='f'?'Cuántas':'Cuántos', P_=it.p;
+  const c=Array(g).fill(k), v=gruposHTML(c,it);
+  switch(sub){
+    case 'grupos': return {tipo:'choice',hab:'Contar los grupos',enunciado:`¿Cuántas <b>${Cs}</b> hay?`,visual:v,
+      opciones:opciones(g,[g+1,g-1,k,g+2]),correcta:g,resumen:`Contar ${Cs}`,
+      pista:`Cada <b>${C}</b> es un grupo. Toca cada ${C} con el dedo y cuenta en voz alta.`+gruposHTML(c,it,{etiquetas:c.map((_,i)=>i+1)}),
+      solucion:`Hay <b>${g} ${Cs}</b>: son ${g} grupos.`};
+    case 'porGrupo': return {tipo:'choice',hab:'Elementos en cada grupo',enunciado:`¿${cu} <b>${P_}</b> hay en cada ${C}?`,visual:v,
+      opciones:opciones(k,[k+1,k-1,g,k+2]),correcta:k,resumen:`${P_} en cada ${C}`,
+      pista:`Fíjate solo en la ${C} marcada y cuenta sus ${P_} uno a uno.`+gruposHTML(c,it,{resaltar:0}),
+      solucion:`En cada ${C} hay <b>${k} ${P_}</b>. Todas tienen lo mismo: son grupos iguales.`};
+    case 'suma': return {tipo:'choice',hab:'Suma de grupos iguales',enunciado:`¿Qué suma representa el dibujo?`,visual:v,
+      opciones:opciones(repSuma(k,g),[g!==k?repSuma(g,k):null,`${k} + ${g}`,repSuma(k,g+1),repSuma(k+1,g)]),correcta:repSuma(k,g),resumen:`Suma del dibujo (${g} grupos de ${k})`,
+      pista:`Mira cuántos hay en cada ${C} (el número de abajo) y cuántas ${Cs} hay.`+gruposHTML(c,it,{etiquetas:c}),
+      solucion:`Hay ${g} ${Cs} con ${k} en cada una:<div class="expr peq">${repSuma(k,g)} = ${g*k}</div>`};
+    case 'iguales': {
+      const dist=Math.random()<.5, cc=c.slice(), i=rnd(0,g-1); if(dist) cc[i]=k+(k>2&&Math.random()<.5?-1:1);
+      return {tipo:'choice',hab:'Reconocer grupos iguales',enunciado:`¿Todas las ${Cs} tienen el mismo número de ${P_}?`,visual:gruposHTML(cc,it),
+        opciones:['Sí, son grupos iguales','No, hay una distinta'],correcta:dist?'No, hay una distinta':'Sí, son grupos iguales',resumen:`¿Grupos iguales?`,
+        pista:`Cuenta los ${P_} de cada ${C} y compara los números.`+gruposHTML(cc,it,{etiquetas:cc}),
+        solucion:dist?`No. Una ${C} tiene ${cc[i]} y las demás tienen ${k}. Para multiplicar, todos los grupos deben ser iguales.`:`Sí. Todas tienen ${k}: son ${g} grupos iguales de ${k}.`};
+    }
+    case 'llenar': return {tipo:'fill',hab:'Formar grupos iguales',it,g,k,C,correcta:k,correctaTxt:`${k} en cada ${C}`,
+      enunciado:`Pon <b>${k} ${P_}</b> en cada ${C}.`,resumen:`Llenar ${g} ${Cs} con ${k}`,
+      pista:`Cada ${C} necesita exactamente <b>${k}</b>. Mira el número de debajo de cada ${C}. Si te pasas, pulsa ↺ para vaciarla.`,
+      solucion:gruposHTML(c,it,{etiquetas:c})+`<div>${g} ${Cs} con ${k}: <b>${repSuma(k,g)} = ${g*k}</b></div>`};
+    case 'total': return {tipo:'numpad',hab:'Total de grupos iguales',enunciado:`¿${cu} <b>${P_}</b> hay en total?`,visual:v,correcta:g*k,resumen:`Total: ${g} grupos de ${k}`,
+      pista:`Suma lo que hay en cada ${C}:`+gruposHTML(c,it,{etiquetas:c})+`<div class="expr peq">${repSuma(k,g)} = ?</div>`,
+      solucion:`<div class="expr peq">${repSuma(k,g)} = ${g*k}</div>`+saltosHTML(k,g)};
+  }
+}};
+
+// ---- NIVEL 2 · Multiplicación como suma de grupos iguales ----
+GEN[2] = { subtipos:['sumaAMult','multASuma','conmutativa','sumaResultado'], gen(sub){
+  const it=pick(ITEMS), g=rnd(2,5), k=rnd(2,9), s=repSuma(k,g), p=g*k;
+  const dib = p<=30 ? gruposHTML(Array(g).fill(k),it) : '';
+  switch(sub){
+    case 'sumaAMult': return {tipo:'choice',hab:'De suma a multiplicación',enunciado:`¿Qué multiplicación es igual a esta suma?`,
+      visual:`<div class="expr">${s}</div>${dib}`,correcta:`${g} × ${k}`,resumen:`${s}`,
+      opciones:opciones(`${g} × ${k}`,[`${g+1} × ${k}`,`${g} × ${k+1}`,`${g} + ${k}`,k!==g?`${k} × ${k}`:null,`${g-1} × ${k}`]),
+      pista:`¿Cuántas veces se repite el <b>${k}</b>? Ese número va primero, y después el ${k}.<div class="expr peq">${Array(g).fill(k).map((x,i)=>`${x}<sup style="color:var(--aviso)">${i+1}</sup>`).join(' + ')}</div>`,
+      solucion:`El ${k} se repite ${g} veces → <b>${g} veces ${k}</b>:<div class="expr peq">${s} = ${g} × ${k} = ${p}</div>`};
+    case 'multASuma': {
+      const cands=[`${g} + ${k}`,repSuma(k,g+1),repSuma(k,g-1),repSuma(g,g),repSuma(k+1,g)].filter(x=>valorSuma(x)!==p && x.includes('+'));
+      return {tipo:'choice',hab:'De multiplicación a suma',enunciado:`¿Qué suma es igual a <b>${g} × ${k}</b>?`,visual:`<div class="expr">${g} × ${k}</div>${dib}`,
+        correcta:s,opciones:opciones(s,cands),resumen:`${g} × ${k} como suma`,
+        pista:`<b>${g} × ${k}</b> significa «${g} veces ${k}». Busca la suma en la que el ${k} aparece ${g} veces.`,
+        solucion:`<div class="expr peq">${g} × ${k} = ${s} = ${p}</div>`};
+    }
+    case 'conmutativa': {
+      const r=rnd(2,5), cl=rnd(r+1,8), pr=r*cl;
+      return {tipo:'numpad',hab:'Propiedad conmutativa',enunciado:`La bandeja tiene ${r} filas de ${cl}: <b>${r} × ${cl} = ${pr}</b>. Si la giramos, ¿cuánto es <b>${cl} × ${r}</b>?`,
+        visual:`${matrizHTML(r,cl,it.e,'matrizGiro')}<button class="btn btn-sec" id="btnGirar">🔄 Girar la bandeja</button>`,correcta:pr,resumen:`${cl} × ${r} (sabiendo que ${r} × ${cl} = ${pr})`,
+        montar(){ let girada=false; const m=$('#matrizGiro'); $('#btnGirar').onclick=()=>{ m.classList.add('girando'); sonido('tic'); setTimeout(()=>{ girada=!girada; m.classList.remove('girando'); m.style.gridTemplateColumns=`repeat(${girada?r:cl},auto)`; },500); }; },
+        pista:`Pulsa <b>🔄 Girar la bandeja</b>. ¿Ha cambiado el número de ${it.p}? Si ${r} × ${cl} = ${pr}, entonces ${cl} × ${r} = …`,
+        solucion:`<div class="expr peq">${cl} × ${r} = ${pr}</div><b>Propiedad conmutativa:</b> el orden de los factores no cambia el producto.`};
+    }
+    case 'sumaResultado': return {tipo:'numpad',hab:'Calcular grupos iguales',enunciado:`Calcula el resultado:`,visual:`<div class="expr">${s} = ${g} × ${k} = <span class="hueco-expr">?</span></div>${dib}`,
+      correcta:p,resumen:`${g} × ${k}`,pista:`Cuenta de ${k} en ${k}, ${g} saltos:`+saltosHTML(k,g),solucion:saltosHTML(k,g)+`<div class="expr peq">${g} × ${k} = ${p}</div>`};
+  }
+}};
+
+// ---- NIVEL 3 · Factores y productos ----
+GEN[3] = { subtipos:['producto','factores','nombre','perdido'], gen(sub){
+  const a=rnd(2,9); let b=rnd(2,9); while(b===a) b=rnd(2,9); const p=a*b;
+  switch(sub){
+    case 'producto': return {tipo:'choice',hab:'Reconocer el producto',enunciado:`¿Cuál es el <b>producto</b>?`,visual:opEtqHTML(a,b,p),
+      opciones:opciones(p,[a,b,a+b]),correcta:p,resumen:`El producto de ${a} × ${b} = ${p}`,pista:PLANTILLA,solucion:opEtqHTML(a,b,p,{etiquetas:true})+`El producto es <b>${p}</b>, el resultado.`};
+    case 'factores': return {tipo:'choice',hab:'Reconocer los factores',enunciado:`¿Cuáles son los <b>factores</b>?`,visual:opEtqHTML(a,b,p),
+      opciones:shuffle([`${a} y ${b}`,`${a} y ${p}`,`${b} y ${p}`]),correcta:`${a} y ${b}`,resumen:`Los factores de ${a} × ${b} = ${p}`,pista:PLANTILLA,solucion:opEtqHTML(a,b,p,{etiquetas:true})+`Los factores son <b>${a} y ${b}</b>: los números que se multiplican.`};
+    case 'nombre': { const m=rnd(0,2), ok=m<2?'Factor':'Producto';
+      return {tipo:'choice',hab:'Vocabulario: factor y producto',enunciado:`¿Cómo se llama el número marcado en naranja?`,visual:opEtqHTML(a,b,p,{marca:m}),
+        opciones:shuffle(['Factor','Producto','Sumando']),correcta:ok,resumen:`Nombre del ${[a,b,p][m]} en ${a} × ${b} = ${p}`,pista:PLANTILLA,solucion:opEtqHTML(a,b,p,{etiquetas:true,marca:m})+`El ${[a,b,p][m]} es un <b>${ok.toLowerCase()}</b>.`}; }
+    case 'perdido': { const f=rnd(0,1), conocido=f===0?b:a, ans=f===0?a:b, ex=f===0?`<span class="hueco-expr">?</span> × ${b} = ${p}`:`${a} × <span class="hueco-expr">?</span> = ${p}`;
+      return {tipo:'numpad',hab:'Hallar el factor que falta',enunciado:`¿Qué factor falta?`,visual:`<div class="expr">${ex}</div>`,correcta:ans,resumen:plano(ex),
+        pista:`Cuenta de ${conocido} en ${conocido} hasta llegar a ${p}. ¿Cuántos saltos has dado?`+saltosHTML(conocido,ans,false),
+        solucion:saltosHTML(conocido,ans)+`<div class="expr peq">${a} × ${b} = ${p}</div>El factor que faltaba es <b>${ans}</b>.`}; }
+  }
+}};
+
+// ---- NIVEL 4 · Series numéricas ----
+GEN[4] = { subtipos:['huecos','salto','huecos'], gen(sub){
+  const k=pick(CONFIG.saltosSeries), ini=k*rnd(1,5), seq=Array.from({length:6},(_,i)=>ini+i*k);
+  const cadena=seq.map((n,i)=>(i?`<span class="fl">+${k}→</span>`:'')+`<span class="chip">${n}</span>`).join('');
+  if(sub==='salto'){
+    const vis=seq.slice(0,5);
+    return {tipo:'choice',hab:'Descubrir el salto',enunciado:`¿De cuánto en cuánto va la serie?`,visual:`<div class="serie">${vis.map(n=>`<span class="n">${n}</span>`).join('<span class="sep">,</span>')}</div>`,
+      opciones:opciones(k,[k+1,k-1,k+2,k*2]).map(x=>x),correcta:k,correctaTxt:`De ${k} en ${k}`,fmtOp:x=>`De ${x} en ${x}`,resumen:vis.join(', ')+'…',
+      pista:`Resta dos números seguidos: <b>${seq[1]} − ${seq[0]} = ?</b> Comprueba que pasa lo mismo con los siguientes.`,
+      solucion:`<div class="saltos">${cadena}</div>Va <b>de ${k} en ${k}</b>.`};
+  }
+  const hs=shuffle([2,3,4,5]).slice(0,2).sort((x,y)=>x-y);
+  return {tipo:'series',hab:`Series de ${k} en ${k}`,seq,huecos:hs,correcta:hs.map(i=>seq[i]),enunciado:`Completa la serie numérica.`,
+    resumen:seq.map((n,i)=>hs.includes(i)?'__':n).join(', '),correctaTxt:seq.join(', '),
+    pista:`¿Cuánto aumenta cada vez? Mira: <b>${seq[1]} − ${seq[0]} = ${k}</b>. Va de ${k} en ${k}, así que al número anterior súmale ${k}.`,
+    solucion:`<div class="saltos">${cadena}</div>`};
+}};
+
+// ---- NIVEL 5 · Cálculo mental ×10, ×100, ×1000 ----
+GEN[5] = { subtipos:['x10','x100','x1000','perdidoCeros'], gen(sub){
+  const nombre={10:'un cero',100:'dos ceros',1000:'tres ceros'}, nc={10:1,100:2,1000:3};
+  if(sub==='perdidoCeros'){
+    const m=pick([10,100,1000]), a=rnd(2,60);
+    return {tipo:'choice',hab:'¿Por 10, 100 o 1000?',enunciado:`¿Por cuánto hemos multiplicado?`,visual:`<div class="expr">${a} × <span class="hueco-expr">?</span> = ${a*m}</div>`,
+      opciones:[10,100,1000],correcta:m,resumen:`${a} × ? = ${a*m}`,
+      pista:`Compara <b>${a}</b> con <b>${a*m}</b>. ¿Cuántos ceros se han añadido a la derecha?<br>× 10 → 1 cero · × 100 → 2 ceros · × 1000 → 3 ceros`,
+      solucion:vpHTML(a*m,nc[m])+`Se han añadido <b>${nombre[m]}</b>: ${a} × ${m} = ${a*m}`};
+  }
+  const m={x10:10,x100:100,x1000:1000}[sub], a=m===1000?rnd(2,40):rnd(2,99), r=a*m;
+  return {tipo:'numpad',hab:`Multiplicar por ${m}`,enunciado:`Calcula mentalmente:`,visual:`<div class="expr">${a} × ${m} = <span class="hueco-expr">?</span></div>${vpHTML(a)}`,
+    correcta:r,max:6,resumen:`${a} × ${m}`,refuerzo:`${a} → ${a}<span style="color:var(--aviso)">${'0'.repeat(nc[m])}</span>`,
+    pista:`Multiplicar por <b>${m}</b> es añadir <b>${nombre[m]}</b> a la derecha. Cada cifra salta ${nc[m]} ${nc[m]===1?'lugar':'lugares'} a la izquierda ⬅️`+vpHTML(a),
+    solucion:vpHTML(r,nc[m])+`<div class="expr peq">${a} × ${m} = ${r}</div>Hemos añadido <b>${nombre[m]}</b>.`};
+}};
+
+// ---- NIVEL 6 · Tablas de multiplicar ----
+const TRUCOS={1:'Cualquier número por 1 da el mismo número.',2:'Multiplicar por 2 es hacer el doble.',3:'Cuenta de 3 en 3: 3, 6, 9, 12…',4:'Por 4 es el doble del doble.',
+  5:'Los resultados de la tabla del 5 acaban en 0 o en 5.',6:'La tabla del 6 es el doble de la del 3.',7:'Apóyate en lo que sabes: 7 × 6 = 7 × 5 + 7.',
+  8:'La tabla del 8 es el doble de la del 4.',9:'Truco: en la tabla del 9, las cifras del resultado suman 9 (18 → 1 + 8 = 9).',10:'Por 10, añade un cero.'};
+GEN[6] = { subtipos:['directa','directa','directa','inversa'], gen(sub,S){
+  const tablas=S?.tablas?.length?S.tablas:[1,2,3,4,5,6,7,8,9,10], a=pick(tablas), b=rnd(1,10), p=a*b;
+  if(sub==='inversa') return {tipo:'numpad',hab:`Tabla del ${a}`,enunciado:`Tabla del ${a}: ¿qué número falta?`,visual:`<div class="expr">${a} × <span class="hueco-expr">?</span> = ${p}</div>`,
+    correcta:b,resumen:`${a} × ? = ${p}`,clave:`i${a}x${b}`,pista:`Cuenta de ${a} en ${a} hasta llegar a ${p}. ¿Cuántos saltos?`+saltosHTML(a,b,false),solucion:saltosHTML(a,b)+`<div class="expr peq">${a} × ${b} = ${p}</div>`};
+  return {tipo:'numpad',hab:`Tabla del ${a}`,enunciado:`Tabla del ${a}`,visual:`<div class="expr" style="font-size:3.4rem">${a} × ${b} = <span class="hueco-expr">?</span></div>`,
+    correcta:p,resumen:`${a} × ${b}`,clave:`d${a}x${b}`,pista:`💡 ${TRUCOS[a]}<br>${a} × ${b} es lo mismo que ${b} × ${a}: cuenta de ${a} en ${a}, ${b} ${b===1?'salto':'saltos'}.`+saltosHTML(a,b,false),
+    solucion:saltosHTML(a,b)+`<div class="expr peq">${a} × ${b} = ${p}</div>`};
+}};
+
+// ---- NIVEL 7 · Algoritmo de la multiplicación ----
+const COLS=['unidades','decenas','centenas','unidades de millar'], SIG=['U','D','C','UM'], COLOR=['#1C7ED6','#E03131','#2F9E44','#7048E8'];
+function genAlgo(cif,llev){
+  for(let t=0;t<300;t++){
+    const b=llev?rnd(2,9):rnd(2,4), d=Array.from({length:cif},(_,i)=>i===0?rnd(1,9):rnd(0,9)), a=Number(d.join(''));
+    let c=0, hay=false; for(let i=cif-1;i>=0;i--){ const v=d[i]*b+c; c=Math.floor(v/10); if(c>0&&i>0) hay=true; }
+    if(hay===llev) return {a,b};
+  }
+  return llev?{a:47,b:6}:{a:32,b:3};
+}
+function pasosAlgo(a,b){
+  const d=String(a).split('').map(Number).reverse(); let c=0;
+  return d.map((x,i)=>{ const v=x*b+c, ult=i===d.length-1;
+    let t=`<b style="color:${COLOR[i]}">${COLS[i][0].toUpperCase()+COLS[i].slice(1)}</b>: ${b} × ${x} = ${x*b}`+(c?` y sumo ${c} que llevaba → ${v}`:'');
+    t+= ult ? ` → escribo <b>${v}</b>` : v>=10 ? ` → escribo <b>${v%10}</b> y llevo <b>${Math.floor(v/10)}</b>` : ` → escribo <b>${v}</b>`;
+    c=Math.floor(v/10); return t; });
+}
+GEN[7] = { subtipos:['dosSin','dosCon','tresSin','tresCon'], gen(sub){
+  const {a,b}=genAlgo(sub.startsWith('dos')?2:3, sub.endsWith('Con')), r=a*b;
+  const q={tipo:'algo',hab:sub.startsWith('dos')?(sub.endsWith('Con')?'2 cifras con llevadas':'2 cifras sin llevadas'):(sub.endsWith('Con')?'3 cifras con llevadas':'3 cifras sin llevadas'),
+    a,b,correcta:r,resumen:`${a} × ${b}`,enunciado:`Resuelve en vertical. Empieza por las <b>unidades</b> y avanza hacia la izquierda ⬅️`,
+    solucion:`<ol class="pasos">${pasosAlgo(a,b).map(p=>`<li>${p}</li>`).join('')}</ol><div class="expr peq">${a} × ${b} = ${r}</div>`};
+  q.pista=()=>{ // pista dinámica: explica la primera columna que está mal o vacía
+    const col=q.colError??0, d=String(a).split('').map(Number).reverse();
+    let c=0; for(let i=0;i<col&&i<d.length;i++) c=Math.floor((d[i]*b+c)/10);
+    if(col>=d.length) return `Casi lo tienes. Lo que llevabas de la última columna (<b>${c}</b>) se escribe delante en el resultado.`;
+    return `Fíjate en las <b style="color:${COLOR[col]}">${COLS[col]}</b>:<div class="expr peq">${b} × ${d[col]} = ?${c?` y súmale ${c} que llevabas`:''}</div>Si te sale un número de dos cifras, escribe las unidades y lleva las decenas a la casilla de arriba ⬆️ de la siguiente columna.`;
+  };
+  return q;
+}};
+
+// ---- NIVEL 8 · Problemas contextualizados ----
+// ✏️ Puedes añadir problemas nuevos copiando una línea. {N}=nombre, {a} y {b}=datos, {d}=dato que sobra
+const PROBLEMAS = [
+  {op:'×',e:'🃏',ctx:'{N} colecciona cromos. Tiene {a} sobres y en cada sobre vienen {b} cromos.',preg:'¿Cuántos cromos tiene en total?',dist:'Su álbum tiene {d} páginas.',ra:[2,9],rb:[3,6],rd:[20,40]},
+  {op:'×',e:'🍊',ctx:'En el mercado, {N} compra {a} bolsas de naranjas. Cada bolsa tiene {b} naranjas.',preg:'¿Cuántas naranjas compra?',dist:'Llega al mercado a las {d} de la mañana.',ra:[2,6],rb:[4,9],rd:[9,11]},
+  {op:'×',e:'🎟️',ctx:'Una entrada para el cine cuesta {b} euros. {N} compra {a} entradas para su familia.',preg:'¿Cuánto dinero paga en total?',dist:'La película dura {d} minutos.',ra:[2,6],rb:[3,9],rd:[85,125]},
+  {op:'×',e:'📚',ctx:'En la biblioteca del cole hay {a} estanterías. En cada estantería hay {b} libros.',preg:'¿Cuántos libros hay en total?',dist:'Cada día la visitan {d} alumnos.',ra:[2,9],rb:[11,35],rd:[15,40]},
+  {op:'×',e:'🍪',ctx:'Un paquete de galletas trae {b} galletas. {N} lleva {a} paquetes a la excursión.',preg:'¿Cuántas galletas lleva?',dist:'En la excursión van {d} niños y niñas.',ra:[2,5],rb:[6,12],rd:[20,28]},
+  {op:'×',e:'⚽',ctx:'El entrenador compra {a} cajas de balones. En cada caja hay {b} balones.',preg:'¿Cuántos balones compra?',dist:'El equipo tiene {d} jugadores.',ra:[2,6],rb:[3,8],rd:[11,16]},
+  {op:'×',e:'🚌',ctx:'A la excursión van {a} autobuses. En cada autobús viajan {b} niños y niñas.',preg:'¿Cuántos niños y niñas van en total?',dist:'El viaje dura {d} minutos.',ra:[2,4],rb:[21,34],rd:[35,50]},
+  {op:'×',e:'🥚',ctx:'{N} ayuda en casa y coloca {a} hueveras. En cada huevera hay {b} huevos.',preg:'¿Cuántos huevos hay?',dist:'Tarda {d} minutos en colocarlas.',ra:[2,8],rb:[6,6],rd:[3,9]},
+  {op:'+',e:'🃏',ctx:'{N} tiene {a} cromos y su prima le regala {b} cromos más.',preg:'¿Cuántos cromos tiene ahora?',dist:'Su prima tiene {d} años.',ra:[20,60],rb:[5,30],rd:[7,12]},
+  {op:'−',e:'💶',ctx:'{N} tenía {a} euros en su hucha y se gasta {b} euros en un libro.',preg:'¿Cuánto dinero le queda?',dist:'El libro tiene {d} páginas.',ra:[25,50],rb:[5,19],rd:[60,120]},
+  {op:'+',e:'⚽',ctx:'En el recreo hay {a} niños y niñas jugando al fútbol y {b} jugando al baloncesto.',preg:'¿Cuántos hay jugando en total?',dist:'El recreo dura {d} minutos.',ra:[10,25],rb:[8,20],rd:[30,30]},
+];
+const OPS={'×':{n:'Multiplicar',r:'Se repite la misma cantidad varias veces (grupos iguales) → <b>multiplicación</b>.'},
+           '+':{n:'Sumar',r:'Juntamos o añadimos cantidades → <b>suma</b>.'},
+           '−':{n:'Restar',r:'Quitamos, gastamos o perdemos → <b>resta</b>.'}};
+GEN[8] = { subtipos:['mult','mult','mult','sumaResta'], gen(sub){
+  const pl=PROBLEMAS.filter(x=>sub==='mult'?x.op==='×':x.op!=='×'), t=pick(pl);
+  const a=rnd(...t.ra), b=t.op==='−'?rnd(t.rb[0],Math.min(t.rb[1],a-5)):rnd(...t.rb);
+  let d=rnd(...t.rd); while(d===a||d===b) d++;
+  const N=esc(pick(CONFIG.nombresProblemas)), conDist=Math.random()<.6;
+  const texto=(t.ctx+(conDist?' '+t.dist:'')+' '+t.preg).replace(/\{N\}/g,N);
+  const partes=texto.split(/(\{[abd]\})/).filter(Boolean).map(s=>{ const m=s.match(/^\{([abd])\}$/); return m?{n:{a,b,d}[m[1]],dato:m[1]!=='d'}:{t:s}; });
+  const res=t.op==='×'?a*b:t.op==='+'?a+b:a-b;
+  let dibujo;
+  if(t.op==='×') dibujo = a*b<=40 ? gruposHTML(Array(a).fill(b),{e:t.e},{etiquetas:Array(a).fill(b)}) : `<div class="esquema">${Array(a).fill(`<span class="cj">${t.e} ${b}</span>`).join('')}</div><div>${a} grupos de ${b}</div>`;
+  else if(t.op==='+') dibujo=`<div class="esquema"><span class="cj">${t.e} ${a}</span> + <span class="cj">${t.e} ${b}</span> = ❓</div>`;
+  else dibujo=`<div class="esquema"><span class="cj">${t.e} ${a}</span> quito <span class="cj" style="text-decoration:line-through">${t.e} ${b}</span> → ❓</div>`;
+  let pistaR, solR;
+  if(t.op==='×'){ const dm=descomponerMult(a,b); pistaR=dm.pista; solR=dm.sol; }
+  else if(t.op==='+'){ pistaR=`Suma por partes: primero las decenas y luego las unidades.<div class="expr peq">${a} + ${b} = ?</div>`; solR=`<div class="expr peq">${a} + ${b} = ${res}</div>`; }
+  else { pistaR=`Resta por partes: primero quita las decenas y luego las unidades.<div class="expr peq">${a} − ${b} = ?</div>`; solR=`<div class="expr peq">${a} − ${b} = ${res}</div>`; }
+  return {tipo:'problem',hab:t.op==='×'?'Problemas de multiplicar':'Elegir la operación',partes,op:t.op,a,b,d,conDist,correcta:res,pregunta:t.preg,emoji:t.e,dibujo,
+    enunciado:'🕵️ Lee el problema con atención.',voz:plano(texto.replace(/\{[abd]\}/g,m=>({'{a}':a,'{b}':b,'{d}':d}[m]))),
+    resumen:plano(t.preg),correctaTxt:`${a} ${t.op} ${b} = ${res}`,pista:pistaR,
+    solucion:`Datos: <b>${a}</b> y <b>${b}</b>. Operación: <b>${OPS[t.op].n.toLowerCase()}</b>.${solR}`};
+}};
+
+/* =====================================================================
+   MOTOR DEL JUEGO
+   ===================================================================== */
+let S=null;              // sesión de juego actual
+let objetivo=null;       // casilla que recibe los números del teclado
+const zonaV=$('#zonaVisual'), zonaR=$('#zonaResp');
+function nuevaSesion(modo){ return {modo,idx:-1,resultados:[],racha:0,rachaMax:0,gemas:0,inicio:Date.now(),intento:0,bloqueado:false,vidas:CONFIG.vidasDesafio,puntos:0,usados:new Set(),preguntas:[],terminado:false,pistasUsadas:0}; }
+function despues(fn,ms){ const ses=S; setTimeout(()=>{ if(S===ses&&!S.terminado) fn(); },ms); }
+function crearPregunta(nivel,sub){
+  for(let i=0;i<25;i++){ const q=GEN[nivel].gen(sub,S); const k=q.clave||plano(q.resumen)+'|'+String(q.correcta);
+    if(!S.usados.has(k)||i===24){ S.usados.add(k); q.nivel=nivel; q.sub=sub; return q; } }
+}
+
+// ---- Arranque de cada modo ----
+function iniciarNivel(id,tablas){
+  if(id===6&&!tablas){ selectorTablas(t=>iniciarNivel(6,t)); return; }
+  S=nuevaSesion('entreno'); S.nivel=id; S.tablas=tablas;
+  let subs=[]; while(subs.length<CONFIG.preguntasPorNivel) subs=subs.concat(shuffle(GEN[id].subtipos.slice()));
+  S.preguntas=subs.slice(0,CONFIG.preguntasPorNivel).map(s=>crearPregunta(id,s));
+  mostrar('pJuego'); siguientePregunta();
+}
+function pintarMenuReloj(){
+  const p=P();
+  $('#pReloj').innerHTML=`<div class="cab-pantalla"><h2>⏱️ Reto Contrarreloj · ${CONFIG.segundosContrarreloj} segundos</h2><span class="hchip" style="background:var(--aviso-bg);color:var(--aviso)">🏅 Tu récord: ${p.reloj.mejor}</span></div>
+    <div class="modos" style="max-width:820px;margin:0 auto">
+      <button class="modo" data-t="tablas"><span class="ico" style="background:#D0EBFF">📋</span><div><b>Tablas de multiplicar</b><span>Elige qué tablas quieres</span></div></button>
+      <button class="modo" data-t="ceros"><span class="ico" style="background:#FFE8CC">🔟</span><div><b>× 10, × 100, × 1000</b><span>Cálculo mental con ceros</span></div></button>
+      <button class="modo" data-t="perdido"><span class="ico" style="background:#E5DBFF">🏷️</span><div><b>El factor perdido</b><span>6 × ? = 24</span></div></button>
+      <button class="modo" data-t="mezcla"><span class="ico" style="background:#D3F9D8">🎲</span><div><b>Mezcla rápida</b><span>De todo un poco</span></div></button>
+    </div>`;
+  $$('#pReloj .modo').forEach(b=>b.onclick=()=>{ const t=b.dataset.t; if(t==='tablas') selectorTablas(tb=>iniciarReloj(t,tb)); else iniciarReloj(t); });
+}
+function iniciarReloj(tema,tablas){
+  S=nuevaSesion('reloj'); S.tema=tema; S.tablas=tablas;
+  mostrar('pJuego'); pintarHUD(); zonaV.innerHTML=''; zonaR.innerHTML=''; $('#enunciado').innerHTML='¡Prepárate!';
+  const ca=$('#cuentaAtras'); let n=3; ca.hidden=false; ca.textContent=n; sonido('tic');
+  const ses=S, iv=setInterval(()=>{ n--; if(S!==ses){ clearInterval(iv); ca.hidden=true; return; }
+    if(n>0){ ca.textContent=n; sonido('tic'); } else { clearInterval(iv); ca.hidden=true; sonido('combo');
+      S.inicio=Date.now(); S.fin=S.inicio+CONFIG.segundosContrarreloj*1000; S.intervalo=setInterval(tickReloj,200); siguientePregunta(); } },800);
+}
+function tickReloj(){
+  if(!S||S.modo!=='reloj'||S.terminado||!S.fin) return;
+  const resta=Math.max(0,S.fin-Date.now()), pct=resta/(CONFIG.segundosContrarreloj*1000)*100;
+  const b=$('#barraReloj'); if(b){ b.style.width=pct+'%'; b.parentElement.classList.toggle('poco',resta<10000); $('#txtReloj').textContent=Math.ceil(resta/1000)+' s'; }
+  if(resta<=0) finReloj();
+}
+function iniciarDesafio(){
+  S=nuevaSesion('desafio'); S.tablas=[1,2,3,4,5,6,7,8,9,10];
+  mostrar('pJuego'); siguientePregunta();
+}
+function preguntaAleatoria(){
+  if(S.modo==='reloj'){
+    const t=S.tema==='mezcla'?pick(['tablas','ceros','perdido','suma']):S.tema;
+    if(t==='tablas') return crearPregunta(6,'directa');
+    if(t==='ceros') return crearPregunta(5,pick(['x10','x100','x1000']));
+    if(t==='perdido') return Math.random()<.5?crearPregunta(3,'perdido'):crearPregunta(6,'inversa');
+    return crearPregunta(2,'sumaResultado');
+  }
+  const n=rnd(1,8); return crearPregunta(n,pick(GEN[n].subtipos));
+}
+function salirJuego(){ if(S){ S.terminado=true; clearInterval(S.intervalo); } $('#cuentaAtras').hidden=true; try{speechSynthesis.cancel();}catch(e){} }
+
+// ---- Pasar a la siguiente pregunta ----
+function siguientePregunta(){
+  if(!S||S.terminado) return;
+  S.idx++; S.intento=0; S.bloqueado=false; S.comprobar=null; S.limpiar=null; S.alEscribir=null; S.tecla=null; S.alFallar=null; S.ultimo='';
+  if(S.modo==='entreno'&&S.idx>=S.preguntas.length) return finNivel();
+  if(S.modo==='desafio'&&S.idx>=CONFIG.preguntasDesafio) return finDesafio();
+  if(S.modo!=='entreno') S.preguntas[S.idx]=preguntaAleatoria();
+  S.q=S.preguntas[S.idx]; S.q.ayuda=false;
+  pintarHUD(); pintarPregunta(S.q);
+  if(vozAuto) hablar(S.q.voz||S.q.enunciado);
+}
+function pintarHUD(){
+  const n=S.modo==='reloj'?{color:'#E67700',icono:'⏱️',titulo:'Contrarreloj'}:S.modo==='desafio'?{color:'#AE3EC9',icono:'🏆',titulo:'Desafío Final'}:NIV(S.nivel);
+  let centro='';
+  if(S.modo==='entreno') centro=`<div class="puntos-prog">${S.preguntas.map((_,i)=>`<i class="${S.resultados[i]?.estado||''} ${i===S.idx?'actual':''}"></i>`).join('')}</div>`;
+  if(S.modo==='reloj') centro=`<div class="reloj">⏱️<div class="barra"><div id="barraReloj" style="width:100%"></div></div><span id="txtReloj">${CONFIG.segundosContrarreloj} s</span></div><span class="racha">✅ ${S.puntos}</span>`;
+  if(S.modo==='desafio') centro=`<div class="puntos-prog" style="font-weight:900;font-size:1.2rem">Reto ${Math.min(S.idx+1,CONFIG.preguntasDesafio)} de ${CONFIG.preguntasDesafio}${S.q?` · Bloque ${S.q.nivel} ${NIV(S.q.nivel).icono}`:''}</div><span class="vidas" aria-label="${S.vidas} vidas">${'❤️'.repeat(S.vidas)}${'🖤'.repeat(CONFIG.vidasDesafio-S.vidas)}</span>`;
+  $('#hud').innerHTML=`<span class="etq" style="--c:${n.color}">${n.icono} ${S.modo==='entreno'?`Nivel ${S.nivel} · `:''}${n.titulo}</span>${centro}<span class="racha ${S.racha>=3?'caliente':''}" id="racha">🔥 ${S.racha}</span>`;
+  $('#btnPista').hidden=S.modo!=='entreno';
+  if(S.modo==='reloj') tickReloj();
+}
+
+// ---- Pintar la pregunta según su tipo ----
+function pintarPregunta(q){
+  setObjetivo(null);
+  $('#enunciado').innerHTML=q.enunciado;
+  zonaV.innerHTML=q.visual||'';
+  RENDER[q.tipo](q);
+  q.montar&&q.montar();
+  $('#zonaPreg').scrollTop=0;
+}
+$('#btnLeer').onclick=()=>{ if(S?.q) hablar(S.q.voz||(S.q.enunciado+' '+plano(S.q.visual||''))); };
+$('#btnPista').onclick=()=>{ if(!S||S.bloqueado||S.modo!=='entreno') return; S.q.ayuda=true; S.pistasUsadas++; mostrarPista(S.q,'Aquí tienes una pista'); };
+const pistaDe = q => typeof q.pista==='function'?q.pista():q.pista;
+function mostrarPista(q,titulo='¡Casi! Mira esta pista'){
+  abrirModal({titulo:'💡 '+titulo,clase:'pista',html:mascotaDice('¡Tú puedes! Piensa así:',70)+`<div>${pistaDe(q)}</div>`,leer:plano(pistaDe(q)),
+    botones:[{txt:'💪 Inténtalo otra vez',clase:'btn-aviso',fn:()=>{ S.bloqueado=false; S.limpiar&&S.limpiar(); }}]});
+}
+
+// ---- Teclado numérico (en pantalla y físico del Chromebook) ----
+function tecladoHTML(){ return `<div class="teclado">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="tecla" data-k="${n}">${n}</button>`).join('')}<button class="tecla tecla-borrar" data-k="b" aria-label="Borrar">⌫</button><button class="tecla" data-k="0">0</button><button class="tecla tecla-ok" data-k="ok" aria-label="Comprobar">✔</button></div>`; }
+function setObjetivo(el){ $$('.objetivo').forEach(e=>e.classList.remove('objetivo')); objetivo=el; if(el) el.classList.add('objetivo'); }
+function escribir(d){
+  if(!objetivo||!S||S.bloqueado) return;
+  const max=+objetivo.dataset.max||6; let t=objetivo.textContent;
+  if(max===1) t=d; else { if(t.length>=max) return; if(t==='0') t=''; t+=d; }
+  objetivo.textContent=t; objetivo.classList.remove('mal','bien'); sonido('tic');
+  S.alEscribir&&S.alEscribir(objetivo);
+}
+function borrar(){ if(!objetivo||!S||S.bloqueado) return; objetivo.textContent=objetivo.textContent.slice(0,-1); objetivo.classList.remove('mal'); }
+zonaR.addEventListener('click',e=>{
+  const k=e.target.closest('.tecla'); if(!k) return;
+  if(k.dataset.k==='b') borrar(); else if(k.dataset.k==='ok'){ if(S&&!S.bloqueado&&S.comprobar) S.comprobar(); } else escribir(k.dataset.k);
+});
+document.addEventListener('keydown',e=>{
+  if(modalAbierto){ if(e.key==='Enter'&&document.activeElement?.tagName!=='INPUT'){ const b=[...$$('#modalCaja .modal-botones .btn')].reverse().find(x=>!x.classList.contains('btn-peligro')); b&&b.click(); e.preventDefault(); }
+    else if(e.key==='Escape'&&$('#modal').dataset.cerrable) cerrarModal(); return; }
+  if(pantalla!=='pJuego'||!S||S.bloqueado) return;
+  if(/^[0-9]$/.test(e.key)){ if(objetivo) escribir(e.key); else if(S.tecla) S.tecla(+e.key); e.preventDefault(); }
+  else if(e.key==='Backspace'){ borrar(); e.preventDefault(); }
+  else if(e.key==='Enter'){ S.comprobar&&S.comprobar(); e.preventDefault(); }
+});
+function avisoVacio(el){ toast('✏️ Escribe tu respuesta primero',1100,true); if(el){ el.classList.add('mal'); setTimeout(()=>el.classList.remove('mal'),600); } }
+
+// ---- Renderizadores de cada tipo de ejercicio ----
+const RENDER = {
+  choice(q){
+    const f=q.fmtOp||(x=>x);
+    zonaR.innerHTML=`<p class="instr">Elige la respuesta correcta:</p><div class="opciones">${q.opciones.map((o,i)=>`<button class="btn-op" data-i="${i}"><span class="tecla-n">${i+1}</span>${f(o)}</button>`).join('')}</div>`;
+    const btns=[...zonaR.querySelectorAll('.btn-op')];
+    const elegir=b=>{ if(S.bloqueado||b.disabled) return; const ok=q.opciones[+b.dataset.i]===q.correcta; b.classList.add(ok?'bien':'mal'); if(!ok) b.disabled=true; else btns.forEach(x=>x.disabled=true); S.ultimo=f(q.opciones[+b.dataset.i]); responder(ok); };
+    btns.forEach(b=>b.onclick=()=>elegir(b));
+    S.tecla=n=>{ if(btns[n-1]) elegir(btns[n-1]); };
+    S.alFallar=()=>{ btns.forEach(b=>{ b.disabled=true; if(q.opciones[+b.dataset.i]===q.correcta) b.classList.add('bien'); }); };
+  },
+  numpad(q){
+    zonaR.innerHTML=`<p class="instr">Escribe tu respuesta:</p><div class="display" id="disp" data-max="${q.max||6}" aria-live="polite"></div>${tecladoHTML()}`;
+    const d=$('#disp'); setObjetivo(d); d.onclick=()=>setObjetivo(d);
+    S.comprobar=()=>{ const v=d.textContent; if(v===''){ avisoVacio(d); return; } const ok=Number(v)===q.correcta; d.classList.add(ok?'bien':'mal'); S.ultimo=v; responder(ok); };
+    S.limpiar=()=>{ d.textContent=''; d.classList.remove('mal'); setObjetivo(d); };
+  },
+  fill(q){
+    q.cuentas=Array(q.g).fill(0);
+    zonaV.innerHTML=`<div class="grupos llenar">${Array.from({length:q.g},(_,i)=>`<div class="grupo" data-i="${i}" role="button" aria-label="${q.C} ${i+1}"><div class="items"></div><span class="cuenta">0</span><button class="vaciar" aria-label="Vaciar">↺</button></div>`).join('')}</div>`;
+    const pintar=i=>{ const gr=zonaV.querySelector(`.grupo[data-i="${i}"]`); gr.querySelector('.items').innerHTML=`<span>${q.it.e}</span>`.repeat(q.cuentas[i]); gr.querySelector('.items').style.setProperty('--tam',tamEmoji(q.cuentas[i])); gr.querySelector('.cuenta').textContent=q.cuentas[i]; gr.classList.remove('mal'); };
+    zonaV.querySelectorAll('.grupo').forEach(gr=>gr.addEventListener('click',e=>{
+      if(S.bloqueado) return; const i=+gr.dataset.i;
+      if(e.target.closest('.vaciar')) q.cuentas[i]=0; else { if(q.cuentas[i]>=10) return; q.cuentas[i]++; sonido('tic'); }
+      pintar(i);
+    }));
+    zonaR.innerHTML=`<p class="instr">Toca una ${q.C} para añadir ${q.it.e}<br>Pulsa ↺ para vaciarla.</p><button class="btn btn-ok" id="btnComp" style="min-height:80px;font-size:1.5rem">✔ Comprobar</button>`;
+    $('#btnComp').onclick=()=>S.comprobar();
+    S.comprobar=()=>{ if(S.bloqueado) return; if(q.cuentas.every(c=>c===0)){ avisoVacio(); return; } let ok=true;
+      zonaV.querySelectorAll('.grupo').forEach((gr,i)=>{ if(q.cuentas[i]!==q.k){ ok=false; gr.classList.add('mal'); } });
+      S.ultimo=q.cuentas.join(', '); responder(ok); };
+  },
+  series(q){
+    zonaV.innerHTML=`<div class="serie">${q.seq.map((n,i)=>q.huecos.includes(i)?`<button class="hueco" data-h="${i}" data-max="4" aria-label="Hueco"></button>`:`<span class="n">${n}</span>`).join('<span class="sep">,</span>')}<span class="sep">…</span></div>`;
+    const hs=[...zonaV.querySelectorAll('.hueco')]; hs.forEach(h=>h.onclick=()=>setObjetivo(h)); setObjetivo(hs[0]);
+    zonaR.innerHTML=`<p class="instr">Toca un hueco y escribe el número.</p>${tecladoHTML()}`;
+    S.comprobar=()=>{
+      const vac=hs.find(h=>h.textContent===''); if(vac){ if(objetivo&&objetivo.textContent!==''){ setObjetivo(vac); } else avisoVacio(vac); return; }
+      let ok=true; hs.forEach(h=>{ const b=Number(h.textContent)===q.seq[+h.dataset.h]; h.classList.toggle('bien',b); h.classList.toggle('mal',!b); if(!b) ok=false; });
+      S.ultimo=hs.map(h=>h.textContent).join(', '); responder(ok);
+    };
+    S.limpiar=()=>{ const m=hs.filter(h=>h.classList.contains('mal')); m.forEach(h=>{h.textContent='';h.classList.remove('mal');}); setObjetivo(m[0]||hs[0]); };
+  },
+  algo(q){
+    const A=String(q.a), R=String(q.correcta), L=R.length, cols=L+1;
+    let h=`<div class="algo" style="grid-template-columns:repeat(${cols},var(--celda))">`;
+    h+='<div></div>'; for(let r=L-1;r>=0;r--) h+=`<div class="c lab" style="background:${COLOR[r]}">${SIG[r]}</div>`;
+    h+='<div class="c" style="font-size:.8rem;color:var(--suave);text-align:center;line-height:1.1">lle-<br>vo</div>'; for(let r=L-1;r>=0;r--) h+= (r>=1&&r<=A.length-1)?`<button class="c llevada" data-max="1" data-r="${r}" aria-label="Llevada"></button>`:'<div></div>';
+    h+='<div></div>'; for(let r=L-1;r>=0;r--) h+=`<div class="c" style="color:${COLOR[r]}">${r<A.length?A[A.length-1-r]:''}</div>`;
+    h+='<div class="c">×</div>'; for(let r=L-1;r>=0;r--) h+=`<div class="c" style="color:${COLOR[r]}">${r===0?q.b:''}</div>`;
+    h+='<div class="linea"></div><div></div>'; for(let r=L-1;r>=0;r--) h+=`<button class="c res" data-max="1" data-r="${r}" aria-label="Resultado ${COLS[r]}"></button>`;
+    zonaV.innerHTML=h+'</div>';
+    const res=[...zonaV.querySelectorAll('.res')].sort((x,y)=>x.dataset.r-y.dataset.r);
+    zonaV.querySelectorAll('.res,.llevada').forEach(c=>c.onclick=()=>setObjetivo(c));
+    setObjetivo(res[0]);
+    zonaR.innerHTML=`<p class="instr">Toca una casilla y escribe una cifra.<br>Las casillas de arriba son para las <b style="color:var(--aviso)">llevadas</b>.</p>${tecladoHTML()}`;
+    S.alEscribir=el=>{ if(el.classList.contains('res')){ const sig=res[+el.dataset.r+1]; if(sig) setObjetivo(sig); } };
+    S.comprobar=()=>{
+      const vac=res.find(c=>c.textContent===''); if(vac){ setObjetivo(vac); avisoVacio(vac); return; }
+      let ok=true; q.colError=null;
+      res.forEach(c=>{ const r=+c.dataset.r, b=c.textContent===R[L-1-r]; c.classList.toggle('bien',b); c.classList.toggle('mal',!b); if(!b){ ok=false; if(q.colError===null||r<q.colError) q.colError=r; } });
+      S.ultimo=res.slice().reverse().map(c=>c.textContent).join(''); responder(ok);
+    };
+    S.limpiar=()=>{ const m=res.filter(c=>c.classList.contains('mal')); m.forEach(c=>{c.textContent='';c.classList.remove('mal');}); setObjetivo(m[0]||res[0]); };
+  },
+  problem(q){
+    zonaV.innerHTML=`<div class="problema">${q.partes.map((p,i)=>p.t!==undefined?esc(p.t):`<button class="dato" data-i="${i}">${p.n}</button>`).join('')}</div>
+      <button class="btn btn-sec" id="btnDibujo">🖼️ Ver dibujo</button><div id="dibujo" hidden>${q.dibujo}</div>`;
+    $('#btnDibujo').onclick=()=>{ const d=$('#dibujo'); d.hidden=!d.hidden; $('#btnDibujo').textContent=d.hidden?'🖼️ Ver dibujo':'🙈 Ocultar dibujo'; };
+    const datos=[...zonaV.querySelectorAll('.dato')];
+    const correctos=new Set(q.partes.map((p,i)=>p.dato?i:null).filter(x=>x!==null));
+    let paso=1;
+    const cab=()=>`<div class="pasos-prob">${['1 Datos','2 Operación','3 Resultado'].map((t,i)=>`<span class="${i+1===paso?'act':i+1<paso?'hecho':''}">${t}</span>`).join('')}</div>`;
+    datos.forEach(d=>d.onclick=()=>{ if(paso!==1||S.bloqueado) return; d.classList.toggle('sel'); sonido('tic'); });
+    const marcarDatos=()=>datos.forEach(d=>{ d.classList.remove('sel'); if(correctos.has(+d.dataset.i)) d.classList.add('bien'); });
+    function paso1(){
+      zonaR.innerHTML=cab()+`<p class="instr">Toca en el problema los <b>datos</b> que necesitas para responder:<br>«${esc(q.pregunta)}»</p><button class="btn btn-ok" id="btnDatos" style="min-height:76px;font-size:1.4rem">✔ Comprobar datos</button>`;
+      $('#btnDatos').onclick=()=>S.comprobar();
+      S.comprobar=()=>{
+        if(S.bloqueado) return;
+        const sel=new Set(datos.filter(d=>d.classList.contains('sel')).map(d=>+d.dataset.i));
+        if(!sel.size){ avisoVacio(); return; }
+        const ok=sel.size===correctos.size&&[...sel].every(i=>correctos.has(i));
+        if(ok){ sonido('success'); marcarDatos(); paso=2; paso2(); return; }
+        sonido('error');
+        if(S.modo==='entreno'){ q.ayuda=true; S.bloqueado=true;
+          const sobra=q.conDist&&datos.some(d=>d.classList.contains('sel')&&!correctos.has(+d.dataset.i));
+          abrirModal({titulo:'💡 Revisa los datos',clase:'pista',html:mascotaDice(`Lee otra vez la pregunta: <b>«${esc(q.pregunta)}»</b>`,70)+`<div>Necesitas <b>2 datos</b>.${sobra?` El <b>${q.d}</b> no sirve para responder esta pregunta: ¡es un dato que sobra!`:''}</div>`,
+            botones:[{txt:'💪 Vuelvo a intentarlo',clase:'btn-aviso',fn:()=>{S.bloqueado=false;}}]});
+        } else { toast(`Los datos eran <b>${q.a}</b> y <b>${q.b}</b>`,1600,true); marcarDatos(); paso=2; paso2(); }
+      };
+    }
+    function paso2(){
+      zonaR.innerHTML=cab()+`<p class="instr">¿Qué <b>operación</b> tienes que hacer?</p><div class="ops">${['+','−','×'].map(o=>`<button class="btn-op" data-o="${o}">${o}<small>${OPS[o].n}</small></button>`).join('')}</div>`;
+      S.comprobar=null; S.tecla=null;
+      zonaR.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{
+        if(S.bloqueado) return;
+        if(b.dataset.o===q.op){ sonido('success'); paso=3; paso3(); return; }
+        sonido('error'); b.classList.add('mal');
+        if(S.modo==='entreno'){ q.ayuda=true; S.bloqueado=true;
+          abrirModal({titulo:'💡 Piensa en la operación',clase:'pista',html:mascotaDice('¿Qué pasa en el problema?',70)+`<div>✖️ ${OPS['×'].r}<br>➕ ${OPS['+'].r}<br>➖ ${OPS['−'].r}</div>`,
+            botones:[{txt:'💪 Vuelvo a intentarlo',clase:'btn-aviso',fn:()=>{S.bloqueado=false;}}]});
+        } else { toast(`La operación era <b>${q.op}</b> (${OPS[q.op].n.toLowerCase()})`,1600,true); paso=3; paso3(); }
+      });
+    }
+    function paso3(){
+      zonaR.innerHTML=cab()+`<div class="expr peq">${q.a} ${q.op} ${q.b} =</div><div class="display" id="disp" data-max="4"></div>${tecladoHTML()}`;
+      const d=$('#disp'); setObjetivo(d);
+      S.comprobar=()=>{ const v=d.textContent; if(v===''){ avisoVacio(d); return; } const ok=Number(v)===q.correcta; d.classList.add(ok?'bien':'mal'); S.ultimo=v; responder(ok); };
+      S.limpiar=()=>{ d.textContent=''; d.classList.remove('mal'); setObjetivo(d); };
+    }
+    paso1();
+  },
+};
+
+// ---- Respuesta: aciertos, pistas y errores ----
+const ANIMOS=['¡Genial!','¡Muy bien!','¡Fantástico!','¡Lo has pillado!','¡Eres un crack!','¡Bravo!','¡Perfecto!'];
+function registrar(estado){
+  const q=S.q;
+  S.resultados.push({nivel:q.nivel,hab:q.hab,estado,resumen:q.resumen,correcta:q.correctaTxt??String(q.correcta),dijo:S.ultimo??''});
+}
+function actualizarRacha(){ const r=$('#racha'); if(r){ r.textContent='🔥 '+S.racha; r.classList.toggle('caliente',S.racha>=3); } }
+function responder(ok){
+  if(!S||S.bloqueado||S.terminado) return;
+  const q=S.q; S.bloqueado=true;
+  // ---------- MODO ENTRENAMIENTO ----------
+  if(S.modo==='entreno'){
+    if(ok){
+      const estado=(S.intento===0&&!q.ayuda)?'primera':'pista'; registrar(estado);
+      let g=estado==='primera'?2:1, extra='';
+      if(estado==='primera'){ S.racha++; S.rachaMax=Math.max(S.rachaMax,S.racha); if(S.racha%5===0){ g+=5; extra=`<small>🔥 ¡COMBO de ${S.racha}! +5 💎</small>`; } } else S.racha=0;
+      S.gemas+=g; sumarGemas(g); actualizarRacha();
+      sonido(extra?'combo':'success');
+      toast(`✔️ ${pick(ANIMOS)} <span style="color:var(--primario)">+${g} 💎</span>${q.refuerzo?`<small>${q.refuerzo}</small>`:''}${extra}`,q.refuerzo||extra?1900:1300);
+      despues(siguientePregunta,q.refuerzo||extra?2000:1400);
+    } else if(S.intento===0){
+      S.intento=1; S.racha=0; actualizarRacha(); sonido('error');
+      setTimeout(()=>mostrarPista(q),450);
+    } else {
+      registrar('fallo'); S.racha=0; sonido('error'); S.alFallar&&S.alFallar();
+      setTimeout(()=>abrirModal({titulo:'🧠 Así se resuelve',clase:'solucion',leer:plano(q.solucion),
+        html:mascotaDice('¡No pasa nada! Equivocarse es parte de aprender. Mira:',70)+`<div class="respuesta-ok">✔️ ${esc(q.correctaTxt??String(q.correcta))}</div><div>${q.solucion}</div>`,
+        botones:[{txt:'Siguiente ▶',clase:'btn-pri',fn:siguientePregunta}],cerrable:false}),450);
+    }
+    pintarHUDpuntos(); return;
+  }
+  // ---------- CONTRARRELOJ ----------
+  if(S.modo==='reloj'){
+    if(ok){ S.puntos++; S.racha++; S.rachaMax=Math.max(S.rachaMax,S.racha); registrar('primera'); sumarGemas(1); S.gemas++; sonido('success'); actualizarRacha();
+      const pr=$('#hud .racha'); if(pr) pr.textContent='✅ '+S.puntos; despues(siguientePregunta,280); }
+    else { S.racha=0; registrar('fallo'); sonido('error'); actualizarRacha();
+      toast(`<span style="color:var(--error)">❌ Era ${esc(q.correctaTxt??q.correcta)}</span><small>${plano(q.resumen)} → ${esc(q.correctaTxt??q.correcta)}</small>`,1500,true); despues(siguientePregunta,1550); }
+    return;
+  }
+  // ---------- DESAFÍO FINAL ----------
+  if(ok){ S.puntos++; S.racha++; S.rachaMax=Math.max(S.rachaMax,S.racha); registrar('primera'); sumarGemas(2); S.gemas+=2; sonido('success'); actualizarRacha();
+    toast(`✔️ ${pick(ANIMOS)} <span style="color:var(--primario)">+2 💎</span>`,900); despues(siguientePregunta,1000); }
+  else { S.vidas--; S.racha=0; registrar('fallo'); sonido('error'); S.alFallar&&S.alFallar(); pintarHUD();
+    const fin=S.vidas<=0;
+    setTimeout(()=>abrirModal({titulo:fin?'💔 ¡Se acabaron las vidas!':'💔 Has perdido una vida',clase:'solucion',leer:plano(q.solucion),
+      html:`<div class="respuesta-ok">✔️ ${esc(q.correctaTxt??String(q.correcta))}</div><div>${q.solucion}</div>`,
+      botones:[{txt:fin?'Ver mi informe 📋':'Siguiente ▶',clase:'btn-pri',fn:fin?finDesafio:siguientePregunta}],cerrable:false}),450);
+  }
+}
+function pintarHUDpuntos(){ if(S.modo!=='entreno') return; const ps=$$('#hud .puntos-prog i'); S.resultados.forEach((r,i)=>{ if(ps[i]) ps[i].className=r.estado+(i===S.idx?' actual':''); }); }
+
+/* =====================================================================
+   INSIGNIAS
+   ===================================================================== */
+function comprobarInsignias(ctx={}){
+  const p=P(), nuevas=[], dar=id=>{ if(!p.insignias.includes(id)){ p.insignias.push(id); nuevas.push(id); } };
+  if(ctx.nivel&&ctx.est>0) dar('n'+ctx.nivel);
+  if(ctx.perfecto) dar('perfecto');
+  if(p.mejorRacha>=10) dar('racha10');
+  if(p.gemas>=100) dar('gemas100');
+  if(p.reloj.mejor>=15) dar('reloj15');
+  if(p.desafio.completado) dar('desafio');
+  if(CONFIG.niveles.every(n=>(p.niveles[n.id]?.estrellas||0)>0)) dar('todos');
+  return nuevas;
+}
+function datosInsignia(id){
+  if(id[0]==='n'){ const n=NIV(+id.slice(1)); return {i:n.icono,n:n.insignia,d:`Supera el nivel ${n.id}: ${n.titulo}`}; }
+  return EXTRAS.find(x=>x.id===id);
+}
+function pintarInsignias(){
+  const p=P(), ids=[...CONFIG.niveles.map(n=>'n'+n.id),...EXTRAS.map(x=>x.id)];
+  $('#pInsignias').innerHTML=`<div class="cab-pantalla"><h2>🏅 Insignias de ${esc(DB.actual)} · ${p.insignias.length} de ${ids.length}</h2><button class="btn btn-sec" onclick="irInicio()">⬅ Volver</button></div>
+    <div class="insignias">${ids.map(id=>{ const x=datosInsignia(id), on=p.insignias.includes(id); return `<div class="insignia ${on?'':'off'}"><div class="i">${on?x.i:'🔒'}</div><b>${x.n}</b><span>${x.d}</span></div>`; }).join('')}</div>`;
+}
+
+/* =====================================================================
+   INFORMES (al acabar cada nivel, contrarreloj o desafío)
+   ===================================================================== */
+function anillo(pct,color){
+  const C=2*Math.PI*50, off=C*(1-pct/100);
+  return `<svg class="anillo" width="130" height="130" viewBox="0 0 120 120" role="img" aria-label="${pct}%"><circle cx="60" cy="60" r="50" fill="none" stroke="#E3E8F8" stroke-width="14"/>
+    <circle cx="60" cy="60" r="50" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 60 60)"/>
+    <text x="60" y="68" text-anchor="middle" font-size="26" fill="#1E2240">${pct}%</text></svg>`;
+}
+function barrasHTML(hist,valor,etq,max=100){
+  const h=hist.slice(-7);
+  return `<div class="barras">${h.map((x,i)=>`<div class="b ${i===h.length-1?'act':''}" style="height:${Math.max(4,valor(x)/max*100)}%"><span>${valor(x)}${max===100?'%':''}</span></div>`).join('')}</div>
+    <div class="barras-et">${h.map((x,i)=>`<span>${i===h.length-1?'Hoy':etq(x,i)}</span>`).join('')}</div>`;
+}
+function habilidadesHTML(R){
+  const m={}; R.forEach(r=>{ m[r.hab] ??= {t:0,ok:0,pri:0}; m[r.hab].t++; if(r.estado!=='fallo') m[r.hab].ok++; if(r.estado==='primera') m[r.hab].pri++; });
+  return Object.entries(m).map(([h,v])=>{ const pct=Math.round((v.pri+(v.ok-v.pri)*.5)/v.t*100), col=pct>=80?'var(--acierto)':pct>=50?'var(--aviso)':'var(--error)';
+    return `<div class="hab"><span>${pct>=80?'✅':pct>=50?'🟠':'🔁'} ${esc(h)}</span><div class="mini"><div style="width:${pct}%;background:${col}"></div></div><span>${v.ok}/${v.t}</span></div>`; }).join('');
+}
+function repasoHTML(R){
+  const f=R.filter(r=>r.estado!=='primera').slice(0,5);
+  if(!f.length) return '<p style="font-weight:800;color:var(--acierto)">🎉 ¡Nada que repasar! Todo bien a la primera.</p>';
+  return `<ul class="repaso">${f.map(r=>`<li><span>${r.estado==='fallo'?'🔁':'💡'} ${esc(plano(r.resumen))}</span><b>${esc(r.correcta)}</b></li>`).join('')}</ul>`;
+}
+function miniMapaHTML(actual){
+  const p=P();
+  return `<div class="mini-mapa">${CONFIG.niveles.map(n=>`<div class="${n.id===actual?'actual':''}" style="--c:${n.color}" title="${n.titulo}">${nivelAbierto(n.id)?n.icono:'🔒'}<small>${'⭐'.repeat(p.niveles[n.id]?.estrellas||0)||'·'}</small></div>`).join('')}</div>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;font-weight:900">🚀<div class="barra" style="background:#E3E8F8"><div style="width:${Math.round(estrellasTotales()/24*100)}%"></div></div>${estrellasTotales()}/24 ⭐</div>`;
+}
+const insigniasNuevasHTML = ids => ids.map(id=>{ const x=datosInsignia(id); return `<div class="insignia-nueva"><span class="i">${x.i}</span><div>¡Nueva insignia!<br><span style="font-size:1.2rem">${x.n}</span></div></div>`; }).join('');
+function cabInforme(titulo,color){ return `<div class="inf-cab" style="--c:${color}"><div><h2>📋 ${titulo}</h2><div class="meta">👤 ${esc(DB.actual)} · 📅 ${new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'})}</div></div>${robot(60,'feliz')}</div>`; }
+
+function finNivel(){
+  S.terminado=true;
+  const R=S.resultados, T=R.length, pri=R.filter(r=>r.estado==='primera').length, pis=R.filter(r=>r.estado==='pista').length, fal=T-pri-pis;
+  const pct=Math.round((pri+pis*.5)/T*100), est=pct>=90?3:pct>=70?2:pct>=50?1:0, n=NIV(S.nivel), p=P();
+  const reg=p.niveles[S.nivel] ??= {estrellas:0,mejor:0,intentos:[]};
+  const anterior=reg.intentos[reg.intentos.length-1], estAntes=reg.estrellas, mejorAntes=reg.mejor;
+  reg.intentos.push({f:Date.now(),pct,pri,pis,fal,t:T}); if(reg.intentos.length>10) reg.intentos.shift();
+  reg.mejor=Math.max(reg.mejor,pct); reg.estrellas=Math.max(reg.estrellas,est);
+  p.mejorRacha=Math.max(p.mejorRacha,S.rachaMax);
+  const nuevas=comprobarInsignias({nivel:S.nivel,est,perfecto:pri===T}); guardar(); actualizarHeader();
+  const abreSig=S.nivel<8&&est>0&&estAntes===0&&CONFIG.bloquearNiveles&&!DB.desbloqueoDocente;
+  const msg=[ '¡No te rindas! Cada intento te hace más fuerte. Usa las pistas 💡 y vuelve a intentarlo.',
+    '¡Nivel superado! Practica un poco más lo que aparece en «Para repasar».',
+    '¡Muy bien! Vas por muy buen camino. Repite el nivel para conseguir la 3.ª estrella.',
+    '¡Increíble! Dominas este nivel. ¡Eres un crack de la multiplicación!' ][est];
+  let evol='Es tu primer intento en este nivel. ¡Ya tienes tu marca!';
+  if(anterior){ const dif=pct-anterior.pct; evol = dif>0?`📈 ¡Has mejorado <b>${dif} puntos</b> desde la última vez!`:dif<0?`Esta vez ha costado un poco más (${dif} puntos). ¡La próxima saldrá mejor!`:'Has conseguido lo mismo que la última vez. ¡A por más!'; }
+  if(pct>mejorAntes&&anterior) evol+=' 🏅 ¡Nuevo récord personal!';
+  // Habilidad más floja → consejo
+  const m={}; R.forEach(r=>{ m[r.hab] ??= {t:0,s:0}; m[r.hab].t++; m[r.hab].s+=r.estado==='primera'?1:r.estado==='pista'?.5:0; });
+  const floja=Object.entries(m).sort((a,b)=>a[1].s/a[1].t-b[1].s/b[1].t)[0];
+  const consejo = est===3 ? (S.nivel<8?`👉 Siguiente paso: el <b>nivel ${S.nivel+1}: ${NIV(S.nivel+1).titulo}</b>.`:'👉 ¡Ya puedes enfrentarte al <b>Desafío Final</b>! 🏆')
+    : `👉 Repasa: <b>${esc(floja[0])}</b>. Usa el botón 💡 si lo necesitas.`;
+  $('#pInforme').innerHTML=`<div class="informe">
+    ${cabInforme(`Informe · Nivel ${S.nivel}: ${n.titulo} ${n.icono}`,n.color)}
+    <div class="card">
+      <div class="resumen-top">${anillo(pct,n.color)}<div style="text-align:center"><div class="estrellas grandes">${estrellasHTML(est)}</div><div style="font-weight:900;font-size:1.1rem">${est?`¡${est} ${est===1?'estrella':'estrellas'}!`:'Necesitas un 50 % para la 1.ª estrella'}</div></div></div>
+      ${mascotaDice(msg,64,est?'feliz':'triste')}
+      <div class="tiles">
+        <div class="tile v"><b>${pri}</b><span>✅ A la primera</span></div>
+        <div class="tile n"><b>${pis}</b><span>💡 Con pista</span></div>
+        <div class="tile r"><b>${fal}</b><span>🔁 Por repasar</span></div>
+        <div class="tile"><b>${mmss(Date.now()-S.inicio)}</b><span>⏱️ Tiempo</span></div>
+        <div class="tile"><b>${S.rachaMax}</b><span>🔥 Mejor racha</span></div>
+        <div class="tile"><b>+${S.gemas}</b><span>💎 Gemas</span></div>
+      </div>
+      <div class="consejo">${evol}<br>${consejo}</div>
+      ${abreSig?`<div class="insignia-nueva"><span class="i">🔓</span><div>¡Has desbloqueado el nivel ${S.nivel+1}!<br><span style="font-size:1.1rem">${NIV(S.nivel+1).titulo}</span></div></div>`:''}
+      ${insigniasNuevasHTML(nuevas)}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vw,18px)">
+      <div class="card"><h3>📈 Tu evolución en este nivel</h3>${barrasHTML(reg.intentos,x=>x.pct,x=>fecha(x.f))}</div>
+      <div class="card"><h3>🧠 Tus habilidades</h3>${habilidadesHTML(R)}</div>
+      <div class="card"><h3>🔁 Para repasar</h3>${repasoHTML(R)}</div>
+      <div class="card"><h3>🗺️ Tu misión</h3>${miniMapaHTML(S.nivel)}</div>
+    </div>
+    <div class="inf-botones">
+      <button class="btn btn-sec" id="bRep">🔄 Repetir nivel</button>
+      <button class="btn btn-sec" id="bMapa">🗺️ Mapa de niveles</button>
+      ${S.nivel<8&&nivelAbierto(S.nivel+1)?`<button class="btn btn-ok" id="bSig">Nivel ${S.nivel+1} ▶</button>`:''}
+      <button class="btn btn-sec" onclick="window.print()">🖨️ Imprimir informe</button>
+    </div></div>`;
+  const nivel=S.nivel, tablas=S.tablas;
+  $('#bRep').onclick=()=>iniciarNivel(nivel,tablas);
+  $('#bMapa').onclick=()=>{ pintarMapa(); mostrar('pMapa'); };
+  $('#bSig')&&($('#bSig').onclick=()=>iniciarNivel(nivel+1));
+  mostrar('pInforme');
+  if(est>0){ sonido('nivel'); confeti(); } else sonido('error');
+}
+function finReloj(){
+  if(S.terminado) return; S.terminado=true; clearInterval(S.intervalo); cerrarModal();
+  const p=P(), R=S.resultados, ok=S.puntos, fal=R.length-ok, record=ok>p.reloj.mejor;
+  p.reloj.mejor=Math.max(p.reloj.mejor,ok); p.reloj.hist.push({f:Date.now(),v:ok,tema:S.tema}); if(p.reloj.hist.length>10) p.reloj.hist.shift();
+  p.mejorRacha=Math.max(p.mejorRacha,S.rachaMax);
+  const nuevas=comprobarInsignias(); guardar(); actualizarHeader();
+  const temas={tablas:'Tablas'+(S.tablas?` (${S.tablas.join(', ')})`:''),ceros:'× 10, × 100, × 1000',perdido:'El factor perdido',mezcla:'Mezcla rápida'};
+  const precision=R.length?Math.round(ok/R.length*100):0, maxH=Math.max(10,...p.reloj.hist.map(h=>h.v));
+  $('#pInforme').innerHTML=`<div class="informe">
+    ${cabInforme(`Informe · Contrarreloj: ${temas[S.tema]} ⏱️`,'#E67700')}
+    <div class="card">
+      <div class="resumen-top"><div style="text-align:center"><div style="font-size:4.2rem;font-weight:900;color:var(--aviso);line-height:1">${ok}</div><div style="font-weight:900">aciertos en ${CONFIG.segundosContrarreloj} s</div></div>${anillo(precision,'#E67700')}</div>
+      ${mascotaDice(record&&ok>0?'🏅 ¡NUEVO RÉCORD! ¡Eres más rápido que un rayo!':ok>=15?'¡Velocidad de rayo! ⚡':ok>=8?'¡Muy bien! Cada día serás más rápido.':'¡Buen intento! Practica en el Modo Entrenamiento y vuelve a por tu récord.',64)}
+      <div class="tiles">
+        <div class="tile v"><b>${ok}</b><span>✅ Aciertos</span></div>
+        <div class="tile r"><b>${fal}</b><span>🔁 Fallos</span></div>
+        <div class="tile"><b>${precision}%</b><span>🎯 Precisión</span></div>
+        <div class="tile n"><b>${p.reloj.mejor}</b><span>🏅 Tu récord</span></div>
+        <div class="tile"><b>${S.rachaMax}</b><span>🔥 Mejor racha</span></div>
+        <div class="tile"><b>+${S.gemas}</b><span>💎 Gemas</span></div>
+      </div>
+      ${insigniasNuevasHTML(nuevas)}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vw,18px)">
+      <div class="card"><h3>📈 Tus últimas partidas (aciertos)</h3>${barrasHTML(p.reloj.hist,x=>x.v,x=>fecha(x.f),maxH)}</div>
+      <div class="card"><h3>🔁 Para repasar</h3>${repasoHTML(R)}</div>
+    </div>
+    <div class="inf-botones"><button class="btn btn-ok" id="bOtra">🔄 Jugar otra vez</button><button class="btn btn-sec" id="bMenu">⏱️ Elegir otro reto</button><button class="btn btn-sec" onclick="window.print()">🖨️ Imprimir</button></div></div>`;
+  const tema=S.tema, tablas=S.tablas;
+  $('#bOtra').onclick=()=>iniciarReloj(tema,tablas);
+  $('#bMenu').onclick=()=>{ pintarMenuReloj(); mostrar('pReloj'); };
+  mostrar('pInforme'); sonido('win'); if(ok>=8||record) confeti();
+}
+function finDesafio(){
+  if(S.terminado) return; S.terminado=true;
+  const p=P(), R=S.resultados, ok=S.puntos, completado=S.vidas>0;
+  p.desafio.mejor=Math.max(p.desafio.mejor,ok); if(completado) p.desafio.completado=true;
+  p.desafio.hist.push({f:Date.now(),v:ok}); if(p.desafio.hist.length>10) p.desafio.hist.shift();
+  p.mejorRacha=Math.max(p.mejorRacha,S.rachaMax);
+  const nuevas=comprobarInsignias(); guardar(); actualizarHeader();
+  const porBloque=CONFIG.niveles.map(n=>{ const r=R.filter(x=>x.nivel===n.id); return {n,t:r.length,ok:r.filter(x=>x.estado!=='fallo').length}; }).filter(x=>x.t);
+  $('#pInforme').innerHTML=`<div class="informe">
+    ${cabInforme('Informe · Desafío Final 🏆','#AE3EC9')}
+    <div class="card">
+      <div class="resumen-top"><div style="text-align:center"><div style="font-size:4.2rem;font-weight:900;color:#AE3EC9;line-height:1">${ok}<span style="font-size:1.6rem">/${CONFIG.preguntasDesafio}</span></div><div style="font-weight:900">retos superados</div></div><div class="vidas" style="font-size:2.4rem">${'❤️'.repeat(S.vidas)}${'🖤'.repeat(CONFIG.vidasDesafio-S.vidas)}</div></div>
+      ${mascotaDice(completado?'🏆 ¡DESAFÍO COMPLETADO! ¡Eres un auténtico maestro de la multiplicación!':'¡Casi! Repasa los bloques que se te han resistido y vuelve a intentarlo. ¡Lo conseguirás!',64,completado?'wow':'feliz')}
+      <div class="tiles">
+        <div class="tile v"><b>${ok}</b><span>✅ Aciertos</span></div>
+        <div class="tile r"><b>${R.length-ok}</b><span>❌ Fallos</span></div>
+        <div class="tile n"><b>${p.desafio.mejor}</b><span>🏅 Tu récord</span></div>
+        <div class="tile"><b>${mmss(Date.now()-S.inicio)}</b><span>⏱️ Tiempo</span></div>
+        <div class="tile"><b>${S.rachaMax}</b><span>🔥 Mejor racha</span></div>
+        <div class="tile"><b>+${S.gemas}</b><span>💎 Gemas</span></div>
+      </div>
+      ${insigniasNuevasHTML(nuevas)}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:clamp(10px,1.4vw,18px)">
+      <div class="card"><h3>🧩 Resultados por bloque</h3>${porBloque.map(x=>{ const pc=Math.round(x.ok/x.t*100), col=pc>=80?'var(--acierto)':pc>=50?'var(--aviso)':'var(--error)';
+        return `<div class="hab"><span>${x.n.icono} ${x.n.titulo}</span><div class="mini"><div style="width:${pc}%;background:${col}"></div></div><span>${x.ok}/${x.t}</span></div>`; }).join('')}</div>
+      <div class="card"><h3>🔁 Para repasar</h3>${repasoHTML(R)}</div>
+    </div>
+    <div class="inf-botones"><button class="btn btn-ok" id="bOtra">🔄 Jugar otra vez</button><button class="btn btn-sec" onclick="irInicio()">🏠 Inicio</button><button class="btn btn-sec" onclick="window.print()">🖨️ Imprimir</button></div></div>`;
+  $('#bOtra').onclick=iniciarDesafio;
+  mostrar('pInforme'); if(completado){ sonido('win'); confeti(); } else sonido('error');
+}
+
+// ---------- MI PROGRESO (informe general del alumno) ----------
+function pintarProgreso(){
+  const p=P();
+  $('#pProgreso').innerHTML=`<div class="cab-pantalla"><h2>📊 Progreso de ${esc(DB.actual)}</h2><div class="fila-botones no-print"><button class="btn btn-sec" onclick="window.print()">🖨️ Imprimir</button><button class="btn btn-sec" onclick="irInicio()">⬅ Volver</button></div></div>
+    <div class="stats" style="margin:0 0 .6rem">
+      <div class="stat"><small>Estrellas</small>⭐ ${estrellasTotales()} / 24</div><div class="stat"><small>Gemas</small>💎 ${p.gemas}</div>
+      <div class="stat"><small>Insignias</small>🏅 ${p.insignias.length} / ${8+EXTRAS.length}</div><div class="stat"><small>Mejor racha</small>🔥 ${p.mejorRacha}</div>
+      <div class="stat"><small>Récord contrarreloj</small>⏱️ ${p.reloj.mejor}</div><div class="stat"><small>Desafío Final</small>🏆 ${p.desafio.mejor}/${CONFIG.preguntasDesafio}${p.desafio.completado?' ✅':''}</div>
+    </div>
+    <table class="prog"><tr><th>Nivel</th><th>Estrellas</th><th>Mejor</th><th>Último</th><th>Intentos</th><th>Evolución</th></tr>
+    ${CONFIG.niveles.map(n=>{ const r=p.niveles[n.id]; const u=r?.intentos[r.intentos.length-1];
+      return `<tr><td style="--c:${n.color}">${n.icono} ${n.id}. ${n.titulo}</td><td class="estrellas" style="font-size:1.1rem">${estrellasHTML(r?.estrellas||0)}</td><td>${r?r.mejor+'%':'—'}</td><td>${u?`${u.pct}% · ${fecha(u.f)}`:'—'}</td><td>${r?r.intentos.length:0}</td>
+      <td>${r?`<div style="display:flex;align-items:flex-end;gap:3px;height:34px">${r.intentos.slice(-8).map(x=>`<div style="width:12px;height:${Math.max(8,x.pct)}%;background:${n.color};border-radius:3px"></div>`).join('')}</div>`:'—'}</td></tr>`; }).join('')}</table>`;
+}
+
+// ---------- ARRANQUE ----------
+silencio=!!DB.silencio;
+if('speechSynthesis' in window) speechSynthesis.getVoices();
+const primeraVez=!DB.actual;
+irInicio();
+if(primeraVez) modalPerfil();
+</script>
+</body>
+</html>
